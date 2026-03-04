@@ -276,19 +276,17 @@ const App = () => {
   // ---- Data ------------------------------------------------------
   const mainTopics = [
     { id: '5-pillars', title: "5 Pillars", subtitle: "Foundation of Islam", icon: "🕌", color: "#0d9488", gradient: "from-teal-600 to-emerald-700" },
-    { id: 'islamic-finance', title: "Islamic Finance", subtitle: "Shariah-compliant economics", icon: "💰", color: "#d97706", gradient: "from-amber-600 to-orange-700" },
-    { id: 'quran-arabic', title: "Quran & Arabic", subtitle: "Learn to read & understand", icon: "📖", color: "#0284c7", gradient: "from-sky-600 to-blue-700" },
-    { id: 'islamic-history', title: "Islamic History", subtitle: "Journey through time", icon: "📜", color: "#7c3aed", gradient: "from-violet-600 to-purple-700" }
-  ];
-
-  const modules = {
-    '5-pillars': [
-      { id: 'shahada', title: "Shahada", subtitle: "Declaration of Faith", icon: "☝️", color: "#0d9488", difficulty: "Beginner", estimatedTime: "10 min", questions: [] },
-      { id: 'salah', title: "Salah", subtitle: "Prayer", icon: "🤲", color: "#0d9488", difficulty: "Beginner", estimatedTime: "15 min", questions: [] },
-      { id: 'zakat', title: "Zakat", subtitle: "Charity", icon: "💎", color: "#0d9488", difficulty: "Intermediate", estimatedTime: "12 min", questions: [] },
-      { id: 'sawm', title: "Sawm", subtitle: "Fasting", icon: "🌙", color: "#0d9488", difficulty: "Beginner", estimatedTime: "12 min", questions: [] },
-      { id: 'hajj', title: "Hajj", subtitle: "Pilgrimage", icon: "🕋", color: "#0d9488", difficulty: "Intermediate", estimatedTime: "18 min", questions: [] }
-    ],
+    { id: 'islamic-finance': [{
+  id: 'module-b1', title: 'Why This Matters', subtitle: 'Islam is pro-wealth, pro-commerce — and your money is a trust', icon: '🎯', color: '#d97706', difficulty: 'Beginner', estimatedTime: '50 min', lessonCount: 5,
+  mascotMessage: 'This is your foundation — by the end you will see money through the lens of amānah!',
+  lessons: [
+    { id: 'lesson-1-1', title: 'The Trader Prophet ﷺ', description: 'Islam is not anti-money', duration: '12 min', questions: [] },
+    { id: 'lesson-1-2', title: 'Money as Amānah', description: 'You do not own wealth, you manage it', duration: '13 min', questions: [] },
+    { id: 'lesson-1-3',    { id: 'lesson-1Prohibitions', description: 'Ribā, gharar and maysir basics', duration: '14 min', questions: [] },
+    { id: 'lesson-1-4', title: 'Substa    { id: 'lesson-1-4'ription: 'What IS this deal doing, not what it is call    { id:tion: '13 min', questions: [] },
+    { id: 'lesson-1-5', title: 'Your Money Right Now', description:    { id: 'lesson-1-5', title: 'Your Minance    { id: 'less12 min', questions: [] },
+  ]
+}],
     'islamic-finance': [{
       id: 'module-1', title: "Principles & Basics", subtitle: "Foundation of Islamic Finance", icon: "🎯", color: "#d97706", difficulty: "Beginner", estimatedTime: "70 min", lessonCount: 6,
       mascotMessage: "Let's build a solid foundation in Islamic finance principles!",
