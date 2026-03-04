@@ -378,7 +378,7 @@ const App = () => {
 
   const selectLvl = (l) => { setSelectedLevel(l); setScreen('history-lessons'); };
   const selectHistLesson = (l) => { if (!l.questions.length) return; setSelectedLesson(l); resetQuiz(l.questions); setScreen('quiz'); };
-  const selectLes = (l, i) => { if (!l.questions.length) return; setSelectedLesson({...l, lessonIndex: i}); resetQuiz(l.questions); setScreen('quiz'); };
+  const selectLes = (l, i) => { if (l.id === 'lesson-1-1') { setSelectedLesson({...l, lessonIndex: i}); setScreen('lesson-component'); return; } if (!l.questions.length) return; setSelectedLesson({...l, lessonIndex: i}); resetQuiz(l.questions); setScreen('quiz'); };
   const resetQuiz = (questions) => {
     setCurrentQuestion(0); setSelectedAnswer(null);
     setHeldItem(null); setDragOverCol(null);
