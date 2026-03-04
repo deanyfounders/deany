@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import DEANY_M1L1 from './DEANY-M1L1.jsx';
 import { 
   CheckCircle, XCircle, Star, Trophy, ArrowRight, Sparkles, BookOpen, Home, 
   Lightbulb, Award, Menu, X, ChevronLeft, Flame, Zap, Target,
@@ -1244,6 +1245,10 @@ const App = () => {
         )}
       </div>
     );
+  }
+
+  if (screen === 'lesson-component') {
+    return <DEANY_M1L1 onBack={goLessons} onHome={goHome} />;
   }
 
   return null;
