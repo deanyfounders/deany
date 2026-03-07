@@ -326,14 +326,14 @@ const QUESTIONS = [
 // ═══════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ═══════════════════════════════════════════════════════════════
-export default function DEANY_M1L2({ onBack, onHome }) {
-  const [phase, setPhase] = useState('intro');
-  const [score, setScore] = useState(0);
-  const [streak, setStreak] = useState(0);
+export default function DEANY_M1L2({ onBack, onHome, savedProgress }) {
+  const [phase, setPhase] = useState(savedProgress ? 'content' : 'intro');
+  const [score, setScore] = useState(savedProgress?.score ?? 0);
+  const [streak, setStreak] = useState(savedProgress?.streak ?? 0);
   const [showStreak, setShowStreak] = useState(false);
   const [showL3Toast, setShowL3Toast] = useState(false);
-  const [results, setResults] = useState([]);
-  const [flowIdx, setFlowIdx] = useState(0);
+  const [results, setResults] = useState(savedProgress?.results ?? []);
+  const [flowIdx, setFlowIdx] = useState(savedProgress?.flowIdx ?? 0);
   const [showConfetti, setShowConfetti] = useState(false);
   const [confidence, setConfidence] = useState(3);
 
@@ -364,12 +364,15 @@ export default function DEANY_M1L2({ onBack, onHome }) {
       setPhase('complete');
       setShowConfetti(true);
       setTimeout(() => setShowConfetti(false), 4000);
+      try { localStorage.removeItem('deany-progress-lesson-1-2'); } catch(e) {}
     }
   };
 
   const recordAnswer = (correct, pts, isCapstone) => {
+    const newScore = correct ? score + pts : score;
+    const newStreak = correct ? streak + 1 : 0;
     if (correct) {
-      setScore(s => s + pts);
+      setScore(newScore);
       setStreak(s => {
         const n = s + 1;
         if (n >= 3) { setShowStreak(true); setTimeout(() => setShowStreak(false), 2000); }
@@ -382,7 +385,10 @@ export default function DEANY_M1L2({ onBack, onHome }) {
     } else {
       setStreak(0);
     }
-    setResults(r => [...r, { correct }]);
+    const newResults = [...results, { correct }];
+    setResults(newResults);
+    // Save progress for resume
+    try { localStorage.setItem('deany-progress-lesson-1-2', JSON.stringify({ flowIdx: flowIdx + 1, score: newScore, streak: newStreak, results: newResults })); } catch(e) {}
   };
 
   // ── Nav Header ─────────────────────────────────────────────

@@ -287,15 +287,15 @@ const QUESTIONS = [
 // ═══════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ═══════════════════════════════════════════════════════════════
-export default function DEANY_M1L1({ onBack, onHome }) {
+export default function DEANY_M1L1({ onBack, onHome, savedProgress }) {
   // ── State ────────────────────────────────────────────────────
-  const [phase, setPhase] = useState('intro'); // intro | content | question | complete
+  const [phase, setPhase] = useState(savedProgress ? 'content' : 'intro'); // intro | content | question | complete
   const [contentIdx, setContentIdx] = useState(0); // which section
-  const [questionIdx, setQuestionIdx] = useState(0);
-  const [score, setScore] = useState(0);
-  const [streak, setStreak] = useState(0);
+  const [questionIdx, setQuestionIdx] = useState(savedProgress?.questionIdx ?? 0);
+  const [score, setScore] = useState(savedProgress?.score ?? 0);
+  const [streak, setStreak] = useState(savedProgress?.streak ?? 0);
   const [showStreak, setShowStreak] = useState(false);
-  const [results, setResults] = useState([]);
+  const [results, setResults] = useState(savedProgress?.results ?? []);
   const [attempts, setAttempts] = useState({});
   const [confidence, setConfidence] = useState(3);
   const [showConfetti, setShowConfetti] = useState(false);
@@ -317,7 +317,7 @@ export default function DEANY_M1L1({ onBack, onHome }) {
     qIdx++;
   }
 
-  const [flowIdx, setFlowIdx] = useState(0);
+  const [flowIdx, setFlowIdx] = useState(savedProgress?.flowIdx ?? 0);
   const currentFlow = flow[flowIdx];
 
   const advanceFlow = () => {
@@ -328,12 +328,15 @@ export default function DEANY_M1L1({ onBack, onHome }) {
       setPhase('complete');
       setShowConfetti(true);
       setTimeout(() => setShowConfetti(false), 4000);
+      try { localStorage.removeItem('deany-progress-lesson-1-1'); } catch(e) {}
     }
   };
 
   const recordAnswer = (correct, pts) => {
+    const newScore = correct ? score + pts : score;
+    const newStreak = correct ? streak + 1 : 0;
     if (correct) {
-      setScore(s => s + pts);
+      setScore(newScore);
       setStreak(s => {
         const n = s + 1;
         if (n >= 3) { setShowStreak(true); setTimeout(() => setShowStreak(false), 2000); }
@@ -342,8 +345,11 @@ export default function DEANY_M1L1({ onBack, onHome }) {
     } else {
       setStreak(0);
     }
-    setResults(r => [...r, { qIdx: questionIdx, correct }]);
+    const newResults = [...results, { qIdx: questionIdx, correct }];
+    setResults(newResults);
     setQuestionIdx(i => i + 1);
+    // Save progress for resume
+    try { localStorage.setItem('deany-progress-lesson-1-1', JSON.stringify({ flowIdx: flowIdx + 1, score: newScore, streak: newStreak, results: newResults, questionIdx: questionIdx + 1 })); } catch(e) {}
   };
 
   // ── Nav Header ─────────────────────────────────────────────

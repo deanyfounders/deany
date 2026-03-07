@@ -115,6 +115,11 @@ function splitGlossary(text) {
   return result;
 }
 
+// ---- Progress Persistence ----------------------------------------
+const saveProgress = (id, data) => { try { localStorage.setItem(`deany-progress-${id}`, JSON.stringify(data)); } catch(e) {} };
+const loadProgress = (id) => { try { const d = localStorage.getItem(`deany-progress-${id}`); return d ? JSON.parse(d) : null; } catch(e) { return null; } };
+const clearProgress = (id) => { try { localStorage.removeItem(`deany-progress-${id}`); } catch(e) {} };
+
 // ---- Main App ----------------------------------------------------
 const App = () => {
   const [screen, setScreen] = useState('home');
@@ -378,7 +383,17 @@ const App = () => {
     if (l.id === 'lesson-1-1') { setSelectedLesson({...l, lessonIndex: i}); setScreen('lesson-component'); return; }
     if (l.id === 'lesson-1-2') { setSelectedLesson({...l, lessonIndex: i}); setScreen('lesson-component-2'); return; }
     if (!l.questions.length) return;
-    setSelectedLesson({...l, lessonIndex: i}); resetQuiz(l.questions); setScreen('quiz');
+    setSelectedLesson({...l, lessonIndex: i});
+    const saved = loadProgress(l.id);
+    if (saved) {
+      setCurrentQuestion(saved.currentQuestion); setQuizScore(saved.quizScore); setStreak(saved.streak);
+      setQuizResults(saved.quizResults); setSelectedAnswer(null); setHeldItem(null); setDragOverCol(null);
+      setShowExplanation(false); setShowConceptIntro(false); setCurrentAnswerCorrect(false);
+      if (l.questions) buildShuffleMaps(l.questions);
+    } else {
+      resetQuiz(l.questions);
+    }
+    setScreen('quiz');
   };
   const resetQuiz = (questions) => {
     setCurrentQuestion(0); setSelectedAnswer(null);
@@ -502,9 +517,17 @@ const App = () => {
   };
   const doAnswer = (ok, q) => {
     setCurrentAnswerCorrect(ok); setShowExplanation(true);
-    if (ok) { setQuizScore(quizScore + 10); setStreak(streak + 1); if (streak + 1 >= 3) { setShowStreakAnim(true); setTimeout(() => setShowStreakAnim(false), 2000); } }
+    const newScore = ok ? quizScore + 10 : quizScore;
+    const newStreak = ok ? streak + 1 : 0;
+    if (ok) { setQuizScore(newScore); setStreak(newStreak); if (newStreak >= 3) { setShowStreakAnim(true); setTimeout(() => setShowStreakAnim(false), 2000); } }
     else setStreak(0);
-    setQuizResults([...quizResults, { question: q.question, correct: ok, explanation: q.explanation }]);
+    const newResults = [...quizResults, { question: q.question, correct: ok, explanation: q.explanation }];
+    setQuizResults(newResults);
+    // Save progress for resume
+    const lessonId = selectedLesson?.id || selectedModule?.id;
+    if (lessonId) {
+      saveProgress(lessonId, { currentQuestion: currentQuestion + 1, quizScore: newScore, streak: newStreak, quizResults: newResults });
+    }
   };
   const handleNext = () => {
     const qs = selectedLesson?.questions || selectedModule?.questions;
@@ -516,6 +539,8 @@ const App = () => {
       if (xp + eXP >= level * 100) { setLevel(level + 1); setXp(xp + eXP - level * 100); }
       if (selectedLesson?.lessonIndex !== undefined && selectedModule) markLesComplete(selectedModule.id, selectedLesson.lessonIndex);
       else if (selectedModule) markModComplete(selectedModule.id);
+      const lessonId = selectedLesson?.id || selectedModule?.id;
+      if (lessonId) clearProgress(lessonId);
       setScreen('results');
     }
   };
@@ -526,11 +551,11 @@ const App = () => {
   // FIX: These MUST be separate top-level checks, NOT nested.
   // M1L2 check comes first so it doesn't fall into M1L1's block.
   if (screen === 'lesson-component-2') {
-    return <DEANY_M1L2 onBack={goLessons} onHome={goHome} />;
+    return <DEANY_M1L2 onBack={goLessons} onHome={goHome} savedProgress={loadProgress('lesson-1-2')} />;
   }
 
   if (screen === 'lesson-component') {
-    return <DEANY_M1L1 onBack={goLessons} onHome={goHome} />;
+    return <DEANY_M1L1 onBack={goLessons} onHome={goHome} savedProgress={loadProgress('lesson-1-1')} />;
   }
 
   // ═══════════════════════════════════════════════════════════════
@@ -697,11 +722,12 @@ const App = () => {
         <div className="space-y-2.5 max-w-lg mx-auto">
           {selectedModule.lessons?.map((l, i) => {
             const done = completedLessons[`${selectedModule.id}-lesson-${i}`];
+            const hasSaved = loadProgress(l.id);
             return (
               <button key={l.id} onClick={() => selectLes(l, i)} className={`w-full ${glassHover} rounded-lg p-4 text-left group ${done ? 'ring-1 ring-emerald-200' : ''}`}>
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-md flex items-center justify-center font-bold text-xs shadow-sm" style={{background:selectedModule.color+'12',color:selectedModule.color}}>{i+1}</div>
-                  <div className="flex-grow min-w-0"><h3 className="font-bold text-gray-900 text-xs">{l.title}</h3><p className="text-[10px] text-gray-500">{l.description}</p><span className="text-[10px] text-gray-400 flex items-center gap-1 mt-0.5"><Clock className="w-2.5 h-2.5" />{l.duration}{!l.questions.length && l.id !== 'lesson-1-1' && l.id !== 'lesson-1-2' && <span className="ml-1 px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded-full font-medium">Soon</span>}</span></div>
+                  <div className="flex-grow min-w-0"><h3 className="font-bold text-gray-900 text-xs">{l.title}</h3><p className="text-[10px] text-gray-500">{l.description}</p><span className="text-[10px] text-gray-400 flex items-center gap-1 mt-0.5"><Clock className="w-2.5 h-2.5" />{l.duration}{hasSaved && <span className="ml-1 px-1.5 py-0.5 bg-emerald-100 text-emerald-700 rounded-full font-medium">Continue</span>}{!l.questions.length && l.id !== 'lesson-1-1' && l.id !== 'lesson-1-2' && !hasSaved && <span className="ml-1 px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded-full font-medium">Soon</span>}</span></div>
                   <ArrowRight className="w-3.5 h-3.5 text-gray-300 group-hover:text-emerald-600 transition-all" />
                 </div>
               </button>
