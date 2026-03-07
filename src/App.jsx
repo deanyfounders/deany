@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import DEANY_M1L1 from './DEANY-M1L1.jsx';
 import DEANY_M1L2 from "../DEANY_M1L2.jsx";
+import DEANY_M1L3 from "../DEANY_M1L3.jsx";
 import { 
   CheckCircle, XCircle, Star, Trophy, ArrowRight, Sparkles, BookOpen, Home, 
   Lightbulb, Award, Menu, X, ChevronLeft, Flame, Zap, Target,
@@ -382,6 +383,7 @@ const App = () => {
   const selectLes = (l, i) => {
     if (l.id === 'lesson-1-1') { setSelectedLesson({...l, lessonIndex: i}); setScreen('lesson-component'); return; }
     if (l.id === 'lesson-1-2') { setSelectedLesson({...l, lessonIndex: i}); setScreen('lesson-component-2'); return; }
+    if (l.id === 'lesson-1-3') { setSelectedLesson({...l, lessonIndex: i}); setScreen('lesson-component-3'); return; }
     if (!l.questions.length) return;
     setSelectedLesson({...l, lessonIndex: i});
     const saved = loadProgress(l.id);
@@ -550,6 +552,10 @@ const App = () => {
   // ═══════════════════════════════════════════════════════════════
   // FIX: These MUST be separate top-level checks, NOT nested.
   // M1L2 check comes first so it doesn't fall into M1L1's block.
+  if (screen === 'lesson-component-3') {
+    return <DEANY_M1L3 onBack={goLessons} onHome={goHome} savedProgress={loadProgress('lesson-1-3')} />;
+  }
+
   if (screen === 'lesson-component-2') {
     return <DEANY_M1L2 onBack={goLessons} onHome={goHome} savedProgress={loadProgress('lesson-1-2')} />;
   }
