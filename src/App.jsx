@@ -130,7 +130,6 @@ const App = () => {
   const [streak, setStreak] = useState(0);
   const [quizResults, setQuizResults] = useState([]);
   const [selectedResultQuestion, setSelectedResultQuestion] = useState(null);
-  // FIX 2: Moved heldItem & dragOverCol useState to top of state block (was mid-component, violating Rules of Hooks ordering)
   const [heldItem, setHeldItem] = useState(null);
   const [dragOverCol, setDragOverCol] = useState(null);
   const [currentAnswerCorrect, setCurrentAnswerCorrect] = useState(false);
@@ -231,7 +230,6 @@ const App = () => {
     if (showExplanation && currentAnswerCorrect) { setShowConfetti(true); setTimeout(() => setShowConfetti(false), 3000); }
   }, [showExplanation, currentAnswerCorrect]);
 
-  // FIX 4: Added eslint-disable comment to acknowledge known stale-closure limitation
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!showExplanation || (!selectedModule && !selectedLesson)) return;
@@ -285,7 +283,7 @@ const App = () => {
       id: 'module-1', title: "Principles & Basics", subtitle: "Foundation of Islamic Finance", icon: "🎯", color: "#d97706", difficulty: "Beginner", estimatedTime: "70 min", lessonCount: 5,
       mascotMessage: "Let's build a solid foundation in Islamic finance principles!",
       lessons: [
-                { id: 'lesson-1-1', title: 'The Trader Prophet', description: '', duration: '12 min', questions: [] },
+        { id: 'lesson-1-1', title: 'The Trader Prophet', description: '', duration: '12 min', questions: [] },
         { id: 'lesson-1-2', title: 'Money as Amanah', description: '', duration: '12 min', questions: [] },
         { id: 'lesson-1-3', title: 'The Three Poisons', description: '', duration: '15 min', questions: [] },
         { id: 'lesson-1-4', title: 'Substance Over Labels', description: '', duration: '14 min', questions: [] },
@@ -359,9 +357,6 @@ const App = () => {
 
   const selectMainTopic = (id) => { setSelectedMainTopic(mainTopics.find(t => t.id == id)); setLastSelectedTopicId(id); setScreen('modules'); };
 
-  // FIX 1: Speed round routing — detect isSpeedRound and route to 'speed-round' screen,
-  // resetting all speed round state. Previously fell through to setScreen('quiz') which
-  // rendered blank (no handler for type:"triage" questions).
   const selectModule = (mod, idx) => {
     if (selectedMainTopic?.id == 'islamic-history' && mod.levels) { setSelectedEpoch(mod); setScreen('epoch-levels'); return; }
     if (mod.isSpeedRound) {
@@ -379,7 +374,12 @@ const App = () => {
 
   const selectLvl = (l) => { setSelectedLevel(l); setScreen('history-lessons'); };
   const selectHistLesson = (l) => { if (!l.questions.length) return; setSelectedLesson(l); resetQuiz(l.questions); setScreen('quiz'); };
-  const selectLes = (l, i) => { if (l.id === 'lesson-1-1') { setSelectedLesson({...l, lessonIndex: i}); setScreen('lesson-component'); return; } if (l.id === 'lesson-1-2') { setSelectedLesson({...l, lessonIndex: i}); setScreen('lesson-component-2'); return; } if (!l.questions.length) return; setSelectedLesson({...l, lessonIndex: i}); resetQuiz(l.questions); setScreen('quiz'); };
+  const selectLes = (l, i) => {
+    if (l.id === 'lesson-1-1') { setSelectedLesson({...l, lessonIndex: i}); setScreen('lesson-component'); return; }
+    if (l.id === 'lesson-1-2') { setSelectedLesson({...l, lessonIndex: i}); setScreen('lesson-component-2'); return; }
+    if (!l.questions.length) return;
+    setSelectedLesson({...l, lessonIndex: i}); resetQuiz(l.questions); setScreen('quiz');
+  };
   const resetQuiz = (questions) => {
     setCurrentQuestion(0); setSelectedAnswer(null);
     setHeldItem(null); setDragOverCol(null);
@@ -419,7 +419,6 @@ const App = () => {
   };
   const placeWord = (word, slotIdx) => {
     if (showExplanation) return;
-    // FIX 3: Added optional chaining on selectedModule?.questions
     const q = (selectedLesson?.questions || selectedModule?.questions)[currentQuestion];
     const state = initDD(q);
     const newSlots = [...state.slots];
@@ -520,6 +519,19 @@ const App = () => {
       setScreen('results');
     }
   };
+
+  // ═══════════════════════════════════════════════════════════════
+  // SCREEN ROUTING — STANDALONE LESSON COMPONENTS
+  // ═══════════════════════════════════════════════════════════════
+  // FIX: These MUST be separate top-level checks, NOT nested.
+  // M1L2 check comes first so it doesn't fall into M1L1's block.
+  if (screen === 'lesson-component-2') {
+    return <DEANY_M1L2 onBack={goLessons} onHome={goHome} />;
+  }
+
+  if (screen === 'lesson-component') {
+    return <DEANY_M1L1 onBack={goLessons} onHome={goHome} />;
+  }
 
   // ═══════════════════════════════════════════════════════════════
   // HOME
@@ -689,7 +701,7 @@ const App = () => {
               <button key={l.id} onClick={() => selectLes(l, i)} className={`w-full ${glassHover} rounded-lg p-4 text-left group ${done ? 'ring-1 ring-emerald-200' : ''}`}>
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-md flex items-center justify-center font-bold text-xs shadow-sm" style={{background:selectedModule.color+'12',color:selectedModule.color}}>{i+1}</div>
-                  <div className="flex-grow min-w-0"><h3 className="font-bold text-gray-900 text-xs">{l.title}</h3><p className="text-[10px] text-gray-500">{l.description}</p><span className="text-[10px] text-gray-400 flex items-center gap-1 mt-0.5"><Clock className="w-2.5 h-2.5" />{l.duration}{!l.questions.length && <span className="ml-1 px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded-full font-medium">Soon</span>}</span></div>
+                  <div className="flex-grow min-w-0"><h3 className="font-bold text-gray-900 text-xs">{l.title}</h3><p className="text-[10px] text-gray-500">{l.description}</p><span className="text-[10px] text-gray-400 flex items-center gap-1 mt-0.5"><Clock className="w-2.5 h-2.5" />{l.duration}{!l.questions.length && l.id !== 'lesson-1-1' && l.id !== 'lesson-1-2' && <span className="ml-1 px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded-full font-medium">Soon</span>}</span></div>
                   <ArrowRight className="w-3.5 h-3.5 text-gray-300 group-hover:text-emerald-600 transition-all" />
                 </div>
               </button>
@@ -1246,13 +1258,6 @@ const App = () => {
         )}
       </div>
     );
-  }
-
-  if (screen === 'lesson-component') {
-    if (screen === "lesson-component-2") {
-      return <DEANY_M1L2 onBack={goLessons} onHome={goHome} />;
-    }
-    return <DEANY_M1L1 onBack={goLessons} onHome={goHome} />;
   }
 
   return null;
