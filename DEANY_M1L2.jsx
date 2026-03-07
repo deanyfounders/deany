@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   CheckCircle, XCircle, ArrowRight, ArrowLeft, Flame, Star,
   BookOpen, Clock, Target, GripVertical, ChevronDown, Award,
+  ChevronLeft, Home,
 } from 'lucide-react';
 
 // ═══════════════════════════════════════════════════════════════
@@ -325,7 +326,7 @@ const QUESTIONS = [
 // ═══════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ═══════════════════════════════════════════════════════════════
-export default function DEANY_M1L2() {
+export default function DEANY_M1L2({ onBack, onHome }) {
   const [phase, setPhase] = useState('intro');
   const [score, setScore] = useState(0);
   const [streak, setStreak] = useState(0);
@@ -384,6 +385,18 @@ export default function DEANY_M1L2() {
     setResults(r => [...r, { correct }]);
   };
 
+  // ── Nav Header ─────────────────────────────────────────────
+  const LessonNav = () => (
+    <div className="flex justify-between items-center mb-6">
+      <button onClick={onBack} className="flex items-center gap-1.5 text-gray-600 hover:text-emerald-700 transition-colors text-sm font-medium">
+        <ChevronLeft className="w-4 h-4" /><span>Lessons</span>
+      </button>
+      <button onClick={onHome} className="flex items-center gap-1.5 text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 px-3 py-1.5 rounded-full text-xs font-medium transition-all shadow-sm">
+        <Home className="w-3.5 h-3.5" /><span>Home</span>
+      </button>
+    </div>
+  );
+
   // ── Intro ────────────────────────────────────────────────────
   if (phase === 'intro') {
     return (
@@ -391,6 +404,7 @@ export default function DEANY_M1L2() {
         style={{ background: 'linear-gradient(150deg, #f0fdf4 0%, #ecfdf5 30%, #f0f9ff 60%, #fefce8 100%)' }}>
         <IslamicPattern />
         <div className="relative z-10 max-w-2xl mx-auto px-4 py-8">
+          <LessonNav />
           <div className="text-center mb-8">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold mb-4"
               style={{ background: `${T.gold}18`, color: T.gold }}>
@@ -472,6 +486,7 @@ export default function DEANY_M1L2() {
         <IslamicPattern />
         {showConfetti && <Confetti />}
         <div className="relative z-10 max-w-2xl mx-auto px-4 py-8">
+          <LessonNav />
           <div className="bg-white/70 backdrop-blur-xl border border-white/40 shadow-xl rounded-2xl p-8 text-center">
             <div className="text-4xl mb-3">🏆</div>
             <h1 className="text-2xl font-bold mb-1" style={{ color: T.navy, fontFamily: 'Georgia, serif' }}>Lesson Complete!</h1>
@@ -585,6 +600,8 @@ export default function DEANY_M1L2() {
       )}
 
       <div className="relative z-10 max-w-2xl mx-auto px-4 py-6">
+        <LessonNav />
+
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
