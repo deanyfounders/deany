@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import DEANY_M1L1 from './DEANY-M1L1.jsx';
 import DEANY_M1L2 from "../DEANY_M1L2.jsx";
 import DEANY_M1L3 from "../DEANY_M1L3.jsx";
+import DEANY_M1L4 from "../DEANY_M1L4.jsx";
 import { 
   CheckCircle, XCircle, Star, Trophy, ArrowRight, Sparkles, BookOpen, Home, 
   Lightbulb, Award, Menu, X, ChevronLeft, Flame, Zap, Target,
@@ -384,6 +385,7 @@ const App = () => {
     if (l.id === 'lesson-1-1') { setSelectedLesson({...l, lessonIndex: i}); setScreen('lesson-component'); return; }
     if (l.id === 'lesson-1-2') { setSelectedLesson({...l, lessonIndex: i}); setScreen('lesson-component-2'); return; }
     if (l.id === 'lesson-1-3') { setSelectedLesson({...l, lessonIndex: i}); setScreen('lesson-component-3'); return; }
+    if (l.id === 'lesson-1-4') { setSelectedLesson({...l, lessonIndex: i}); setScreen('lesson-component-4'); return; }
     if (!l.questions.length) return;
     setSelectedLesson({...l, lessonIndex: i});
     const saved = loadProgress(l.id);
@@ -552,6 +554,10 @@ const App = () => {
   // ═══════════════════════════════════════════════════════════════
   // FIX: These MUST be separate top-level checks, NOT nested.
   // M1L2 check comes first so it doesn't fall into M1L1's block.
+  if (screen === 'lesson-component-4') {
+    return <DEANY_M1L4 onBack={goLessons} onHome={goHome} savedProgress={loadProgress('lesson-1-4')} />;
+  }
+
   if (screen === 'lesson-component-3') {
     return <DEANY_M1L3 onBack={goLessons} onHome={goHome} savedProgress={loadProgress('lesson-1-3')} />;
   }
@@ -733,7 +739,7 @@ const App = () => {
               <button key={l.id} onClick={() => selectLes(l, i)} className={`w-full ${glassHover} rounded-lg p-4 text-left group ${done ? 'ring-1 ring-emerald-200' : ''}`}>
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-md flex items-center justify-center font-bold text-xs shadow-sm" style={{background:selectedModule.color+'12',color:selectedModule.color}}>{i+1}</div>
-                  <div className="flex-grow min-w-0"><h3 className="font-bold text-gray-900 text-xs">{l.title}</h3><p className="text-[10px] text-gray-500">{l.description}</p><span className="text-[10px] text-gray-400 flex items-center gap-1 mt-0.5"><Clock className="w-2.5 h-2.5" />{l.duration}{hasSaved && <span className="ml-1 px-1.5 py-0.5 bg-emerald-100 text-emerald-700 rounded-full font-medium">Continue</span>}{!l.questions.length && !['lesson-1-1','lesson-1-2','lesson-1-3'].includes(l.id) && !hasSaved && <span className="ml-1 px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded-full font-medium">Soon</span>}</span></div>
+                  <div className="flex-grow min-w-0"><h3 className="font-bold text-gray-900 text-xs">{l.title}</h3><p className="text-[10px] text-gray-500">{l.description}</p><span className="text-[10px] text-gray-400 flex items-center gap-1 mt-0.5"><Clock className="w-2.5 h-2.5" />{l.duration}{hasSaved && <span className="ml-1 px-1.5 py-0.5 bg-emerald-100 text-emerald-700 rounded-full font-medium">Continue</span>}{!l.questions.length && !['lesson-1-1','lesson-1-2','lesson-1-3','lesson-1-4'].includes(l.id) && !hasSaved && <span className="ml-1 px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded-full font-medium">Soon</span>}</span></div>
                   <ArrowRight className="w-3.5 h-3.5 text-gray-300 group-hover:text-emerald-600 transition-all" />
                 </div>
               </button>
