@@ -4,6 +4,7 @@ import DEANY_M1L2 from "../DEANY_M1L2.jsx";
 import DEANY_M1L3 from "../DEANY_M1L3.jsx";
 import DEANY_M1L4 from "../DEANY_M1L4.jsx";
 import DEANY_M1L5 from "../DEANY_M1L5.jsx";
+import ModuleOverview from './ModuleOverview.jsx';
 import { 
   CheckCircle, XCircle, Star, Trophy, ArrowRight, Sparkles, BookOpen, Home, 
   Lightbulb, Award, Menu, X, ChevronLeft, Flame, Zap, Target,
@@ -731,28 +732,14 @@ const App = () => {
   // LESSONS
   if (screen == 'lessons' && selectedModule) {
     return (
-      <div className="min-h-screen relative" style={pageBg}><IslamicPattern /><div className="relative z-10 max-w-3xl mx-auto px-4 py-8">
-        <NavHeader onBack={goModules} onHome={goHome} backLabel="Modules" />
-        <div className={`${glass} rounded-2xl p-6 mb-6`}>
-          <div className="flex items-center gap-4"><div className="w-14 h-14 rounded-xl flex items-center justify-center text-3xl shadow-md" style={{background:selectedModule.color+'12'}}>{selectedModule.icon}</div><div><h1 className="text-xl font-bold text-gray-900" style={{fontFamily:"Georgia,serif"}}>{selectedModule.title}</h1><p className="text-gray-500 text-xs">{selectedModule.subtitle}</p></div></div>
-          {selectedModule.mascotMessage && <div className="mt-3 bg-emerald-50/50 rounded-lg p-2.5 border border-emerald-100 flex items-start gap-2"><Mascot size="sm" className="flex-shrink-0 !w-8 !h-8 !text-lg" /><p className="text-xs text-gray-700"><b className="text-emerald-700">Fulus:</b> {selectedModule.mascotMessage}</p></div>}
-        </div>
-        <div className="space-y-2.5 max-w-lg mx-auto">
-          {selectedModule.lessons?.map((l, i) => {
-            const done = completedLessons[`${selectedModule.id}-lesson-${i}`];
-            const hasSaved = loadProgress(l.id);
-            return (
-              <button key={l.id} onClick={() => selectLes(l, i)} className={`w-full ${glassHover} rounded-lg p-4 text-left group ${done ? 'ring-1 ring-emerald-200' : ''}`}>
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-md flex items-center justify-center font-bold text-xs shadow-sm" style={{background:selectedModule.color+'12',color:selectedModule.color}}>{i+1}</div>
-                  <div className="flex-grow min-w-0"><h3 className="font-bold text-gray-900 text-xs">{l.title}</h3><p className="text-[10px] text-gray-500">{l.description}</p><span className="text-[10px] text-gray-400 flex items-center gap-1 mt-0.5"><Clock className="w-2.5 h-2.5" />{l.duration}{hasSaved && <span className="ml-1 px-1.5 py-0.5 bg-emerald-100 text-emerald-700 rounded-full font-medium">Continue</span>}{!l.questions.length && !['lesson-1-1','lesson-1-2','lesson-1-3','lesson-1-4','lesson-1-5'].includes(l.id) && !hasSaved && <span className="ml-1 px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded-full font-medium">Soon</span>}</span></div>
-                  <ArrowRight className="w-3.5 h-3.5 text-gray-300 group-hover:text-emerald-600 transition-all" />
-                </div>
-              </button>
-            );
-          })}
-        </div>
-      </div></div>
+      <ModuleOverview
+        module={selectedModule}
+        completedLessons={completedLessons}
+        loadProgress={loadProgress}
+        onSelectLesson={selectLes}
+        onBack={goModules}
+        onHome={goHome}
+      />
     );
   }
 
