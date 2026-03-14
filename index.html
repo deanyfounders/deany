@@ -5,6 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Deany - Learn Islam Beautifully</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              deany: {
+                white:       '#FFFFFF',
+                cream:       '#FAF8F5',
+                ivory:       '#F5F1EC',
+                navy:        '#1A2332',
+                steel:       '#4A5568',
+                muted:       '#94a0b0',
+                gold:        '#C9A84C',
+                'gold-light':'#F5EDD4',
+                sage:        '#7C9A82',
+                'sage-light':'#EEF3EF',
+                border:      '#E8E4DF',
+                error:       '#C53030',
+                'error-light':'#FEF2F2',
+              },
+            },
+            fontFamily: {
+              sans: ['"Source Sans 3"', 'system-ui', '-apple-system', 'sans-serif'],
+              arabic: ['"Noto Naskh Arabic"', '"Traditional Arabic"', 'serif'],
+            },
+            animation: {
+              'pulse-gold': 'pulseGold 2s ease-in-out infinite',
+            },
+            keyframes: {
+              pulseGold: {
+                '0%, 100%': { boxShadow: '0 0 0 0 rgba(201, 168, 76, 0.4)' },
+                '50%':      { boxShadow: '0 0 0 12px rgba(201, 168, 76, 0)' },
+              },
+            },
+          },
+        },
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
