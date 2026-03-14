@@ -1,15 +1,53 @@
 import React from 'react';
-import { Check, Lock, ChevronLeft, Home } from 'lucide-react';
-
-// Zigzag positions: left, right, left, right, centre
-const POSITIONS = [30, 70, 30, 70, 50];
-const VERTICAL_GAP = 140;
-const PATH_START = 60;
+import { Check, Lock, ChevronLeft, Home, Zap } from 'lucide-react';
 
 const ModuleOverview = ({
-  module: mod, completedLessons, loadProgress, onSelectLesson, onBack, onHome, className = '',
+  modules, completedLessons, loadProgress, onSelectLesson, onSelectModule, onBack, onHome,
 }) => {
-  if (!mod) return null;
+  if (!modules?.length) return null;
+
+  return (
+    <div className="min-h-screen bg-white">
+      <div className="max-w-md mx-auto px-5 py-8">
+
+        {/* Nav */}
+        <div className="flex justify-between items-center mb-10">
+          <button onClick={onBack}
+            className="flex items-center gap-1.5 text-sm text-deany-steel hover:text-deany-navy
+              transition-colors duration-200 focus:outline-none focus-visible:ring-2
+              focus-visible:ring-deany-gold focus-visible:ring-offset-2 rounded-lg px-2 py-1.5">
+            <ChevronLeft className="w-4 h-4" /><span>Topics</span>
+          </button>
+          <button onClick={onHome}
+            className="flex items-center gap-1.5 text-sm text-deany-steel hover:text-deany-navy
+              transition-colors duration-200 focus:outline-none focus-visible:ring-2
+              focus-visible:ring-deany-gold focus-visible:ring-offset-2 rounded-lg px-2 py-1.5">
+            <Home className="w-3.5 h-3.5" /><span>Home</span>
+          </button>
+        </div>
+
+        {/* Page title */}
+        <div className="text-center mb-12">
+          <p className="text-xs font-medium uppercase tracking-widest text-deany-muted mb-3">Islamic Finance</p>
+          <h1 className="text-2xl md:text-3xl font-semibold text-deany-navy">Your Learning Path</h1>
+        </div>
+
+        {/* Modules */}
+        <div className="space-y-16">
+          {modules.map((mod, mi) => (
+            <ModuleSection key={mod.id} mod={mod} moduleIndex={mi}
+              completedLessons={completedLessons} loadProgress={loadProgress}
+              onSelectLesson={onSelectLesson} onSelectModule={onSelectModule} />
+          ))}
+        </div>
+
+      </div>
+    </div>
+  );
+};
+
+/* ── Module section: header + lesson nodes ── */
+const ModuleSection = ({ mod, moduleIndex, completedLessons, loadProgress, onSelectLesson, onSelectModule }) => {
   const lessons = mod.lessons || [];
   const isDone = (i) => !!completedLessons[`${mod.id}-lesson-${i}`];
   const completedCount = lessons.filter((_, i) => isDone(i)).length;
@@ -23,156 +61,143 @@ const ModuleOverview = ({
     return 'current';
   };
 
-  // Node centre Y positions
-  const nodeY = (i) => PATH_START + i * VERTICAL_GAP + 44;
-  const totalHeight = PATH_START + (lessons.length - 1) * VERTICAL_GAP + 88 + 80;
+  // Speed round module
+  if (mod.isSpeedRound) {
+    return (
+      <div>
+        <ModuleHeader label={`Module ${moduleIndex + 1}`} title={mod.title} subtitle={mod.subtitle} />
+        <button onClick={() => onSelectModule(mod, moduleIndex)}
+          className="w-full mt-6 bg-deany-cream rounded-2xl border border-deany-border p-6
+            text-center hover:shadow-md hover:-translate-y-0.5 active:scale-[0.98]
+            transition-all duration-200 focus:outline-none focus-visible:ring-2
+            focus-visible:ring-deany-gold focus-visible:ring-offset-2">
+          <Zap className="w-6 h-6 text-deany-gold mx-auto mb-2" />
+          <p className="text-sm font-medium text-deany-navy mb-1">Rapid-fire challenge</p>
+          <p className="text-xs text-deany-muted">{mod.estimatedTime} · {mod.questions?.length || 0} questions</p>
+        </button>
+      </div>
+    );
+  }
 
-  // Build SVG curve through node centres
-  const buildCurve = () => {
-    if (lessons.length < 2) return '';
-    const pts = lessons.map((_, i) => ({ x: POSITIONS[i] ?? 50, y: nodeY(i) }));
-    let d = `M ${pts[0].x} ${pts[0].y}`;
-    for (let j = 0; j < pts.length - 1; j++) {
-      const a = pts[j], b = pts[j + 1], mid = (a.y + b.y) / 2;
-      d += ` C ${a.x} ${mid}, ${b.x} ${mid}, ${b.x} ${b.y}`;
-    }
-    return d;
-  };
+  // Empty module (coming soon)
+  if (!lessons.length) {
+    return (
+      <div>
+        <ModuleHeader label={`Module ${moduleIndex + 1}`} title={mod.title} subtitle={mod.subtitle} />
+        <div className="mt-6 bg-deany-cream rounded-2xl border border-deany-border p-8 text-center opacity-60">
+          <Lock className="w-6 h-6 text-deany-muted mx-auto mb-2" />
+          <p className="text-sm font-medium text-deany-muted">Coming soon</p>
+        </div>
+      </div>
+    );
+  }
 
-  const curve = buildCurve();
-  const fillRatio = lessons.length > 1
-    ? Math.min(completedCount, lessons.length - 1) / (lessons.length - 1) : 0;
-
+  // Regular module with lessons
   return (
-    <div className={`min-h-screen bg-white ${className}`}>
-      <div className="max-w-md mx-auto px-5 py-8">
+    <div>
+      <ModuleHeader label={`Module ${moduleIndex + 1} · ${mod.difficulty || 'Beginner'}`}
+        title={mod.title} subtitle={mod.subtitle} />
 
-        {/* Navigation */}
-        <div className="flex justify-between items-center mb-10">
-          <button onClick={onBack}
-            className="flex items-center gap-1.5 text-sm text-deany-steel hover:text-deany-navy
-              transition-colors duration-200 focus:outline-none focus-visible:ring-2
-              focus-visible:ring-deany-gold focus-visible:ring-offset-2 rounded-lg px-2 py-1.5">
-            <ChevronLeft className="w-4 h-4" /><span>Modules</span>
-          </button>
-          <button onClick={onHome}
-            className="flex items-center gap-1.5 text-sm text-deany-steel hover:text-deany-navy
-              transition-colors duration-200 focus:outline-none focus-visible:ring-2
-              focus-visible:ring-deany-gold focus-visible:ring-offset-2 rounded-lg px-2 py-1.5">
-            <Home className="w-3.5 h-3.5" /><span>Home</span>
-          </button>
+      {/* Progress */}
+      <div className="flex items-center gap-3 mt-4 mb-8">
+        <div className="flex-1 h-1.5 bg-deany-border rounded-full overflow-hidden">
+          <div className="h-full bg-deany-gold rounded-full transition-all duration-500 ease-out"
+            style={{ width: `${pct}%` }} />
         </div>
+        <span className="text-xs text-deany-muted whitespace-nowrap">{completedCount}/{lessons.length}</span>
+      </div>
 
-        {/* Header */}
-        <div className="text-center mb-4">
-          <p className="text-xs font-medium uppercase tracking-widest text-deany-muted mb-3">
-            Module 1
-          </p>
-          <h1 className="text-2xl md:text-3xl font-semibold text-deany-navy mb-1.5">
-            {mod.title}
-          </h1>
-          <p className="text-base text-deany-steel">{mod.subtitle}</p>
-        </div>
+      {/* Winding lesson path */}
+      <div className="space-y-3">
+        {lessons.map((lesson, i) => {
+          const state = getState(i);
+          const saved = !!loadProgress?.(lesson.id);
+          const isLeft = i % 2 === 0;
+          const isLast = i === lessons.length - 1;
 
-        {/* Progress bar */}
-        <div className="flex flex-col items-center mb-12">
-          <p className="text-sm text-deany-muted mb-2.5">
-            {completedCount} of {lessons.length} complete
-          </p>
-          <div className="w-40 h-1.5 bg-deany-border rounded-full overflow-hidden">
-            <div className="h-full bg-deany-gold rounded-full transition-all duration-500 ease-out"
-              style={{ width: `${pct}%` }} />
-          </div>
-        </div>
+          return (
+            <React.Fragment key={lesson.id}>
+              {/* Connector line */}
+              {i > 0 && (
+                <div className="flex justify-center -my-1">
+                  <div className={`w-0.5 h-8 rounded-full ${
+                    isDone(i - 1) && (isDone(i) || i === currentIdx) ? 'bg-deany-gold' : 'bg-deany-border'
+                  }`} />
+                </div>
+              )}
 
-        {/* Learning Path */}
-        <div className="relative" style={{ height: totalHeight }}>
-          {/* SVG trail */}
-          <svg className="absolute inset-0 w-full pointer-events-none" style={{ height: totalHeight }}
-            viewBox={`0 0 100 ${totalHeight}`} preserveAspectRatio="none" fill="none" aria-hidden="true">
-            <g className="text-deany-border">
-              <path d={curve} stroke="currentColor" strokeWidth="2"
-                strokeDasharray="8 6" vectorEffect="non-scaling-stroke" strokeLinecap="round" />
-            </g>
-            {fillRatio > 0 && (
-              <g className="text-deany-gold">
-                <path d={curve} stroke="currentColor" strokeWidth="2.5"
-                  vectorEffect="non-scaling-stroke" strokeLinecap="round"
-                  strokeDasharray="2000" strokeDashoffset={2000 - 2000 * fillRatio} />
-              </g>
-            )}
-          </svg>
-
-          {/* Nodes */}
-          {lessons.map((lesson, i) => {
-            const s = getState(i);
-            const saved = !!loadProgress?.(lesson.id);
-            return (
-              <LilyPad key={lesson.id} index={i} lesson={lesson} state={s}
-                hasSaved={saved} xPct={POSITIONS[i] ?? 50} topPx={PATH_START + i * VERTICAL_GAP}
-                onClick={() => s !== 'locked' && onSelectLesson(lesson, i)} />
-            );
-          })}
-        </div>
+              {/* Node row */}
+              <div className={`flex items-center gap-4 ${
+                isLast ? 'justify-center' : isLeft ? 'justify-start pl-4' : 'justify-end pr-4'
+              }`}>
+                <NodeCircle index={i} state={state} saved={saved} lesson={lesson}
+                  onClick={() => state !== 'locked' && onSelectLesson(lesson, i)} />
+              </div>
+            </React.Fragment>
+          );
+        })}
       </div>
     </div>
   );
 };
 
-/* ── Single lily-pad node ── */
-const LilyPad = ({ index, lesson, state, hasSaved, xPct, topPx, onClick }) => {
+/* ── Module header ── */
+const ModuleHeader = ({ label, title, subtitle }) => (
+  <div className="text-center">
+    <p className="text-xs font-medium uppercase tracking-wide text-deany-muted mb-1">{label}</p>
+    <h2 className="text-xl font-semibold text-deany-navy">{title}</h2>
+    {subtitle && <p className="text-sm text-deany-steel mt-0.5">{subtitle}</p>}
+  </div>
+);
+
+/* ── Single circle node with title ── */
+const NodeCircle = ({ index, state, saved, lesson, onClick }) => {
   const clickable = state !== 'locked';
 
-  const circleClass = [
-    'w-[88px] h-[88px] rounded-full flex items-center justify-center',
-    'transition-all duration-200 ease-out select-none',
-    state === 'completed' && 'bg-deany-gold shadow-md',
-    state === 'current' && 'bg-white border-[3px] border-deany-gold shadow-md animate-pulse-gold',
-    state === 'locked' && 'bg-deany-cream border-2 border-deany-border opacity-60',
-    clickable && 'hover:scale-110 hover:shadow-xl active:scale-90 active:shadow-sm',
-    !clickable && 'cursor-not-allowed',
-  ].filter(Boolean).join(' ');
+  const ring = state === 'completed' ? 'bg-deany-gold shadow-md'
+    : state === 'current' ? 'bg-white border-[3px] border-deany-gold shadow-md animate-pulse-gold'
+    : 'bg-deany-cream border-2 border-deany-border opacity-50';
+
+  const hoverClass = clickable
+    ? 'hover:scale-110 hover:shadow-xl active:scale-90 active:shadow-sm' : 'cursor-not-allowed';
+
+  const inner = state === 'locked'
+    ? <Lock className="w-5 h-5 text-deany-muted" />
+    : <span className={`text-xl font-bold ${state === 'completed' ? 'text-white' : 'text-deany-gold'}`}>{index + 1}</span>;
+
+  const circle = (
+    <div className="relative">
+      {clickable ? (
+        <button onClick={onClick}
+          className={`w-[84px] h-[84px] rounded-full flex items-center justify-center
+            transition-all duration-200 ease-out ${ring} ${hoverClass}
+            focus:outline-none focus-visible:ring-2 focus-visible:ring-deany-gold focus-visible:ring-offset-2`}
+          aria-label={`Lesson ${index + 1}: ${lesson.title}`}>
+          {inner}
+        </button>
+      ) : (
+        <div className={`w-[84px] h-[84px] rounded-full flex items-center justify-center
+          transition-all duration-200 ${ring} ${hoverClass}`}>
+          {inner}
+        </div>
+      )}
+      {state === 'completed' && (
+        <div className="absolute -top-0.5 -right-0.5 w-6 h-6 rounded-full bg-white border-2 border-deany-gold
+          flex items-center justify-center shadow-sm">
+          <Check className="w-3.5 h-3.5 text-deany-gold" strokeWidth={3} />
+        </div>
+      )}
+    </div>
+  );
 
   return (
-    <div className="absolute flex flex-col items-center"
-      style={{ left: `${xPct}%`, top: topPx, transform: 'translateX(-50%)', width: 130 }}>
-
-      {/* Circle wrapper for badge positioning */}
-      <div className="relative">
-        {clickable ? (
-          <button onClick={onClick}
-            className={`${circleClass} focus:outline-none focus-visible:ring-2
-              focus-visible:ring-deany-gold focus-visible:ring-offset-2`}
-            aria-label={`Lesson ${index + 1}: ${lesson.title}`}>
-            {state === 'completed'
-              ? <span className="text-xl font-bold text-white">{index + 1}</span>
-              : <span className="text-xl font-bold text-deany-gold">{index + 1}</span>}
-          </button>
-        ) : (
-          <div className={circleClass}>
-            <Lock className="w-5 h-5 text-deany-muted" />
-          </div>
-        )}
-
-        {/* Checkmark badge */}
-        {state === 'completed' && (
-          <div className="absolute -top-0.5 -right-0.5 w-7 h-7 rounded-full bg-white
-            flex items-center justify-center shadow border-2 border-deany-gold">
-            <Check className="w-4 h-4 text-deany-gold" strokeWidth={3} />
-          </div>
-        )}
-      </div>
-
-      {/* Title */}
-      <p className={`mt-3 text-sm font-medium leading-snug text-center ${
+    <div className="flex flex-col items-center" style={{ width: 140 }}>
+      {circle}
+      <p className={`mt-2.5 text-sm font-medium text-center leading-snug ${
         state === 'locked' ? 'text-deany-muted' : 'text-deany-navy'
-      }`}>
-        {lesson.title}
-      </p>
-
-      {/* Continue badge */}
-      {hasSaved && state !== 'completed' && (
-        <span className="mt-1.5 text-[11px] font-medium text-deany-gold bg-deany-gold-light
+      }`}>{lesson.title}</p>
+      {saved && state !== 'completed' && (
+        <span className="mt-1 text-[11px] font-medium text-deany-gold bg-deany-gold-light
           px-2.5 py-0.5 rounded-full">Continue</span>
       )}
     </div>

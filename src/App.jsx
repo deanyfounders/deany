@@ -682,6 +682,22 @@ const App = () => {
     const mods = modules[selectedMainTopic.id] || [];
     const isHist = selectedMainTopic.id == 'islamic-history';
     const isFin = selectedMainTopic.id == 'islamic-finance';
+
+    // Islamic Finance: full learning path with all modules + lessons inline
+    if (isFin) {
+      return (
+        <ModuleOverview
+          modules={mods}
+          completedLessons={completedLessons}
+          loadProgress={loadProgress}
+          onSelectLesson={selectLes}
+          onSelectModule={selectModule}
+          onBack={goHome}
+          onHome={goHome}
+        />
+      );
+    }
+
     return (
       <div className="min-h-screen relative" style={pageBg}>
         <IslamicPattern /><div className="relative z-10 max-w-5xl mx-auto px-4 py-8">
@@ -696,20 +712,6 @@ const App = () => {
                   <div className="w-8 h-8 mx-auto rounded-full flex items-center justify-center text-white text-xs font-bold mb-2 shadow-sm" style={{background:'linear-gradient(135deg,#0ea5e9,#3b82f6)'}}>{i+1}</div>
                   <div className="text-3xl mb-2">{e.icon}</div><h3 className="font-bold text-gray-900 text-xs mb-0.5">{e.title}</h3><p className="text-[10px] text-gray-500 mb-2">{e.subtitle}</p>
                   <span className="inline-flex items-center gap-1 text-[10px] px-2 py-1 rounded-full font-semibold text-sky-700 bg-sky-50">Explore <ArrowRight className="w-2.5 h-2.5" /></span>
-                </button>
-              ))}
-            </div>
-          ) : isFin ? (
-            <div className="max-w-xl mx-auto space-y-3">
-              {mods.map((m, i) => (
-                <button key={m.id} onClick={() => selectModule(m, i)} className={`w-full ${glassHover} rounded-xl p-5 text-left group`}>
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-lg flex items-center justify-center text-2xl shadow-sm" style={{background:m.color+'12'}}>{m.icon}</div>
-                    <div className="flex-grow min-w-0"><h3 className="font-bold text-gray-900 text-sm">{m.title}</h3><p className="text-xs text-gray-500">{m.subtitle}</p>
-                      <div className="flex gap-2 mt-1">{m.difficulty && <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${m.difficulty=='Beginner'?'bg-green-100 text-green-700':m.difficulty=='Challenge'?'bg-purple-100 text-purple-700':'bg-orange-100 text-orange-700'}`}>{m.difficulty}</span>}{m.lessonCount && <span className="text-[10px] text-gray-400">{m.lessonCount} lessons</span>}{m.isSpeedRound && <span className="text-[10px] text-gray-400">⚡ Speed</span>}</div>
-                    </div>
-                    <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-emerald-600 group-hover:translate-x-0.5 transition-all" />
-                  </div>
                 </button>
               ))}
             </div>
@@ -729,14 +731,15 @@ const App = () => {
     );
   }
 
-  // LESSONS
+  // LESSONS (fallback for non-finance modules with lessons)
   if (screen == 'lessons' && selectedModule) {
     return (
       <ModuleOverview
-        module={selectedModule}
+        modules={[selectedModule]}
         completedLessons={completedLessons}
         loadProgress={loadProgress}
         onSelectLesson={selectLes}
+        onSelectModule={selectModule}
         onBack={goModules}
         onHome={goHome}
       />
