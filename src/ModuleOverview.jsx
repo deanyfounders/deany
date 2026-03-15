@@ -18,90 +18,82 @@ const PagePattern = () => (
 );
 
 /* ── Sculpted 3D Balance Scales ──
-   Every part is a volumetric form with visible thickness, curved-surface
-   shading (radialGradient for spheres, horizontal linearGradient for
-   cylinders), cast shadows, and specular highlights.
-   Modelled after Chess.com's 3D rendered piece aesthetic. */
-const ScalesIcon3D = ({ size = 48 }) => (
-  <svg width={size} height={size} viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+   Chunky volumetric forms: radialGradient sphere, cylinder-wrap pillar,
+   deep bowls with curved walls, visible beam thickness. Designed to
+   render large (90px) and tower above its tile. */
+const ScalesIcon3D = ({ size = 90 }) => (
+  <svg width={size} height={size * 1.15} viewBox="0 0 64 74" fill="none" xmlns="http://www.w3.org/2000/svg">
     <defs>
-      {/* Sphere — radial highlight top-left like a lit ball */}
-      <radialGradient id="s-sph" cx="38%" cy="32%" r="60%">
-        <stop offset="0%" stopColor="#fef9c3"/><stop offset="35%" stopColor="#fcd34d"/>
-        <stop offset="75%" stopColor="#d97706"/><stop offset="100%" stopColor="#92400e"/>
+      <radialGradient id="s-sph" cx="36%" cy="30%" r="58%">
+        <stop offset="0%" stopColor="#fffbeb"/><stop offset="30%" stopColor="#fcd34d"/>
+        <stop offset="70%" stopColor="#d97706"/><stop offset="100%" stopColor="#7c2d12"/>
       </radialGradient>
-      {/* Cylinder wrap — bright left face, dark right face */}
       <linearGradient id="s-cyl" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0%" stopColor="#fef3c7"/><stop offset="18%" stopColor="#fcd34d"/>
-        <stop offset="50%" stopColor="#f59e0b"/><stop offset="78%" stopColor="#d97706"/>
-        <stop offset="100%" stopColor="#92400e"/>
+        <stop offset="0%" stopColor="#fef3c7"/><stop offset="15%" stopColor="#fcd34d"/>
+        <stop offset="45%" stopColor="#f59e0b"/><stop offset="75%" stopColor="#b45309"/>
+        <stop offset="100%" stopColor="#7c2d12"/>
       </linearGradient>
-      {/* Top-lit surface */}
-      <linearGradient id="s-top" x1="0" y1="0" x2="0.4" y2="1">
-        <stop offset="0%" stopColor="#fef9c3"/><stop offset="100%" stopColor="#fbbf24"/>
+      <linearGradient id="s-top" x1="0.2" y1="0" x2="0.8" y2="1">
+        <stop offset="0%" stopColor="#fef9c3"/><stop offset="100%" stopColor="#eab308"/>
       </linearGradient>
-      {/* Front face — medium to dark */}
       <linearGradient id="s-fr" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stopColor="#f59e0b"/><stop offset="100%" stopColor="#92400e"/>
+        <stop offset="0%" stopColor="#d97706"/><stop offset="100%" stopColor="#7c2d12"/>
       </linearGradient>
-      {/* Bowl interior — radial for concave surface */}
-      <radialGradient id="s-bowl" cx="42%" cy="38%" r="60%">
-        <stop offset="0%" stopColor="#fef3c7"/><stop offset="45%" stopColor="#fcd34d"/>
-        <stop offset="100%" stopColor="#b45309"/>
+      <radialGradient id="s-bowl" cx="40%" cy="35%" r="60%">
+        <stop offset="0%" stopColor="#fef3c7"/><stop offset="40%" stopColor="#fbbf24"/>
+        <stop offset="100%" stopColor="#92400e"/>
       </radialGradient>
-      {/* Bowl outer wall */}
       <linearGradient id="s-wall" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stopColor="#d97706"/><stop offset="100%" stopColor="#78350f"/>
+        <stop offset="0%" stopColor="#b45309"/><stop offset="100%" stopColor="#6d2810"/>
       </linearGradient>
     </defs>
 
-    {/* ── Ground shadow ── */}
-    <ellipse cx="32" cy="60" rx="22" ry="3" fill="#000" opacity="0.1"/>
+    {/* ── GROUND SHADOW ── */}
+    <ellipse cx="32" cy="71" rx="24" ry="3" fill="#000" opacity="0.12"/>
 
-    {/* ── BASE PEDESTAL — thick disc with visible side wall ── */}
-    <path d="M18,52 L18,55 Q18,59 32,59 Q46,59 46,55 L46,52 Q46,56 32,56 Q18,56 18,52Z" fill="url(#s-fr)"/>
-    <ellipse cx="32" cy="52" rx="14" ry="4.5" fill="url(#s-top)"/>
-    <ellipse cx="29" cy="51" rx="8" ry="2.2" fill="#fff" opacity="0.2"/>
+    {/* ── BASE PEDESTAL ── */}
+    <path d="M16,62 L16,66 Q16,70 32,70 Q48,70 48,66 L48,62 Q48,66 32,66 Q16,66 16,62Z" fill="url(#s-fr)"/>
+    <ellipse cx="32" cy="62" rx="16" ry="5" fill="url(#s-top)"/>
+    <ellipse cx="29" cy="61" rx="9" ry="2.5" fill="#fff" opacity="0.22"/>
 
-    {/* ── CENTRAL PILLAR — thick cylinder ── */}
-    <rect x="26" y="15" width="12" height="37" rx="5" fill="url(#s-cyl)"/>
-    <rect x="27" y="16" width="3.5" height="35" rx="1.5" fill="#fff" opacity="0.15"/>
+    {/* ── CENTRAL PILLAR ── */}
+    <rect x="25" y="18" width="14" height="44" rx="6" fill="url(#s-cyl)"/>
+    <rect x="26" y="20" width="4" height="40" rx="2" fill="#fff" opacity="0.12"/>
 
-    {/* ── HORIZONTAL BEAM — top face + front face for depth ── */}
-    <rect x="4" y="17" width="56" height="3.5" rx="1.5" fill="url(#s-fr)"/>
-    <rect x="4" y="12" width="56" height="6" rx="3" fill="url(#s-cyl)"/>
-    <rect x="7" y="12.5" width="32" height="2.5" rx="1.2" fill="#fff" opacity="0.25"/>
+    {/* ── BEAM — top face + front face ── */}
+    <rect x="3" y="20" width="58" height="4" rx="2" fill="url(#s-fr)"/>
+    <rect x="3" y="14" width="58" height="7" rx="3.5" fill="url(#s-cyl)"/>
+    <rect x="6" y="14.5" width="34" height="3" rx="1.5" fill="#fff" opacity="0.2"/>
 
-    {/* ── LEFT CHAIN — thick rod ── */}
-    <rect x="8" y="18" width="5" height="17" rx="2.5" fill="url(#s-cyl)"/>
-    <rect x="8.5" y="19" width="1.8" height="15" rx="0.9" fill="#fff" opacity="0.15"/>
+    {/* ── LEFT CHAIN ── */}
+    <rect x="7" y="21" width="6" height="20" rx="3" fill="url(#s-cyl)"/>
+    <rect x="8" y="23" width="2.2" height="16" rx="1" fill="#fff" opacity="0.15"/>
 
-    {/* ── RIGHT CHAIN — thick rod ── */}
-    <rect x="51" y="18" width="5" height="17" rx="2.5" fill="url(#s-cyl)"/>
-    <rect x="51.5" y="19" width="1.8" height="15" rx="0.9" fill="#fff" opacity="0.15"/>
+    {/* ── RIGHT CHAIN ── */}
+    <rect x="51" y="21" width="6" height="20" rx="3" fill="url(#s-cyl)"/>
+    <rect x="52" y="23" width="2.2" height="16" rx="1" fill="#fff" opacity="0.15"/>
 
-    {/* ── LEFT PAN — 3D bowl with curved wall + interior ── */}
-    <ellipse cx="10.5" cy="44" rx="8" ry="1.5" fill="#000" opacity="0.08"/>
-    <path d="M0,36 Q0,45 10.5,45 Q21,45 21,36 L19.5,36 Q19,43 10.5,43 Q2,43 1.5,36Z" fill="url(#s-wall)"/>
-    <ellipse cx="10.5" cy="36" rx="10.5" ry="3.8" fill="url(#s-bowl)"/>
-    <ellipse cx="9" cy="35.2" rx="6" ry="2" fill="#fff" opacity="0.2"/>
+    {/* ── LEFT PAN ── */}
+    <ellipse cx="10" cy="51" rx="9" ry="2" fill="#000" opacity="0.08"/>
+    <path d="M-1,42 Q-1,52 10,52 Q21,52 21,42 L19,42 Q18.5,49 10,49 Q1.5,49 1,42Z" fill="url(#s-wall)"/>
+    <ellipse cx="10" cy="42" rx="11" ry="4.2" fill="url(#s-bowl)"/>
+    <ellipse cx="8.5" cy="41" rx="6.5" ry="2.2" fill="#fff" opacity="0.18"/>
 
-    {/* ── RIGHT PAN — 3D bowl ── */}
-    <ellipse cx="53.5" cy="44" rx="8" ry="1.5" fill="#000" opacity="0.08"/>
-    <path d="M43,36 Q43,45 53.5,45 Q64,45 64,36 L62.5,36 Q62,43 53.5,43 Q45,43 44.5,36Z" fill="url(#s-wall)"/>
-    <ellipse cx="53.5" cy="36" rx="10.5" ry="3.8" fill="url(#s-bowl)"/>
-    <ellipse cx="52" cy="35.2" rx="6" ry="2" fill="#fff" opacity="0.2"/>
+    {/* ── RIGHT PAN ── */}
+    <ellipse cx="54" cy="51" rx="9" ry="2" fill="#000" opacity="0.08"/>
+    <path d="M43,42 Q43,52 54,52 Q65,52 65,42 L63,42 Q62.5,49 54,49 Q45.5,49 45,42Z" fill="url(#s-wall)"/>
+    <ellipse cx="54" cy="42" rx="11" ry="4.2" fill="url(#s-bowl)"/>
+    <ellipse cx="52.5" cy="41" rx="6.5" ry="2.2" fill="#fff" opacity="0.18"/>
 
-    {/* ── TOP SPHERE (FINIAL) — lit ball ── */}
-    <circle cx="32" cy="9" r="6.5" fill="url(#s-sph)"/>
-    <circle cx="30" cy="7" r="2.8" fill="#fff" opacity="0.45"/>
+    {/* ── TOP SPHERE ── */}
+    <circle cx="32" cy="10" r="7.5" fill="url(#s-sph)"/>
+    <circle cx="29.5" cy="7.5" r="3" fill="#fff" opacity="0.4"/>
   </svg>
 );
 
 const LESSON_ICONS = [ScalesIcon3D, '🤲', '🛡️', '🔍', '💰'];
 const TILE_OFFSETS = [0, 50, -35, 55, -15];
 
-/* Satisfying click sound via Web Audio API */
 const playClickSound = () => {
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -117,7 +109,7 @@ const playClickSound = () => {
     gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
     osc.start(ctx.currentTime);
     osc.stop(ctx.currentTime + 0.15);
-  } catch (_) { /* silent fallback */ }
+  } catch (_) {}
 };
 
 const ModuleOverview = ({
@@ -154,7 +146,6 @@ const ModuleBlock = ({ mod, mi, completedLessons, loadProgress, onSelectLesson, 
   const doneCount = lessons.filter((_, i) => isDone(i)).length;
   const pct = lessons.length > 0 ? Math.round((doneCount / lessons.length) * 100) : 0;
   const curIdx = lessons.findIndex((_, i) => !isDone(i));
-  /* All lessons unlocked — no locked state */
   const getState = (i) => {
     if (isDone(i)) return 'done';
     if (i === curIdx) return 'current';
@@ -198,7 +189,6 @@ const ModuleBlock = ({ mod, mi, completedLessons, loadProgress, onSelectLesson, 
 
   return (
     <div>
-      {/* Module header */}
       <div className="text-center mb-8">
         <span className="text-xs font-bold uppercase tracking-widest text-emerald-600/60">Module {mi + 1}</span>
         <h2 className="text-2xl font-bold text-gray-900 mt-1" style={{ fontFamily: 'Georgia,serif' }}>{mod.title}</h2>
@@ -211,16 +201,15 @@ const ModuleBlock = ({ mod, mi, completedLessons, loadProgress, onSelectLesson, 
         </div>
       </div>
 
-      {/* Diamond tiles path */}
-      <div className="flex flex-col items-center gap-7">
+      <div className="flex flex-col items-center gap-14">
         {lessons.map((lesson, i) => {
           const st = getState(i);
           const saved = !!loadProgress?.(lesson.id);
           const offset = TILE_OFFSETS[i % TILE_OFFSETS.length];
           return (
-            <div key={lesson.id} className="flex items-center gap-6 w-full" style={{ paddingLeft: `${Math.max(0, offset + 30)}px`, paddingRight: `${Math.max(0, -offset + 30)}px` }}>
+            <div key={lesson.id} className="flex items-end gap-5 w-full" style={{ paddingLeft: `${Math.max(0, offset + 20)}px`, paddingRight: `${Math.max(0, -offset + 20)}px` }}>
               <DiamondTile i={i} st={st} onClick={() => handleLessonClick(lesson, i)} />
-              <div className="flex-1 min-w-0">
+              <div className="flex-1 min-w-0 pb-3">
                 <p className={`text-xs font-bold uppercase tracking-wide ${st === 'done' ? 'text-emerald-600' : st === 'current' ? 'text-amber-600' : 'text-gray-500'}`}>Lesson {i + 1}</p>
                 <h3 className="font-bold text-base leading-snug text-gray-900 mt-0.5" style={{ fontFamily: 'Georgia,serif' }}>{lesson.title}</h3>
                 <div className="flex items-center gap-2 mt-1">
@@ -234,7 +223,6 @@ const ModuleBlock = ({ mod, mi, completedLessons, loadProgress, onSelectLesson, 
         })}
       </div>
 
-      {/* Next Lesson CTA */}
       {nextLesson && (
         <button onClick={() => { playClickSound(); onSelectLesson(nextLesson, curIdx); }}
           className="w-full mt-8 py-4 rounded-2xl text-white font-bold text-base shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-[0.97] transition-all flex items-center justify-center gap-2"
@@ -251,6 +239,7 @@ const DiamondTile = ({ i, st, onClick }) => {
   const isDone = st === 'done';
   const isCur = st === 'current';
   const icon = LESSON_ICONS[i % LESSON_ICONS.length];
+  const isComponent = typeof icon === 'function';
 
   const bg = isDone
     ? 'linear-gradient(145deg, #059669 0%, #10b981 60%, #34d399 100%)'
@@ -269,19 +258,25 @@ const DiamondTile = ({ i, st, onClick }) => {
     : shadow;
 
   return (
-    <div className="relative flex-shrink-0" style={{ width: 92, height: 92 }}>
-      {/* Glow aura behind current tile */}
+    <div className="relative flex-shrink-0" style={{ width: 88, height: 140 }}>
+      {/* Glow aura for current tile */}
       {isCur && (
-        <div className="absolute inset-[-14px] rounded-3xl animate-pulse-gold" style={{
+        <div className="absolute rounded-3xl animate-pulse-gold" style={{
+          left: -10, right: -10, bottom: -10, height: 108,
           background: 'radial-gradient(circle, rgba(245,158,11,0.25) 0%, transparent 70%)',
         }} />
       )}
 
-      {/* Diamond base tile */}
+      {/* Diamond tile — anchored at bottom of container */}
       <button onClick={onClick}
-        className="w-full h-full rounded-2xl flex items-center justify-center cursor-pointer transition-all duration-200 hover:-translate-y-2 hover:scale-110 active:translate-y-1 active:scale-95"
-        style={{ background: bg, boxShadow: isCur ? glowShadow : shadow, transform: 'rotate(45deg)' }}>
-        {/* Specular shine strip across tile */}
+        className="absolute bottom-0 left-1/2 rounded-2xl cursor-pointer transition-all duration-200 hover:-translate-y-3 hover:scale-110 active:translate-y-1 active:scale-95"
+        style={{
+          width: 80, height: 80,
+          marginLeft: -40,
+          background: bg,
+          boxShadow: isCur ? glowShadow : shadow,
+          transform: 'rotate(45deg)',
+        }}>
         <div className="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none">
           <div style={{
             position: 'absolute', top: 0, left: '-20%', width: '60%', height: '100%',
@@ -290,26 +285,28 @@ const DiamondTile = ({ i, st, onClick }) => {
         </div>
       </button>
 
-      {/* 3D icon floating ABOVE the tile — like Chess.com pieces */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ transform: 'translateY(-10px)' }}>
+      {/* Contact shadow ON the tile surface */}
+      {!isDone && (
+        <div className="absolute pointer-events-none" style={{
+          bottom: 42, left: '50%', transform: 'translateX(-50%)',
+          width: 48, height: 14,
+          background: 'radial-gradient(ellipse, rgba(0,0,0,0.25) 0%, transparent 70%)',
+          borderRadius: '50%',
+        }} />
+      )}
+
+      {/* 3D icon STANDING on tile — base at tile surface, extends above */}
+      <div className="absolute pointer-events-none" style={{
+        left: '50%', bottom: 36,
+        transform: 'translateX(-50%)',
+        filter: 'drop-shadow(0 6px 3px rgba(0,0,0,0.4)) drop-shadow(0 12px 8px rgba(0,0,0,0.18))',
+      }}>
         {isDone ? (
-          <div style={{
-            filter: 'drop-shadow(0 4px 3px rgba(0,0,0,0.35)) drop-shadow(0 8px 6px rgba(0,0,0,0.15))',
-          }}>
-            <Check className="w-10 h-10 text-white" strokeWidth={3} />
-          </div>
-        ) : typeof icon === 'function' ? (
-          <div style={{
-            filter: 'drop-shadow(0 4px 2px rgba(0,0,0,0.4)) drop-shadow(0 8px 5px rgba(0,0,0,0.2)) drop-shadow(0 12px 10px rgba(0,0,0,0.1))',
-          }}>
-            {React.createElement(icon, { size: 44 })}
-          </div>
+          <Check className="w-12 h-12 text-white" strokeWidth={3} />
+        ) : isComponent ? (
+          React.createElement(icon, { size: 80 })
         ) : (
-          <span style={{
-            fontSize: 44,
-            lineHeight: 1,
-            filter: 'drop-shadow(0 4px 2px rgba(0,0,0,0.4)) drop-shadow(0 8px 5px rgba(0,0,0,0.2)) drop-shadow(0 12px 10px rgba(0,0,0,0.1))',
-          }}>{icon}</span>
+          <span style={{ fontSize: 72, lineHeight: 1, display: 'block' }}>{icon}</span>
         )}
       </div>
     </div>
