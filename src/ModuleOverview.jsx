@@ -1,20 +1,31 @@
 import React from 'react';
-import { Check, Lock, ChevronLeft, Home, Zap, ArrowRight, Clock, BookOpen } from 'lucide-react';
+import { Check, Lock, ChevronLeft, Home, Zap, ArrowRight, Clock, BookOpen, PlayCircle } from 'lucide-react';
 
 const pageBg = { background: 'linear-gradient(150deg, #f0fdf4 0%, #ecfdf5 30%, #f0f9ff 60%, #fefce8 100%)' };
 const glass = "bg-white/70 backdrop-blur-xl border border-white/40 shadow-lg";
 const glassHover = `${glass} transition-all duration-300 hover:shadow-xl hover:-translate-y-1`;
 
-const IslamicPattern = ({ opacity = 0.035, color = "#065f46" }) => (
+const IslamicPattern = ({ opacity = 0.05, color = "#fff" }) => (
   <svg className="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
     <defs>
-      <pattern id="geo-mo" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
+      <pattern id="geo-hdr" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
         <path d="M30 0L60 30L30 60L0 30Z" fill="none" stroke={color} strokeWidth="0.5" opacity={opacity}/>
         <circle cx="30" cy="30" r="12" fill="none" stroke={color} strokeWidth="0.3" opacity={opacity}/>
-        <path d="M30 18L42 30L30 42L18 30Z" fill="none" stroke={color} strokeWidth="0.4" opacity={opacity}/>
       </pattern>
     </defs>
-    <rect width="100%" height="100%" fill="url(#geo-mo)"/>
+    <rect width="100%" height="100%" fill="url(#geo-hdr)"/>
+  </svg>
+);
+
+const PagePattern = () => (
+  <svg className="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <pattern id="geo-pg" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
+        <path d="M30 0L60 30L30 60L0 30Z" fill="none" stroke="#065f46" strokeWidth="0.5" opacity="0.035"/>
+        <circle cx="30" cy="30" r="12" fill="none" stroke="#065f46" strokeWidth="0.3" opacity="0.035"/>
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#geo-pg)"/>
   </svg>
 );
 
@@ -24,10 +35,10 @@ const ModuleOverview = ({
   if (!modules?.length) return null;
   return (
     <div className="min-h-screen relative" style={pageBg}>
-      <IslamicPattern />
-      <div className="relative z-10 max-w-xl mx-auto px-4 py-8">
+      <PagePattern />
+      <div className="relative z-10 max-w-lg mx-auto px-4 py-6">
         {/* Nav */}
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-center mb-5">
           <button onClick={onBack} className="flex items-center gap-1.5 text-gray-600 hover:text-emerald-700 transition-colors text-sm font-medium">
             <ChevronLeft className="w-4 h-4" /><span>Topics</span>
           </button>
@@ -37,8 +48,7 @@ const ModuleOverview = ({
           </button>
         </div>
 
-        {/* Modules */}
-        <div className="space-y-14">
+        <div className="space-y-8">
           {modules.map((mod, mi) => (
             <ModuleBlock key={mod.id} mod={mod} mi={mi} completedLessons={completedLessons}
               loadProgress={loadProgress} onSelectLesson={onSelectLesson} onSelectModule={onSelectModule} />
@@ -62,139 +72,161 @@ const ModuleBlock = ({ mod, mi, completedLessons, loadProgress, onSelectLesson, 
     return 'current';
   };
 
-  // Speed round card
   if (mod.isSpeedRound) return (
-    <div>
-      <button onClick={() => onSelectModule(mod, mi)} className={`w-full ${glassHover} rounded-2xl p-6 text-center`}>
-        <div className="w-14 h-14 mx-auto mb-3 rounded-2xl flex items-center justify-center shadow-lg text-white"
-          style={{ background: 'linear-gradient(135deg, #7c3aed, #6d28d9)' }}>
-          <Zap className="w-7 h-7" />
+    <button onClick={() => onSelectModule(mod, mi)} className={`w-full ${glassHover} rounded-2xl p-5 text-left`}>
+      <div className="flex items-center gap-4">
+        <div className="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg text-white flex-shrink-0"
+          style={{ background: 'linear-gradient(135deg, #7c3aed, #6d28d9)' }}><Zap className="w-6 h-6" /></div>
+        <div className="flex-1">
+          <h3 className="font-bold text-gray-900 text-sm" style={{ fontFamily: 'Georgia,serif' }}>{mod.title}</h3>
+          <p className="text-xs text-gray-500">{mod.subtitle}</p>
         </div>
-        <h3 className="font-bold text-gray-900 text-base mb-1" style={{ fontFamily: 'Georgia, serif' }}>{mod.title}</h3>
-        <p className="text-xs text-gray-500 mb-3">{mod.subtitle}</p>
-        <span className="inline-flex items-center gap-1.5 text-xs px-4 py-2 rounded-full font-semibold text-white shadow-md"
-          style={{ background: 'linear-gradient(135deg, #7c3aed, #6d28d9)' }}>
-          Start Challenge <ArrowRight className="w-3.5 h-3.5" />
-        </span>
-      </button>
-    </div>
+        <ArrowRight className="w-4 h-4 text-gray-400" />
+      </div>
+    </button>
   );
 
-  // Empty / coming soon
   if (!lessons.length) return (
-    <div className={`${glass} rounded-2xl p-8 text-center opacity-60`}>
-      <Lock className="w-6 h-6 text-gray-400 mx-auto mb-2" />
-      <h3 className="font-bold text-gray-900 text-sm mb-1" style={{ fontFamily: 'Georgia, serif' }}>{mod.title}</h3>
-      <p className="text-xs text-gray-500 mb-2">{mod.subtitle}</p>
-      <span className="text-[11px] px-3 py-1 rounded-full font-medium bg-amber-100 text-amber-700">Coming Soon</span>
+    <div className={`${glass} rounded-2xl p-5 opacity-60`}>
+      <div className="flex items-center gap-4">
+        <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-gray-200 flex-shrink-0">
+          <Lock className="w-5 h-5 text-gray-400" /></div>
+        <div>
+          <h3 className="font-bold text-gray-700 text-sm" style={{ fontFamily: 'Georgia,serif' }}>{mod.title}</h3>
+          <p className="text-xs text-gray-400">{mod.subtitle}</p>
+          <span className="text-[10px] px-2 py-0.5 rounded-full font-medium bg-amber-100 text-amber-700 mt-1 inline-block">Coming Soon</span>
+        </div>
+      </div>
     </div>
   );
 
-  // Course info card + path
   return (
     <div>
-      {/* Info card — Brilliant-style */}
-      <div className={`${glass} rounded-2xl p-5 mb-2`}>
-        <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-lg"
-            style={{ background: `linear-gradient(135deg, ${mod.color || '#d97706'}22, ${mod.color || '#d97706'}44)` }}>
-            {mod.icon}
+      {/* Hero header card */}
+      <div className="rounded-2xl p-6 text-white relative overflow-hidden shadow-xl mb-4"
+        style={{ background: 'linear-gradient(135deg, #059669 0%, #0d9488 50%, #0891b2 100%)' }}>
+        <IslamicPattern />
+        <div className="relative z-10">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-white/50">Module {mi + 1}</span>
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/20 font-semibold">{mod.difficulty || 'Beginner'}</span>
           </div>
-          <div className="flex-1 min-w-0">
-            <h2 className="font-bold text-gray-900 text-lg" style={{ fontFamily: 'Georgia, serif' }}>{mod.title}</h2>
-            <p className="text-xs text-gray-500">{mod.subtitle}</p>
+          <h2 className="text-xl font-bold" style={{ fontFamily: 'Georgia,serif' }}>{mod.title}</h2>
+          <p className="text-white/60 text-sm mt-0.5">{mod.subtitle}</p>
+          <div className="flex items-center gap-4 mt-4 text-xs text-white/50">
+            <span className="flex items-center gap-1"><BookOpen className="w-3.5 h-3.5" />{lessons.length} Lessons</span>
+            <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" />{mod.estimatedTime || '70 min'}</span>
           </div>
-        </div>
-        <div className="flex items-center gap-4 mt-4 text-xs text-gray-500">
-          <span className="flex items-center gap-1"><BookOpen className="w-3.5 h-3.5" />{lessons.length} Lessons</span>
-          <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" />{mod.estimatedTime || '70 min'}</span>
-          <span className={`ml-auto px-2 py-0.5 rounded-full text-[10px] font-semibold ${
-            mod.difficulty === 'Beginner' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'
-          }`}>{mod.difficulty || 'Beginner'}</span>
-        </div>
-        <div className="mt-3 flex items-center gap-3">
-          <div className="flex-1 h-2 bg-gray-200/80 rounded-full overflow-hidden">
-            <div className="h-full rounded-full transition-all duration-500"
-              style={{ width: `${pct}%`, background: 'linear-gradient(90deg, #059669, #34d399)' }} />
+          <div className="flex items-center gap-3 mt-3">
+            <div className="flex-1 h-2 bg-white/20 rounded-full overflow-hidden">
+              <div className="h-full bg-white rounded-full transition-all duration-500" style={{ width: `${pct}%` }} />
+            </div>
+            <span className="text-sm font-bold text-white/90">{doneCount}/{lessons.length}</span>
           </div>
-          <span className="text-xs font-bold text-gray-700">{doneCount}/{lessons.length}</span>
         </div>
       </div>
 
-      {/* Winding path */}
-      <div className="py-6">
-        {lessons.map((lesson, i) => {
-          const st = getState(i);
-          const saved = !!loadProgress?.(lesson.id);
-          const isLeft = i % 2 === 0;
-          const isLast = i === lessons.length - 1;
+      {/* Timeline of lesson cards */}
+      <div className="relative pl-6">
+        {/* Vertical line */}
+        <div className="absolute left-[18px] top-4 bottom-4 w-[3px] rounded-full bg-gray-200" />
+        <div className="absolute left-[18px] top-4 w-[3px] rounded-full transition-all duration-500"
+          style={{ height: `${pct}%`, background: 'linear-gradient(180deg, #059669, #10b981)' }} />
 
-          return (
-            <React.Fragment key={lesson.id}>
-              {i > 0 && (
-                <div className={`flex ${isLeft ? 'justify-start pl-20' : 'justify-end pr-20'}`}>
-                  <div className={`w-0.5 h-10 rounded-full ${
-                    isDone(i - 1) && (isDone(i) || i === curIdx) ? 'bg-emerald-300' : 'bg-gray-200'
-                  }`} />
-                </div>
-              )}
-              <div className={`flex items-center gap-4 ${
-                isLast ? 'justify-center' : isLeft ? 'justify-start pl-4' : 'justify-end pr-4'
-              }`}>
-                <PathNode i={i} lesson={lesson} st={st} saved={saved} color={mod.color}
-                  onClick={() => st !== 'locked' && onSelectLesson(lesson, i)} />
-              </div>
-            </React.Fragment>
-          );
-        })}
+        <div className="space-y-3">
+          {lessons.map((lesson, i) => {
+            const st = getState(i);
+            const saved = !!loadProgress?.(lesson.id);
+            return (
+              <LessonCard key={lesson.id} i={i} lesson={lesson} st={st} saved={saved}
+                color={mod.color} onClick={() => st !== 'locked' && onSelectLesson(lesson, i)} />
+            );
+          })}
+        </div>
       </div>
     </div>
   );
 };
 
-/* ── The actual node — this is where visual weight lives ── */
-const PathNode = ({ i, lesson, st, saved, color, onClick }) => {
+const LessonCard = ({ i, lesson, st, saved, color, onClick }) => {
   const clickable = st !== 'locked';
-  const isCurrent = st === 'current';
-  const size = isCurrent ? 'w-[90px] h-[90px]' : 'w-[76px] h-[76px]';
+  const isDone = st === 'done';
+  const isCur = st === 'current';
 
-  // Visual style per state
-  const style = st === 'done'
-    ? { background: 'linear-gradient(145deg, #059669, #10b981)', boxShadow: '0 8px 24px rgba(5,150,105,0.35)' }
-    : isCurrent
-      ? { background: 'white', boxShadow: `0 8px 30px ${color || '#d97706'}40`, border: `3px solid ${color || '#d97706'}` }
-      : { background: 'linear-gradient(145deg, #e5e7eb, #f3f4f6)', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' };
+  const badgeStyle = isDone
+    ? { background: 'linear-gradient(135deg, #059669, #10b981)' }
+    : isCur
+      ? { background: `linear-gradient(135deg, ${color || '#d97706'}, #f59e0b)` }
+      : { background: '#e5e7eb' };
 
-  const cls = [
-    `${size} rounded-full flex items-center justify-center transition-all duration-200 ease-out`,
-    isCurrent && 'animate-pulse-gold',
-    clickable && 'hover:scale-110 hover:brightness-105 active:scale-90',
-    !clickable && 'cursor-not-allowed',
+  const cardClass = [
+    'flex items-center gap-4 rounded-xl p-4 transition-all duration-200',
+    isDone && 'bg-emerald-50/80 border border-emerald-200/60 shadow-sm',
+    isCur && 'bg-white border-2 shadow-lg',
+    st === 'locked' && 'bg-white/40 border border-gray-200/50',
+    clickable && 'cursor-pointer hover:shadow-xl hover:-translate-y-0.5 active:scale-[0.98] active:shadow-md',
+    !clickable && 'cursor-not-allowed opacity-60',
   ].filter(Boolean).join(' ');
 
-  const inner = st === 'done'
-    ? <Check className="w-7 h-7 text-white drop-shadow-sm" strokeWidth={2.5} />
-    : isCurrent
-      ? <span className="text-2xl font-bold drop-shadow-sm" style={{ color: color || '#d97706' }}>{i + 1}</span>
-      : <Lock className="w-5 h-5 text-gray-400" />;
-
-  const circle = clickable
-    ? <button onClick={onClick} className={cls} style={style} aria-label={`Lesson ${i + 1}: ${lesson.title}`}>{inner}</button>
-    : <div className={cls} style={style}>{inner}</div>;
+  const borderColor = isCur ? (color || '#d97706') : undefined;
 
   return (
-    <div className="flex flex-col items-center" style={{ width: 140 }}>
-      {circle}
-      <p className={`mt-2.5 text-xs font-bold text-center leading-snug ${
-        st === 'locked' ? 'text-gray-400' : 'text-gray-800'
-      }`}>{lesson.title}</p>
-      <p className="text-[10px] text-gray-400 flex items-center gap-0.5 mt-0.5">
-        <Clock className="w-2.5 h-2.5" />{lesson.duration}
-      </p>
-      {saved && st !== 'done' && (
-        <span className="mt-1 text-[10px] px-2 py-0.5 rounded-full font-medium bg-emerald-100 text-emerald-700">Continue</span>
+    <div className="relative">
+      {/* Badge on the timeline */}
+      <div className="absolute -left-6 top-1/2 -translate-y-1/2 w-9 h-9 rounded-xl flex items-center justify-center shadow-md z-10"
+        style={badgeStyle}>
+        {isDone ? <Check className="w-4.5 h-4.5 text-white" strokeWidth={2.5} />
+          : isCur ? <span className="text-sm font-bold text-white">{i + 1}</span>
+          : <Lock className="w-3.5 h-3.5 text-gray-400" />}
+      </div>
+
+      {/* Card */}
+      {clickable ? (
+        <button onClick={onClick} className={`w-full text-left ${cardClass}`}
+          style={borderColor ? { borderColor } : undefined}>
+          <CardContent i={i} lesson={lesson} st={st} saved={saved} color={color} />
+        </button>
+      ) : (
+        <div className={cardClass}>
+          <CardContent i={i} lesson={lesson} st={st} saved={saved} color={color} />
+        </div>
       )}
     </div>
+  );
+};
+
+const CardContent = ({ i, lesson, st, saved, color }) => {
+  const isDone = st === 'done';
+  const isCur = st === 'current';
+  return (
+    <>
+      <div className="flex-1 min-w-0">
+        <p className={`text-[10px] font-semibold uppercase tracking-wide mb-0.5 ${
+          isDone ? 'text-emerald-600' : isCur ? 'text-gray-500' : 'text-gray-400'
+        }`}>Lesson {i + 1}</p>
+        <h3 className={`font-bold text-sm leading-snug ${
+          st === 'locked' ? 'text-gray-400' : 'text-gray-900'
+        }`} style={{ fontFamily: 'Georgia,serif' }}>{lesson.title}</h3>
+        <div className="flex items-center gap-2 mt-1">
+          <span className={`text-[11px] flex items-center gap-0.5 ${
+            st === 'locked' ? 'text-gray-300' : 'text-gray-400'
+          }`}><Clock className="w-3 h-3" />{lesson.duration}</span>
+          {isDone && <span className="text-[10px] font-semibold text-emerald-600">Completed</span>}
+          {saved && !isDone && <span className="text-[10px] px-2 py-0.5 rounded-full font-medium bg-emerald-100 text-emerald-700">Continue</span>}
+        </div>
+      </div>
+      {isCur && (
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md text-white"
+          style={{ background: `linear-gradient(135deg, ${color || '#d97706'}, #f59e0b)` }}>
+          <PlayCircle className="w-5 h-5" />
+        </div>
+      )}
+      {isDone && (
+        <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 bg-emerald-100">
+          <Check className="w-4 h-4 text-emerald-600" strokeWidth={2.5} />
+        </div>
+      )}
+    </>
   );
 };
 
