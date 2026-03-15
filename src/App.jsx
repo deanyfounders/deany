@@ -160,6 +160,74 @@ const App = () => {
   const [speedFeedback, setSpeedFeedback] = useState(null);
   const modalRef = useRef(null);
   const shuffleRef = useRef({});
+  const audioCtxRef = useRef(null);
+
+  // Global mechanical keyboard click sound on any interactive element
+  useEffect(() => {
+    const getCtx = () => {
+      if (!audioCtxRef.current || audioCtxRef.current.state === 'closed') {
+        audioCtxRef.current = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtxRef.current.state === 'suspended') audioCtxRef.current.resume();
+      return audioCtxRef.current;
+    };
+
+    const playMechClick = () => {
+      try {
+        const ctx = getCtx();
+        const t = ctx.currentTime;
+
+        // Noise burst — the "click" body
+        const bufLen = Math.floor(ctx.sampleRate * 0.04);
+        const buf = ctx.createBuffer(1, bufLen, ctx.sampleRate);
+        const data = buf.getChannelData(0);
+        for (let i = 0; i < bufLen; i++) data[i] = (Math.random() * 2 - 1) * 0.6;
+        const noise = ctx.createBufferSource();
+        noise.buffer = buf;
+
+        // Bandpass filter — mechanical resonance
+        const bp = ctx.createBiquadFilter();
+        bp.type = 'bandpass';
+        bp.frequency.value = 3800;
+        bp.Q.value = 1.2;
+
+        // High-pass to remove muddiness
+        const hp = ctx.createBiquadFilter();
+        hp.type = 'highpass';
+        hp.frequency.value = 1200;
+
+        // Envelope — sharp attack, quick decay
+        const env = ctx.createGain();
+        env.gain.setValueAtTime(0, t);
+        env.gain.linearRampToValueAtTime(0.18, t + 0.003);
+        env.gain.exponentialRampToValueAtTime(0.001, t + 0.045);
+
+        noise.connect(bp).connect(hp).connect(env).connect(ctx.destination);
+        noise.start(t);
+        noise.stop(t + 0.05);
+
+        // Tiny "thock" undertone
+        const osc = ctx.createOscillator();
+        const oscGain = ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(420, t);
+        osc.frequency.exponentialRampToValueAtTime(120, t + 0.025);
+        oscGain.gain.setValueAtTime(0.06, t);
+        oscGain.gain.exponentialRampToValueAtTime(0.001, t + 0.03);
+        osc.connect(oscGain).connect(ctx.destination);
+        osc.start(t);
+        osc.stop(t + 0.035);
+      } catch (_) {}
+    };
+
+    const handler = (e) => {
+      const el = e.target.closest('button, a, [role="button"], [onclick], input[type="submit"], input[type="checkbox"], input[type="radio"], select, .cursor-pointer');
+      if (el) playMechClick();
+    };
+
+    document.addEventListener('pointerdown', handler, true);
+    return () => document.removeEventListener('pointerdown', handler, true);
+  }, []);
 
   const makeShuffledIndices = (n) => {
     const arr = Array.from({length: n}, (_, i) => i);

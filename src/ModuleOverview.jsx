@@ -103,23 +103,6 @@ const ScalesIcon3D = ({ size = 80 }) => (
 const LESSON_ICONS = [ScalesIcon3D, '🤲', '🛡️', '🔍', '💰'];
 const TILE_OFFSETS = [0, 50, -35, 55, -15];
 
-const playClickSound = () => {
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(880, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(1320, ctx.currentTime + 0.05);
-    osc.frequency.exponentialRampToValueAtTime(660, ctx.currentTime + 0.12);
-    gain.gain.setValueAtTime(0.15, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
-    osc.start(ctx.currentTime);
-    osc.stop(ctx.currentTime + 0.15);
-  } catch (_) {}
-};
 
 const ModuleOverview = ({
   modules, completedLessons, loadProgress, onSelectLesson, onSelectModule, onBack, onHome,
@@ -162,7 +145,6 @@ const ModuleBlock = ({ mod, mi, completedLessons, loadProgress, onSelectLesson, 
   };
 
   const handleLessonClick = useCallback((lesson, i) => {
-    playClickSound();
     onSelectLesson(lesson, i);
   }, [onSelectLesson]);
 
@@ -233,7 +215,7 @@ const ModuleBlock = ({ mod, mi, completedLessons, loadProgress, onSelectLesson, 
       </div>
 
       {nextLesson && (
-        <button onClick={() => { playClickSound(); onSelectLesson(nextLesson, curIdx); }}
+        <button onClick={() => onSelectLesson(nextLesson, curIdx)}
           className="w-full mt-8 py-4 rounded-2xl text-white font-bold text-base shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-[0.97] transition-all flex items-center justify-center gap-2"
           style={{ background: 'linear-gradient(135deg, #059669, #0d9488)' }}>
           <Play className="w-5 h-5" fill="white" />
