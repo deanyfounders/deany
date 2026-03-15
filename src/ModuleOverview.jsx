@@ -17,7 +17,67 @@ const PagePattern = () => (
   </svg>
 );
 
-const LESSON_ICONS = ['⚖️', '🤲', '🛡️', '🔍', '💰'];
+/* 3D Balance Scales SVG — built-in gradients for shading, highlights & extrusion */
+const ScalesIcon3D = ({ size = 44 }) => (
+  <svg width={size} height={size} viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      {/* Main gold body gradient — light from top-left */}
+      <linearGradient id="sc-body" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stopColor="#fde68a"/>
+        <stop offset="40%" stopColor="#f59e0b"/>
+        <stop offset="100%" stopColor="#b45309"/>
+      </linearGradient>
+      {/* Specular highlight */}
+      <linearGradient id="sc-hi" x1="0.3" y1="0" x2="0.7" y2="1">
+        <stop offset="0%" stopColor="#fff" stopOpacity="0.6"/>
+        <stop offset="100%" stopColor="#fff" stopOpacity="0"/>
+      </linearGradient>
+      {/* Pan/bowl gradient */}
+      <linearGradient id="sc-pan" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stopColor="#fcd34d"/>
+        <stop offset="100%" stopColor="#92400e"/>
+      </linearGradient>
+      {/* Dark extrusion edge */}
+      <linearGradient id="sc-ext" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stopColor="#92400e"/>
+        <stop offset="100%" stopColor="#78350f"/>
+      </linearGradient>
+    </defs>
+    {/* Base pedestal — extrusion layer first */}
+    <ellipse cx="32" cy="58" rx="14" ry="4" fill="url(#sc-ext)"/>
+    <ellipse cx="32" cy="56" rx="14" ry="4" fill="url(#sc-body)"/>
+    <ellipse cx="32" cy="56" rx="10" ry="2.5" fill="url(#sc-hi)" opacity="0.5"/>
+    {/* Central pillar */}
+    <rect x="29" y="20" width="6" height="36" rx="2" fill="url(#sc-body)"/>
+    <rect x="30" y="20" width="2.5" height="36" rx="1" fill="url(#sc-hi)" opacity="0.4"/>
+    {/* Pillar extrusion edge */}
+    <rect x="29" y="22" width="6" height="36" rx="2" fill="url(#sc-ext)" opacity="0.15"/>
+    {/* Top ornament sphere */}
+    <circle cx="32" cy="16" r="5" fill="url(#sc-body)"/>
+    <circle cx="30.5" cy="14.5" r="2" fill="url(#sc-hi)" opacity="0.6"/>
+    {/* Horizontal beam */}
+    <rect x="6" y="19" width="52" height="5" rx="2.5" fill="url(#sc-body)"/>
+    <rect x="6" y="19" width="52" height="2.5" rx="1.5" fill="url(#sc-hi)" opacity="0.35"/>
+    {/* Beam extrusion bottom */}
+    <rect x="6" y="22" width="52" height="2" rx="1" fill="url(#sc-ext)" opacity="0.3"/>
+    {/* Left chain */}
+    <line x1="12" y1="24" x2="12" y2="38" stroke="#d97706" strokeWidth="2" strokeLinecap="round"/>
+    <line x1="12" y1="24" x2="12" y2="38" stroke="url(#sc-hi)" strokeWidth="1" strokeLinecap="round" opacity="0.3"/>
+    {/* Right chain */}
+    <line x1="52" y1="24" x2="52" y2="38" stroke="#d97706" strokeWidth="2" strokeLinecap="round"/>
+    <line x1="52" y1="24" x2="52" y2="38" stroke="url(#sc-hi)" strokeWidth="1" strokeLinecap="round" opacity="0.3"/>
+    {/* Left pan — bowl shape */}
+    <ellipse cx="12" cy="42" rx="10" ry="3.5" fill="url(#sc-ext)"/>
+    <ellipse cx="12" cy="40" rx="10" ry="3.5" fill="url(#sc-pan)"/>
+    <ellipse cx="12" cy="39.5" rx="7" ry="2" fill="url(#sc-hi)" opacity="0.4"/>
+    {/* Right pan — bowl shape */}
+    <ellipse cx="52" cy="42" rx="10" ry="3.5" fill="url(#sc-ext)"/>
+    <ellipse cx="52" cy="40" rx="10" ry="3.5" fill="url(#sc-pan)"/>
+    <ellipse cx="52" cy="39.5" rx="7" ry="2" fill="url(#sc-hi)" opacity="0.4"/>
+  </svg>
+);
+
+const LESSON_ICONS = [ScalesIcon3D, '🤲', '🛡️', '🔍', '💰'];
 const TILE_OFFSETS = [0, 50, -35, 55, -15];
 
 /* Satisfying click sound via Web Audio API */
@@ -216,6 +276,12 @@ const DiamondTile = ({ i, st, onClick }) => {
             filter: 'drop-shadow(0 4px 3px rgba(0,0,0,0.35)) drop-shadow(0 8px 6px rgba(0,0,0,0.15))',
           }}>
             <Check className="w-10 h-10 text-white" strokeWidth={3} />
+          </div>
+        ) : typeof icon === 'function' ? (
+          <div style={{
+            filter: 'drop-shadow(0 4px 2px rgba(0,0,0,0.4)) drop-shadow(0 8px 5px rgba(0,0,0,0.2)) drop-shadow(0 12px 10px rgba(0,0,0,0.1))',
+          }}>
+            {React.createElement(icon, { size: 44 })}
           </div>
         ) : (
           <span style={{
