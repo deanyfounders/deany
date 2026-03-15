@@ -1,5 +1,5 @@
-import React from 'react';
-import { Check, Lock, ChevronLeft, Home, Zap, ArrowRight, Clock, BookOpen, Play } from 'lucide-react';
+import React, { useCallback } from 'react';
+import { Check, Lock, ChevronLeft, Home, Zap, ArrowRight, Clock, Play } from 'lucide-react';
 
 const pageBg = { background: 'linear-gradient(150deg, #f0fdf4 0%, #ecfdf5 30%, #f0f9ff 60%, #fefce8 100%)' };
 const glass = "bg-white/70 backdrop-blur-xl border border-white/40 shadow-lg";
@@ -18,7 +18,26 @@ const PagePattern = () => (
 );
 
 const LESSON_ICONS = ['⚖️', '🤲', '🛡️', '🔍', '💰'];
-const TILE_OFFSETS = [0, 40, -30, 50, -10];
+const TILE_OFFSETS = [0, 50, -35, 55, -15];
+
+/* Satisfying click sound via Web Audio API */
+const playClickSound = () => {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(880, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(1320, ctx.currentTime + 0.05);
+    osc.frequency.exponentialRampToValueAtTime(660, ctx.currentTime + 0.12);
+    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.15);
+  } catch (_) { /* silent fallback */ }
+};
 
 const ModuleOverview = ({
   modules, completedLessons, loadProgress, onSelectLesson, onSelectModule, onBack, onHome,
@@ -54,36 +73,41 @@ const ModuleBlock = ({ mod, mi, completedLessons, loadProgress, onSelectLesson, 
   const doneCount = lessons.filter((_, i) => isDone(i)).length;
   const pct = lessons.length > 0 ? Math.round((doneCount / lessons.length) * 100) : 0;
   const curIdx = lessons.findIndex((_, i) => !isDone(i));
+  /* All lessons unlocked — no locked state */
   const getState = (i) => {
     if (isDone(i)) return 'done';
     if (i === curIdx) return 'current';
-    if (i > curIdx && curIdx !== -1) return 'locked';
-    return 'current';
+    return 'open';
   };
 
+  const handleLessonClick = useCallback((lesson, i) => {
+    playClickSound();
+    onSelectLesson(lesson, i);
+  }, [onSelectLesson]);
+
   if (mod.isSpeedRound) return (
-    <button onClick={() => onSelectModule(mod, mi)} className={`w-full ${glassHover} rounded-2xl p-5 text-left`}>
-      <div className="flex items-center gap-4">
-        <div className="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg text-white flex-shrink-0"
-          style={{ background: 'linear-gradient(135deg, #7c3aed, #6d28d9)' }}><Zap className="w-6 h-6" /></div>
+    <button onClick={() => onSelectModule(mod, mi)} className={`w-full ${glassHover} rounded-2xl p-6 text-left`}>
+      <div className="flex items-center gap-5">
+        <div className="w-14 h-14 rounded-xl flex items-center justify-center shadow-lg text-white flex-shrink-0"
+          style={{ background: 'linear-gradient(135deg, #7c3aed, #6d28d9)' }}><Zap className="w-7 h-7" /></div>
         <div className="flex-1">
-          <h3 className="font-bold text-gray-900 text-sm" style={{ fontFamily: 'Georgia,serif' }}>{mod.title}</h3>
-          <p className="text-xs text-gray-500">{mod.subtitle}</p>
+          <h3 className="font-bold text-gray-900" style={{ fontFamily: 'Georgia,serif' }}>{mod.title}</h3>
+          <p className="text-sm text-gray-500">{mod.subtitle}</p>
         </div>
-        <ArrowRight className="w-4 h-4 text-gray-400" />
+        <ArrowRight className="w-5 h-5 text-gray-400" />
       </div>
     </button>
   );
 
   if (!lessons.length) return (
-    <div className={`${glass} rounded-2xl p-5 opacity-60`}>
-      <div className="flex items-center gap-4">
-        <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-gray-200 flex-shrink-0">
-          <Lock className="w-5 h-5 text-gray-400" /></div>
+    <div className={`${glass} rounded-2xl p-6 opacity-60`}>
+      <div className="flex items-center gap-5">
+        <div className="w-14 h-14 rounded-xl flex items-center justify-center bg-gray-200 flex-shrink-0">
+          <Lock className="w-6 h-6 text-gray-400" /></div>
         <div>
-          <h3 className="font-bold text-gray-700 text-sm" style={{ fontFamily: 'Georgia,serif' }}>{mod.title}</h3>
-          <p className="text-xs text-gray-400">{mod.subtitle}</p>
-          <span className="text-[10px] px-2 py-0.5 rounded-full font-medium bg-amber-100 text-amber-700 mt-1 inline-block">Coming Soon</span>
+          <h3 className="font-bold text-gray-700" style={{ fontFamily: 'Georgia,serif' }}>{mod.title}</h3>
+          <p className="text-sm text-gray-400">{mod.subtitle}</p>
+          <span className="text-xs px-2.5 py-0.5 rounded-full font-medium bg-amber-100 text-amber-700 mt-1.5 inline-block">Coming Soon</span>
         </div>
       </div>
     </div>
@@ -94,34 +118,34 @@ const ModuleBlock = ({ mod, mi, completedLessons, loadProgress, onSelectLesson, 
   return (
     <div>
       {/* Module header */}
-      <div className="text-center mb-6">
-        <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-600/60">Module {mi + 1}</span>
-        <h2 className="text-xl font-bold text-gray-900 mt-1" style={{ fontFamily: 'Georgia,serif' }}>{mod.title}</h2>
-        <p className="text-xs text-gray-500 mt-0.5">{mod.subtitle}</p>
-        <div className="flex items-center justify-center gap-3 mt-3">
-          <div className="w-32 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+      <div className="text-center mb-8">
+        <span className="text-xs font-bold uppercase tracking-widest text-emerald-600/60">Module {mi + 1}</span>
+        <h2 className="text-2xl font-bold text-gray-900 mt-1" style={{ fontFamily: 'Georgia,serif' }}>{mod.title}</h2>
+        <p className="text-sm text-gray-500 mt-1">{mod.subtitle}</p>
+        <div className="flex items-center justify-center gap-3 mt-4">
+          <div className="w-40 h-2 bg-gray-200 rounded-full overflow-hidden">
             <div className="h-full rounded-full transition-all duration-500" style={{ width: `${pct}%`, background: 'linear-gradient(90deg, #059669, #10b981)' }} />
           </div>
-          <span className="text-xs font-semibold text-gray-500">{doneCount}/{lessons.length}</span>
+          <span className="text-sm font-semibold text-gray-500">{doneCount}/{lessons.length}</span>
         </div>
       </div>
 
       {/* Diamond tiles path */}
-      <div className="flex flex-col items-center gap-5">
+      <div className="flex flex-col items-center gap-7">
         {lessons.map((lesson, i) => {
           const st = getState(i);
           const saved = !!loadProgress?.(lesson.id);
           const offset = TILE_OFFSETS[i % TILE_OFFSETS.length];
           return (
-            <div key={lesson.id} className="flex items-center gap-4 w-full" style={{ paddingLeft: `${Math.max(0, offset + 30)}px`, paddingRight: `${Math.max(0, -offset + 30)}px` }}>
-              <DiamondTile i={i} st={st} onClick={() => st !== 'locked' && onSelectLesson(lesson, i)} />
+            <div key={lesson.id} className="flex items-center gap-6 w-full" style={{ paddingLeft: `${Math.max(0, offset + 30)}px`, paddingRight: `${Math.max(0, -offset + 30)}px` }}>
+              <DiamondTile i={i} st={st} onClick={() => handleLessonClick(lesson, i)} />
               <div className="flex-1 min-w-0">
-                <p className={`text-[10px] font-bold uppercase tracking-wide ${st === 'done' ? 'text-emerald-600' : st === 'current' ? 'text-amber-600' : 'text-gray-400'}`}>Lesson {i + 1}</p>
-                <h3 className={`font-bold text-sm leading-snug ${st === 'locked' ? 'text-gray-400' : 'text-gray-900'}`} style={{ fontFamily: 'Georgia,serif' }}>{lesson.title}</h3>
-                <div className="flex items-center gap-2 mt-0.5">
-                  <span className={`text-[11px] flex items-center gap-0.5 ${st === 'locked' ? 'text-gray-300' : 'text-gray-400'}`}><Clock className="w-3 h-3" />{lesson.duration}</span>
-                  {st === 'done' && <span className="text-[10px] font-semibold text-emerald-600">Completed</span>}
-                  {saved && st !== 'done' && <span className="text-[10px] px-1.5 py-0.5 rounded-full font-medium bg-emerald-100 text-emerald-700">Continue</span>}
+                <p className={`text-xs font-bold uppercase tracking-wide ${st === 'done' ? 'text-emerald-600' : st === 'current' ? 'text-amber-600' : 'text-gray-500'}`}>Lesson {i + 1}</p>
+                <h3 className="font-bold text-base leading-snug text-gray-900 mt-0.5" style={{ fontFamily: 'Georgia,serif' }}>{lesson.title}</h3>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-xs flex items-center gap-1 text-gray-400"><Clock className="w-3.5 h-3.5" />{lesson.duration}</span>
+                  {st === 'done' && <span className="text-xs font-semibold text-emerald-600">Completed</span>}
+                  {saved && st !== 'done' && <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-emerald-100 text-emerald-700">Continue</span>}
                 </div>
               </div>
             </div>
@@ -131,10 +155,10 @@ const ModuleBlock = ({ mod, mi, completedLessons, loadProgress, onSelectLesson, 
 
       {/* Next Lesson CTA */}
       {nextLesson && (
-        <button onClick={() => onSelectLesson(nextLesson, curIdx)}
-          className="w-full mt-6 py-3.5 rounded-2xl text-white font-bold text-sm shadow-lg hover:shadow-xl active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+        <button onClick={() => { playClickSound(); onSelectLesson(nextLesson, curIdx); }}
+          className="w-full mt-8 py-4 rounded-2xl text-white font-bold text-base shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-[0.97] transition-all flex items-center justify-center gap-2"
           style={{ background: 'linear-gradient(135deg, #059669, #0d9488)' }}>
-          <Play className="w-4 h-4" fill="white" />
+          <Play className="w-5 h-5" fill="white" />
           {doneCount > 0 ? 'Continue Learning' : 'Start Learning'}
         </button>
       )}
@@ -145,49 +169,48 @@ const ModuleBlock = ({ mod, mi, completedLessons, loadProgress, onSelectLesson, 
 const DiamondTile = ({ i, st, onClick }) => {
   const isDone = st === 'done';
   const isCur = st === 'current';
-  const isLocked = st === 'locked';
-  const clickable = !isLocked;
   const icon = LESSON_ICONS[i % LESSON_ICONS.length];
 
   const bg = isDone
-    ? 'linear-gradient(135deg, #059669, #10b981)'
+    ? 'linear-gradient(145deg, #059669 0%, #10b981 60%, #34d399 100%)'
     : isCur
-      ? 'linear-gradient(135deg, #d97706, #f59e0b)'
-      : 'linear-gradient(135deg, #e5e7eb, #d1d5db)';
+      ? 'linear-gradient(145deg, #d97706 0%, #f59e0b 60%, #fbbf24 100%)'
+      : 'linear-gradient(145deg, #6366f1 0%, #818cf8 60%, #a5b4fc 100%)';
 
+  /* 3D extrusion: thick bottom edge + soft ambient + specular highlight */
   const shadow = isDone
-    ? '0 6px 0 #047857, 0 8px 20px rgba(5,150,105,0.3)'
+    ? '0 8px 0 #047857, 0 10px 24px rgba(5,150,105,0.35), inset 0 2px 4px rgba(255,255,255,0.3)'
     : isCur
-      ? '0 6px 0 #b45309, 0 8px 20px rgba(217,119,6,0.3)'
-      : '0 4px 0 #9ca3af, 0 6px 12px rgba(0,0,0,0.08)';
+      ? '0 8px 0 #b45309, 0 10px 24px rgba(217,119,6,0.35), inset 0 2px 4px rgba(255,255,255,0.3)'
+      : '0 6px 0 #4338ca, 0 8px 18px rgba(99,102,241,0.25), inset 0 2px 4px rgba(255,255,255,0.2)';
 
   const glowShadow = isCur
-    ? '0 6px 0 #b45309, 0 0 30px rgba(245,158,11,0.4), 0 0 60px rgba(245,158,11,0.15)'
+    ? '0 8px 0 #b45309, 0 0 35px rgba(245,158,11,0.5), 0 0 70px rgba(245,158,11,0.2), inset 0 2px 4px rgba(255,255,255,0.3)'
     : shadow;
 
   return (
-    <div className="relative flex-shrink-0" style={{ width: 72, height: 72 }}>
-      {/* Glow ring behind current tile */}
+    <div className="relative flex-shrink-0" style={{ width: 92, height: 92 }}>
+      {/* Glow aura behind current tile */}
       {isCur && (
-        <div className="absolute inset-[-8px] rounded-2xl animate-pulse-gold" style={{
-          background: 'radial-gradient(circle, rgba(245,158,11,0.2) 0%, transparent 70%)',
+        <div className="absolute inset-[-14px] rounded-3xl animate-pulse-gold" style={{
+          background: 'radial-gradient(circle, rgba(245,158,11,0.25) 0%, transparent 70%)',
         }} />
       )}
-      <button
-        onClick={clickable ? onClick : undefined}
-        disabled={isLocked}
-        className={[
-          'w-full h-full rounded-2xl flex items-center justify-center transition-all duration-200',
-          clickable && 'cursor-pointer hover:scale-110 hover:-translate-y-1 active:scale-95 active:translate-y-0',
-          isLocked && 'cursor-not-allowed opacity-50',
-        ].filter(Boolean).join(' ')}
+      <button onClick={onClick}
+        className="w-full h-full rounded-2xl flex items-center justify-center cursor-pointer transition-all duration-200 hover:-translate-y-2 hover:scale-110 active:translate-y-1 active:scale-95"
         style={{
           background: bg,
-          boxShadow: clickable ? glowShadow : shadow,
-          transform: `rotate(45deg)`,
+          boxShadow: isCur ? glowShadow : shadow,
+          transform: 'rotate(45deg)',
         }}>
-        <span className="text-2xl" style={{ transform: 'rotate(-45deg)' }}>
-          {isDone ? <Check className="w-6 h-6 text-white" strokeWidth={3} /> : isLocked ? <Lock className="w-5 h-5 text-gray-400" /> : icon}
+        {/* 3D icon with text shadow depth */}
+        <span style={{
+          transform: 'rotate(-45deg)',
+          fontSize: 32,
+          filter: 'drop-shadow(0 3px 2px rgba(0,0,0,0.3)) drop-shadow(0 1px 1px rgba(0,0,0,0.2))',
+          lineHeight: 1,
+        }}>
+          {isDone ? <Check className="w-8 h-8 text-white" strokeWidth={3} style={{ filter: 'drop-shadow(0 2px 2px rgba(0,0,0,0.25))' }} /> : icon}
         </span>
       </button>
     </div>
