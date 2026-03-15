@@ -5,6 +5,7 @@ import DEANY_M1L3 from "../DEANY_M1L3.jsx";
 import DEANY_M1L4 from "../DEANY_M1L4.jsx";
 import DEANY_M1L5 from "../DEANY_M1L5.jsx";
 import ModuleOverview from './ModuleOverview.jsx';
+import LessonPath from './components/lesson-path/LessonPath';
 import { 
   CheckCircle, XCircle, Star, Trophy, ArrowRight, Sparkles, BookOpen, Home, 
   Lightbulb, Award, Menu, X, ChevronLeft, Flame, Zap, Target,
@@ -685,16 +686,40 @@ const App = () => {
 
     // Islamic Finance: full learning path with all modules + lessons inline
     if (isFin) {
+      const mainMod = mods.find(m => m.lessons?.length > 0);
       return (
-        <ModuleOverview
-          modules={mods}
-          completedLessons={completedLessons}
-          loadProgress={loadProgress}
-          onSelectLesson={selectLes}
-          onSelectModule={selectModule}
-          onBack={goHome}
-          onHome={goHome}
-        />
+        <div className="min-h-screen relative" style={pageBg}>
+          <IslamicPattern />
+          <div className="relative z-10 max-w-3xl mx-auto px-4 py-8">
+            <NavHeader onBack={goHome} onHome={goHome} backLabel="Topics" />
+            {mainMod && (
+              <div className={`${glass} rounded-2xl p-6 mb-6`}>
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-xl flex items-center justify-center text-3xl shadow-md" style={{background: mainMod.color + '18'}}>{mainMod.icon}</div>
+                  <div>
+                    <h1 className="text-xl font-bold text-gray-900" style={{fontFamily:'Georgia,serif'}}>{mainMod.title}</h1>
+                    <p className="text-gray-500 text-xs">{mainMod.subtitle} · {mainMod.lessons.length} Lessons · {mainMod.estimatedTime}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 mt-4">
+                  <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                    <div className="h-full rounded-full transition-all duration-500" style={{ width: `${Math.round((mainMod.lessons.filter((_,i) => completedLessons[`${mainMod.id}-lesson-${i}`]).length / mainMod.lessons.length) * 100)}%`, background: 'linear-gradient(90deg, #2A7B88, #3AADA0)' }} />
+                  </div>
+                  <span className="text-sm font-semibold text-gray-500">{mainMod.lessons.filter((_,i) => completedLessons[`${mainMod.id}-lesson-${i}`]).length}/{mainMod.lessons.length}</span>
+                </div>
+              </div>
+            )}
+            {mainMod && (
+              <LessonPath
+                lessons={mainMod.lessons}
+                completedLessons={completedLessons}
+                moduleId={mainMod.id}
+                moduleColor={mainMod.color}
+                onSelectLesson={selectLes}
+              />
+            )}
+          </div>
+        </div>
       );
     }
 
