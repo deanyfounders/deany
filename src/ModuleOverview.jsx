@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react';
 import { Check, Lock, ChevronLeft, Home, Zap, ArrowRight, Clock, Play } from 'lucide-react';
+import { DECO_COMPONENTS } from './JourneyAssets';
 
 const pageBg = { background: 'linear-gradient(150deg, #f0fdf4 0%, #ecfdf5 30%, #f0f9ff 60%, #fefce8 100%)' };
 const glass = "bg-white/70 backdrop-blur-xl border border-white/40 shadow-lg";
@@ -18,120 +19,7 @@ const PagePattern = () => (
   </svg>
 );
 
-/* ────────────────────────────────────────────────────────────────────
-   2.5D LESSON ICONS — "Painted Light" technique
-   Each icon:  1) Mid-tone base shape (#d97706)
-               2) Blurred shadow overlay (#451a03, filter=sf)
-               3) Blurred light overlay (#fef3c7, filter=sf)
-               4) Sharp specular highlight (#fff)
-   The blur creates soft, organic light falloff — not hard vector edges.
-   All icons share the same gold palette & light direction (top-left).
-   ──────────────────────────────────────────────────────────────────── */
-const F = 'url(#sf)';
-
-const ScalesIcon = ({ size = 90 }) => (
-  <svg width={size} height={size * 1.1} viewBox="0 0 80 88" fill="none">
-    <ellipse cx="40" cy="85" rx="26" ry="3.5" fill="#000" opacity="0.12"/>
-    {/* BASE */}
-    <path d="M22,70 Q22,78 40,78 Q58,78 58,70 Q58,75 40,75 Q22,75 22,70Z" fill="#92400e"/>
-    <ellipse cx="40" cy="70" rx="18" ry="5.5" fill="#d97706"/>
-    <ellipse cx="45" cy="72" rx="12" ry="4" fill="#451a03" opacity="0.25" filter={F}/>
-    <ellipse cx="35" cy="69" rx="12" ry="3.5" fill="#fef3c7" opacity="0.5" filter={F}/>
-    <ellipse cx="33" cy="68" rx="6" ry="1.8" fill="#fff" opacity="0.4"/>
-    {/* PILLAR */}
-    <rect x="33" y="22" width="14" height="48" rx="6" fill="#d97706"/>
-    <rect x="41" y="23" width="7" height="46" rx="3.5" fill="#451a03" opacity="0.3" filter={F}/>
-    <rect x="32" y="23" width="8" height="46" rx="4" fill="#fef3c7" opacity="0.4" filter={F}/>
-    <rect x="34" y="26" width="3" height="42" rx="1.5" fill="#fff" opacity="0.35"/>
-    {/* BEAM */}
-    <rect x="2" y="14" width="76" height="10" rx="5" fill="#d97706"/>
-    <rect x="4" y="19" width="72" height="6" rx="3" fill="#451a03" opacity="0.32" filter={F}/>
-    <rect x="4" y="12" width="72" height="6" rx="3" fill="#fef3c7" opacity="0.45" filter={F}/>
-    <rect x="8" y="14" width="40" height="2.5" rx="1.2" fill="#fff" opacity="0.45"/>
-    <rect x="2" y="23.5" width="76" height="0.8" rx="0.4" fill="#451a03" opacity="0.2"/>
-    {/* LEFT SUPPORT */}
-    <rect x="6" y="24" width="7" height="20" rx="3.5" fill="#d97706"/>
-    <rect x="10" y="25" width="4" height="18" rx="2" fill="#451a03" opacity="0.28" filter={F}/>
-    <rect x="6" y="25" width="4" height="18" rx="2" fill="#fef3c7" opacity="0.35" filter={F}/>
-    {/* RIGHT SUPPORT */}
-    <rect x="67" y="24" width="7" height="20" rx="3.5" fill="#d97706"/>
-    <rect x="71" y="25" width="4" height="18" rx="2" fill="#451a03" opacity="0.28" filter={F}/>
-    <rect x="67" y="25" width="4" height="18" rx="2" fill="#fef3c7" opacity="0.35" filter={F}/>
-    {/* LEFT PAN */}
-    <ellipse cx="9.5" cy="55" rx="10" ry="2" fill="#000" opacity="0.08"/>
-    <path d="M-2,45 Q-2,55 9.5,55 Q21,55 21,45 L19,45 Q18,52 9.5,52 Q1,52 0,45Z" fill="#92400e"/>
-    <ellipse cx="9.5" cy="45" rx="11.5" ry="4.5" fill="#d97706"/>
-    <ellipse cx="13" cy="47" rx="7" ry="3" fill="#451a03" opacity="0.22" filter={F}/>
-    <ellipse cx="7" cy="43.5" rx="7" ry="3" fill="#fef3c7" opacity="0.4" filter={F}/>
-    <ellipse cx="6.5" cy="43" rx="3.5" ry="1.5" fill="#fff" opacity="0.35"/>
-    {/* RIGHT PAN */}
-    <ellipse cx="70.5" cy="55" rx="10" ry="2" fill="#000" opacity="0.08"/>
-    <path d="M59,45 Q59,55 70.5,55 Q82,55 82,45 L80,45 Q79,52 70.5,52 Q62,52 61,45Z" fill="#92400e"/>
-    <ellipse cx="70.5" cy="45" rx="11.5" ry="4.5" fill="#d97706"/>
-    <ellipse cx="74" cy="47" rx="7" ry="3" fill="#451a03" opacity="0.22" filter={F}/>
-    <ellipse cx="68" cy="43.5" rx="7" ry="3" fill="#fef3c7" opacity="0.4" filter={F}/>
-    <ellipse cx="67.5" cy="43" rx="3.5" ry="1.5" fill="#fff" opacity="0.35"/>
-    {/* SPHERE */}
-    <circle cx="40" cy="10" r="8" fill="#d97706"/>
-    <circle cx="44" cy="14" r="6" fill="#451a03" opacity="0.38" filter={F}/>
-    <circle cx="37" cy="7" r="6" fill="#fef3c7" opacity="0.5" filter={F}/>
-    <circle cx="36" cy="6" r="2.5" fill="#fff" opacity="0.6"/>
-  </svg>
-);
-
-const CoinIcon = ({ size = 80 }) => (
-  <svg width={size} height={size * 0.78} viewBox="0 0 64 50" fill="none">
-    <ellipse cx="32" cy="33" rx="26" ry="6" fill="#92400e"/>
-    <ellipse cx="32" cy="30" rx="26" ry="6" fill="#d97706"/>
-    <ellipse cx="32" cy="22" rx="25" ry="15" fill="#d97706"/>
-    <ellipse cx="37" cy="26" rx="18" ry="10" fill="#451a03" opacity="0.22" filter={F}/>
-    <ellipse cx="27" cy="19" rx="17" ry="10" fill="#fef3c7" opacity="0.45" filter={F}/>
-    <ellipse cx="25" cy="17" rx="7" ry="4" fill="#fff" opacity="0.4"/>
-    <circle cx="32" cy="22" r="8" fill="none" stroke="#92400e" strokeWidth="1.5" opacity="0.12"/>
-  </svg>
-);
-
-const ShieldIcon = ({ size = 80 }) => (
-  <svg width={size} height={size * 1.12} viewBox="0 0 56 63" fill="none">
-    <ellipse cx="28" cy="60" rx="15" ry="2.5" fill="#000" opacity="0.1"/>
-    <path d="M28,4 L50,14 L50,32 Q50,52 28,58 Q6,52 6,32 L6,14Z" fill="#d97706"/>
-    <path d="M28,6 L48,15 L48,32 Q48,50 28,56" fill="#451a03" opacity="0.3" filter={F}/>
-    <path d="M28,8 L10,16 L10,32 Q10,44 22,50" fill="#fef3c7" opacity="0.4" filter={F}/>
-    <path d="M16,18 L25,13 L22,26Z" fill="#fff" opacity="0.22"/>
-    <path d="M28,16 L40,22 L40,32 Q40,44 28,48 Q16,44 16,32 L16,22Z" fill="#92400e" opacity="0.1"/>
-  </svg>
-);
-
-const LensIcon = ({ size = 80 }) => (
-  <svg width={size} height={size * 1.06} viewBox="0 0 64 68" fill="none">
-    <ellipse cx="32" cy="65" rx="18" ry="2.5" fill="#000" opacity="0.1"/>
-    <line x1="38" y1="38" x2="56" y2="60" stroke="#92400e" strokeWidth="9" strokeLinecap="round"/>
-    <line x1="38" y1="38" x2="56" y2="60" stroke="#d97706" strokeWidth="7" strokeLinecap="round"/>
-    <line x1="37" y1="37" x2="48" y2="50" stroke="#fef3c7" strokeWidth="2" strokeLinecap="round" opacity="0.35"/>
-    <circle cx="24" cy="24" r="22" fill="#d97706"/>
-    <circle cx="29" cy="29" r="17" fill="#451a03" opacity="0.24" filter={F}/>
-    <circle cx="20" cy="19" r="17" fill="#fef3c7" opacity="0.35" filter={F}/>
-    <circle cx="24" cy="24" r="15" fill="#e8f8ff" opacity="0.15"/>
-    <ellipse cx="17" cy="17" rx="6" ry="4" fill="#fff" opacity="0.4" transform="rotate(-25 17 17)"/>
-  </svg>
-);
-
-const BagIcon = ({ size = 80 }) => (
-  <svg width={size} height={size * 1.12} viewBox="0 0 56 63" fill="none">
-    <ellipse cx="28" cy="60" rx="15" ry="2.5" fill="#000" opacity="0.1"/>
-    <path d="M8,56 Q2,38 10,26 L18,20 L38,20 L46,26 Q54,38 48,56Z" fill="#d97706"/>
-    <path d="M28,22 L40,22 L46,26 Q54,38 48,56 L28,56" fill="#451a03" opacity="0.3" filter={F}/>
-    <path d="M28,24 L16,24 L10,28 Q4,38 7,48" fill="#fef3c7" opacity="0.4" filter={F}/>
-    <path d="M14,32 Q17,26 22,24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" opacity="0.28"/>
-    <ellipse cx="28" cy="18" rx="10" ry="3.5" fill="#d97706"/>
-    <ellipse cx="25" cy="17" rx="6" ry="2" fill="#fef3c7" opacity="0.35"/>
-    <path d="M22,16 Q24,11 28,9 Q32,11 34,16" fill="none" stroke="#b45309" strokeWidth="2.5" strokeLinecap="round"/>
-  </svg>
-);
-
-const LESSON_ICONS = [ScalesIcon, CoinIcon, ShieldIcon, LensIcon, BagIcon];
-const TILE_OFFSETS = [0, 50, -35, 55, -15];
-
+/* ── Click sound ── */
 const playClickSound = () => {
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -148,6 +36,186 @@ const playClickSound = () => {
   } catch (_) {}
 };
 
+/* ── Scene constants ── */
+const SW = 320;
+const SH = 880;
+const NODES = [
+  { x: 160, y: 75 },
+  { x: 225, y: 250 },
+  { x: 95,  y: 425 },
+  { x: 230, y: 600 },
+  { x: 155, y: 775 },
+];
+const DECOS = [
+  { x: 100, y: 162 },
+  { x: 225, y: 338 },
+  { x: 100, y: 512 },
+  { x: 230, y: 688 },
+];
+
+const roadPath = `M${NODES[0].x} ${NODES[0].y} C${NODES[0].x + 55} ${NODES[0].y + 75}, ${NODES[1].x + 15} ${NODES[1].y - 75}, ${NODES[1].x} ${NODES[1].y} C${NODES[1].x - 50} ${NODES[1].y + 75}, ${NODES[2].x - 25} ${NODES[2].y - 75}, ${NODES[2].x} ${NODES[2].y} C${NODES[2].x + 55} ${NODES[2].y + 75}, ${NODES[3].x + 15} ${NODES[3].y - 75}, ${NODES[3].x} ${NODES[3].y} C${NODES[3].x - 40} ${NODES[3].y + 75}, ${NODES[4].x - 15} ${NODES[4].y - 75}, ${NODES[4].x} ${NODES[4].y}`;
+
+const MAT = {
+  done:    { top: '#10b981', side: '#047857', glow: 'rgba(16,185,129,0.3)', accent: '#059669' },
+  current: { top: '#f59e0b', side: '#b45309', glow: 'rgba(245,158,11,0.4)', accent: '#d97706' },
+  open:    { top: '#94a3b8', side: '#64748b', glow: 'rgba(100,116,139,0.12)', accent: '#475569' },
+};
+
+/* ── Road SVG ── */
+const RoadSVG = () => (
+  <svg viewBox={`0 0 ${SW} ${SH}`} className="w-full h-auto" preserveAspectRatio="xMidYMid meet">
+    <defs>
+      <filter id="road-shadow"><feGaussianBlur stdDeviation="3" /></filter>
+      <linearGradient id="road-surface" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stopColor="#e2d9c8" />
+        <stop offset="100%" stopColor="#d4c5a9" />
+      </linearGradient>
+    </defs>
+    {/* Road drop shadow */}
+    <path d={roadPath} stroke="rgba(0,0,0,0.07)" strokeWidth="62" fill="none" strokeLinecap="round" strokeLinejoin="round" filter="url(#road-shadow)" transform="translate(2,4)" />
+    {/* Road body */}
+    <path d={roadPath} stroke="#c8b894" strokeWidth="56" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+    {/* Road surface highlight */}
+    <path d={roadPath} stroke="url(#road-surface)" strokeWidth="48" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+    {/* Left edge subtle line */}
+    <path d={roadPath} stroke="#b8a882" strokeWidth="56" fill="none" strokeLinecap="round" strokeLinejoin="round" opacity="0.15" strokeDasharray="2 0" />
+    {/* Center dashed line */}
+    <path d={roadPath} stroke="#c4b494" strokeWidth="1.5" fill="none" strokeDasharray="10 14" opacity="0.4" strokeLinecap="round" />
+    {/* Small dots at node positions for subtle road markings */}
+    {NODES.map((n, i) => (
+      <circle key={i} cx={n.x} cy={n.y} r="32" fill="rgba(255,255,255,0.08)" />
+    ))}
+  </svg>
+);
+
+/* ── 3D Pedestal Node ── */
+const LessonNode = ({ index, state, onClick }) => {
+  const m = MAT[state];
+  const pos = NODES[index];
+  const isDone = state === 'done';
+  const isCur = state === 'current';
+
+  return (
+    <div className="absolute" style={{
+      left: `${(pos.x / SW) * 100}%`,
+      top: `${(pos.y / SH) * 100}%`,
+      transform: 'translate(-50%, -50%)',
+      zIndex: isCur ? 20 : 10,
+    }}>
+      {/* Pulse glow ring for current */}
+      {isCur && (
+        <div className="absolute animate-pulse-gold rounded-full" style={{
+          left: -14, top: -14, right: -14, bottom: -14,
+          background: `radial-gradient(circle, ${m.glow} 0%, transparent 70%)`,
+        }} />
+      )}
+      <button
+        onClick={onClick}
+        className="relative block transition-all duration-200 hover:-translate-y-2 hover:scale-105 active:translate-y-0.5 active:scale-95 cursor-pointer"
+        style={{ width: 72, height: 82 }}
+      >
+        <svg width="72" height="82" viewBox="0 0 72 82" fill="none">
+          {/* Contact shadow */}
+          <ellipse cx="36" cy="78" rx="28" ry="4" fill="#000" opacity="0.1" />
+          {/* Side extrusion */}
+          <path d={`M6,48 L6,58 Q6,64 18,66 L54,66 Q66,64 66,58 L66,48 Q66,42 54,40 L18,40 Q6,42 6,48Z`} fill={m.side} />
+          {/* Side highlight (left edge) */}
+          <path d="M6,48 L6,56 Q6,62 14,64 L14,44 Q6,44 6,48Z" fill="rgba(255,255,255,0.12)" />
+          {/* Top face */}
+          <rect x="4" y="28" width="64" height="22" rx="11" fill={m.top} />
+          {/* Top face — light overlay */}
+          <rect x="6" y="26" width="36" height="14" rx="7" fill="#fff" opacity="0.25" filter="url(#sf)" />
+          {/* Top face — shadow overlay */}
+          <rect x="30" y="36" width="34" height="16" rx="8" fill="#000" opacity="0.12" filter="url(#sf)" />
+          {/* Top edge highlight */}
+          <rect x="10" y="28" width="30" height="3" rx="1.5" fill="#fff" opacity="0.3" />
+          {/* Content */}
+          {isDone ? (
+            <g transform="translate(36,39)">
+              <path d="M-8,0 L-3,5 L8,-5" stroke="#fff" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+            </g>
+          ) : (
+            <text x="36" y="44" textAnchor="middle" fill="#fff" fontSize="17" fontWeight="700" fontFamily="Georgia,serif">{index + 1}</text>
+          )}
+        </svg>
+      </button>
+    </div>
+  );
+};
+
+/* ── Lesson label ── */
+const LessonLabel = ({ lesson, index, state, saved }) => {
+  const pos = NODES[index];
+  const isRight = pos.x > SW / 2;
+  const labelX = isRight ? pos.x - 105 : pos.x + 50;
+  const stColor = state === 'done' ? 'text-emerald-600' : state === 'current' ? 'text-amber-600' : 'text-gray-400';
+
+  return (
+    <div className="absolute pointer-events-none" style={{
+      left: `${(labelX / SW) * 100}%`,
+      top: `${(pos.y / SH) * 100}%`,
+      transform: 'translateY(-50%)',
+      width: 110,
+      textAlign: isRight ? 'right' : 'left',
+    }}>
+      <p className={`text-[10px] font-bold uppercase tracking-wide ${stColor}`}>Lesson {index + 1}</p>
+      <h3 className="font-bold text-xs leading-tight text-gray-800 mt-0.5" style={{ fontFamily: 'Georgia,serif' }}>{lesson.title}</h3>
+      <div className={`flex items-center gap-1 mt-0.5 ${isRight ? 'justify-end' : ''}`}>
+        <Clock className="w-3 h-3 text-gray-400" />
+        <span className="text-[10px] text-gray-400">{lesson.duration}</span>
+      </div>
+      {state === 'done' && <span className="text-[10px] font-semibold text-emerald-600">Completed</span>}
+      {saved && state !== 'done' && (
+        <span className="text-[9px] px-1.5 py-0.5 rounded-full font-medium bg-emerald-100 text-emerald-700 mt-0.5 inline-block">Continue</span>
+      )}
+    </div>
+  );
+};
+
+/* ── Decorative asset ── */
+const DecorativeAsset = ({ index }) => {
+  const pos = DECOS[index];
+  const Comp = DECO_COMPONENTS[index % DECO_COMPONENTS.length];
+  return (
+    <div className="absolute pointer-events-none" style={{
+      left: `${(pos.x / SW) * 100}%`,
+      top: `${(pos.y / SH) * 100}%`,
+      transform: 'translate(-50%, -50%)',
+      zIndex: 5,
+      opacity: 0.85,
+    }}>
+      <Comp size={36} />
+    </div>
+  );
+};
+
+/* ── Journey Scene ── */
+const JourneyScene = ({ lessons, getState, handleClick, loadProgress }) => (
+  <div className="relative mx-auto" style={{ width: '100%', maxWidth: SW, perspective: 800 }}>
+    <div style={{ transform: 'rotateX(3deg)', transformOrigin: 'center top' }}>
+      {/* Road layer */}
+      <RoadSVG />
+      {/* Overlay: nodes, labels, decorative objects */}
+      <div className="absolute inset-0">
+        {/* Decorative objects (behind nodes in z-order) */}
+        {DECOS.map((_, i) => <DecorativeAsset key={`d-${i}`} index={i} />)}
+        {/* Lesson nodes + labels */}
+        {lessons.map((lesson, i) => {
+          const st = getState(i);
+          const saved = !!loadProgress?.(lesson.id);
+          return (
+            <React.Fragment key={lesson.id}>
+              <LessonNode index={i} state={st} onClick={() => handleClick(lesson, i)} />
+              <LessonLabel lesson={lesson} index={i} state={st} saved={saved} />
+            </React.Fragment>
+          );
+        })}
+      </div>
+    </div>
+  </div>
+);
+
+/* ── Main component ── */
 const ModuleOverview = ({
   modules, completedLessons, loadProgress, onSelectLesson, onSelectModule, onBack, onHome,
 }) => {
@@ -176,6 +244,7 @@ const ModuleOverview = ({
   );
 };
 
+/* ── Module block ── */
 const ModuleBlock = ({ mod, mi, completedLessons, loadProgress, onSelectLesson, onSelectModule }) => {
   const lessons = mod.lessons || [];
   const isDone = (i) => !!completedLessons[`${mod.id}-lesson-${i}`];
@@ -204,10 +273,11 @@ const ModuleBlock = ({ mod, mi, completedLessons, loadProgress, onSelectLesson, 
       </div>
     </div>
   );
+
   const next = curIdx >= 0 ? lessons[curIdx] : null;
   return (
     <div>
-      <div className="text-center mb-8">
+      <div className="text-center mb-6">
         <span className="text-xs font-bold uppercase tracking-widest text-emerald-600/60">Module {mi + 1}</span>
         <h2 className="text-2xl font-bold text-gray-900 mt-1" style={{ fontFamily: 'Georgia,serif' }}>{mod.title}</h2>
         <p className="text-sm text-gray-500 mt-1">{mod.subtitle}</p>
@@ -217,61 +287,15 @@ const ModuleBlock = ({ mod, mi, completedLessons, loadProgress, onSelectLesson, 
           <span className="text-sm font-semibold text-gray-500">{doneCount}/{lessons.length}</span>
         </div>
       </div>
-      <div className="flex flex-col items-center gap-14">
-        {lessons.map((lesson, i) => {
-          const st = getState(i); const saved = !!loadProgress?.(lesson.id);
-          const off = TILE_OFFSETS[i % TILE_OFFSETS.length];
-          return (
-            <div key={lesson.id} className="flex items-end gap-5 w-full" style={{ paddingLeft: `${Math.max(0, off + 20)}px`, paddingRight: `${Math.max(0, -off + 20)}px` }}>
-              <DiamondTile i={i} st={st} onClick={() => handleClick(lesson, i)} />
-              <div className="flex-1 min-w-0 pb-3">
-                <p className={`text-xs font-bold uppercase tracking-wide ${st === 'done' ? 'text-emerald-600' : st === 'current' ? 'text-amber-600' : 'text-gray-500'}`}>Lesson {i + 1}</p>
-                <h3 className="font-bold text-base leading-snug text-gray-900 mt-0.5" style={{ fontFamily: 'Georgia,serif' }}>{lesson.title}</h3>
-                <div className="flex items-center gap-2 mt-1">
-                  <span className="text-xs flex items-center gap-1 text-gray-400"><Clock className="w-3.5 h-3.5" />{lesson.duration}</span>
-                  {st === 'done' && <span className="text-xs font-semibold text-emerald-600">Completed</span>}
-                  {saved && st !== 'done' && <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-emerald-100 text-emerald-700">Continue</span>}
-                </div>
-              </div>
-            </div>);
-        })}
-      </div>
+
+      <JourneyScene lessons={lessons} getState={getState} handleClick={handleClick} loadProgress={loadProgress} />
+
       {next && (
         <button onClick={() => { playClickSound(); onSelectLesson(next, curIdx); }}
           className="w-full mt-8 py-4 rounded-2xl text-white font-bold text-base shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-[0.97] transition-all flex items-center justify-center gap-2"
           style={{ background: 'linear-gradient(135deg, #059669, #0d9488)' }}>
           <Play className="w-5 h-5" fill="white" />{doneCount > 0 ? 'Continue Learning' : 'Start Learning'}
         </button>)}
-    </div>
-  );
-};
-
-const DiamondTile = ({ i, st, onClick }) => {
-  const isDone = st === 'done'; const isCur = st === 'current';
-  const Icon = LESSON_ICONS[i % LESSON_ICONS.length];
-  const bg = isDone ? 'linear-gradient(145deg, #059669 0%, #10b981 60%, #34d399 100%)'
-    : isCur ? 'linear-gradient(145deg, #d97706 0%, #f59e0b 60%, #fbbf24 100%)'
-    : 'linear-gradient(145deg, #6366f1 0%, #818cf8 60%, #a5b4fc 100%)';
-  const shadow = isDone ? '0 8px 0 #047857, 0 12px 24px rgba(5,150,105,0.35), inset 0 2px 4px rgba(255,255,255,0.3)'
-    : isCur ? '0 8px 0 #b45309, 0 12px 24px rgba(217,119,6,0.35), inset 0 2px 4px rgba(255,255,255,0.3)'
-    : '0 6px 0 #4338ca, 0 10px 18px rgba(99,102,241,0.25), inset 0 2px 4px rgba(255,255,255,0.2)';
-  const glow = isCur ? '0 8px 0 #b45309, 0 0 35px rgba(245,158,11,0.5), 0 0 70px rgba(245,158,11,0.2), inset 0 2px 4px rgba(255,255,255,0.3)' : shadow;
-
-  return (
-    <div className="relative flex-shrink-0" style={{ width: 88, height: 140 }}>
-      {isCur && <div className="absolute rounded-3xl animate-pulse-gold" style={{ left: -10, right: -10, bottom: -10, height: 108, background: 'radial-gradient(circle, rgba(245,158,11,0.25) 0%, transparent 70%)' }} />}
-      <button onClick={onClick}
-        className="absolute bottom-0 left-1/2 rounded-2xl cursor-pointer transition-all duration-200 hover:-translate-y-3 hover:scale-110 active:translate-y-1 active:scale-95"
-        style={{ width: 80, height: 80, marginLeft: -40, background: bg, boxShadow: isCur ? glow : shadow, transform: 'rotate(45deg)' }}>
-        <div className="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none">
-          <div style={{ position: 'absolute', top: 0, left: '-20%', width: '60%', height: '100%', background: 'linear-gradient(135deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 60%)' }} />
-        </div>
-      </button>
-      {!isDone && <div className="absolute pointer-events-none" style={{ bottom: 42, left: '50%', transform: 'translateX(-50%)', width: 48, height: 14, background: 'radial-gradient(ellipse, rgba(0,0,0,0.2) 0%, transparent 70%)', borderRadius: '50%' }} />}
-      <div className="absolute pointer-events-none" style={{ left: '50%', bottom: 36, transform: 'translateX(-50%)' }}>
-        {isDone ? <Check className="w-12 h-12 text-white" strokeWidth={3} style={{ filter: 'drop-shadow(0 3px 2px rgba(0,0,0,0.2))' }} />
-          : <Icon size={80} />}
-      </div>
     </div>
   );
 };
