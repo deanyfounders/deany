@@ -17,77 +17,86 @@ const PagePattern = () => (
   </svg>
 );
 
-/* ── Sculpted 3D Balance Scales ──
-   Chunky volumetric forms: radialGradient sphere, cylinder-wrap pillar,
-   deep bowls with curved walls, visible beam thickness. Designed to
-   render large (90px) and tower above its tile. */
-const ScalesIcon3D = ({ size = 90 }) => (
-  <svg width={size} height={size * 1.15} viewBox="0 0 64 74" fill="none" xmlns="http://www.w3.org/2000/svg">
+/* ── 3D Isometric Balance Scales ──
+   Drawn from a 3/4 view — every element has separate front, top, and
+   side-face polygons with distinct flat fills. The 3D comes from the
+   GEOMETRY (visible face planes), not from gradients on flat shapes.
+   Light source: top-left. */
+const ScalesIcon3D = ({ size = 80 }) => (
+  <svg width={size} height={size * 1.12} viewBox="0 0 80 90" fill="none" xmlns="http://www.w3.org/2000/svg">
     <defs>
-      <radialGradient id="s-sph" cx="36%" cy="30%" r="58%">
+      <radialGradient id="sc-sphere" cx="38%" cy="32%" r="55%">
         <stop offset="0%" stopColor="#fffbeb"/><stop offset="30%" stopColor="#fcd34d"/>
-        <stop offset="70%" stopColor="#d97706"/><stop offset="100%" stopColor="#7c2d12"/>
+        <stop offset="70%" stopColor="#b45309"/><stop offset="100%" stopColor="#7c2d12"/>
       </radialGradient>
-      <linearGradient id="s-cyl" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0%" stopColor="#fef3c7"/><stop offset="15%" stopColor="#fcd34d"/>
-        <stop offset="45%" stopColor="#f59e0b"/><stop offset="75%" stopColor="#b45309"/>
-        <stop offset="100%" stopColor="#7c2d12"/>
-      </linearGradient>
-      <linearGradient id="s-top" x1="0.2" y1="0" x2="0.8" y2="1">
-        <stop offset="0%" stopColor="#fef9c3"/><stop offset="100%" stopColor="#eab308"/>
-      </linearGradient>
-      <linearGradient id="s-fr" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stopColor="#d97706"/><stop offset="100%" stopColor="#7c2d12"/>
-      </linearGradient>
-      <radialGradient id="s-bowl" cx="40%" cy="35%" r="60%">
-        <stop offset="0%" stopColor="#fef3c7"/><stop offset="40%" stopColor="#fbbf24"/>
+      <radialGradient id="sc-concave" cx="42%" cy="36%" r="55%">
+        <stop offset="0%" stopColor="#fef3c7"/><stop offset="40%" stopColor="#eab308"/>
         <stop offset="100%" stopColor="#92400e"/>
       </radialGradient>
-      <linearGradient id="s-wall" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stopColor="#b45309"/><stop offset="100%" stopColor="#6d2810"/>
-      </linearGradient>
     </defs>
 
     {/* ── GROUND SHADOW ── */}
-    <ellipse cx="32" cy="71" rx="24" ry="3" fill="#000" opacity="0.12"/>
+    <ellipse cx="40" cy="87" rx="30" ry="3.5" fill="#000" opacity="0.12"/>
 
     {/* ── BASE PEDESTAL ── */}
-    <path d="M16,62 L16,66 Q16,70 32,70 Q48,70 48,66 L48,62 Q48,66 32,66 Q16,66 16,62Z" fill="url(#s-fr)"/>
-    <ellipse cx="32" cy="62" rx="16" ry="5" fill="url(#s-top)"/>
-    <ellipse cx="29" cy="61" rx="9" ry="2.5" fill="#fff" opacity="0.22"/>
+    <path d="M18,74 Q18,82 40,82 Q62,82 62,74 Q62,79 40,79 Q18,79 18,74Z" fill="#92400e"/>
+    <path d="M52,74 Q58,75.5 62,74 L62,79 Q58,80.5 52,79Z" fill="#7c2d12"/>
+    <ellipse cx="40" cy="74" rx="22" ry="6.5" fill="#eab308"/>
+    <ellipse cx="36" cy="73" rx="13" ry="3.5" fill="#fde68a" opacity="0.5"/>
+    <ellipse cx="33" cy="72.5" rx="7" ry="2" fill="#fff" opacity="0.22"/>
 
-    {/* ── CENTRAL PILLAR ── */}
-    <rect x="25" y="18" width="14" height="44" rx="6" fill="url(#s-cyl)"/>
-    <rect x="26" y="20" width="4" height="40" rx="2" fill="#fff" opacity="0.12"/>
+    {/* ── PILLAR — front + right side + top face ── */}
+    <polygon points="46,26 50,23 50,72 46,74" fill="#7c2d12"/>
+    <rect x="34" y="26" width="12" height="48" fill="#d97706"/>
+    <rect x="34" y="26" width="2.5" height="48" fill="#fcd34d" opacity="0.45"/>
+    <rect x="42" y="26" width="4" height="48" fill="#92400e" opacity="0.12"/>
+    <polygon points="34,26 38,23 50,23 46,26" fill="#fde68a"/>
+    <polygon points="34,26 38,23 50,23 46,26" fill="#fff" opacity="0.15"/>
 
-    {/* ── BEAM — top face + front face ── */}
-    <rect x="3" y="20" width="58" height="4" rx="2" fill="url(#s-fr)"/>
-    <rect x="3" y="14" width="58" height="7" rx="3.5" fill="url(#s-cyl)"/>
-    <rect x="6" y="14.5" width="34" height="3" rx="1.5" fill="#fff" opacity="0.2"/>
+    {/* ── BEAM — front + top + right end cap ── */}
+    <polygon points="72,22 76,18 76,24 72,28" fill="#7c2d12"/>
+    <polygon points="8,22 72,22 72,28 8,28" fill="#ca8a04"/>
+    <polygon points="8,22 12,18 76,18 72,22" fill="#fde68a"/>
+    <polygon points="10,19.5 44,19.5 42,21 8,21" fill="#fff" opacity="0.22"/>
+    <line x1="8" y1="28" x2="72" y2="28" stroke="#7c2d12" strokeWidth="0.8" opacity="0.3"/>
 
-    {/* ── LEFT CHAIN ── */}
-    <rect x="7" y="21" width="6" height="20" rx="3" fill="url(#s-cyl)"/>
-    <rect x="8" y="23" width="2.2" height="16" rx="1" fill="#fff" opacity="0.15"/>
+    {/* ── LEFT CHAIN — rod with side face ── */}
+    <polygon points="14,29 17,27 17,46 14,48" fill="#7c2d12"/>
+    <rect x="8" y="29" width="6" height="19" fill="#d97706"/>
+    <polygon points="8,29 11,27 17,27 14,29" fill="#fde68a"/>
+    <rect x="8.5" y="30" width="2" height="17" fill="#fcd34d" opacity="0.4"/>
 
-    {/* ── RIGHT CHAIN ── */}
-    <rect x="51" y="21" width="6" height="20" rx="3" fill="url(#s-cyl)"/>
-    <rect x="52" y="23" width="2.2" height="16" rx="1" fill="#fff" opacity="0.15"/>
+    {/* ── RIGHT CHAIN — rod with side face ── */}
+    <polygon points="72,29 75,27 75,46 72,48" fill="#7c2d12"/>
+    <rect x="66" y="29" width="6" height="19" fill="#d97706"/>
+    <polygon points="66,29 69,27 75,27 72,29" fill="#fde68a"/>
+    <rect x="66.5" y="30" width="2" height="17" fill="#fcd34d" opacity="0.4"/>
 
-    {/* ── LEFT PAN ── */}
-    <ellipse cx="10" cy="51" rx="9" ry="2" fill="#000" opacity="0.08"/>
-    <path d="M-1,42 Q-1,52 10,52 Q21,52 21,42 L19,42 Q18.5,49 10,49 Q1.5,49 1,42Z" fill="url(#s-wall)"/>
-    <ellipse cx="10" cy="42" rx="11" ry="4.2" fill="url(#s-bowl)"/>
-    <ellipse cx="8.5" cy="41" rx="6.5" ry="2.2" fill="#fff" opacity="0.18"/>
+    {/* ── LEFT PAN — bowl with wall + interior ── */}
+    <ellipse cx="11" cy="58" rx="11" ry="2.5" fill="#000" opacity="0.1"/>
+    <path d="M-2,49 Q-2,59 11,59 Q24,59 24,49 L22,49 Q21,56 11,56 Q1,56 0,49Z" fill="#92400e"/>
+    <path d="M18,49 Q22,50.5 24,49 L24,59 Q21,57 18,56Z" fill="#7c2d12" opacity="0.5"/>
+    <ellipse cx="11" cy="49" rx="13" ry="5" fill="url(#sc-concave)"/>
+    <ellipse cx="11" cy="50.5" rx="9" ry="3" fill="#92400e" opacity="0.1"/>
+    <ellipse cx="11" cy="48.5" rx="11.5" ry="4.2" fill="none" stroke="#fde68a" strokeWidth="1.2"/>
+    <ellipse cx="8" cy="48" rx="5.5" ry="2" fill="#fff" opacity="0.18"/>
 
-    {/* ── RIGHT PAN ── */}
-    <ellipse cx="54" cy="51" rx="9" ry="2" fill="#000" opacity="0.08"/>
-    <path d="M43,42 Q43,52 54,52 Q65,52 65,42 L63,42 Q62.5,49 54,49 Q45.5,49 45,42Z" fill="url(#s-wall)"/>
-    <ellipse cx="54" cy="42" rx="11" ry="4.2" fill="url(#s-bowl)"/>
-    <ellipse cx="52.5" cy="41" rx="6.5" ry="2.2" fill="#fff" opacity="0.18"/>
+    {/* ── RIGHT PAN — bowl with wall + interior ── */}
+    <ellipse cx="69" cy="58" rx="11" ry="2.5" fill="#000" opacity="0.1"/>
+    <path d="M56,49 Q56,59 69,59 Q82,59 82,49 L80,49 Q79,56 69,56 Q59,56 58,49Z" fill="#92400e"/>
+    <path d="M76,49 Q80,50.5 82,49 L82,59 Q79,57 76,56Z" fill="#7c2d12" opacity="0.5"/>
+    <ellipse cx="69" cy="49" rx="13" ry="5" fill="url(#sc-concave)"/>
+    <ellipse cx="69" cy="50.5" rx="9" ry="3" fill="#92400e" opacity="0.1"/>
+    <ellipse cx="69" cy="48.5" rx="11.5" ry="4.2" fill="none" stroke="#fde68a" strokeWidth="1.2"/>
+    <ellipse cx="66" cy="48" rx="5.5" ry="2" fill="#fff" opacity="0.18"/>
 
     {/* ── TOP SPHERE ── */}
-    <circle cx="32" cy="10" r="7.5" fill="url(#s-sph)"/>
-    <circle cx="29.5" cy="7.5" r="3" fill="#fff" opacity="0.4"/>
+    <circle cx="40" cy="13" r="8" fill="url(#sc-sphere)"/>
+    <circle cx="37" cy="10" r="3" fill="#fff" opacity="0.45"/>
+
+    {/* ── AMBIENT OCCLUSION ── */}
+    <ellipse cx="40" cy="74" rx="8" ry="2" fill="#000" opacity="0.06"/>
+    <rect x="36" y="25" width="8" height="3" fill="#000" opacity="0.04" rx="1"/>
   </svg>
 );
 
@@ -299,7 +308,7 @@ const DiamondTile = ({ i, st, onClick }) => {
       <div className="absolute pointer-events-none" style={{
         left: '50%', bottom: 36,
         transform: 'translateX(-50%)',
-        filter: 'drop-shadow(0 6px 3px rgba(0,0,0,0.4)) drop-shadow(0 12px 8px rgba(0,0,0,0.18))',
+        filter: 'drop-shadow(0 4px 2px rgba(0,0,0,0.2))',
       }}>
         {isDone ? (
           <Check className="w-12 h-12 text-white" strokeWidth={3} />
