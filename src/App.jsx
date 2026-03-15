@@ -411,7 +411,7 @@ const App = () => {
   };
   const goHome = () => { setScreen('home'); setSelectedMainTopic(null); setSelectedModule(null); setSelectedLesson(null); };
   const goModules = () => { setScreen('modules'); setSelectedModule(null); setSelectedLesson(null); };
-  const goLessons = () => { setScreen(selectedEpoch && selectedLevel ? 'history-lessons' : 'lessons'); setSelectedLesson(null); };
+  const goLessons = () => { setScreen(selectedEpoch && selectedLevel ? 'history-lessons' : selectedModule ? 'lessons' : 'modules'); setSelectedLesson(null); };
 
   const handleMC = (i) => { if (!showExplanation) setSelectedAnswer(i); };
   const submitMC = () => {
