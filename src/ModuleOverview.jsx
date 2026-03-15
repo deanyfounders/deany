@@ -177,12 +177,11 @@ const DiamondTile = ({ i, st, onClick }) => {
       ? 'linear-gradient(145deg, #d97706 0%, #f59e0b 60%, #fbbf24 100%)'
       : 'linear-gradient(145deg, #6366f1 0%, #818cf8 60%, #a5b4fc 100%)';
 
-  /* 3D extrusion: thick bottom edge + soft ambient + specular highlight */
   const shadow = isDone
-    ? '0 8px 0 #047857, 0 10px 24px rgba(5,150,105,0.35), inset 0 2px 4px rgba(255,255,255,0.3)'
+    ? '0 8px 0 #047857, 0 12px 24px rgba(5,150,105,0.35), inset 0 2px 4px rgba(255,255,255,0.3)'
     : isCur
-      ? '0 8px 0 #b45309, 0 10px 24px rgba(217,119,6,0.35), inset 0 2px 4px rgba(255,255,255,0.3)'
-      : '0 6px 0 #4338ca, 0 8px 18px rgba(99,102,241,0.25), inset 0 2px 4px rgba(255,255,255,0.2)';
+      ? '0 8px 0 #b45309, 0 12px 24px rgba(217,119,6,0.35), inset 0 2px 4px rgba(255,255,255,0.3)'
+      : '0 6px 0 #4338ca, 0 10px 18px rgba(99,102,241,0.25), inset 0 2px 4px rgba(255,255,255,0.2)';
 
   const glowShadow = isCur
     ? '0 8px 0 #b45309, 0 0 35px rgba(245,158,11,0.5), 0 0 70px rgba(245,158,11,0.2), inset 0 2px 4px rgba(255,255,255,0.3)'
@@ -196,23 +195,36 @@ const DiamondTile = ({ i, st, onClick }) => {
           background: 'radial-gradient(circle, rgba(245,158,11,0.25) 0%, transparent 70%)',
         }} />
       )}
+
+      {/* Diamond base tile */}
       <button onClick={onClick}
         className="w-full h-full rounded-2xl flex items-center justify-center cursor-pointer transition-all duration-200 hover:-translate-y-2 hover:scale-110 active:translate-y-1 active:scale-95"
-        style={{
-          background: bg,
-          boxShadow: isCur ? glowShadow : shadow,
-          transform: 'rotate(45deg)',
-        }}>
-        {/* 3D icon with text shadow depth */}
-        <span style={{
-          transform: 'rotate(-45deg)',
-          fontSize: 32,
-          filter: 'drop-shadow(0 3px 2px rgba(0,0,0,0.3)) drop-shadow(0 1px 1px rgba(0,0,0,0.2))',
-          lineHeight: 1,
-        }}>
-          {isDone ? <Check className="w-8 h-8 text-white" strokeWidth={3} style={{ filter: 'drop-shadow(0 2px 2px rgba(0,0,0,0.25))' }} /> : icon}
-        </span>
+        style={{ background: bg, boxShadow: isCur ? glowShadow : shadow, transform: 'rotate(45deg)' }}>
+        {/* Specular shine strip across tile */}
+        <div className="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none">
+          <div style={{
+            position: 'absolute', top: 0, left: '-20%', width: '60%', height: '100%',
+            background: 'linear-gradient(135deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 60%)',
+          }} />
+        </div>
       </button>
+
+      {/* 3D icon floating ABOVE the tile — like Chess.com pieces */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ transform: 'translateY(-10px)' }}>
+        {isDone ? (
+          <div style={{
+            filter: 'drop-shadow(0 4px 3px rgba(0,0,0,0.35)) drop-shadow(0 8px 6px rgba(0,0,0,0.15))',
+          }}>
+            <Check className="w-10 h-10 text-white" strokeWidth={3} />
+          </div>
+        ) : (
+          <span style={{
+            fontSize: 44,
+            lineHeight: 1,
+            filter: 'drop-shadow(0 4px 2px rgba(0,0,0,0.4)) drop-shadow(0 8px 5px rgba(0,0,0,0.2)) drop-shadow(0 12px 10px rgba(0,0,0,0.1))',
+          }}>{icon}</span>
+        )}
+      </div>
     </div>
   );
 };
