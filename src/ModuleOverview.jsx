@@ -17,63 +17,84 @@ const PagePattern = () => (
   </svg>
 );
 
-/* 3D Balance Scales SVG — built-in gradients for shading, highlights & extrusion */
-const ScalesIcon3D = ({ size = 44 }) => (
+/* ── Sculpted 3D Balance Scales ──
+   Every part is a volumetric form with visible thickness, curved-surface
+   shading (radialGradient for spheres, horizontal linearGradient for
+   cylinders), cast shadows, and specular highlights.
+   Modelled after Chess.com's 3D rendered piece aesthetic. */
+const ScalesIcon3D = ({ size = 48 }) => (
   <svg width={size} height={size} viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
     <defs>
-      {/* Main gold body gradient — light from top-left */}
-      <linearGradient id="sc-body" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stopColor="#fde68a"/>
-        <stop offset="40%" stopColor="#f59e0b"/>
-        <stop offset="100%" stopColor="#b45309"/>
-      </linearGradient>
-      {/* Specular highlight */}
-      <linearGradient id="sc-hi" x1="0.3" y1="0" x2="0.7" y2="1">
-        <stop offset="0%" stopColor="#fff" stopOpacity="0.6"/>
-        <stop offset="100%" stopColor="#fff" stopOpacity="0"/>
-      </linearGradient>
-      {/* Pan/bowl gradient */}
-      <linearGradient id="sc-pan" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stopColor="#fcd34d"/>
+      {/* Sphere — radial highlight top-left like a lit ball */}
+      <radialGradient id="s-sph" cx="38%" cy="32%" r="60%">
+        <stop offset="0%" stopColor="#fef9c3"/><stop offset="35%" stopColor="#fcd34d"/>
+        <stop offset="75%" stopColor="#d97706"/><stop offset="100%" stopColor="#92400e"/>
+      </radialGradient>
+      {/* Cylinder wrap — bright left face, dark right face */}
+      <linearGradient id="s-cyl" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stopColor="#fef3c7"/><stop offset="18%" stopColor="#fcd34d"/>
+        <stop offset="50%" stopColor="#f59e0b"/><stop offset="78%" stopColor="#d97706"/>
         <stop offset="100%" stopColor="#92400e"/>
       </linearGradient>
-      {/* Dark extrusion edge */}
-      <linearGradient id="sc-ext" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stopColor="#92400e"/>
-        <stop offset="100%" stopColor="#78350f"/>
+      {/* Top-lit surface */}
+      <linearGradient id="s-top" x1="0" y1="0" x2="0.4" y2="1">
+        <stop offset="0%" stopColor="#fef9c3"/><stop offset="100%" stopColor="#fbbf24"/>
+      </linearGradient>
+      {/* Front face — medium to dark */}
+      <linearGradient id="s-fr" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stopColor="#f59e0b"/><stop offset="100%" stopColor="#92400e"/>
+      </linearGradient>
+      {/* Bowl interior — radial for concave surface */}
+      <radialGradient id="s-bowl" cx="42%" cy="38%" r="60%">
+        <stop offset="0%" stopColor="#fef3c7"/><stop offset="45%" stopColor="#fcd34d"/>
+        <stop offset="100%" stopColor="#b45309"/>
+      </radialGradient>
+      {/* Bowl outer wall */}
+      <linearGradient id="s-wall" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stopColor="#d97706"/><stop offset="100%" stopColor="#78350f"/>
       </linearGradient>
     </defs>
-    {/* Base pedestal — extrusion layer first */}
-    <ellipse cx="32" cy="58" rx="14" ry="4" fill="url(#sc-ext)"/>
-    <ellipse cx="32" cy="56" rx="14" ry="4" fill="url(#sc-body)"/>
-    <ellipse cx="32" cy="56" rx="10" ry="2.5" fill="url(#sc-hi)" opacity="0.5"/>
-    {/* Central pillar */}
-    <rect x="29" y="20" width="6" height="36" rx="2" fill="url(#sc-body)"/>
-    <rect x="30" y="20" width="2.5" height="36" rx="1" fill="url(#sc-hi)" opacity="0.4"/>
-    {/* Pillar extrusion edge */}
-    <rect x="29" y="22" width="6" height="36" rx="2" fill="url(#sc-ext)" opacity="0.15"/>
-    {/* Top ornament sphere */}
-    <circle cx="32" cy="16" r="5" fill="url(#sc-body)"/>
-    <circle cx="30.5" cy="14.5" r="2" fill="url(#sc-hi)" opacity="0.6"/>
-    {/* Horizontal beam */}
-    <rect x="6" y="19" width="52" height="5" rx="2.5" fill="url(#sc-body)"/>
-    <rect x="6" y="19" width="52" height="2.5" rx="1.5" fill="url(#sc-hi)" opacity="0.35"/>
-    {/* Beam extrusion bottom */}
-    <rect x="6" y="22" width="52" height="2" rx="1" fill="url(#sc-ext)" opacity="0.3"/>
-    {/* Left chain */}
-    <line x1="12" y1="24" x2="12" y2="38" stroke="#d97706" strokeWidth="2" strokeLinecap="round"/>
-    <line x1="12" y1="24" x2="12" y2="38" stroke="url(#sc-hi)" strokeWidth="1" strokeLinecap="round" opacity="0.3"/>
-    {/* Right chain */}
-    <line x1="52" y1="24" x2="52" y2="38" stroke="#d97706" strokeWidth="2" strokeLinecap="round"/>
-    <line x1="52" y1="24" x2="52" y2="38" stroke="url(#sc-hi)" strokeWidth="1" strokeLinecap="round" opacity="0.3"/>
-    {/* Left pan — bowl shape */}
-    <ellipse cx="12" cy="42" rx="10" ry="3.5" fill="url(#sc-ext)"/>
-    <ellipse cx="12" cy="40" rx="10" ry="3.5" fill="url(#sc-pan)"/>
-    <ellipse cx="12" cy="39.5" rx="7" ry="2" fill="url(#sc-hi)" opacity="0.4"/>
-    {/* Right pan — bowl shape */}
-    <ellipse cx="52" cy="42" rx="10" ry="3.5" fill="url(#sc-ext)"/>
-    <ellipse cx="52" cy="40" rx="10" ry="3.5" fill="url(#sc-pan)"/>
-    <ellipse cx="52" cy="39.5" rx="7" ry="2" fill="url(#sc-hi)" opacity="0.4"/>
+
+    {/* ── Ground shadow ── */}
+    <ellipse cx="32" cy="60" rx="22" ry="3" fill="#000" opacity="0.1"/>
+
+    {/* ── BASE PEDESTAL — thick disc with visible side wall ── */}
+    <path d="M18,52 L18,55 Q18,59 32,59 Q46,59 46,55 L46,52 Q46,56 32,56 Q18,56 18,52Z" fill="url(#s-fr)"/>
+    <ellipse cx="32" cy="52" rx="14" ry="4.5" fill="url(#s-top)"/>
+    <ellipse cx="29" cy="51" rx="8" ry="2.2" fill="#fff" opacity="0.2"/>
+
+    {/* ── CENTRAL PILLAR — thick cylinder ── */}
+    <rect x="26" y="15" width="12" height="37" rx="5" fill="url(#s-cyl)"/>
+    <rect x="27" y="16" width="3.5" height="35" rx="1.5" fill="#fff" opacity="0.15"/>
+
+    {/* ── HORIZONTAL BEAM — top face + front face for depth ── */}
+    <rect x="4" y="17" width="56" height="3.5" rx="1.5" fill="url(#s-fr)"/>
+    <rect x="4" y="12" width="56" height="6" rx="3" fill="url(#s-cyl)"/>
+    <rect x="7" y="12.5" width="32" height="2.5" rx="1.2" fill="#fff" opacity="0.25"/>
+
+    {/* ── LEFT CHAIN — thick rod ── */}
+    <rect x="8" y="18" width="5" height="17" rx="2.5" fill="url(#s-cyl)"/>
+    <rect x="8.5" y="19" width="1.8" height="15" rx="0.9" fill="#fff" opacity="0.15"/>
+
+    {/* ── RIGHT CHAIN — thick rod ── */}
+    <rect x="51" y="18" width="5" height="17" rx="2.5" fill="url(#s-cyl)"/>
+    <rect x="51.5" y="19" width="1.8" height="15" rx="0.9" fill="#fff" opacity="0.15"/>
+
+    {/* ── LEFT PAN — 3D bowl with curved wall + interior ── */}
+    <ellipse cx="10.5" cy="44" rx="8" ry="1.5" fill="#000" opacity="0.08"/>
+    <path d="M0,36 Q0,45 10.5,45 Q21,45 21,36 L19.5,36 Q19,43 10.5,43 Q2,43 1.5,36Z" fill="url(#s-wall)"/>
+    <ellipse cx="10.5" cy="36" rx="10.5" ry="3.8" fill="url(#s-bowl)"/>
+    <ellipse cx="9" cy="35.2" rx="6" ry="2" fill="#fff" opacity="0.2"/>
+
+    {/* ── RIGHT PAN — 3D bowl ── */}
+    <ellipse cx="53.5" cy="44" rx="8" ry="1.5" fill="#000" opacity="0.08"/>
+    <path d="M43,36 Q43,45 53.5,45 Q64,45 64,36 L62.5,36 Q62,43 53.5,43 Q45,43 44.5,36Z" fill="url(#s-wall)"/>
+    <ellipse cx="53.5" cy="36" rx="10.5" ry="3.8" fill="url(#s-bowl)"/>
+    <ellipse cx="52" cy="35.2" rx="6" ry="2" fill="#fff" opacity="0.2"/>
+
+    {/* ── TOP SPHERE (FINIAL) — lit ball ── */}
+    <circle cx="32" cy="9" r="6.5" fill="url(#s-sph)"/>
+    <circle cx="30" cy="7" r="2.8" fill="#fff" opacity="0.45"/>
   </svg>
 );
 
