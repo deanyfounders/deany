@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { CheckCircle, XCircle, ArrowRight, Flame, Star, BookOpen, Clock, Target, GripVertical, Award, ChevronUp, ChevronDown } from 'lucide-react';
+import { CheckCircle, XCircle, ArrowRight, Flame, Star, BookOpen, Clock, Target, GripVertical, Award, ChevronUp, ChevronDown, ChevronLeft, Home } from 'lucide-react';
 
 // ================================================================
 // TOKENS
@@ -1638,7 +1638,7 @@ function QuestionCard({q, qNum, totalQ, onAnswer, onNext}){
 // ================================================================
 // MAIN APP
 // ================================================================
-export default function DEANY_HB1_L1(){
+export default function DEANY_HB1_L1({onBack, onHome}){
   const [screen,       setScreen]      = useState('intro');
   const [flowIdx,      setFlowIdx]     = useState(0);
   const [score,        setScore]       = useState(0);
@@ -1666,11 +1666,24 @@ export default function DEANY_HB1_L1(){
     else{ setScreen('complete'); setConfetti(true); setTimeout(()=>setConfetti(false),5000); }
   },[flowIdx]);
 
+  const goBack = onBack || (()=>{});
+  const goHome = onHome || (()=>{});
+
   // ── INTRO ──────────────────────────────────────────────────────
   if(screen==='intro') return(
     <div className="min-h-screen relative overflow-hidden" style={PAGE_BG}>
       <IslamicBg/><style>{STYLES}</style>
       <div className="relative z-10 max-w-2xl mx-auto px-4 py-10">
+        <div className="flex justify-between items-center mb-6">
+          <button onClick={goBack} className="flex items-center gap-1.5 text-sm font-medium" style={{color:C.mid}}
+            onMouseEnter={e=>e.currentTarget.style.color=C.navy} onMouseLeave={e=>e.currentTarget.style.color=C.mid}>
+            <ChevronLeft className="w-4 h-4"/><span>Back</span>
+          </button>
+          <button onClick={goHome} className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold text-white shadow-md"
+            style={{background:`linear-gradient(135deg,${C.teal},${C.navy})`}}>
+            <Home className="w-4 h-4"/><span>Home</span>
+          </button>
+        </div>
         <div className="text-center mb-8 su">
           <span className="inline-block px-4 py-1.5 rounded-full text-xs font-bold mb-3" style={{background:rgba(C.teal,0.1),color:C.teal,letterSpacing:'0.06em'}}>
             H-B1 · LESSON 1.1
@@ -1739,6 +1752,15 @@ export default function DEANY_HB1_L1(){
         <IslamicBg/><style>{STYLES}</style>
         {confetti&&<Confetti/>}
         <div className="relative z-10 max-w-2xl mx-auto px-4 py-10">
+          <div className="flex justify-between items-center mb-6">
+            <button onClick={goBack} className="flex items-center gap-1.5 text-sm font-medium" style={{color:C.mid}}>
+              <ChevronLeft className="w-4 h-4"/><span>Lessons</span>
+            </button>
+            <button onClick={goHome} className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold text-white shadow-md"
+              style={{background:`linear-gradient(135deg,${C.teal},${C.navy})`}}>
+              <Home className="w-4 h-4"/><span>Home</span>
+            </button>
+          </div>
           <div className="rounded-2xl p-8 border border-white/40 shadow-xl text-center su" style={CARD}>
             <div className="text-4xl mb-3">⛓️</div>
             <h1 className="text-2xl font-bold mb-1" style={{color:C.navy,fontFamily:'Georgia,serif'}}>Lesson Complete!</h1>
@@ -1821,8 +1843,13 @@ export default function DEANY_HB1_L1(){
       <div className="relative z-10 max-w-2xl mx-auto px-4 py-8">
         {/* Top bar */}
         <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center text-sm" style={{background:rgba(C.gold,0.15),color:C.gold}}>📜</div>
+          <div className="flex items-center gap-3">
+            <button onClick={goBack} className="flex items-center justify-center w-8 h-8 rounded-lg"
+              style={{background:rgba(C.navy,0.06)}}
+              onMouseEnter={e=>e.currentTarget.style.background=rgba(C.navy,0.12)}
+              onMouseLeave={e=>e.currentTarget.style.background=rgba(C.navy,0.06)}>
+              <ChevronLeft className="w-4 h-4" style={{color:C.navy}}/>
+            </button>
             <div>
               <div className="text-xs font-bold" style={{color:C.navy}}>Lesson H-B1.1</div>
               <div className="text-[10px]" style={{color:C.mid}}>Before Arabia: The Story of Humanity</div>

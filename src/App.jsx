@@ -633,11 +633,11 @@ const App = () => {
 
   // Islamic History standalone lessons
   if (screen === 'hb1-l1') {
-    return <DEANY_HB1_L1 />;
+    return <DEANY_HB1_L1 onBack={goLessons} onHome={goHome} />;
   }
 
   if (screen === 'hb1-l2') {
-    return <DEANY_HB1_L2 />;
+    return <DEANY_HB1_L2 onBack={goLessons} onHome={goHome} />;
   }
 
   // M1L2 check comes first so it doesn't fall into M1L1's block.
