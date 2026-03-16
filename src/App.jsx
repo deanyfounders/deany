@@ -4,6 +4,8 @@ import DEANY_M1L2 from "../DEANY_M1L2.jsx";
 import DEANY_M1L3 from "../DEANY_M1L3.jsx";
 import DEANY_M1L4 from "../DEANY_M1L4.jsx";
 import DEANY_M1L5 from "../DEANY_M1L5.jsx";
+import DEANY_HB1_L1 from './DEANY-HB1L1.jsx';
+import DEANY_HB1_L2 from './DEANY-HB1L2.jsx';
 import ModuleOverview from './ModuleOverview.jsx';
 import { 
   CheckCircle, XCircle, Star, Trophy, ArrowRight, Sparkles, BookOpen, Home, 
@@ -450,7 +452,11 @@ const App = () => {
   };
 
   const selectLvl = (l) => { setSelectedLevel(l); setScreen('history-lessons'); };
-  const selectHistLesson = (l) => { if (!l.questions.length) return; setSelectedLesson(l); resetQuiz(l.questions); setScreen('quiz'); };
+  const selectHistLesson = (l) => {
+    if (l.id === 'creation') { setSelectedLesson(l); setScreen('hb1-l1'); return; }
+    if (l.id === 'arabia-before-islam') { setSelectedLesson(l); setScreen('hb1-l2'); return; }
+    if (!l.questions.length) return; setSelectedLesson(l); resetQuiz(l.questions); setScreen('quiz');
+  };
   const selectLes = (l, i) => {
     if (l.id === 'lesson-1-1') { setSelectedLesson({...l, lessonIndex: i}); setScreen('lesson-component'); return; }
     if (l.id === 'lesson-1-2') { setSelectedLesson({...l, lessonIndex: i}); setScreen('lesson-component-2'); return; }
@@ -624,6 +630,16 @@ const App = () => {
   // SCREEN ROUTING — STANDALONE LESSON COMPONENTS
   // ═══════════════════════════════════════════════════════════════
   // FIX: These MUST be separate top-level checks, NOT nested.
+
+  // Islamic History standalone lessons
+  if (screen === 'hb1-l1') {
+    return <DEANY_HB1_L1 />;
+  }
+
+  if (screen === 'hb1-l2') {
+    return <DEANY_HB1_L2 />;
+  }
+
   // M1L2 check comes first so it doesn't fall into M1L1's block.
   if (screen === 'lesson-component-5') {
     return <DEANY_M1L5 onBack={goLessons} onHome={goHome} savedProgress={loadProgress('lesson-1-5')} />;
