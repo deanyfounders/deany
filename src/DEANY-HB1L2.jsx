@@ -200,58 +200,56 @@ function ArabiaDiagram({onActivate}){
   const DOTS=[0,1,2,3];
   const W=320,H=210;
 
-  // Arabian Peninsula — traced from real geography
-  // Wide at north (Jordan/Iraq border), tapers to Yemen in SW.
-  // Persian Gulf cuts in from NE. Oman horn protrudes at SE.
-  // Red Sea coast (west) is relatively straight NW→SE.
+  // Arabian Peninsula — lat/lon mapped to 320×210 SVG
+  // Projection: x = (lon-33)*10.5+8, y = (31.5-lat)*10.5+5
+  // Red Sea on left, Persian Gulf top-right. Oman horn SE.
   const peninsula = [
-    // -- WEST COAST (Red Sea) — straight-ish, NW to SW --
-    "M 68,16",              // NW: Aqaba / Sinai border
-    "L 62,32",              // Tabuk region
-    "L 56,52",              // North Hijaz
-    "L 50,72",              // Madinah latitude
-    "L 46,92",              // Jeddah latitude
-    "L 44,108",             // Makkah latitude
-    "L 42,128",             // South of Makkah
-    "L 44,148",             // Asir region
-    "L 52,168",             // Asir coast curves east
-    "L 66,182",             // Yemen highlands
-    // -- SOUTH COAST (Yemen → Oman) --
-    "L 82,192",             // Bab al-Mandab (SW tip)
-    "L 110,198",            // Aden
-    "L 145,194",            // Hadramawt coast
-    "L 185,186",            // Eastern Hadramawt
-    "L 220,174",            // Dhofar
-    "L 250,158",            // Toward Oman horn
-    // -- OMAN HORN (protrudes SE then curves NE) --
-    "L 270,142",            // Southern Oman
-    "L 284,120",            // Ras al-Hadd (SE tip)
-    "L 288,100",            // Oman NE coast
-    "L 282,82",             // Muscat area
-    // -- PERSIAN GULF COAST (clear indentation) --
-    "L 268,68",             // Strait of Hormuz / UAE
-    "L 252,56",             // Abu Dhabi / UAE coast
-    "L 236,50",             // Qatar base
-    "L 226,42",             // Qatar peninsula tip (indent)
-    "L 218,48",             // Bahrain / back from indent
-    "L 206,52",             // Eastern Saudi coast
-    "L 192,54",             // Dammam area
-    "L 178,50",             // Kuwait Bay area
-    "L 168,42",             // Kuwait
-    // -- NORTH COAST (Iraq border) --
-    "L 152,30",             // Southern Iraq
-    "L 130,22",             // Iraqi border
-    "L 100,16",             // Northern desert
-    "Z"                     // Close back to Aqaba
+    "M 30,22",     // Aqaba (29.5°N, 35°E)
+    "L 50,38",     // Tabuk coast
+    "L 62,54",     // Wejh
+    "L 70,68",     // Medina coast
+    "L 72,82",     // Yanbu
+    "L 70,98",     // Jeddah
+    "L 74,112",    // Makkah coast
+    "L 82,128",    // Lith
+    "L 98,146",    // Asir
+    "L 114,166",   // Yemen highlands
+    "L 118,182",   // Bab al-Mandab approach
+    "L 130,192",   // SW Yemen tip
+    "L 148,190",   // Aden
+    "L 170,178",   // Hadramawt W
+    "L 195,170",   // Hadramawt E
+    "L 222,154",   // Dhofar
+    "L 248,136",   // S Oman
+    "L 268,114",   // Ras al-Hadd approach
+    "L 280,94",    // Ras al-Hadd (SE tip)
+    "L 274,82",    // Muscat
+    "L 260,72",    // Gulf of Oman coast
+    "L 248,66",    // Fujairah / UAE east
+    "L 236,64",    // Dubai
+    "L 224,70",    // Abu Dhabi
+    "L 212,66",    // Toward Qatar
+    "L 200,58",    // Qatar east base
+    "L 196,48",    // Qatar tip (protrudes)
+    "L 190,58",    // Qatar west base
+    "L 182,52",    // Bahrain
+    "L 176,42",    // Dammam
+    "L 170,32",    // Jubail
+    "L 162,24",    // Kuwait
+    "L 152,16",    // Basra area
+    "L 128,12",    // Iraq border
+    "L 100,14",    // N desert
+    "L 72,18",     // Jordan border
+    "Z"
   ].join(" ");
 
-  // Key coordinates — match real geography on the map
-  const makkah   = {x:50,  y:108}; // West coast, Hijaz
-  const madinah  = {x:56,  y:72};  // North of Makkah
-  const yemenPt  = {x:90,  y:194}; // Yemen (SW)
-  const syriaDir = {x:66,  y:6};   // Syria direction (north, off map)
-  const pgulf    = {x:282, y:82};  // Persian Gulf coast (east)
-  const redSea   = {x:26,  y:108}; // Red Sea (west, off map)
+  // City coordinates (match the peninsula path positions)
+  const makkah   = {x:76,  y:112}; // Hijaz coast
+  const madinah  = {x:74,  y:70};  // North of Makkah
+  const yemenPt  = {x:130, y:192}; // Yemen SW
+  const syriaDir = {x:50,  y:4};   // Syria (off map north)
+  const pgulf    = {x:274, y:82};  // Muscat / Gulf coast
+  const redSea   = {x:36,  y:112}; // Red Sea (off map west)
 
   // Route path strings
   const nsRoute = `M${yemenPt.x},${yemenPt.y} L${makkah.x},${makkah.y} L${syriaDir.x},${syriaDir.y}`;
@@ -268,39 +266,81 @@ function ArabiaDiagram({onActivate}){
         </div>
         <svg viewBox={`0 0 ${W} ${H}`} width="100%" style={{display:'block'}}>
 
-          {/* Ocean background  -  subtle blue-grey */}
-          <rect x="0" y="0" width={W} height={H} fill="rgba(190,215,235,0.3)"/>
+          {/* Ocean background */}
+          <rect x="0" y="0" width={W} height={H} fill="rgba(185,215,238,0.35)"/>
 
-          {/* Red Sea — narrow strip west of peninsula */}
-          <path d="M 28,8 L 38,16 L 34,40 L 30,65 L 26,90 L 24,115 L 28,140 L 34,160 L 44,175 L 58,185 L 66,182 L 52,168 L 44,148 L 42,128 L 44,108 L 46,92 L 50,72 L 56,52 L 62,32 L 68,16 Z"
-            fill="rgba(160,200,230,0.45)"/>
+          {/* Red Sea — clear narrow channel west of Hijaz coast */}
+          <path d={[
+            "M 0,0 L 30,22",           // NW corner to Aqaba
+            "L 50,38 L 62,54 L 70,68", // follows peninsula west coast
+            "L 72,82 L 70,98 L 74,112",
+            "L 82,128 L 98,146",
+            "L 114,166 L 118,182 L 130,192", // down to Yemen
+            "L 110,200 L 80,200",       // south edge
+            "L 50,180 L 30,150",        // Africa east coast (approximate)
+            "L 16,120 L 8,90",
+            "L 4,60 L 0,30 Z"          // back to NW
+          ].join(" ")}
+            fill="rgba(140,190,225,0.5)"/>
 
-          {/* Persian Gulf — indent from NE */}
-          <path d="M 168,42 L 178,50 L 192,54 L 206,52 L 218,48 L 226,42 L 236,50 L 252,56 L 268,68 L 282,82 L 298,72 L 290,52 L 272,38 L 248,28 L 224,24 L 200,28 L 180,32 Z"
-            fill="rgba(160,200,230,0.45)"/>
+          {/* Persian Gulf — prominent narrow channel NE of peninsula */}
+          <path d={[
+            "M 162,24",                 // Kuwait
+            "L 170,32 L 176,42",        // peninsula gulf coast
+            "L 182,52 L 190,58",
+            "L 196,48 L 200,58",        // around Qatar
+            "L 212,66 L 224,70",
+            "L 236,64 L 248,66",        // UAE coast
+            "L 260,72 L 274,82",        // to Strait of Hormuz
+            "L 290,72",                 // Iran side of strait
+            "L 296,52 L 288,32",        // Iran southern coast
+            "L 270,18 L 244,10",
+            "L 218,8 L 192,12",         // Iran coast continuing
+            "L 170,14 L 152,16",        // to Basra
+            "L 162,24 Z"               // close
+          ].join(" ")}
+            fill="rgba(140,190,225,0.5)"/>
 
-          {/* Peninsula fill */}
-          <path d={peninsula} fill={rgba(C.sand,0.55)} stroke={rgba(C.navy,0.22)} strokeWidth="1.2" strokeLinejoin="round"/>
+          {/* Hint of Africa/Egypt on far left */}
+          <path d="M 0,30 L 4,60 L 8,90 L 16,120 L 30,150 L 50,180 L 80,200 L 0,200 Z"
+            fill={rgba(C.sand,0.25)} stroke="none"/>
 
-          {/* Region labels  -  step 0 always visible */}
-          <text x="56" y="96" textAnchor="middle" fontSize="8" fontWeight="600"
-            fill={rgba(C.navy,0.5)} fontFamily="system-ui,sans-serif">HIJAZ</text>
-          <text x="155" y="105" textAnchor="middle" fontSize="8" fontWeight="600"
-            fill={rgba(C.navy,0.4)} fontFamily="system-ui,sans-serif">NAJD</text>
-          <text x="95" y="180" textAnchor="middle" fontSize="7.5" fontWeight="600"
-            fill={rgba(C.navy,0.4)} fontFamily="system-ui,sans-serif">YEMEN</text>
-          <text x="258" y="134" textAnchor="middle" fontSize="7" fontWeight="600"
-            fill={rgba(C.navy,0.3)} fontFamily="system-ui,sans-serif">OMAN</text>
+          {/* Hint of Iran on far right */}
+          <path d="M 290,72 L 296,52 L 288,32 L 270,18 L 244,10 L 218,8 L 192,12 L 170,14 L 152,16 L 128,12 L 100,14 L 72,18 L 30,22 L 0,0 L 320,0 L 320,82 Z"
+            fill={rgba(C.sand,0.2)} stroke="none"/>
 
-          {/* Red Sea label */}
-          <text x="24" y="110" textAnchor="middle" fontSize="7" fill={rgba(C.teal,0.55)}
-            fontFamily="system-ui,sans-serif" transform="rotate(-90,24,110)">RED SEA</text>
+          {/* Peninsula fill — on top */}
+          <path d={peninsula} fill={rgba(C.sand,0.65)} stroke={rgba(C.navy,0.25)} strokeWidth="1.2" strokeLinejoin="round"/>
+
+          {/* Water body labels */}
+          <text x="30" y="110" textAnchor="middle" fontSize="7" fill={rgba(C.teal,0.7)}
+            fontFamily="system-ui,sans-serif" fontStyle="italic"
+            transform="rotate(-70,30,110)">Red Sea</text>
 
           {/* Persian Gulf label  -  step 2+ */}
           {step>=2&&(
-            <text x="225" y="36" textAnchor="middle" fontSize="6.5" fill={rgba(C.teal,0.5)}
-              fontFamily="system-ui,sans-serif" style={{animation:'fadeIn 0.4s ease both'}}>PERSIAN GULF</text>
+            <text x="230" y="30" textAnchor="middle" fontSize="7" fill={rgba(C.teal,0.65)}
+              fontFamily="system-ui,sans-serif" fontStyle="italic"
+              style={{animation:'fadeIn 0.4s ease both'}}>Persian Gulf</text>
           )}
+
+          {/* Region labels on the peninsula */}
+          <text x="82" y="96" textAnchor="middle" fontSize="8" fontWeight="600"
+            fill={rgba(C.navy,0.5)} fontFamily="system-ui,sans-serif">HIJAZ</text>
+          <text x="158" y="108" textAnchor="middle" fontSize="8" fontWeight="600"
+            fill={rgba(C.navy,0.35)} fontFamily="system-ui,sans-serif">NAJD</text>
+          <text x="120" y="178" textAnchor="middle" fontSize="7.5" fontWeight="600"
+            fill={rgba(C.navy,0.4)} fontFamily="system-ui,sans-serif">YEMEN</text>
+          <text x="255" y="120" textAnchor="middle" fontSize="7" fontWeight="600"
+            fill={rgba(C.navy,0.3)} fontFamily="system-ui,sans-serif">OMAN</text>
+
+          {/* Surrounding region hints */}
+          <text x="14" y="70" textAnchor="middle" fontSize="6.5" fontWeight="600"
+            fill={rgba(C.navy,0.18)} fontFamily="system-ui,sans-serif">EGYPT</text>
+          <text x="290" y="20" textAnchor="middle" fontSize="6.5" fontWeight="600"
+            fill={rgba(C.navy,0.18)} fontFamily="system-ui,sans-serif">IRAN</text>
+          <text x="82" y="14" textAnchor="middle" fontSize="6.5" fontWeight="600"
+            fill={rgba(C.navy,0.18)} fontFamily="system-ui,sans-serif">SYRIA</text>
 
           {/* Makkah dot  -  always present */}
           <circle cx={makkah.x} cy={makkah.y} r={step>=3?8:5}
