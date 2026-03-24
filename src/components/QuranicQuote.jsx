@@ -15,49 +15,47 @@ function getSessionQuote() {
   return quranicQuotes[idx];
 }
 
-const QuranicQuote = ({ glass = '', className = '' }) => {
+const QuranicQuote = ({ className = '' }) => {
   const quote = useMemo(getSessionQuote, []);
   const [showTafseer, setShowTafseer] = useState(false);
 
   return (
-    <div className={`${glass} rounded-2xl p-6 sm:p-8 text-center ${className}`}>
-      {/* Arabic — the centrepiece */}
-      <p className="font-arabic text-xl sm:text-2xl leading-loose text-gray-900 mb-3" dir="rtl" style={{ fontFamily: 'Georgia, serif' }}>
-        ❝ {quote.arabic} ❞
+    <div className={`max-w-md mx-auto text-center ${className}`}>
+      {/* Arabic */}
+      <p className="font-arabic text-lg sm:text-xl leading-loose text-gray-700" dir="rtl">
+        {quote.arabic}
       </p>
 
-      {/* Transliteration */}
-      <p className="text-sm italic text-gray-400 mb-3">
-        {quote.transliteration}
-      </p>
-
-      {/* Translation */}
-      <p className="text-sm sm:text-base font-medium text-gray-700 leading-relaxed max-w-lg mx-auto mb-2">
+      {/* Translation — serves as the page subtitle */}
+      <p className="text-sm sm:text-base text-gray-500 leading-relaxed mt-1.5">
         "{quote.translation}"
       </p>
 
-      {/* Reference */}
-      <p className="text-[11px] font-semibold uppercase tracking-widest mb-1" style={{ color: '#b45309' }}>
-        {quote.reference}
-      </p>
+      {/* Reference + tafseer toggle on one line */}
+      <div className="flex items-center justify-center gap-2 mt-2">
+        <span className="text-[11px] font-medium uppercase tracking-wide text-gray-400">
+          {quote.reference}
+        </span>
+        <span className="text-gray-300">·</span>
+        <button
+          onClick={() => setShowTafseer(prev => !prev)}
+          className="inline-flex items-center gap-0.5 text-[11px] font-medium text-gray-400
+            hover:text-gray-600 transition-colors duration-200
+            focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 rounded"
+        >
+          Tafseer
+          {showTafseer
+            ? <ChevronUp className="w-3 h-3" />
+            : <ChevronDown className="w-3 h-3" />}
+        </button>
+      </div>
 
-      {/* Tafseer toggle */}
-      <button
-        onClick={() => setShowTafseer(prev => !prev)}
-        className="mt-3 inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium
-          text-gray-400 hover:text-gray-600 hover:bg-white/50
-          transition-all duration-200
-          focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2"
-      >
-        Tafseer
-        {showTafseer
-          ? <ChevronUp className="w-3 h-3" />
-          : <ChevronDown className="w-3 h-3" />}
-      </button>
-
-      {/* Tafseer panel */}
+      {/* Tafseer panel — subtle expand */}
       {showTafseer && (
-        <div className="mt-4 bg-white/50 backdrop-blur-sm rounded-xl p-4 sm:p-5 text-left border border-white/60 animate-fade-in">
+        <div className="mt-4 bg-white/50 backdrop-blur-sm rounded-xl p-4 sm:p-5 text-left border border-white/60 animate-fade-in max-w-lg mx-auto">
+          <p className="text-xs italic text-gray-400 mb-2">
+            {quote.transliteration}
+          </p>
           <p className="text-sm leading-relaxed text-gray-600">
             {quote.tafseer}
           </p>

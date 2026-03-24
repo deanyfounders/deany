@@ -693,7 +693,7 @@ const App = () => {
             <h1 className="text-4xl sm:text-6xl font-bold text-gray-900 leading-[1.1]" style={{fontFamily:"Georgia,serif"}}>
               Learn Islam
             </h1>
-            <p className="text-base text-gray-500 max-w-md mx-auto">Interactive lessons, gamified learning, and a supportive journey through Islamic knowledge.</p>
+            <QuranicQuote />
             <div className={`${glass} rounded-xl p-4 max-w-xs mx-auto`}>
               <div className="flex items-center justify-between mb-2"><div className="flex items-center gap-1.5"><div className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold" style={{background:'linear-gradient(135deg,#059669,#0d9488)'}}>{level}</div><span className="text-xs font-bold text-gray-800">Level {level}</span></div><span className="text-[10px] text-gray-400">{xp}/{xpNext} XP</span></div>
               <div className="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden"><div className="h-2.5 rounded-full transition-all duration-700" style={{width:`${Math.max(xpPct,3)}%`,background:'linear-gradient(90deg,#10b981,#14b8a6,#06b6d4)'}}/></div>
@@ -713,7 +713,6 @@ const App = () => {
                 <p className="text-gray-400 text-[10px] text-center mt-0.5">-- Fulus</p>
               </div>
             </div>
-            <QuranicQuote glass={glass} className="mt-6" />
           </div>
         </section>
 
