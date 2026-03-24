@@ -713,11 +713,8 @@ const App = () => {
                 <p className="text-gray-400 text-[10px] text-center mt-0.5">-- Fulus</p>
               </div>
             </div>
+            <QuranicQuote glass={glass} className="mt-6" />
           </div>
-        </section>
-
-        <section className="max-w-3xl mx-auto px-4 pb-6">
-          <QuranicQuote />
         </section>
 
         <section className="max-w-3xl mx-auto px-4 pb-10">
