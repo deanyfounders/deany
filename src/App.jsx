@@ -7,6 +7,7 @@ import DEANY_M1L5 from "../DEANY_M1L5.jsx";
 import DEANY_HB1_L1 from './DEANY-HB1L1.jsx';
 import DEANY_HB1_L2 from './DEANY-HB1L2.jsx';
 import ModuleOverview from './ModuleOverview.jsx';
+import QuranicQuote from './components/QuranicQuote.jsx';
 import { 
   CheckCircle, XCircle, Star, Trophy, ArrowRight, Sparkles, BookOpen, Home, 
   Lightbulb, Award, Menu, X, ChevronLeft, Flame, Zap, Target,
@@ -179,46 +180,49 @@ const App = () => {
         const ctx = getCtx();
         const t = ctx.currentTime;
 
-        // Noise burst — the "click" body
-        const bufLen = Math.floor(ctx.sampleRate * 0.04);
-        const buf = ctx.createBuffer(1, bufLen, ctx.sampleRate);
-        const data = buf.getChannelData(0);
-        for (let i = 0; i < bufLen; i++) data[i] = (Math.random() * 2 - 1) * 0.6;
-        const noise = ctx.createBufferSource();
-        noise.buffer = buf;
+        // Layer 1 — Sharp "click" transient (switch actuating)
+        const clickLen = Math.floor(ctx.sampleRate * 0.012);
+        const clickBuf = ctx.createBuffer(1, clickLen, ctx.sampleRate);
+        const clickData = clickBuf.getChannelData(0);
+        for (let i = 0; i < clickLen; i++) clickData[i] = (Math.random() * 2 - 1);
+        const clickSrc = ctx.createBufferSource();
+        clickSrc.buffer = clickBuf;
+        const clickBp = ctx.createBiquadFilter();
+        clickBp.type = 'bandpass'; clickBp.frequency.value = 6500; clickBp.Q.value = 2.0;
+        const clickEnv = ctx.createGain();
+        clickEnv.gain.setValueAtTime(0.22, t);
+        clickEnv.gain.exponentialRampToValueAtTime(0.001, t + 0.015);
+        clickSrc.connect(clickBp).connect(clickEnv).connect(ctx.destination);
+        clickSrc.start(t); clickSrc.stop(t + 0.02);
 
-        // Bandpass filter — mechanical resonance
-        const bp = ctx.createBiquadFilter();
-        bp.type = 'bandpass';
-        bp.frequency.value = 3800;
-        bp.Q.value = 1.2;
+        // Layer 2 — Plate "thock" (key bottoming out on metal plate)
+        const thockLen = Math.floor(ctx.sampleRate * 0.06);
+        const thockBuf = ctx.createBuffer(1, thockLen, ctx.sampleRate);
+        const thockData = thockBuf.getChannelData(0);
+        for (let i = 0; i < thockLen; i++) thockData[i] = (Math.random() * 2 - 1);
+        const thockSrc = ctx.createBufferSource();
+        thockSrc.buffer = thockBuf;
+        const thockBp = ctx.createBiquadFilter();
+        thockBp.type = 'bandpass'; thockBp.frequency.value = 2200; thockBp.Q.value = 0.8;
+        const thockHp = ctx.createBiquadFilter();
+        thockHp.type = 'highpass'; thockHp.frequency.value = 800;
+        const thockEnv = ctx.createGain();
+        thockEnv.gain.setValueAtTime(0, t);
+        thockEnv.gain.linearRampToValueAtTime(0.14, t + 0.002);
+        thockEnv.gain.exponentialRampToValueAtTime(0.001, t + 0.055);
+        thockSrc.connect(thockBp).connect(thockHp).connect(thockEnv).connect(ctx.destination);
+        thockSrc.start(t + 0.001); thockSrc.stop(t + 0.065);
 
-        // High-pass to remove muddiness
-        const hp = ctx.createBiquadFilter();
-        hp.type = 'highpass';
-        hp.frequency.value = 1200;
-
-        // Envelope — sharp attack, quick decay
-        const env = ctx.createGain();
-        env.gain.setValueAtTime(0, t);
-        env.gain.linearRampToValueAtTime(0.18, t + 0.003);
-        env.gain.exponentialRampToValueAtTime(0.001, t + 0.045);
-
-        noise.connect(bp).connect(hp).connect(env).connect(ctx.destination);
-        noise.start(t);
-        noise.stop(t + 0.05);
-
-        // Tiny "thock" undertone
+        // Layer 3 — Low "clack" resonance (keycap hitting housing)
         const osc = ctx.createOscillator();
-        const oscGain = ctx.createGain();
-        osc.type = 'square';
-        osc.frequency.setValueAtTime(420, t);
-        osc.frequency.exponentialRampToValueAtTime(120, t + 0.025);
-        oscGain.gain.setValueAtTime(0.06, t);
-        oscGain.gain.exponentialRampToValueAtTime(0.001, t + 0.03);
-        osc.connect(oscGain).connect(ctx.destination);
-        osc.start(t);
-        osc.stop(t + 0.035);
+        const oscEnv = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(320, t);
+        osc.frequency.exponentialRampToValueAtTime(80, t + 0.035);
+        oscEnv.gain.setValueAtTime(0.08, t + 0.001);
+        oscEnv.gain.exponentialRampToValueAtTime(0.001, t + 0.04);
+        osc.connect(oscEnv).connect(ctx.destination);
+        osc.start(t + 0.001); osc.stop(t + 0.05);
       } catch (_) {}
     };
 
@@ -397,7 +401,7 @@ const App = () => {
         id: 'e1-beginner', name: "Beginner",
         lessons: [
         {
-          id: 'creation', title: "How Allah Created the World", subtitle: "Understanding creation's purpose", icon: "🌍", color: "#0284c7", difficulty: "Beginner", estimatedTime: "8 min",
+          id: 'creation', title: "Before Arabia: The Story of Humanity", subtitle: "Creation, purpose & the prophetic chain", icon: "🌍", color: "#0284c7", difficulty: "Beginner", estimatedTime: "8 min",
           conceptCards: [
             { title: "Why start with creation?", text: "When we learn Islamic history, we don't begin with ancient kingdoms or tribes -- we begin before humans, with how Allah created the world. This matters because Islam teaches that the universe isn't random or accidental. It was made on purpose, with wisdom, by the One who controls everything.\n\nThe Qur'an says Allah created the heavens and the earth in six \"days\" -- not days like we count, but stages that show order, planning, and power. Creation is intentional, not chaotic." },
             { title: "Humanity's purpose", text: "With Adam and Hawwa, human history starts. Humans aren't placed on earth as an afterthought. They are given dignity, the ability to choose, and responsibility to live by guidance.\n\nThe unseen world -- like angels who obey Allah and jinn who choose like humans -- reminds us that reality is bigger than what our eyes see. What we do matters, even when no one else sees it." },
@@ -410,10 +414,10 @@ const App = () => {
             { question: "Islamic history follows a clear meaning-based flow. Fill in the blanks to complete the correct sequence:", type: "drag-drop", sentence: "Creation → ___ → ___ → Accountability", wordBank: ["Human responsibility on earth", "Prophetic guidance over time", "Random chance", "Worldly success"], correct: ["Human responsibility on earth", "Prophetic guidance over time"], explanation: "This sequence captures the Islamic meaning of history: Allah creates with purpose → humans are given responsibility → Allah sends guidance through prophets → people are accountable." }
           ]
         },
-        { id: 'prophets', title: "Line of Prophets", subtitle: "One message across time", icon: "👥", color: "#0284c7", difficulty: "Beginner", estimatedTime: "10 min", conceptCards: [], questions: [] },
-        { id: 'prophet-messenger', title: "Prophet vs Messenger", subtitle: "Understanding their roles", icon: "📯", color: "#0284c7", difficulty: "Beginner", estimatedTime: "9 min", conceptCards: [], questions: [] },
-        { id: 'arabia-before-islam', title: "Arabia Before Islam", subtitle: "Geography and society", icon: "🏜️", color: "#0284c7", difficulty: "Beginner", estimatedTime: "8 min", conceptCards: [], questions: [] },
-        { id: 'faiths-in-arabia', title: "Faiths in Arabia", subtitle: "Religious diversity before Islam", icon: "🕊️", color: "#0284c7", difficulty: "Beginner", estimatedTime: "9 min", conceptCards: [], questions: [] }
+        { id: 'arabia-before-islam', title: "The Land and Its People", subtitle: "Geography, trade routes & tribal society", icon: "🏜️", color: "#0284c7", difficulty: "Beginner", estimatedTime: "8 min", conceptCards: [], questions: [] },
+        { id: 'jahiliyyah', title: "Jahiliyyah: Life Without Revelation", subtitle: "Pre-Islamic customs & beliefs", icon: "🌑", color: "#0284c7", difficulty: "Beginner", estimatedTime: "9 min", conceptCards: [], questions: [] },
+        { id: 'quraysh', title: "The Quraysh: Arabia's Most Powerful Tribe", subtitle: "Makkah's guardians & power brokers", icon: "👑", color: "#0284c7", difficulty: "Beginner", estimatedTime: "10 min", conceptCards: [], questions: [] },
+        { id: 'muhammad-before-message', title: "Muhammad \uFDFA: The Man Before the Message", subtitle: "Character, trade & the path to revelation", icon: "🕊️", color: "#0284c7", difficulty: "Beginner", estimatedTime: "9 min", conceptCards: [], questions: [] }
         ]
       },
       { id: 'e1-int', name: "Intermediate", locked: false },
@@ -687,7 +691,7 @@ const App = () => {
           <div className="max-w-2xl mx-auto text-center space-y-5">
             <div className="inline-flex items-center gap-1.5 bg-white/50 backdrop-blur-sm px-3 py-1 rounded-full border border-emerald-200/50 text-xs font-medium text-gray-500"><Target className="w-3 h-3 text-emerald-600" />Daily Goal: 35/50 XP</div>
             <h1 className="text-4xl sm:text-6xl font-bold text-gray-900 leading-[1.1]" style={{fontFamily:"Georgia,serif"}}>
-              Learn Islam,{' '}<span style={{background:'linear-gradient(135deg,#059669,#0d9488,#0284c7)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>beautifully</span>
+              Learn Islam
             </h1>
             <p className="text-base text-gray-500 max-w-md mx-auto">Interactive lessons, gamified learning, and a supportive journey through Islamic knowledge.</p>
             <div className={`${glass} rounded-xl p-4 max-w-xs mx-auto`}>
@@ -710,6 +714,10 @@ const App = () => {
               </div>
             </div>
           </div>
+        </section>
+
+        <section className="max-w-3xl mx-auto px-4 pb-6">
+          <QuranicQuote />
         </section>
 
         <section className="max-w-3xl mx-auto px-4 pb-10">

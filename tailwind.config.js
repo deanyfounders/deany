@@ -21,6 +21,7 @@ export default {
           border:      '#E8E4DF',
           error:       '#C53030',
           'error-light':'#FEF2F2',
+          'gold-tint': '#FFF8E7',
         },
       },
       fontFamily: {
