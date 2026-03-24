@@ -20,28 +20,29 @@ const QuranicQuote = ({ className = '' }) => {
   const [showTafseer, setShowTafseer] = useState(false);
 
   return (
-    <div className={`max-w-md mx-auto text-center ${className}`}>
+    <div className={`max-w-md mx-auto text-center pt-2 ${className}`}>
       {/* Arabic */}
-      <p className="font-arabic text-lg sm:text-xl leading-loose text-gray-700" dir="rtl">
+      <p className="font-arabic text-xl sm:text-2xl leading-loose text-gray-800" dir="rtl">
         {quote.arabic}
       </p>
 
-      {/* Translation — serves as the page subtitle */}
-      <p className="text-sm sm:text-base text-gray-500 leading-relaxed mt-1.5">
+      {/* Translation */}
+      <p className="text-sm sm:text-base text-gray-600 leading-relaxed mt-2" style={{ fontFamily: 'Georgia, serif' }}>
         "{quote.translation}"
       </p>
 
-      {/* Reference + tafseer toggle on one line */}
-      <div className="flex items-center justify-center gap-2 mt-2">
-        <span className="text-[11px] font-medium uppercase tracking-wide text-gray-400">
+      {/* Reference + tafseer toggle */}
+      <div className="flex items-center justify-center gap-2.5 mt-3">
+        <span className="text-[11px] font-semibold uppercase tracking-widest" style={{ color: '#b45309' }}>
           {quote.reference}
         </span>
         <span className="text-gray-300">·</span>
         <button
           onClick={() => setShowTafseer(prev => !prev)}
-          className="inline-flex items-center gap-0.5 text-[11px] font-medium text-gray-400
-            hover:text-gray-600 transition-colors duration-200
-            focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 rounded"
+          className="inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wide
+            transition-colors duration-200 rounded
+            focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2"
+          style={{ color: '#059669' }}
         >
           Tafseer
           {showTafseer
@@ -50,7 +51,7 @@ const QuranicQuote = ({ className = '' }) => {
         </button>
       </div>
 
-      {/* Tafseer panel — subtle expand */}
+      {/* Tafseer panel */}
       {showTafseer && (
         <div className="mt-4 bg-white/50 backdrop-blur-sm rounded-xl p-4 sm:p-5 text-left border border-white/60 animate-fade-in max-w-lg mx-auto">
           <p className="text-xs italic text-gray-400 mb-2">
