@@ -78,20 +78,30 @@ const QuranicQuote = ({ variant = 'hero', className = '' }) => {
     );
   }
 
-  // variant === 'hero' (legacy centered layout)
+  // variant === 'hero' (centered layout with ornamental dividers)
+  const OrnamentalDivider = () => (
+    <div className="flex items-center gap-3 my-4">
+      <div className="flex-1 h-px bg-deany-border" />
+      <span className="text-deany-gold text-xs">✦</span>
+      <div className="flex-1 h-px bg-deany-border" />
+    </div>
+  );
+
   return (
     <div className={`max-w-md mx-auto text-center pt-2 ${className}`}>
+      <OrnamentalDivider />
+
       <span className="text-[10px] font-bold uppercase tracking-widest text-deany-sage">
         {isAyah ? "Today's Verse" : "Today's Hadith"}
       </span>
 
       {item.arabic && (
-        <p className="font-arabic text-xl sm:text-2xl leading-loose text-deany-navy mt-2" dir="rtl">
+        <p className="font-arabic text-2xl sm:text-3xl leading-loose text-deany-navy mt-3" dir="rtl">
           {item.arabic}
         </p>
       )}
 
-      <p className="text-sm sm:text-base text-deany-steel leading-relaxed mt-2" style={{ fontFamily: 'Georgia, serif' }}>
+      <p className="text-sm sm:text-base text-deany-steel leading-relaxed mt-3" style={{ fontFamily: 'Georgia, serif' }}>
         &ldquo;{item.translation}&rdquo;
       </p>
 
@@ -122,10 +132,10 @@ const QuranicQuote = ({ variant = 'hero', className = '' }) => {
       {/* Collapsible panel */}
       <div
         className={`transition-all duration-300 ease-out overflow-hidden ${
-          showDetail && hasDetail ? 'max-h-[400px] opacity-100 mt-4' : 'max-h-0 opacity-0'
+          showDetail && hasDetail ? 'max-h-[500px] opacity-100 mt-4' : 'max-h-0 opacity-0'
         }`}
       >
-        <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 sm:p-5 border border-white/60 max-w-lg mx-auto">
+        <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 sm:p-5 border border-white/60 max-w-lg mx-auto overflow-y-auto max-h-[460px]">
           {isAyah && item.tafseer ? (
             <>
               {item.transliteration && (
@@ -138,6 +148,8 @@ const QuranicQuote = ({ variant = 'hero', className = '' }) => {
           )}
         </div>
       </div>
+
+      <OrnamentalDivider />
     </div>
   );
 };
