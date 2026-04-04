@@ -3,13 +3,13 @@ import React from 'react';
 function TafseerSegment({ segment }) {
   if (segment.type === 'highlight') {
     return (
-      <div className="border-l-4 border-teal-500 pl-4 mb-3 bg-teal-50/80 rounded-r-lg py-2.5 pr-3">
+      <div className="border-l-4 border-deany-sage pl-4 mb-3 bg-deany-sage-light rounded-r-lg py-2.5 pr-3">
         {segment.label && (
-          <span className="text-[10px] font-bold uppercase tracking-widest text-teal-600 block mb-1">
+          <span className="text-[10px] font-bold uppercase tracking-widest text-deany-sage block mb-1">
             {segment.label}
           </span>
         )}
-        <p className="text-sm text-teal-900 font-medium leading-relaxed">{segment.text}</p>
+        <p className="text-sm text-deany-navy font-medium leading-relaxed">{segment.text}</p>
       </div>
     );
   }
@@ -22,21 +22,21 @@ function TafseerSegment({ segment }) {
     );
   }
   // type === 'body' (default)
-  return <p className="text-sm text-gray-600 leading-relaxed mb-3">{segment.text}</p>;
+  return <p className="text-sm text-deany-steel leading-relaxed mb-3">{segment.text}</p>;
 }
 
 export default function TafseerPanel({ tafseer }) {
   // Backward compat: plain string tafseer
   if (typeof tafseer === 'string') {
-    return <p className="text-sm leading-relaxed text-gray-600">{tafseer}</p>;
+    return <p className="text-sm leading-relaxed text-deany-steel">{tafseer}</p>;
   }
 
   return (
     <div className="text-left">
       {tafseer.scholars.map((scholar, i) => (
-        <div key={i} className={i > 0 ? 'mt-4 pt-4 border-t border-gray-200/50' : ''}>
+        <div key={i} className={i > 0 ? 'mt-4 pt-4 border-t border-deany-border' : ''}>
           {scholar.segments.map((seg, j) => <TafseerSegment key={j} segment={seg} />)}
-          <p className="text-[11px] text-gray-400 font-medium">
+          <p className="text-[11px] text-deany-muted font-medium">
             {scholar.name} &middot; <span className="italic">{scholar.source}</span>
           </p>
         </div>
