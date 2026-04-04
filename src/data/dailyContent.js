@@ -384,9 +384,11 @@ export const DAILY_CONTENT = [
 ];
 
 // Helper — pick today's item deterministically (cycles by day of year)
+const AYAHS_ONLY = DAILY_CONTENT.filter(item => item.type === 'ayah');
+
 export function getTodayContent() {
   const now = new Date();
   const start = new Date(now.getFullYear(), 0, 0);
   const dayOfYear = Math.floor((now - start) / 86400000);
-  return DAILY_CONTENT[dayOfYear % DAILY_CONTENT.length];
+  return AYAHS_ONLY[dayOfYear % AYAHS_ONLY.length];
 }

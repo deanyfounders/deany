@@ -694,22 +694,12 @@ const App = () => {
         </nav>
 
         <section className="relative max-w-5xl mx-auto px-4 pt-10 pb-6 md:pt-16">
-          {/* Mobile: Ayah card above hero */}
-          <div className="md:hidden mb-6">
-            <QuranicQuote variant="sidebar" />
-          </div>
-
-          <div className="md:grid md:grid-cols-[1fr_340px] md:gap-x-8">
-            {/* Row 1: Heading spans full width, centered */}
-            <div className="md:col-span-2 text-center space-y-5 mb-5">
-              <div className="inline-flex items-center gap-1.5 bg-white/50 backdrop-blur-sm px-3 py-1 rounded-full border border-emerald-200/50 text-xs font-medium text-gray-500"><Target className="w-3 h-3 text-emerald-600" />Daily Goal: 35/50 XP</div>
-              <h1 className="text-4xl sm:text-6xl font-bold text-gray-900 leading-[1.1]" style={{fontFamily:"Georgia,serif"}}>
-                Learn Islam
-              </h1>
-            </div>
-
-            {/* Row 2: CTA spans full width, centered */}
-            <div className="md:col-span-2 text-center mb-6">
+          <div className="max-w-2xl mx-auto text-center space-y-5">
+            <div className="inline-flex items-center gap-1.5 bg-white/50 backdrop-blur-sm px-3 py-1 rounded-full border border-emerald-200/50 text-xs font-medium text-gray-500"><Target className="w-3 h-3 text-emerald-600" />Daily Goal: 35/50 XP</div>
+            <h1 className="text-4xl sm:text-6xl font-bold text-gray-900 leading-[1.1]" style={{fontFamily:"Georgia,serif"}}>
+              Learn Islam
+            </h1>
+            <div className="pt-2">
               <button onClick={() => lastSelectedTopicId ? selectMainTopic(lastSelectedTopicId) : document.getElementById('paths')?.scrollIntoView({behavior:'smooth'})}
                 className="group inline-flex items-center gap-2.5 px-8 py-4 rounded-xl text-lg font-bold text-white shadow-xl transition-all hover:shadow-emerald-500/25 hover:-translate-y-0.5"
                 style={{background:'linear-gradient(135deg,#059669,#0d9488)'}}>
@@ -717,26 +707,26 @@ const App = () => {
                 <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
               </button>
             </div>
-
-            {/* Row 3 left: XP bar + mascot */}
-            <div className="text-center space-y-4 flex flex-col items-center">
-              <div className={`${glass} rounded-xl p-4 max-w-xs w-full`}>
-                <div className="flex items-center justify-between mb-2"><div className="flex items-center gap-1.5"><div className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold" style={{background:'linear-gradient(135deg,#059669,#0d9488)'}}>{level}</div><span className="text-xs font-bold text-gray-800">Level {level}</span></div><span className="text-[10px] text-gray-400">{xp}/{xpNext} XP</span></div>
-                <div className="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden"><div className="h-2.5 rounded-full transition-all duration-700" style={{width:`${Math.max(xpPct,3)}%`,background:'linear-gradient(90deg,#10b981,#14b8a6,#06b6d4)'}}/></div>
-              </div>
-              <div className="max-w-xs w-full pt-2">
-                <div className={`${glass} rounded-xl p-4 relative`} style={{borderColor:'rgba(16,185,129,0.15)'}}>
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2"><Mascot size="sm" /></div>
-                  <p className="pt-3 text-emerald-700 font-semibold text-xs text-center" style={{fontFamily:"Georgia,serif"}}>"As-salamu alaykum! Ready to learn today?"</p>
-                  <p className="text-gray-400 text-[10px] text-center mt-0.5">-- Fulus</p>
-                </div>
+            <div className="max-w-xs mx-auto pt-4">
+              <div className={`${glass} rounded-xl p-4 relative`} style={{borderColor:'rgba(16,185,129,0.15)'}}>
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2"><Mascot size="sm" /></div>
+                <p className="pt-3 text-emerald-700 font-semibold text-xs text-center" style={{fontFamily:"Georgia,serif"}}>"As-salamu alaykum! Ready to learn today?"</p>
+                <p className="text-gray-400 text-[10px] text-center mt-0.5">-- Fulus</p>
               </div>
             </div>
+          </div>
+        </section>
 
-            {/* Row 3 right: Ayah card (desktop only) */}
-            <div className="hidden md:block">
-              <QuranicQuote variant="sidebar" />
-            </div>
+        {/* Ayah of the Day — standalone section */}
+        <section className="max-w-2xl mx-auto px-4 pb-8">
+          <QuranicQuote />
+        </section>
+
+        {/* XP Progress */}
+        <section className="max-w-xs mx-auto px-4 pb-6">
+          <div className={`${glass} rounded-xl p-4`}>
+            <div className="flex items-center justify-between mb-2"><div className="flex items-center gap-1.5"><div className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold" style={{background:'linear-gradient(135deg,#059669,#0d9488)'}}>{level}</div><span className="text-xs font-bold text-gray-800">Level {level}</span></div><span className="text-[10px] text-gray-400">{xp}/{xpNext} XP</span></div>
+            <div className="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden"><div className="h-2.5 rounded-full transition-all duration-700" style={{width:`${Math.max(xpPct,3)}%`,background:'linear-gradient(90deg,#10b981,#14b8a6,#06b6d4)'}}/></div>
           </div>
         </section>
 
