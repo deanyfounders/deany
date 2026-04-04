@@ -6,8 +6,8 @@ import DEANY_M1L4 from "../DEANY_M1L4.jsx";
 import DEANY_M1L5 from "../DEANY_M1L5.jsx";
 import DEANY_HB1_L1 from './DEANY-HB1L1.jsx';
 import DEANY_HB1_L2 from './DEANY-HB1L2.jsx';
-import DEANYPrayerVis from './DEANY-PRAYER-VIS.jsx';
 import ModuleOverview from './ModuleOverview.jsx';
+import DEANYPrayerVis from './DEANY-PRAYER-VIS.jsx';
 import QuranicQuote from './components/QuranicQuote.jsx';
 import { 
   CheckCircle, XCircle, Star, Trophy, ArrowRight, Sparkles, BookOpen, Home, 
@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 
 // ---- Shared Components --------------------------------------------
-const IslamicPattern = ({ opacity = 0.03, color = "#1A2332" }) => (
+const IslamicPattern = ({ opacity = 0.035, color = "#065f46" }) => (
   <svg className="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
     <defs>
       <pattern id="geo" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
@@ -33,7 +33,8 @@ const IslamicPattern = ({ opacity = 0.03, color = "#1A2332" }) => (
 const Mascot = ({ size = 'md', className = "" }) => {
   const s = { sm: 'w-10 h-10 text-xl', md: 'w-14 h-14 text-3xl', lg: 'w-20 h-20 text-5xl' };
   return (
-    <div className={`${s[size]} rounded-full bg-deany-gold-light flex items-center justify-center shadow-sm border border-deany-gold/20 ${className}`}>
+    <div className={`${s[size]} rounded-full flex items-center justify-center shadow-lg ${className}`}
+      style={{ background: 'linear-gradient(135deg, #f59e0b, #ea580c)', boxShadow: '0 6px 24px rgba(245,158,11,0.3)' }}>
       <span>🪙</span>
     </div>
   );
@@ -41,10 +42,10 @@ const Mascot = ({ size = 'md', className = "" }) => {
 
 const NavHeader = ({ onBack, onHome, backLabel = "Back" }) => (
   <div className="flex justify-between items-center mb-6">
-    <button onClick={onBack} className="flex items-center gap-1.5 text-deany-steel hover:text-deany-navy transition-colors duration-200 text-sm font-medium">
+    <button onClick={onBack} className="flex items-center gap-1.5 text-gray-600 hover:text-emerald-700 transition-colors text-sm font-medium">
       <ChevronLeft className="w-4 h-4" /><span>{backLabel}</span>
     </button>
-    <button onClick={onHome} className="flex items-center gap-1.5 bg-deany-gold text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-sm hover:brightness-105 active:brightness-95 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-deany-gold focus-visible:ring-offset-2">
+    <button onClick={onHome} className="flex items-center gap-1.5 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all" style={{background: 'linear-gradient(135deg, #059669, #0d9488)'}}>
       <Home className="w-4 h-4" /><span>Home</span>
     </button>
   </div>
@@ -62,9 +63,9 @@ const Confetti = () => (
 );
 
 // ---- Styles ------------------------------------------------------
-const pageBg = { background: '#FAF8F5' };
-const glass = "bg-white/80 backdrop-blur-xl border border-deany-border shadow-sm";
-const glassHover = `${glass} transition-all duration-200 hover:shadow-md hover:-translate-y-0.5`;
+const pageBg = { background: 'linear-gradient(150deg, #f0fdf4 0%, #ecfdf5 30%, #f0f9ff 60%, #fefce8 100%)' };
+const glass = "bg-white/70 backdrop-blur-xl border border-white/40 shadow-lg";
+const glassHover = `${glass} transition-all duration-300 hover:shadow-xl hover:-translate-y-1`;
 
 // ---- Glossary (Islamic History) ----------------------------------
 const GLOSSARY_ENTRIES = [
@@ -644,10 +645,6 @@ const App = () => {
     return <DEANY_HB1_L2 onBack={goLessons} onHome={goHome} />;
   }
 
-  if (screen === 'prayer-vis') {
-    return <DEANYPrayerVis onBack={goHome} onHome={goHome} />;
-  }
-
   // M1L2 check comes first so it doesn't fall into M1L1's block.
   if (screen === 'lesson-component-5') {
     return <DEANY_M1L5 onBack={goLessons} onHome={goHome} savedProgress={loadProgress('lesson-1-5')} />;
@@ -669,122 +666,98 @@ const App = () => {
     return <DEANY_M1L1 onBack={goLessons} onHome={goHome} savedProgress={loadProgress('lesson-1-1')} />;
   }
 
+  if (screen === 'prayer-vis') {
+    return <DEANYPrayerVis onBack={goHome} onHome={goHome} />;
+  }
+
   // ═══════════════════════════════════════════════════════════════
   // HOME
   // ═══════════════════════════════════════════════════════════════
   if (screen == 'home') {
     const xpNext = level * 100, xpPct = (xp / xpNext) * 100;
-    const lessonsCompleted = Object.keys(completedLessons).length;
     return (
-      <div className="min-h-screen relative overflow-hidden bg-deany-cream">
+      <div className="min-h-screen relative overflow-hidden" style={pageBg}>
         <IslamicPattern />
-        {/* Navigation */}
-        <nav className="sticky top-0 z-40 bg-white/80 backdrop-blur-2xl border-b border-deany-border shadow-sm">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 flex justify-between items-center h-14">
+        <nav className="sticky top-0 z-40 bg-white/60 backdrop-blur-2xl border-b border-emerald-100/50 shadow-sm">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 flex justify-between items-center h-14">
             <div className="flex items-center gap-2.5">
               <Mascot size="sm" />
-              <div>
-                <span className="text-lg font-semibold tracking-tight text-deany-navy">Deany</span>
-                <div className="text-[10px] text-deany-muted">Learn Islam Beautifully</div>
-              </div>
+              <div><span className="text-lg font-bold tracking-tight" style={{fontFamily:"Georgia,serif",color:'#065f46'}}>Deany</span><div className="text-[10px] text-emerald-600/60" style={{fontFamily:"Georgia,serif"}}>Learn Islam Beautifully</div></div>
             </div>
             <div className="flex items-center gap-2">
-              <div className="hidden sm:flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-deany-gold-light border border-deany-gold/20 text-deany-navy">
-                <Flame className="w-3.5 h-3.5 text-deany-gold" />{dailyStreak} day streak
-              </div>
+              <div className="hidden sm:flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold" style={{background:'linear-gradient(135deg,#fef3c7,#fed7aa)',border:'1px solid #fbbf24',color:'#b45309'}}><Flame className="w-3.5 h-3.5" />{dailyStreak}</div>
+              <div className="hidden sm:flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold" style={{background:'linear-gradient(135deg,#fef9c3,#fef08a)',border:'1px solid #facc15',color:'#a16207'}}>🪙 {coins}</div>
+              <div className="hidden md:flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold" style={{background:'linear-gradient(135deg,#d1fae5,#a7f3d0)',border:'1px solid #34d399',color:'#047857'}}><Trophy className="w-3.5 h-3.5" />Lvl {level}</div>
             </div>
           </div>
         </nav>
 
-        {/* Hero */}
         <section className="relative max-w-5xl mx-auto px-4 pt-10 pb-6 md:pt-16">
-          <div className="max-w-2xl mx-auto text-center space-y-6">
-            <h1 className="text-3xl sm:text-5xl font-semibold text-deany-navy leading-[1.15]">
+          <div className="max-w-2xl mx-auto text-center space-y-5">
+            <div className="inline-flex items-center gap-1.5 bg-white/50 backdrop-blur-sm px-3 py-1 rounded-full border border-emerald-200/50 text-xs font-medium text-gray-500"><Target className="w-3 h-3 text-emerald-600" />Daily Goal: 35/50 XP</div>
+            <h1 className="text-4xl sm:text-6xl font-bold text-gray-900 leading-[1.1]" style={{fontFamily:"Georgia,serif"}}>
               Learn Islam
             </h1>
             <QuranicQuote />
+            <div className={`${glass} rounded-xl p-4 max-w-xs mx-auto`}>
+              <div className="flex items-center justify-between mb-2"><div className="flex items-center gap-1.5"><div className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold" style={{background:'linear-gradient(135deg,#059669,#0d9488)'}}>{level}</div><span className="text-xs font-bold text-gray-800">Level {level}</span></div><span className="text-[10px] text-gray-400">{xp}/{xpNext} XP</span></div>
+              <div className="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden"><div className="h-2.5 rounded-full transition-all duration-700" style={{width:`${Math.max(xpPct,3)}%`,background:'linear-gradient(90deg,#10b981,#14b8a6,#06b6d4)'}}/></div>
+            </div>
             <div className="pt-2">
               <button onClick={() => lastSelectedTopicId ? selectMainTopic(lastSelectedTopicId) : document.getElementById('paths')?.scrollIntoView({behavior:'smooth'})}
-                className="group inline-flex items-center gap-2.5 bg-deany-gold text-white px-8 py-4 rounded-xl text-lg font-medium shadow-sm transition-all duration-200 hover:brightness-105 hover:-translate-y-0.5 active:brightness-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-deany-gold focus-visible:ring-offset-2">
+                className="group inline-flex items-center gap-2.5 px-8 py-4 rounded-xl text-lg font-bold text-white shadow-xl transition-all hover:shadow-emerald-500/25 hover:-translate-y-0.5"
+                style={{background:'linear-gradient(135deg,#059669,#0d9488)'}}>
                 {lastSelectedTopicId ? <><Play className="w-5 h-5" />Continue Learning</> : <><BookOpen className="w-5 h-5" />Choose Your Path</>}
                 <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
               </button>
             </div>
-            {/* Fulus greeting */}
-            <div className="max-w-xs mx-auto pt-2">
-              <div className="bg-deany-cream rounded-2xl p-4 border border-deany-border shadow-sm relative">
+            <div className="max-w-xs mx-auto pt-4">
+              <div className={`${glass} rounded-xl p-4 relative`} style={{borderColor:'rgba(16,185,129,0.15)'}}>
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2"><Mascot size="sm" /></div>
-                <p className="pt-3 text-deany-navy font-medium text-xs text-center">As-salamu alaykum! Ready to learn today?</p>
-                <p className="text-deany-muted text-[10px] text-center mt-0.5">-- Fulus</p>
+                <p className="pt-3 text-emerald-700 font-semibold text-xs text-center" style={{fontFamily:"Georgia,serif"}}>"As-salamu alaykum! Ready to learn today?"</p>
+                <p className="text-gray-400 text-[10px] text-center mt-0.5">-- Fulus</p>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Progress summary */}
-        <section className="max-w-md mx-auto px-4 pb-10">
-          <div className="bg-white rounded-2xl p-5 border border-deany-border shadow-sm space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-medium uppercase tracking-wide text-deany-muted">Your Progress</span>
-              <span className="text-xs text-deany-muted">Level {level}</span>
-            </div>
-            <div className="w-full h-1.5 bg-deany-border rounded-full">
-              <div className="h-full bg-deany-gold rounded-full transition-all duration-300 ease-out" style={{width:`${Math.max(xpPct,3)}%`}} />
-            </div>
-            <div className="grid grid-cols-3 gap-3">
-              <div className="text-center">
-                <div className="text-xl font-semibold text-deany-navy">{lessonsCompleted}</div>
-                <div className="text-[10px] text-deany-muted font-medium mt-0.5">Lessons</div>
+        <section className="max-w-3xl mx-auto px-4 pb-10">
+          <div className="grid grid-cols-4 gap-2.5">
+            {[{l:'Points',v:totalPoints,c:'#b45309',bg:'from-amber-50 to-orange-50',bc:'#fbbf24'},{l:'Streak',v:`🔥 ${dailyStreak}`,c:'#c2410c',bg:'from-red-50 to-orange-50',bc:'#f97316'},{l:'Coins',v:`🪙 ${coins}`,c:'#a16207',bg:'from-yellow-50 to-amber-50',bc:'#eab308'},{l:'Level',v:level,c:'#047857',bg:'from-emerald-50 to-teal-50',bc:'#10b981'}].map((s,i) => (
+              <div key={i} className={`bg-gradient-to-br ${s.bg} rounded-xl p-3.5 text-center border hover:shadow-md transition-all`} style={{borderColor:s.bc+'30'}}>
+                <div className="text-lg font-bold" style={{color:s.c}}>{s.v}</div>
+                <div className="text-[10px] text-gray-500 font-medium mt-0.5">{s.l}</div>
               </div>
-              <div className="text-center">
-                <div className="text-xl font-semibold text-deany-navy">{dailyStreak}</div>
-                <div className="text-[10px] text-deany-muted font-medium mt-0.5">Day Streak</div>
-              </div>
-              <div className="text-center">
-                <div className="text-xl font-semibold text-deany-navy">{totalPoints}</div>
-                <div className="text-[10px] text-deany-muted font-medium mt-0.5">Points</div>
-              </div>
-            </div>
+            ))}
           </div>
         </section>
 
-        {/* Learning Paths */}
-        <section id="paths" className="relative py-12">
+        <section id="paths" className="relative py-12" style={{background:'linear-gradient(180deg,transparent,rgba(255,255,255,0.4),transparent)'}}>
           <div className="max-w-5xl mx-auto px-4">
-            <h2 className="text-xl font-semibold text-deany-navy mb-2 text-center">Learning Paths</h2>
-            <p className="text-deany-steel text-sm text-center mb-8 max-w-md mx-auto leading-relaxed">Curated journeys through Islamic knowledge</p>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2 text-center" style={{fontFamily:"Georgia,serif"}}>Learning Paths</h2>
+            <p className="text-gray-500 text-sm text-center mb-8 max-w-md mx-auto">Curated journeys through Islamic knowledge</p>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               {mainTopics.map(t => (
-                <button key={t.id} onClick={() => selectMainTopic(t.id)}
-                  className="group bg-white rounded-2xl p-5 text-center border border-deany-border shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-deany-gold focus-visible:ring-offset-2">
-                  <div className={`w-14 h-14 mx-auto mb-3 rounded-xl flex items-center justify-center text-2xl shadow-sm bg-gradient-to-br ${t.gradient} group-hover:scale-105 transition-transform duration-200`}>{t.icon}</div>
-                  <h3 className="font-semibold text-deany-navy text-sm mb-0.5">{t.title}</h3>
-                  <p className="text-[11px] text-deany-muted mb-3">{t.subtitle}</p>
-                  <span className="inline-flex items-center gap-1 text-[11px] px-2.5 py-1 rounded-full font-medium bg-deany-gold-light text-deany-gold group-hover:gap-2 transition-all duration-200">
-                    Explore <ArrowRight className="w-3 h-3" />
-                  </span>
+                <button key={t.id} onClick={() => selectMainTopic(t.id)} className={`group ${glassHover} rounded-xl p-5 text-center`}>
+                  <div className={`w-14 h-14 mx-auto mb-3 rounded-lg flex items-center justify-center text-2xl shadow-md bg-gradient-to-br ${t.gradient} group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>{t.icon}</div>
+                  <h3 className="font-bold text-gray-900 text-sm mb-0.5">{t.title}</h3>
+                  <p className="text-[11px] text-gray-500 mb-3">{t.subtitle}</p>
+                  <span className="inline-flex items-center gap-1 text-[11px] px-2.5 py-1 rounded-full font-semibold group-hover:gap-2 transition-all" style={{background:t.color+'12',color:t.color}}>Explore <ArrowRight className="w-3 h-3" /></span>
                 </button>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Today's Goal */}
-        <section className="max-w-5xl mx-auto px-4 py-6 pb-12">
-          <div className="relative bg-deany-navy rounded-2xl p-6 overflow-hidden">
-            <IslamicPattern color="#FAF8F5" opacity={0.04} />
+        <section className="max-w-5xl mx-auto px-4 py-6">
+          <div className="relative rounded-2xl p-6 text-white overflow-hidden" style={{background:'linear-gradient(135deg,#7c3aed,#6d28d9,#4f46e5)'}}>
+            <IslamicPattern color="#fff" opacity={0.05} />
             <div className="relative z-10 flex items-center justify-between flex-wrap gap-4">
-              <div>
-                <div className="flex items-center gap-2 mb-1.5">
-                  <BookOpen className="w-4 h-4 text-deany-gold" />
-                  <h3 className="text-base font-semibold text-white">Today's Goal</h3>
-                </div>
-                <p className="text-white/60 text-sm max-w-sm leading-relaxed">Complete a lesson today to keep your streak going.</p>
+              <div><div className="flex items-center gap-2 mb-1.5"><Zap className="w-4 h-4" /><h3 className="text-base font-bold">Today's Challenge</h3></div><p className="text-white/70 text-xs max-w-sm">Complete 3 lessons to maintain your streak!</p></div>
+              <div className="flex items-center gap-2">
+                <button className="bg-white text-violet-700 px-4 py-2 rounded-lg font-semibold text-xs shadow-md">Accept</button>
+                <div className="flex items-center gap-1 bg-white/15 px-3 py-1.5 rounded-lg text-xs"><Gift className="w-3.5 h-3.5" /><span className="font-semibold">+50 XP</span></div>
               </div>
-              <button onClick={() => lastSelectedTopicId ? selectMainTopic(lastSelectedTopicId) : document.getElementById('paths')?.scrollIntoView({behavior:'smooth'})}
-                className="bg-deany-gold text-white px-5 py-2.5 rounded-xl font-medium text-sm shadow-sm hover:brightness-105 active:brightness-95 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-deany-gold focus-visible:ring-offset-2 focus-visible:ring-offset-deany-navy">
-                Start Learning
-              </button>
             </div>
           </div>
         </section>
