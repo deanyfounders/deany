@@ -694,12 +694,18 @@ const App = () => {
         </nav>
 
         <section className="relative max-w-5xl mx-auto px-4 pt-10 pb-6 md:pt-16">
-          <div className="max-w-2xl mx-auto text-center space-y-5">
+          {/* Mobile: Ayah card above hero */}
+          <div className="md:hidden mb-6">
+            <QuranicQuote variant="sidebar" />
+          </div>
+
+          <div className="md:flex md:items-start md:gap-8">
+          {/* Hero content */}
+          <div className="flex-1 max-w-2xl mx-auto md:mx-0 text-center space-y-5">
             <div className="inline-flex items-center gap-1.5 bg-white/50 backdrop-blur-sm px-3 py-1 rounded-full border border-emerald-200/50 text-xs font-medium text-gray-500"><Target className="w-3 h-3 text-emerald-600" />Daily Goal: 35/50 XP</div>
             <h1 className="text-4xl sm:text-6xl font-bold text-gray-900 leading-[1.1]" style={{fontFamily:"Georgia,serif"}}>
               Learn Islam
             </h1>
-            <QuranicQuote />
             <div className={`${glass} rounded-xl p-4 max-w-xs mx-auto`}>
               <div className="flex items-center justify-between mb-2"><div className="flex items-center gap-1.5"><div className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold" style={{background:'linear-gradient(135deg,#059669,#0d9488)'}}>{level}</div><span className="text-xs font-bold text-gray-800">Level {level}</span></div><span className="text-[10px] text-gray-400">{xp}/{xpNext} XP</span></div>
               <div className="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden"><div className="h-2.5 rounded-full transition-all duration-700" style={{width:`${Math.max(xpPct,3)}%`,background:'linear-gradient(90deg,#10b981,#14b8a6,#06b6d4)'}}/></div>
@@ -719,6 +725,12 @@ const App = () => {
                 <p className="text-gray-400 text-[10px] text-center mt-0.5">-- Fulus</p>
               </div>
             </div>
+          </div>
+
+          {/* Desktop: Ayah card top-right */}
+          <div className="hidden md:block md:w-[340px] md:flex-shrink-0">
+            <QuranicQuote variant="sidebar" />
+          </div>
           </div>
         </section>
 
