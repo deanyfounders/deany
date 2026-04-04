@@ -676,6 +676,22 @@ const App = () => {
   // ═══════════════════════════════════════════════════════════════
   if (screen == 'home') {
     const xpNext = level * 100, xpPct = (xp / xpNext) * 100;
+
+    // Compute per-topic stats
+    const getTopicStats = (topicId) => {
+      const mods = modules[topicId] || [];
+      const modCount = mods.length;
+      let totalLessons = 0, completedCount = 0;
+      mods.forEach(mod => {
+        const lessons = mod.lessons || [];
+        totalLessons += lessons.length;
+        lessons.forEach((_, i) => {
+          if (completedLessons[`${mod.id}-lesson-${i}`]) completedCount++;
+        });
+      });
+      return { modCount, totalLessons, completedCount, pct: totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0 };
+    };
+
     return (
       <div className="min-h-screen relative overflow-hidden" style={pageBg}>
         <IslamicPattern />
@@ -749,17 +765,46 @@ const App = () => {
 
         <section id="paths" className="relative py-12" style={{background:'linear-gradient(180deg,transparent,rgba(255,255,255,0.4),transparent)', animation: 'slideUp 0.6s ease-out 0.3s both'}}>
           <div className="max-w-5xl mx-auto px-4">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2 text-center" style={{fontFamily:"Georgia,serif"}}>Learning Paths</h2>
-            <p className="text-gray-500 text-sm text-center mb-8 max-w-md mx-auto">Curated journeys through Islamic knowledge</p>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              {mainTopics.map(t => (
-                <button key={t.id} onClick={() => selectMainTopic(t.id)} className={`group ${glassHover} rounded-xl p-5 text-center`}>
-                  <div className={`w-14 h-14 mx-auto mb-3 rounded-lg flex items-center justify-center text-2xl shadow-md bg-gradient-to-br ${t.gradient} group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>{t.icon}</div>
-                  <h3 className="font-bold text-gray-900 text-sm mb-0.5">{t.title}</h3>
-                  <p className="text-[11px] text-gray-500 mb-3">{t.subtitle}</p>
-                  <span className="inline-flex items-center gap-1 text-[11px] px-2.5 py-1 rounded-full font-semibold group-hover:gap-2 transition-all" style={{background:t.color+'12',color:t.color}}>Explore <ArrowRight className="w-3 h-3" /></span>
-                </button>
-              ))}
+            <div className="flex items-center gap-3 mb-8">
+              <div className="flex-1 h-px bg-deany-border" />
+              <h2 className="text-xl font-semibold text-deany-navy" style={{ fontFamily: 'Georgia, serif' }}>Learning Paths</h2>
+              <div className="flex-1 h-px bg-deany-border" />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              {mainTopics.map(t => {
+                const stats = getTopicStats(t.id);
+                return (
+                  <button key={t.id} onClick={() => selectMainTopic(t.id)}
+                    className="group relative overflow-hidden rounded-2xl p-6 text-left transition-all duration-300 hover:shadow-xl hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-deany-gold focus-visible:ring-offset-2"
+                    style={{ background: `linear-gradient(135deg, ${t.color}, ${t.color}dd)`, minHeight: '200px' }}>
+                    <IslamicPattern color="#fff" opacity={0.04} />
+                    <div className="relative z-10 flex flex-col h-full justify-between">
+                      <div>
+                        <div className="text-4xl mb-3 drop-shadow-lg group-hover:scale-110 transition-transform duration-300 inline-block">
+                          {t.icon}
+                        </div>
+                        <h3 className="text-xl font-bold text-white" style={{ fontFamily: 'Georgia, serif' }}>
+                          {t.title}
+                        </h3>
+                        <p className="text-white/70 text-sm mt-1">{t.subtitle}</p>
+                      </div>
+                      <div className="mt-5">
+                        <p className="text-white/60 text-xs mb-2">
+                          {stats.modCount} {stats.modCount === 1 ? 'module' : 'modules'}{stats.totalLessons > 0 ? ` · ${stats.totalLessons} lessons` : ''}
+                        </p>
+                        {stats.totalLessons > 0 && (
+                          <div className="w-full h-1.5 bg-white/20 rounded-full overflow-hidden">
+                            <div className="h-full bg-white/80 rounded-full transition-all duration-500" style={{ width: `${Math.max(stats.pct, 0)}%` }} />
+                          </div>
+                        )}
+                        <div className="flex items-center gap-1.5 mt-3 text-white/80 text-sm font-medium group-hover:text-white transition-colors">
+                          {lastSelectedTopicId === t.id ? <><Play className="w-3.5 h-3.5" /> Continue</> : <><ArrowRight className="w-3.5 h-3.5" /> Explore</>}
+                        </div>
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </div>
         </section>
