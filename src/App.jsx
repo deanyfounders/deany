@@ -452,6 +452,7 @@ const App = () => {
       return;
     }
     if (selectedMainTopic?.id == 'islamic-finance' && mod.lessons) { setSelectedModule(mod); setScreen('lessons'); return; }
+    if (mod.id === 'salah') { setScreen('prayer-vis'); return; }
     if (!mod.questions?.length) { alert('Coming soon!'); return; }
     setSelectedModule(mod); resetQuiz(mod.questions); setScreen('quiz');
   };
