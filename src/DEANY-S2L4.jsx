@@ -220,7 +220,7 @@ const Q6_SCENARIO = {
 function shuffle(a) { const b = [...a]; for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; }
 
 /* ═══ MAIN APP ═══ */
-export default function DEANYS2L4({ onBack, onHome }) {
+export default function DEANYS2L4({ onBack, onHome, onGoToHifz }) {
   const savedPage = useMemo(() => { try { const d = localStorage.getItem("deany-progress-s2-l4"); return d ? (JSON.parse(d).page || 0) : 0; } catch { return 0; } }, []);
   const [page, setPage] = useState(savedPage);
   const [scores, setScores] = useState({ q1: 0, q2: 0, q3: 0, q4: 0, q5: 0, q6: 0 });
@@ -1122,7 +1122,7 @@ function PCheckpoint({ scores, total, rm }) {
 
       {/* Cross-module bridge to Quran section */}
       <div
-        onClick={() => { /* PLACEHOLDER: navigate to Quran module, Lesson 1 (Surah al-Fatihah memorisation) */ console.log("Navigate to Quran/al-Fatihah memorisation lesson"); }}
+        onClick={() => { if (onGoToHifz) onGoToHifz(); }}
         role="link"
         tabIndex={0}
         aria-label="Memorise Surah al-Fatihah in the Quran section (coming soon)"

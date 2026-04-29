@@ -12,6 +12,8 @@ import DEANYS2L1 from './DEANY-S2L1.jsx';
 import DEANYS2L2 from './DEANY-S2L2.jsx';
 import DEANYS2L3 from './DEANY-S2L3.jsx';
 import DEANYS2L4 from './DEANY-S2L4.jsx';
+import DeanyFatihaMemorisationOnly from './DEANY-HIFZ-FATIHA.jsx';
+import DeanyFatihaTafsirBeginnerIbnKathir from './DEANY-TAFSIR-FATIHA.jsx';
 import QuranicQuote from './components/QuranicQuote.jsx';
 import { 
   CheckCircle, XCircle, Star, Trophy, ArrowRight, Sparkles, BookOpen, Home, 
@@ -497,6 +499,8 @@ const App = () => {
     if (l.id === 's2-l2') { setSelectedLesson({...l, lessonIndex: i}); setScreen('s2-l2'); return; }
     if (l.id === 's2-l3') { setSelectedLesson({...l, lessonIndex: i}); setScreen('s2-l3'); return; }
     if (l.id === 's2-l4') { setSelectedLesson({...l, lessonIndex: i}); setScreen('s2-l4'); return; }
+    if (l.id === 'hifz-fatiha') { setSelectedLesson({...l, lessonIndex: i}); setScreen('hifz-fatiha'); return; }
+    if (l.id === 'tafsir-fatiha') { setSelectedLesson({...l, lessonIndex: i}); setScreen('tafsir-fatiha'); return; }
     if (!l.questions.length) return;
     setSelectedLesson({...l, lessonIndex: i});
     const saved = loadProgress(l.id);
@@ -709,7 +713,14 @@ const App = () => {
     return <DEANYS2L3 onBack={goLessons} onHome={goHome} />;
   }
   if (screen === 's2-l4') {
-    return <DEANYS2L4 onBack={goLessons} onHome={goHome} />;
+    return <DEANYS2L4 onBack={goLessons} onHome={goHome} onGoToHifz={() => setScreen('hifz-fatiha')} />;
+  }
+
+  if (screen === 'hifz-fatiha') {
+    return <DeanyFatihaMemorisationOnly onBack={goLessons} onHome={goHome} onGoTafsir={() => setScreen('tafsir-fatiha')} />;
+  }
+  if (screen === 'tafsir-fatiha') {
+    return <DeanyFatihaTafsirBeginnerIbnKathir onBack={goLessons} onHome={goHome} />;
   }
 
   // ═══════════════════════════════════════════════════════════════
