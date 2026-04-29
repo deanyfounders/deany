@@ -1127,54 +1127,42 @@ function PCheckpoint({ scores, total, rm }) {
         tabIndex={0}
         aria-label="Memorise Surah al-Fatihah in the Quran section (coming soon)"
         style={{
-          background: "linear-gradient(135deg, " + T.navy + " 0%, " + T.navyDeep + " 100%)",
-          borderRadius: 16,
-          padding: "20px 22px",
-          marginBottom: 16,
+          background: "#fff",
+          border: "1.5px solid " + T.grayLight,
+          borderRadius: 14,
+          padding: "16px 18px",
+          marginBottom: 14,
           cursor: "pointer",
           position: "relative",
-          overflow: "hidden",
-          transition: rm ? "none" : "all .25s",
-          boxShadow: "0 6px 24px " + T.navy + "33",
+          transition: rm ? "none" : "all .2s",
+          display: "flex",
+          alignItems: "center",
+          gap: 14,
         }}
-        onMouseEnter={(e) => { if (!rm) { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 10px 32px " + T.navy + "44"; } }}
-        onMouseLeave={(e) => { if (!rm) { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 6px 24px " + T.navy + "33"; } }}
+        onMouseEnter={(e) => { if (!rm) { e.currentTarget.style.borderColor = T.gold; e.currentTarget.style.boxShadow = "0 4px 16px " + T.gold + "22"; } }}
+        onMouseLeave={(e) => { if (!rm) { e.currentTarget.style.borderColor = T.grayLight; e.currentTarget.style.boxShadow = "none"; } }}
       >
-        {/* Decorative arabic in background */}
-        <div aria-hidden="true" dir="rtl" lang="ar" style={{ position: "absolute", top: -6, right: -8, fontFamily: F.ar, fontSize: 56, color: T.gold, opacity: 0.1, lineHeight: 1, fontWeight: 400 }}>الفاتحة</div>
-
-        {/* "Coming soon" tag */}
-        <div style={{ position: "absolute", top: 12, right: 14, fontFamily: F.ui, fontSize: 8, fontWeight: 700, color: T.gold, background: T.gold + "22", padding: "3px 8px", borderRadius: 6, letterSpacing: 1.5, border: "1px solid " + T.gold + "44" }}>
-          COMING SOON
+        {/* Arabic accent on the left */}
+        <div style={{ flexShrink: 0, width: 44, height: 44, borderRadius: 10, background: T.goldPale, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <span dir="rtl" lang="ar" style={{ fontFamily: F.ar, fontSize: 22, color: T.gold, lineHeight: 1, fontWeight: 700 }}>ٱ</span>
         </div>
 
-        <div style={{ position: "relative", zIndex: 1 }}>
-          {/* Header */}
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-            <span style={{ fontSize: 18 }}>📖</span>
-            <span style={{ fontFamily: F.ui, fontSize: 10, fontWeight: 700, color: T.gold, letterSpacing: 2 }}>QURAN MODULE</span>
+        {/* Content */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 3 }}>
+            <span style={{ fontFamily: F.ui, fontSize: 9, fontWeight: 700, color: T.gold, letterSpacing: 1.5 }}>QURAN MODULE</span>
+            <span style={{ fontFamily: F.ui, fontSize: 8, fontWeight: 700, color: T.grayMed, background: T.grayLight, padding: "2px 6px", borderRadius: 4, letterSpacing: .5 }}>SOON</span>
           </div>
-
-          {/* Title */}
-          <div style={{ fontFamily: F.display, fontSize: 18, fontWeight: 700, color: "#fff", lineHeight: 1.3, marginBottom: 6 }}>
+          <div style={{ fontFamily: F.display, fontSize: 15, fontWeight: 700, color: T.navy, lineHeight: 1.3 }}>
             Memorise Surah al-Fatihah
           </div>
-
-          {/* Description */}
-          <p style={{ fontFamily: F.body, fontSize: 12.5, color: "rgba(255,255,255,.72)", lineHeight: 1.6, margin: "0 0 14px", paddingRight: 60 }}>
-            You learned what al-Fatihah <em>means</em>. Next, learn to <strong style={{ color: "#fff" }}>recite it from memory</strong>: ayah by ayah, with audio, repetition, and review.
+          <p style={{ fontFamily: F.body, fontSize: 12, color: T.grayMed, lineHeight: 1.5, margin: "3px 0 0" }}>
+            You learned the meaning. Now learn to recite it.
           </p>
-
-          {/* Action row */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: 12, borderTop: "1px solid rgba(255,255,255,.15)" }}>
-            <div style={{ fontFamily: F.ui, fontSize: 11, color: T.gold, fontWeight: 600 }}>
-              Start the talaqqi method →
-            </div>
-            <div style={{ background: T.gold, color: T.navy, fontFamily: F.ui, fontSize: 11, fontWeight: 700, padding: "5px 12px", borderRadius: 6, letterSpacing: .5 }}>
-              GO
-            </div>
-          </div>
         </div>
+
+        {/* Arrow */}
+        <div style={{ flexShrink: 0, fontFamily: F.ui, fontSize: 16, color: T.gold, fontWeight: 700 }}>→</div>
       </div>
 
       <Box color={T.teal} bg={T.tealLight} style={{ borderRadius: 12 }}>
