@@ -405,7 +405,19 @@ const App = () => {
       lessons: []
     },
     ],
-    'quran-arabic': [{ id: 'arabic', title: "Arabic Alphabet", subtitle: "Learn the letters", icon: "", color: "#0284c7", difficulty: "Beginner", questions: [] }],
+    'quran-arabic': [
+      { id: 'arabic', title: "Arabic Alphabet", subtitle: "Learn the letters", icon: "🔤", color: "#0284c7", difficulty: "Beginner", questions: [] },
+      { id: 'quran-memorisation', title: "Quran Memorisation", subtitle: "Hifz — commit to memory", icon: "🧠", color: "#0284c7", difficulty: "Beginner", estimatedTime: "20 min",
+        lessons: [
+          { id: 'hifz-fatiha', title: 'Surah Al-Fatiha', description: 'The Opening — 7 verses', duration: '20 min', questions: [] },
+        ]
+      },
+      { id: 'quran-tafsir', title: "Tafsir", subtitle: "Understand what you recite", icon: "📜", color: "#0284c7", difficulty: "Beginner", estimatedTime: "25 min",
+        lessons: [
+          { id: 'tafsir-fatiha', title: 'Surah Al-Fatiha', description: 'Verse-by-verse meaning and context', duration: '25 min', questions: [] },
+        ]
+      },
+    ],
     'islamic-history': [{
       id: 'epoch-1', title: "Epoch 1: Creation to Pre-Islamic Arabia", subtitle: "Creation -- 610 CE", icon: "🌍", color: "#0284c7", estimatedTime: "44 min (5 lessons)",
       mascotMessage: "Let's journey to the very beginning!",
@@ -464,6 +476,7 @@ const App = () => {
     }
     if (selectedMainTopic?.id == 'islamic-finance' && mod.lessons) { setSelectedModule(mod); setScreen('lessons'); return; }
     if (mod.id === 'salah' && mod.lessons) { setSelectedModule(mod); setScreen('lessons'); return; }
+    if (mod.lessons?.length) { setSelectedModule(mod); setScreen('lessons'); return; }
     if (!mod.questions?.length) { alert('Coming soon!'); return; }
     setSelectedModule(mod); resetQuiz(mod.questions); setScreen('quiz');
   };
@@ -857,9 +870,6 @@ const App = () => {
   // MODULES
   // ═══════════════════════════════════════════════════════════════
   if (screen == 'modules') {
-    if (selectedMainTopic.id == 'quran-arabic') {
-      return (<div className="min-h-screen relative" style={pageBg}><IslamicPattern /><div className="relative z-10 max-w-2xl mx-auto px-4 py-8"><NavHeader onBack={goHome} onHome={goHome} backLabel="Topics" /><div className={`${glass} rounded-2xl p-12 text-center`}><div className="text-6xl mb-4">🚧</div><h1 className="text-2xl font-bold text-gray-900 mb-2" style={{fontFamily:"Georgia,serif"}}>Coming Soon!</h1><p className="text-gray-500 text-sm">{selectedMainTopic.title} content is being crafted.</p></div></div></div>);
-    }
     const mods = modules[selectedMainTopic.id] || [];
     const isHist = selectedMainTopic.id == 'islamic-history';
     const isFin = selectedMainTopic.id == 'islamic-finance';
