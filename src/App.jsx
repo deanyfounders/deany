@@ -8,6 +8,10 @@ import DEANY_HB1_L1 from './DEANY-HB1L1.jsx';
 import DEANY_HB1_L2 from './DEANY-HB1L2.jsx';
 import ModuleOverview from './ModuleOverview.jsx';
 import DEANYPrayerVis from './DEANY-PRAYER-VIS.jsx';
+import DEANYS2L1 from './DEANY-S2L1.jsx';
+import DEANYS2L2 from './DEANY-S2L2.jsx';
+import DEANYS2L3 from './DEANY-S2L3.jsx';
+import DEANYS2L4 from './DEANY-S2L4.jsx';
 import QuranicQuote from './components/QuranicQuote.jsx';
 import { 
   CheckCircle, XCircle, Star, Trophy, ArrowRight, Sparkles, BookOpen, Home, 
@@ -358,7 +362,14 @@ const App = () => {
   const modules = {
     '5-pillars': [
       { id: 'shahada', title: "Shahada", subtitle: "Declaration of Faith", icon: "☝️", color: "#0d9488", difficulty: "Beginner", estimatedTime: "10 min", questions: [] },
-      { id: 'salah', title: "Salah", subtitle: "Prayer", icon: "🤲", color: "#0d9488", difficulty: "Beginner", estimatedTime: "15 min", questions: [] },
+      { id: 'salah', title: "Salah", subtitle: "Prayer", icon: "🤲", color: "#0d9488", difficulty: "Beginner", estimatedTime: "60 min",
+        lessons: [
+          { id: 's2-l1', title: 'The Five Daily Appointments', description: '', duration: '15 min', questions: [] },
+          { id: 's2-l2', title: 'Before You Pray', description: '', duration: '12 min', questions: [] },
+          { id: 's2-l3', title: "Inside the Rak'ah", description: '', duration: '15 min', questions: [] },
+          { id: 's2-l4', title: 'The Words That Rise', description: '', duration: '15 min', questions: [] },
+        ]
+      },
       { id: 'zakat', title: "Zakat", subtitle: "Charity", icon: "💎", color: "#0d9488", difficulty: "Intermediate", estimatedTime: "12 min", questions: [] },
       { id: 'sawm', title: "Sawm", subtitle: "Fasting", icon: "🌙", color: "#0d9488", difficulty: "Beginner", estimatedTime: "12 min", questions: [] },
       { id: 'hajj', title: "Hajj", subtitle: "Pilgrimage", icon: "🕋", color: "#0d9488", difficulty: "Intermediate", estimatedTime: "18 min", questions: [] }
@@ -452,7 +463,7 @@ const App = () => {
       return;
     }
     if (selectedMainTopic?.id == 'islamic-finance' && mod.lessons) { setSelectedModule(mod); setScreen('lessons'); return; }
-    if (mod.id === 'salah') { setScreen('prayer-vis'); return; }
+    if (mod.id === 'salah' && mod.lessons) { setSelectedModule(mod); setScreen('lessons'); return; }
     if (!mod.questions?.length) { alert('Coming soon!'); return; }
     setSelectedModule(mod); resetQuiz(mod.questions); setScreen('quiz');
   };
@@ -469,6 +480,10 @@ const App = () => {
     if (l.id === 'lesson-1-3') { setSelectedLesson({...l, lessonIndex: i}); setScreen('lesson-component-3'); return; }
     if (l.id === 'lesson-1-4') { setSelectedLesson({...l, lessonIndex: i}); setScreen('lesson-component-4'); return; }
     if (l.id === 'lesson-1-5') { setSelectedLesson({...l, lessonIndex: i}); setScreen('lesson-component-5'); return; }
+    if (l.id === 's2-l1') { setSelectedLesson({...l, lessonIndex: i}); setScreen('s2-l1'); return; }
+    if (l.id === 's2-l2') { setSelectedLesson({...l, lessonIndex: i}); setScreen('s2-l2'); return; }
+    if (l.id === 's2-l3') { setSelectedLesson({...l, lessonIndex: i}); setScreen('s2-l3'); return; }
+    if (l.id === 's2-l4') { setSelectedLesson({...l, lessonIndex: i}); setScreen('s2-l4'); return; }
     if (!l.questions.length) return;
     setSelectedLesson({...l, lessonIndex: i});
     const saved = loadProgress(l.id);
@@ -669,6 +684,19 @@ const App = () => {
 
   if (screen === 'prayer-vis') {
     return <DEANYPrayerVis onBack={goHome} onHome={goHome} />;
+  }
+
+  if (screen === 's2-l1') {
+    return <DEANYS2L1 onBack={goLessons} onHome={goHome} />;
+  }
+  if (screen === 's2-l2') {
+    return <DEANYS2L2 onBack={goLessons} onHome={goHome} />;
+  }
+  if (screen === 's2-l3') {
+    return <DEANYS2L3 onBack={goLessons} onHome={goHome} />;
+  }
+  if (screen === 's2-l4') {
+    return <DEANYS2L4 onBack={goLessons} onHome={goHome} />;
   }
 
   // ═══════════════════════════════════════════════════════════════
