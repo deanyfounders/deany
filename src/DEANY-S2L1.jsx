@@ -143,7 +143,8 @@ function shuffle(arr) {
    MAIN APP
    ═══════════════════════════════════════════════════════════════ */
 export default function DEANYS2L1({ onBack, onHome }) {
-  const [page, setPage] = useState(0);
+  const savedPage = useMemo(() => { try { const d = localStorage.getItem("deany-progress-s2-l1"); return d ? (JSON.parse(d).page || 0) : 0; } catch { return 0; } }, []);
+  const [page, setPage] = useState(savedPage);
   const [scores, setScores] = useState({ q1: 0, q2: 0, q3: 0, q4: 0 });
   const [reducedMotion, setReducedMotion] = useState(false);
   const containerRef = useRef(null);
@@ -158,6 +159,7 @@ export default function DEANYS2L1({ onBack, onHome }) {
 
   const goToPage = useCallback((p) => {
     setPage(p);
+    try { localStorage.setItem("deany-progress-s2-l1", JSON.stringify({ page: p })); } catch {}
     /* DEANY rule: scroll-to-top on every page transition */
     if (containerRef.current) {
       containerRef.current.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "start" });
@@ -217,7 +219,10 @@ export default function DEANYS2L1({ onBack, onHome }) {
           borderBottom: "1px solid " + T.gold + "22",
         }}
       >
-        <div style={{ maxWidth: 660, margin: "0 auto", padding: "12px 20px", display: "flex", alignItems: "center", gap: 14 }}>
+        <div style={{ maxWidth: 660, margin: "0 auto", padding: "12px 20px", display: "flex", alignItems: "center", gap: 10 }}>
+          <button onClick={onBack} aria-label="Back to lessons" style={{ background: "none", border: "none", cursor: "pointer", padding: "6px 2px", display: "flex", alignItems: "center", color: T.grayMed }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
           <span style={{ fontFamily: FONT.ui, fontSize: 11, fontWeight: 700, color: T.gold, letterSpacing: 2 }}>S2.1</span>
           <div style={{ flex: 1, background: T.gold + "18", borderRadius: 20, height: 5, overflow: "hidden" }}>
             <div

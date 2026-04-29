@@ -100,12 +100,13 @@ function shuffle(a) { const b = [...a]; for (let i = b.length - 1; i > 0; i--) {
 
 /* ═══ MAIN APP ═══ */
 export default function DEANYS2L3({ onBack, onHome }) {
-  const [page, setPage] = useState(0);
+  const savedPage = useMemo(() => { try { const d = localStorage.getItem("deany-progress-s2-l3"); return d ? (JSON.parse(d).page || 0) : 0; } catch { return 0; } }, []);
+  const [page, setPage] = useState(savedPage);
   const [scores, setScores] = useState({ q1: 0, q2: 0, q3: 0, q4: 0, q5: 0 });
   const [rm, setRm] = useState(false);
   const ref = useRef(null);
   useEffect(() => { const m = window.matchMedia("(prefers-reduced-motion: reduce)"); setRm(m.matches); m.addEventListener("change", e => setRm(e.matches)); }, []);
-  const go = useCallback((p) => { setPage(p); if (ref.current) ref.current.scrollIntoView({ behavior: rm ? "auto" : "smooth", block: "start" }); else window.scrollTo({ top: 0, behavior: rm ? "auto" : "smooth" }); }, [rm]);
+  const go = useCallback((p) => { setPage(p); try { localStorage.setItem("deany-progress-s2-l3", JSON.stringify({ page: p })); } catch {} if (ref.current) ref.current.scrollIntoView({ behavior: rm ? "auto" : "smooth", block: "start" }); else window.scrollTo({ top: 0, behavior: rm ? "auto" : "smooth" }); }, [rm]);
   const nx = useCallback(() => go(page + 1), [page, go]);
 
   const totalPages = 12;
@@ -132,7 +133,10 @@ export default function DEANYS2L3({ onBack, onHome }) {
       <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&family=DM+Sans:wght@400;500;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet" />
       <div style={{ position: "fixed", inset: 0, opacity: .025, pointerEvents: "none", background: `url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L60 30L30 60L0 30Z' fill='none' stroke='%23C5A55A' stroke-width='.5'/%3E%3C/svg%3E")` }} />
       <div style={{ position: "sticky", top: 0, zIndex: 50, background: T.cream + "ee", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", borderBottom: "1px solid " + T.gold + "22" }}>
-        <div style={{ maxWidth: 660, margin: "0 auto", padding: "12px 20px", display: "flex", alignItems: "center", gap: 14 }}>
+        <div style={{ maxWidth: 660, margin: "0 auto", padding: "12px 20px", display: "flex", alignItems: "center", gap: 10 }}>
+          <button onClick={onBack} aria-label="Back to lessons" style={{ background: "none", border: "none", cursor: "pointer", padding: "6px 2px", display: "flex", alignItems: "center", color: T.grayMed }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
           <span style={{ fontFamily: F.ui, fontSize: 11, fontWeight: 700, color: T.gold, letterSpacing: 2 }}>S2.3</span>
           <div style={{ flex: 1, background: T.gold + "18", borderRadius: 20, height: 5, overflow: "hidden" }}>
             <div role="progressbar" aria-valuenow={prog} aria-valuemin={0} aria-valuemax={100} style={{ height: "100%", background: "linear-gradient(90deg," + T.gold + "," + T.teal + ")", borderRadius: 20, width: prog + "%", transition: rm ? "none" : "width .5s ease" }} />
