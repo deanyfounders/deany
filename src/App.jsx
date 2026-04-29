@@ -923,7 +923,11 @@ const App = () => {
                 <button key={m.id} onClick={() => selectModule(m)} className={`group ${glassHover} rounded-xl p-5 text-left`}>
                   <div className="w-12 h-12 mb-2 rounded-lg flex items-center justify-center text-2xl shadow-sm group-hover:scale-110 transition-transform" style={{background:m.color+'12'}}>{m.icon}</div>
                   <h3 className="font-bold text-gray-900 text-sm mb-0.5">{m.title}</h3><p className="text-[11px] text-gray-500 mb-2">{m.subtitle}</p>
-                  <span className="inline-flex items-center gap-1 text-[10px] px-2.5 py-1 rounded-full font-semibold" style={{background:m.color+'12',color:m.color}}>Coming Soon</span>
+                  {m.lessons?.length ? (
+                    <span className="inline-flex items-center gap-1 text-[10px] px-2.5 py-1 rounded-full font-semibold" style={{background:m.color+'12',color:m.color}}>{m.lessons.length} {m.lessons.length === 1 ? 'lesson' : 'lessons'} <ArrowRight className="w-2.5 h-2.5" /></span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 text-[10px] px-2.5 py-1 rounded-full font-semibold bg-deany-border text-deany-muted">Coming Soon</span>
+                  )}
                 </button>
               ))}
             </div>
