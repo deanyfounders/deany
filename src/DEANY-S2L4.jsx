@@ -253,7 +253,7 @@ export default function DEANYS2L4({ onBack, onHome, onGoToHifz }) {
     <PFatihahStructure key={8} nx={nx} rm={rm} />,
     <PQ6MC key={9} done={s => { setScores(p => ({ ...p, q6: s })); nx(); }} rm={rm} />,
     <PTakeaway key={10} nx={nx} />,
-    <PCheckpoint key={11} scores={scores} total={totalScore} rm={rm} />,
+    <PCheckpoint key={11} scores={scores} total={totalScore} rm={rm} onGoToHifz={onGoToHifz} />,
   ];
 
   return (
@@ -1074,7 +1074,7 @@ function PTakeaway({ nx }) {
 }
 
 /* ═══ P11: CHECKPOINT ═══ */
-function PCheckpoint({ scores, total, rm }) {
+function PCheckpoint({ scores, total, rm, onGoToHifz }) {
   const maxScore = 16; /* Q1=1 + Q2=5 + Q3=2 + Q4=6 + Q5=1 + Q6=1 */
   const pct = Math.round((total / maxScore) * 100);
   const pass = pct >= 60;
@@ -1125,7 +1125,7 @@ function PCheckpoint({ scores, total, rm }) {
         onClick={() => { if (onGoToHifz) onGoToHifz(); }}
         role="link"
         tabIndex={0}
-        aria-label="Memorise Surah al-Fatihah in the Quran section (coming soon)"
+        aria-label="Memorise Surah al-Fatihah in the Quran section"
         style={{
           background: "#fff",
           border: "1.5px solid " + T.grayLight,
@@ -1151,7 +1151,6 @@ function PCheckpoint({ scores, total, rm }) {
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 3 }}>
             <span style={{ fontFamily: F.ui, fontSize: 9, fontWeight: 700, color: T.gold, letterSpacing: 1.5 }}>QURAN MODULE</span>
-            <span style={{ fontFamily: F.ui, fontSize: 8, fontWeight: 700, color: T.grayMed, background: T.grayLight, padding: "2px 6px", borderRadius: 4, letterSpacing: .5 }}>SOON</span>
           </div>
           <div style={{ fontFamily: F.display, fontSize: 15, fontWeight: 700, color: T.navy, lineHeight: 1.3 }}>
             Memorise Surah al-Fatihah
