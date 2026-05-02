@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 
-const STORAGE_KEY = "deany:fatiha:memorisation:v6";
-const TAFSIR_LESSON_URL = "#replace-with-fatiha-tafsir-lesson-url";
+const STORAGE_KEY = "deany:fatiha:memorisation:v7";
 
 const audioFor = (ayah) => [
   `https://cdn.islamic.network/quran/audio/128/ar.alafasy/${ayah}.mp3`,
@@ -16,7 +15,7 @@ const modes = {
     id: "guided",
     title: "Lots of help",
     tag: "Most support",
-    description: "Arabic stays visible and every passage is chained back to what you already learnt.",
+    description: "Arabic stays visible, hints are stronger, and every passage is chained back to what you already learnt.",
     showArabic: true,
     chainEvery: 1,
   },
@@ -221,7 +220,10 @@ const defaultProgress = {
   phase: "listen",
   selected: {},
   mistakes: {},
+  firstAttempt: {},
+  weakQueue: [],
   finalChecks: {},
+  returnToFinal: false,
   complete: false,
 };
 
@@ -238,16 +240,43 @@ function shuffle(items) {
   return [...items].sort(() => Math.random() - 0.5);
 }
 
-function phasesFor(modeId, index) {
-  const mode = modes[modeId] || modes.balanced;
-  const shouldChain = index === passages.length - 1 || (index + 1) % mode.chainEvery === 0;
-  return shouldChain ? ["listen", "echo", "quiz", "chain"] : ["listen", "echo", "quiz"];
-}
-
 function formatSeconds(total) {
   const minutes = Math.floor(total / 60);
   const seconds = String(total % 60).padStart(2, "0");
   return `${minutes}:${seconds}`;
+}
+
+function phasesFor(modeId, index) {
+  const mode = modes[modeId] || modes.balanced;
+  const shouldChain = index === passages.length - 1 || (index + 1) % mode.chainEvery === 0;
+  const phases = ["listen", "echo", "quiz"];
+  if (index > 0) phases.push("seam");
+  if (shouldChain) phases.push("chain");
+  return phases;
+}
+
+function translitForArabic(arabic) {
+  return optionTranslit[arabic] || passages.find((item) => item.arabic === arabic)?.translit || "";
+}
+
+function questionTranslitFor(passage) {
+  const task = passage.task;
+
+  const blanksByKey = {
+    "1": "Bismillāhi _____ r-raḥīm",
+    "2": "Al-ḥamdu lillāhi rabbi _____",
+    "3": "_____ _____",
+    "4": "_____ yawmi d-dīn",
+    "5": "Iyyāka naʿbudu _____",
+    "6": "Ihdinā _____ l-mustaqīm",
+    "7a": "Ṣirāṭa lladhīna anʿamta _____",
+    "7b": "Ghayri _____ ʿalayhim",
+    "7c": "Wa la _____",
+  };
+
+  if (blanksByKey[passage.key]) return blanksByKey[passage.key];
+  if (task.type === "order") return "_____ _____";
+  return "_____";
 }
 
 function Button({ children, onClick, variant = "primary", disabled = false, className = "" }) {
@@ -348,7 +377,7 @@ function useRecorder() {
     setError("");
   }
 
-  return { supported, isRecording, audioUrl, seconds, error, start, stop, reset };
+  return { isRecording, audioUrl, seconds, error, start, stop, reset };
 }
 
 function RecorderPanel({ title = "Optional recording", helper = "Record yourself only if it helps you compare your recitation.", compact = false }) {
@@ -376,7 +405,7 @@ function RecorderPanel({ title = "Optional recording", helper = "Record yourself
       {recorder.audioUrl && (
         <div className="mt-4 rounded-2xl bg-white p-3">
           <audio src={recorder.audioUrl} controls className="w-full" />
-          <p className="mt-2 text-xs font-bold text-slate-500">Now play the model recitation and compare word order, endings, and pauses.</p>
+          <p className="mt-2 text-xs font-bold text-slate-500">Play this beside the model and compare wording, endings, and pauses.</p>
         </div>
       )}
 
@@ -429,13 +458,8 @@ function FullSurahPlayer() {
   const [sourceIndex, setSourceIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [status, setStatus] = useState("");
-
   const currentAyah = fullSurahAyahs[ayahIndex];
   const sources = audioFor(currentAyah);
-
-  useEffect(() => {
-    setSourceIndex(0);
-  }, [ayahIndex]);
 
   async function playFromStart() {
     setAyahIndex(0);
@@ -458,9 +482,10 @@ function FullSurahPlayer() {
     if (audioRef.current) audioRef.current.pause();
   }
 
-  async function handleEnded() {
+  function handleEnded() {
     if (ayahIndex < fullSurahAyahs.length - 1) {
       setAyahIndex((value) => value + 1);
+      setSourceIndex(0);
       setTimeout(async () => {
         try {
           if (!audioRef.current) return;
@@ -540,7 +565,7 @@ function ModeSelect({ onChoose }) {
   );
 }
 
-function Quiz({ passage, selected, onSelect, onCorrect, onWrong }) {
+function Quiz({ passage, selected, firstAttempt, onSelect, onFirstAttempt, onWeak, onCorrect }) {
   const [result, setResult] = useState(null);
   const [pickedOrder, setPickedOrder] = useState([]);
   const [round, setRound] = useState(0);
@@ -552,6 +577,11 @@ function Quiz({ passage, selected, onSelect, onCorrect, onWrong }) {
     setPickedOrder([]);
     setRound(0);
   }, [passage.key]);
+
+  function registerAttempt(correct, type) {
+    if (typeof firstAttempt === "undefined") onFirstAttempt(passage.key, correct, type);
+    else if (!correct) onWeak(passage.key, type);
+  }
 
   function tryAgain() {
     setResult(null);
@@ -567,22 +597,27 @@ function Quiz({ passage, selected, onSelect, onCorrect, onWrong }) {
       setPickedOrder(next);
       if (next.length === task.answer.length) {
         const correct = next.join(" ") === task.answer.join(" ");
+        registerAttempt(correct, "order");
         setResult(correct ? "correct" : "wrong");
-        if (!correct) onWrong(passage.key, "order");
       }
       return;
     }
 
     const correct = option === task.answer;
     onSelect(passage.key, option);
+    registerAttempt(correct, task.type);
     setResult(correct ? "correct" : "wrong");
-    if (!correct) onWrong(passage.key, task.type);
   }
 
   return (
     <Card>
-      <p className="text-xs font-black uppercase tracking-[0.2em] text-emerald-700">Recall check</p>
-      <h2 className="mt-2 text-3xl font-black text-slate-950">{task.prompt}</h2>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <p className="text-xs font-black uppercase tracking-[0.2em] text-emerald-700">Recall check</p>
+          <h2 className="mt-2 text-3xl font-black text-slate-950">{task.prompt}</h2>
+        </div>
+        {firstAttempt === false && <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-black text-amber-700">Added to review</span>}
+      </div>
       <p className="mt-2 text-sm font-bold text-slate-600">Cue: {passage.cue}</p>
 
       <div dir="rtl" className="mt-5 rounded-3xl bg-slate-50 p-6 text-center text-3xl leading-loose text-slate-900">
@@ -591,10 +626,11 @@ function Quiz({ passage, selected, onSelect, onCorrect, onWrong }) {
         {task.type === "first" && <span className="text-slate-400">{task.prompt}</span>}
         {task.type === "order" && <div className="rounded-2xl bg-white p-3 text-emerald-700">{pickedOrder.length ? pickedOrder.join(" | ") : "Tap below to build the phrase"}</div>}
       </div>
+      <p className="mt-3 text-center text-sm font-bold italic text-slate-500">{questionTranslitFor(passage)}</p>
 
       <div className="mt-5 grid gap-3 sm:grid-cols-2">
         {options.map((option) => {
-          const translit = optionTranslit[option] || "";
+          const translit = translitForArabic(option);
           const active = selected === option || pickedOrder.includes(option);
           return (
             <button
@@ -615,7 +651,7 @@ function Quiz({ passage, selected, onSelect, onCorrect, onWrong }) {
         <div className={`mt-5 rounded-3xl p-5 ${result === "correct" ? "bg-emerald-50 text-emerald-900" : "bg-rose-50 text-rose-900"}`}>
           <p className="text-xs font-black uppercase tracking-[0.18em]">{result === "correct" ? "Correct" : "Not quite"}</p>
           <p className="mt-2 text-sm font-bold leading-6">
-            {result === "correct" ? "Good. Now connect it to the wider surah." : "Try again before moving on. This is where memory gets stronger."}
+            {result === "correct" ? "Good. Now connect it to the wider surah." : "Try again before moving on. This passage will return in your review."}
           </p>
           <div className="mt-4 flex gap-3">
             {result === "correct" ? <Button onClick={onCorrect}>Continue</Button> : <Button variant="secondary" onClick={tryAgain}>Try again</Button>}
@@ -626,9 +662,87 @@ function Quiz({ passage, selected, onSelect, onCorrect, onWrong }) {
   );
 }
 
+function SeamDrill({ index, firstAttempt, onFirstAttempt, onWeak, onContinue }) {
+  const previous = passages[index - 1];
+  const current = passages[index];
+  const [result, setResult] = useState(null);
+  const [round, setRound] = useState(0);
+
+  const options = useMemo(() => {
+    const candidates = passages.filter((item) => item.key !== current.key).map((item) => item.arabic);
+    return shuffle([current.arabic, ...shuffle(candidates).slice(0, 3)]);
+  }, [current.key, round]);
+
+  function choose(option) {
+    const correct = option === current.arabic;
+    const attemptKey = `seam:${current.key}`;
+    if (typeof firstAttempt === "undefined") onFirstAttempt(attemptKey, correct, "seam");
+    else if (!correct) onWeak(current.key, "seam");
+    setResult(correct ? "correct" : "wrong");
+  }
+
+  function tryAgain() {
+    setResult(null);
+    setRound((value) => value + 1);
+  }
+
+  return (
+    <Card>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <p className="text-xs font-black uppercase tracking-[0.2em] text-emerald-700">Seam drill</p>
+          <h2 className="mt-2 text-3xl font-black text-slate-950">What comes next?</h2>
+        </div>
+        {firstAttempt === false && <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-black text-amber-700">Transition added to review</span>}
+      </div>
+
+      <div className="mt-5 rounded-3xl bg-slate-50 p-5">
+        <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-400">After this</p>
+        <p dir="rtl" className="mt-3 text-right text-3xl leading-loose text-slate-950">{previous.arabic}</p>
+        <p className="mt-2 text-sm font-bold italic text-slate-500">{previous.translit}</p>
+        <div className="mt-4 rounded-2xl bg-white p-4">
+          <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Choose what comes next</p>
+          <p className="mt-2 text-sm font-bold italic text-slate-500">Next passage transliteration: _____</p>
+        </div>
+      </div>
+
+      <div className="mt-5 grid gap-3 sm:grid-cols-2">
+        {options.map((option) => {
+          const translit = translitForArabic(option);
+          return (
+            <button
+              key={option}
+              type="button"
+              disabled={result === "correct"}
+              onClick={() => choose(option)}
+              className="rounded-2xl border border-slate-200 bg-white p-4 text-right outline-none transition hover:-translate-y-0.5 hover:shadow-sm focus:ring-4 focus:ring-emerald-100 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <span dir="rtl" className="block text-xl font-black leading-loose text-slate-950">{option}</span>
+              {translit && <span className="block text-sm font-bold italic text-slate-500">{translit}</span>}
+            </button>
+          );
+        })}
+      </div>
+
+      {result && (
+        <div className={`mt-5 rounded-3xl p-5 ${result === "correct" ? "bg-emerald-50 text-emerald-900" : "bg-rose-50 text-rose-900"}`}>
+          <p className="text-xs font-black uppercase tracking-[0.18em]">{result === "correct" ? "Correct transition" : "Not quite"}</p>
+          <p className="mt-2 text-sm font-bold leading-6">
+            {result === "correct" ? "Good. The join between the two passages is getting stronger." : "This is a weak seam. Try it once more before moving on."}
+          </p>
+          <div className="mt-4 flex gap-3">
+            {result === "correct" ? <Button onClick={onContinue}>Continue</Button> : <Button variant="secondary" onClick={tryAgain}>Try again</Button>}
+          </div>
+        </div>
+      )}
+    </Card>
+  );
+}
+
 function FinalGate({ progress, revealed, setRevealed, onBackToPassage, onMarkFinal, onComplete }) {
   const allMarked = passages.every((item) => typeof progress.finalChecks[item.key] === "boolean");
   const stuckItems = passages.filter((item) => progress.finalChecks[item.key] === false);
+  const weakItems = passages.filter((item) => progress.weakQueue.includes(item.key));
 
   return (
     <main className="min-h-screen bg-[#fbfbf8] p-6 text-slate-950">
@@ -653,47 +767,38 @@ function FinalGate({ progress, revealed, setRevealed, onBackToPassage, onMarkFin
           <FullSurahPlayer />
         </div>
 
+        {weakItems.length > 0 && (
+          <Card className="border-amber-200 bg-amber-50">
+            <p className="text-xs font-black uppercase tracking-[0.2em] text-amber-700">Adaptive review queue</p>
+            <h2 className="mt-2 text-2xl font-black text-slate-950">Passages to strengthen before finishing</h2>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {weakItems.map((item) => (
+                <button key={item.key} type="button" onClick={() => onBackToPassage(item.key)} className="rounded-full bg-white px-4 py-2 text-sm font-black text-amber-800 shadow-sm">
+                  Review {item.label}
+                </button>
+              ))}
+            </div>
+          </Card>
+        )}
+
         <Card>
           <p className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Where did you get stuck?</p>
           <div className="mt-4 grid gap-3 md:grid-cols-3">
             {passages.map((item) => {
               const state = progress.finalChecks[item.key];
               return (
-                <button
-                  key={item.key}
-                  type="button"
-                  onClick={() => onBackToPassage(item.key)}
-                  className={`rounded-3xl border p-4 text-left transition hover:-translate-y-0.5 hover:shadow-sm ${state === false ? "border-rose-200 bg-rose-50" : state === true ? "border-emerald-200 bg-emerald-50" : "border-slate-200 bg-white"}`}
-                >
+                <div key={item.key} className={`rounded-3xl border p-4 transition ${state === false ? "border-rose-200 bg-rose-50" : state === true ? "border-emerald-200 bg-emerald-50" : "border-slate-200 bg-white"}`}>
                   <p className="text-sm font-black text-slate-500">{item.label}</p>
                   <p className="mt-2 text-sm font-bold italic text-slate-500">{item.translit}</p>
                   {revealed && <p dir="rtl" className="mt-3 text-right text-2xl leading-loose text-slate-950">{item.arabic}</p>}
                   <div className="mt-4 flex flex-wrap gap-2">
-                    <span className="rounded-full bg-white px-3 py-1 text-xs font-black text-slate-500">Tap to review</span>
-                    {state === false && <span className="rounded-full bg-rose-100 px-3 py-1 text-xs font-black text-rose-700">Needs work</span>}
-                    {state === true && <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-black text-emerald-700">Clean</span>}
+                    <Button className="px-3 py-2" variant="secondary" onClick={() => onBackToPassage(item.key)}>Review</Button>
+                    <Button className="px-3 py-2" variant={state === true ? "primary" : "secondary"} onClick={() => onMarkFinal(item.key, true)}>Clean</Button>
+                    <Button className="px-3 py-2" variant={state === false ? "danger" : "secondary"} onClick={() => onMarkFinal(item.key, false)}>Needs work</Button>
                   </div>
-                </button>
+                </div>
               );
             })}
-          </div>
-        </Card>
-
-        <Card>
-          <p className="text-xs font-black uppercase tracking-[0.2em] text-emerald-700">Self-check after listening</p>
-          <div className="mt-4 grid gap-3">
-            {passages.map((item) => (
-              <div key={item.key} className="flex flex-wrap items-center justify-between gap-3 rounded-3xl border border-slate-200 bg-white p-4">
-                <div>
-                  <p className="font-black text-slate-950">{item.label}</p>
-                  <p className="text-sm italic text-slate-500">{item.translit}</p>
-                </div>
-                <div className="flex gap-2">
-                  <Button className="px-3 py-2" variant={progress.finalChecks[item.key] === true ? "primary" : "secondary"} onClick={() => onMarkFinal(item.key, true)}>Clean</Button>
-                  <Button className="px-3 py-2" variant={progress.finalChecks[item.key] === false ? "danger" : "secondary"} onClick={() => onMarkFinal(item.key, false)}>Needs work</Button>
-                </div>
-              </div>
-            ))}
           </div>
         </Card>
       </div>
@@ -728,6 +833,23 @@ export default function DeanyFatihaMemorisationOnly({ onBack, onHome, onGoTafsir
     setProgress((old) => ({ ...old, ...patch }));
   }
 
+  function addWeak(key, type) {
+    setProgress((old) => ({
+      ...old,
+      mistakes: { ...old.mistakes, [key]: [...(old.mistakes[key] || []), type] },
+      weakQueue: old.weakQueue.includes(key) ? old.weakQueue : [...old.weakQueue, key],
+    }));
+  }
+
+  function recordFirstAttempt(key, correct, type) {
+    setProgress((old) => ({
+      ...old,
+      firstAttempt: { ...old.firstAttempt, [key]: correct },
+      mistakes: correct ? old.mistakes : { ...old.mistakes, [key]: [...(old.mistakes[key] || []), type] },
+      weakQueue: correct || old.weakQueue.includes(key.replace("seam:", "")) ? old.weakQueue : [...old.weakQueue, key.replace("seam:", "")],
+    }));
+  }
+
   function start(modeId) {
     setProgress({ ...defaultProgress, started: true, mode: modeId });
   }
@@ -741,16 +863,14 @@ export default function DeanyFatihaMemorisationOnly({ onBack, onHome, onGoTafsir
     setProgress(defaultProgress);
   }
 
-  function logMistake(key, type) {
-    setProgress((old) => ({
-      ...old,
-      mistakes: { ...old.mistakes, [key]: [...(old.mistakes[key] || []), type] },
-    }));
-  }
-
   function next() {
     if (phaseIndex < phaseList.length - 1) {
       update({ phase: phaseList[phaseIndex + 1] });
+      return;
+    }
+
+    if (progress.returnToFinal) {
+      update({ phase: "final", returnToFinal: false });
       return;
     }
 
@@ -767,24 +887,29 @@ export default function DeanyFatihaMemorisationOnly({ onBack, onHome, onGoTafsir
   }
 
   function markFinal(key, clean) {
-    setProgress((old) => ({ ...old, finalChecks: { ...old.finalChecks, [key]: clean } }));
-    if (!clean) logMistake(key, "final-review");
+    setProgress((old) => ({
+      ...old,
+      finalChecks: { ...old.finalChecks, [key]: clean },
+      mistakes: clean ? old.mistakes : { ...old.mistakes, [key]: [...(old.mistakes[key] || []), "final-review"] },
+      weakQueue: clean || old.weakQueue.includes(key) ? old.weakQueue : [...old.weakQueue, key],
+    }));
   }
 
   function backToPassage(key) {
     const index = passages.findIndex((item) => item.key === key);
     if (index < 0) return;
-    logMistake(key, "stuck-on-final");
-    update({ index, phase: "listen" });
+    addWeak(key, "stuck-on-final");
+    update({ index, phase: "listen", returnToFinal: true });
   }
 
   const reviewPlan = useMemo(() => {
-    const weak = Object.keys(progress.mistakes);
+    const weak = progress.weakQueue;
     if (!weak.length) {
       return ["Today: one blind recitation after a short break.", "Tomorrow: one blind recitation before learning anything new.", "Review again on day 3, day 7, day 14, and day 30."];
     }
-    return [`Today: repeat ${weak.slice(0, 5).join(", ")} before the full surah.`, "Tomorrow: start with the passage that needs work, then recite the full surah blind.", "Move on after one clean full recitation."];
-  }, [progress.mistakes]);
+    const names = weak.map((key) => passages.find((item) => item.key === key)?.label || key).slice(0, 5).join(", ");
+    return [`Today: repeat ${names} before the full surah.`, "Tomorrow: start with the passage that needs work, then recite the full surah blind.", "Move on after one clean full recitation."];
+  }, [progress.weakQueue]);
 
   if (!progress.started) return <ModeSelect onChoose={start} />;
 
@@ -796,7 +921,7 @@ export default function DeanyFatihaMemorisationOnly({ onBack, onHome, onGoTafsir
           <Card>
             <p className="text-xs font-black uppercase tracking-[0.25em] text-emerald-700">Lesson complete</p>
             <h1 className="mt-4 text-5xl font-black">{cleanCount} / {passages.length} passages clean</h1>
-            <p className="mt-3 text-slate-600">Your next review is based on where you hesitated, not just how confident you felt.</p>
+            <p className="mt-3 text-slate-600">Your next review is based on first-attempt accuracy and where you hesitated.</p>
             <div className="mt-6 grid gap-4 md:grid-cols-3">
               {reviewPlan.map((item) => <div key={item} className="rounded-3xl bg-slate-50 p-4 text-sm font-bold leading-6 text-slate-700">{item}</div>)}
             </div>
@@ -808,13 +933,8 @@ export default function DeanyFatihaMemorisationOnly({ onBack, onHome, onGoTafsir
           <Card className="mt-5 bg-gradient-to-br from-white to-emerald-50">
             <p className="text-xs font-black uppercase tracking-[0.25em] text-emerald-700">Optional next lesson</p>
             <h2 className="mt-3 text-3xl font-black text-slate-950">Understand what you memorised</h2>
-            <p className="mt-3 max-w-2xl text-sm font-bold leading-6 text-slate-600">
-              When the learner is ready, send them to the separate beginner tafsir lesson for Surah Al-Fatiha.
-            </p>
-            <button
-              onClick={onGoTafsir}
-              className="mt-6 inline-flex rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white shadow-sm transition hover:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-emerald-100"
-            >
+            <p className="mt-3 max-w-2xl text-sm font-bold leading-6 text-slate-600">When the learner is ready, send them to the separate beginner tafsir lesson for Surah Al-Fatiha.</p>
+            <button onClick={onGoTafsir} className="mt-6 inline-flex rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white shadow-sm transition hover:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-emerald-100">
               Go to Al-Fatiha tafsir lesson
             </button>
           </Card>
@@ -843,6 +963,7 @@ export default function DeanyFatihaMemorisationOnly({ onBack, onHome, onGoTafsir
           <div>
             <p className="text-xs font-black uppercase tracking-[0.25em] text-emerald-700">Al-Fatiha memorisation · {mode.title}</p>
             <h1 className="mt-2 text-3xl font-black">{passage.label}</h1>
+            {progress.returnToFinal && <p className="mt-1 text-sm font-bold text-amber-700">Review this passage, then return to the full-surah test.</p>}
           </div>
           <Button variant="secondary" onClick={reset}>Restart</Button>
         </div>
@@ -887,7 +1008,25 @@ export default function DeanyFatihaMemorisationOnly({ onBack, onHome, onGoTafsir
         )}
 
         {progress.phase === "quiz" && (
-          <Quiz passage={passage} selected={progress.selected[passage.key]} onSelect={selectAnswer} onWrong={logMistake} onCorrect={next} />
+          <Quiz
+            passage={passage}
+            selected={progress.selected[passage.key]}
+            firstAttempt={progress.firstAttempt[passage.key]}
+            onSelect={selectAnswer}
+            onFirstAttempt={recordFirstAttempt}
+            onWeak={addWeak}
+            onCorrect={next}
+          />
+        )}
+
+        {progress.phase === "seam" && (
+          <SeamDrill
+            index={progress.index}
+            firstAttempt={progress.firstAttempt[`seam:${passage.key}`]}
+            onFirstAttempt={recordFirstAttempt}
+            onWeak={addWeak}
+            onContinue={next}
+          />
         )}
 
         {progress.phase === "chain" && (
