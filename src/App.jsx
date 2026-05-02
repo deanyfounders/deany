@@ -720,7 +720,7 @@ const App = () => {
     return <DeanyFatihaMemorisationOnly onBack={goLessons} onHome={goHome} onGoTafsir={() => setScreen('tafsir-fatiha')} />;
   }
   if (screen === 'tafsir-fatiha') {
-    return <DeanyFatihaTafsirBeginnerIbnKathir onBack={goLessons} onHome={goHome} />;
+    return <DeanyFatihaTafsirBeginnerIbnKathir onBack={goLessons} onHome={goHome} onGoToHifz={() => setScreen('hifz-fatiha')} />;
   }
 
   // ═══════════════════════════════════════════════════════════════
