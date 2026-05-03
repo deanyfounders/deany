@@ -14,6 +14,7 @@ import DEANYS2L3 from './DEANY-S2L3.jsx';
 import DEANYS2L4 from './DEANY-S2L4.jsx';
 import DeanyFatihaMemorisationOnly from './DEANY-HIFZ-FATIHA.jsx';
 import DeanyFatihaTafsirBeginnerIbnKathir from './DEANY-TAFSIR-FATIHA.jsx';
+import DeanyCompass from './DEANY-COMPASS.jsx';
 import QuranicQuote from './components/QuranicQuote.jsx';
 import { 
   CheckCircle, XCircle, Star, Trophy, ArrowRight, Sparkles, BookOpen, Home, 
@@ -726,6 +727,10 @@ const App = () => {
   // ═══════════════════════════════════════════════════════════════
   // HOME
   // ═══════════════════════════════════════════════════════════════
+  if (screen === 'compass') {
+    return <DeanyCompass onBack={goHome} onHome={goHome} />;
+  }
+
   if (screen == 'home') {
     const xpNext = level * 100, xpPct = (xp / xpNext) * 100;
 
@@ -752,6 +757,9 @@ const App = () => {
             <div className="flex items-center gap-2.5">
               <Mascot size="sm" />
               <div><span className="text-lg font-bold tracking-tight" style={{fontFamily:"Georgia,serif",color:'#065f46'}}>Deany</span><div className="text-[10px] text-emerald-600/60" style={{fontFamily:"Georgia,serif"}}>Learn Islam Beautifully</div></div>
+              <button onClick={() => setScreen('compass')} className="hidden sm:inline-flex items-center gap-1 ml-3 px-3 py-1.5 rounded-lg text-xs font-medium text-deany-steel border border-deany-border hover:bg-deany-cream transition-all duration-200">
+                <Target className="w-3 h-3" />Calibration Quiz
+              </button>
             </div>
             <div className="flex items-center gap-2">
               <div className="hidden sm:flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold" style={{background:'linear-gradient(135deg,#fef3c7,#fed7aa)',border:'1px solid #fbbf24',color:'#b45309'}}><Flame className="w-3.5 h-3.5" />{dailyStreak}</div>
