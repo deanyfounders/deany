@@ -745,7 +745,13 @@ const App = () => {
   }
 
   if (screen === 'b1-l3') {
-    return <DeanyB1L3 onBack={goLessons} onHome={goHome} />;
+    return <DeanyB1L3 onBack={goLessons} onHome={goHome} onGoToSalah={() => {
+      const pillarsTopic = mainTopics.find(t => t.id === '5-pillars');
+      const salahMod = modules['5-pillars'].find(m => m.id === 'salah');
+      setSelectedMainTopic(pillarsTopic);
+      setSelectedModule(salahMod);
+      setScreen('lessons');
+    }} />;
   }
 
   // ═══════════════════════════════════════════════════════════════
