@@ -379,7 +379,7 @@ const App = () => {
           { id: 's2-l1', title: 'The Five Daily Appointments', description: '', duration: '15 min', questions: [] },
           { id: 's2-l2', title: 'Before You Pray', description: '', duration: '12 min', questions: [] },
           { id: 's2-l3', title: "Inside the Rak'ah", description: '', duration: '15 min', questions: [] },
-          { id: 's2-l4', title: 'The Words That Rise', description: '', duration: '15 min', questions: [] },
+          { id: 's2-l4', title: 'What You Say in Prayer', description: '', duration: '15 min', questions: [] },
         ]
       },
       { id: 'zakat', title: "Zakat", subtitle: "Charity", icon: "💎", color: "#0d9488", difficulty: "Intermediate", estimatedTime: "12 min", questions: [] },
