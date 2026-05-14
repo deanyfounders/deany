@@ -16,6 +16,7 @@ import DeanyFatihaMemorisationOnly from './DEANY-HIFZ-FATIHA.jsx';
 import DeanyFatihaTafsirBeginnerIbnKathir from './DEANY-TAFSIR-FATIHA.jsx';
 import DeanyCompass from './DEANY-COMPASS.jsx';
 import DeanyB1L1 from './DEANY-B1L1.jsx';
+import DeanyB1L2 from './DEANY-B1L2.jsx';
 import QuranicQuote from './components/QuranicQuote.jsx';
 import { 
   CheckCircle, XCircle, Star, Trophy, ArrowRight, Sparkles, BookOpen, Home, 
@@ -368,6 +369,7 @@ const App = () => {
       { id: 'shahada', title: "Shahada", subtitle: "Declaration of Faith", icon: "☝️", color: "#0d9488", difficulty: "Beginner", estimatedTime: "10 min",
         lessons: [
           { id: 'b1-l1', title: 'The Shahadah', description: 'The testimony that opens the door to Islam', duration: '10 min', questions: [] },
+          { id: 'b1-l2', title: 'The Second Testimony', description: 'Why the Shahadah does not stop at illa Allah', duration: '13 min', questions: [] },
         ]
       },
       { id: 'salah', title: "Salah", subtitle: "Prayer", icon: "🤲", color: "#0d9488", difficulty: "Beginner", estimatedTime: "60 min",
@@ -508,6 +510,7 @@ const App = () => {
     if (l.id === 'hifz-fatiha') { setSelectedLesson({...l, lessonIndex: i}); setScreen('hifz-fatiha'); return; }
     if (l.id === 'tafsir-fatiha') { setSelectedLesson({...l, lessonIndex: i}); setScreen('tafsir-fatiha'); return; }
     if (l.id === 'b1-l1') { setSelectedLesson({...l, lessonIndex: i}); setScreen('b1-l1'); return; }
+    if (l.id === 'b1-l2') { setSelectedLesson({...l, lessonIndex: i}); setScreen('b1-l2'); return; }
     if (!l.questions.length) return;
     setSelectedLesson({...l, lessonIndex: i});
     const saved = loadProgress(l.id);
@@ -731,7 +734,11 @@ const App = () => {
   }
 
   if (screen === 'b1-l1') {
-    return <DeanyB1L1 onBack={goLessons} onHome={goHome} />;
+    return <DeanyB1L1 onBack={goLessons} onHome={goHome} onGoToNext={() => setScreen('b1-l2')} />;
+  }
+
+  if (screen === 'b1-l2') {
+    return <DeanyB1L2 onBack={goLessons} onHome={goHome} />;
   }
 
   // ═══════════════════════════════════════════════════════════════
