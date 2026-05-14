@@ -15,6 +15,7 @@ import DEANYS2L4 from './DEANY-S2L4.jsx';
 import DeanyFatihaMemorisationOnly from './DEANY-HIFZ-FATIHA.jsx';
 import DeanyFatihaTafsirBeginnerIbnKathir from './DEANY-TAFSIR-FATIHA.jsx';
 import DeanyCompass from './DEANY-COMPASS.jsx';
+import DeanyB1L1 from './DEANY-B1L1.jsx';
 import QuranicQuote from './components/QuranicQuote.jsx';
 import { 
   CheckCircle, XCircle, Star, Trophy, ArrowRight, Sparkles, BookOpen, Home, 
@@ -364,7 +365,11 @@ const App = () => {
 
   const modules = {
     '5-pillars': [
-      { id: 'shahada', title: "Shahada", subtitle: "Declaration of Faith", icon: "☝️", color: "#0d9488", difficulty: "Beginner", estimatedTime: "10 min", questions: [] },
+      { id: 'shahada', title: "Shahada", subtitle: "Declaration of Faith", icon: "☝️", color: "#0d9488", difficulty: "Beginner", estimatedTime: "10 min",
+        lessons: [
+          { id: 'b1-l1', title: 'The Shahadah', description: 'The testimony that opens the door to Islam', duration: '10 min', questions: [] },
+        ]
+      },
       { id: 'salah', title: "Salah", subtitle: "Prayer", icon: "🤲", color: "#0d9488", difficulty: "Beginner", estimatedTime: "60 min",
         lessons: [
           { id: 's2-l1', title: 'The Five Daily Appointments', description: '', duration: '15 min', questions: [] },
@@ -502,6 +507,7 @@ const App = () => {
     if (l.id === 's2-l4') { setSelectedLesson({...l, lessonIndex: i}); setScreen('s2-l4'); return; }
     if (l.id === 'hifz-fatiha') { setSelectedLesson({...l, lessonIndex: i}); setScreen('hifz-fatiha'); return; }
     if (l.id === 'tafsir-fatiha') { setSelectedLesson({...l, lessonIndex: i}); setScreen('tafsir-fatiha'); return; }
+    if (l.id === 'b1-l1') { setSelectedLesson({...l, lessonIndex: i}); setScreen('b1-l1'); return; }
     if (!l.questions.length) return;
     setSelectedLesson({...l, lessonIndex: i});
     const saved = loadProgress(l.id);
@@ -722,6 +728,10 @@ const App = () => {
   }
   if (screen === 'tafsir-fatiha') {
     return <DeanyFatihaTafsirBeginnerIbnKathir onBack={goLessons} onHome={goHome} onGoToHifz={() => setScreen('hifz-fatiha')} />;
+  }
+
+  if (screen === 'b1-l1') {
+    return <DeanyB1L1 onBack={goLessons} onHome={goHome} />;
   }
 
   // ═══════════════════════════════════════════════════════════════
