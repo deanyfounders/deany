@@ -13,6 +13,7 @@ import DEANYS2L2 from './DEANY-S2L2.jsx';
 import DEANYS2L3 from './DEANY-S2L3.jsx';
 import DEANYS2L4 from './DEANY-S2L4.jsx';
 import DEANYS2L5 from './DEANY-S2L5.jsx';
+import DEANYS2L6 from './DEANY-S2L6.jsx';
 import DeanyFatihaMemorisationOnly from './DEANY-HIFZ-FATIHA.jsx';
 import DeanyFatihaTafsirBeginnerIbnKathir from './DEANY-TAFSIR-FATIHA.jsx';
 import DeanyCompass from './DEANY-COMPASS.jsx';
@@ -382,6 +383,7 @@ const App = () => {
           { id: 's2-l3', title: "Inside the Rak'ah", description: '', duration: '15 min', questions: [] },
           { id: 's2-l4', title: 'What You Say in Prayer', description: '', duration: '15 min', questions: [] },
           { id: 's2-l5', title: 'When Things Go Wrong', description: '', duration: '14 min', questions: [] },
+          { id: 's2-l6', title: 'Your First Real Salah', description: '', duration: '15 min', questions: [] },
         ]
       },
       { id: 'zakat', title: "Zakat", subtitle: "Charity", icon: "💎", color: "#0d9488", difficulty: "Intermediate", estimatedTime: "12 min", questions: [] },
@@ -512,6 +514,7 @@ const App = () => {
     if (l.id === 's2-l3') { setSelectedLesson({...l, lessonIndex: i}); setScreen('s2-l3'); return; }
     if (l.id === 's2-l4') { setSelectedLesson({...l, lessonIndex: i}); setScreen('s2-l4'); return; }
     if (l.id === 's2-l5') { setSelectedLesson({...l, lessonIndex: i}); setScreen('s2-l5'); return; }
+    if (l.id === 's2-l6') { setSelectedLesson({...l, lessonIndex: i}); setScreen('s2-l6'); return; }
     if (l.id === 'hifz-fatiha') { setSelectedLesson({...l, lessonIndex: i}); setScreen('hifz-fatiha'); return; }
     if (l.id === 'tafsir-fatiha') { setSelectedLesson({...l, lessonIndex: i}); setScreen('tafsir-fatiha'); return; }
     if (l.id === 'b1-l1') { setSelectedLesson({...l, lessonIndex: i}); setScreen('b1-l1'); return; }
@@ -733,6 +736,9 @@ const App = () => {
   }
   if (screen === 's2-l5') {
     return <DEANYS2L5 onBack={goLessons} onHome={goHome} />;
+  }
+  if (screen === 's2-l6') {
+    return <DEANYS2L6 onBack={goLessons} onHome={goHome} />;
   }
 
   if (screen === 'hifz-fatiha') {
