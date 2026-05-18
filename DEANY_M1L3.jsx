@@ -5,12 +5,12 @@ import { CheckCircle, XCircle, ArrowRight, Flame, Star, BookOpen, Clock, Target,
 // TOKENS
 // ═══════════════════════════════════════════════════════════════
 const C = {
-  navy:        '#1B2A4A', gold:       '#C5A55A', goldLight:  '#F5EDD6',
-  teal:        '#2A7B88', tealLight:  '#E0F2F4', coral:      '#D4654A',
-  coralLight:  '#FDEAE5', green:      '#3A8B5C', greenLight: '#E5F5EC',
-  orange:      '#E8872B', orangeLight:'#FEF3E5', purple:     '#6B4C9A',
-  magenta:     '#A855A0', dark:       '#3D3D3D', mid:        '#6B6B6B',
-  light:       '#F2F2F2',
+  navy:        '#0F172A', gold:       '#B68A2D', goldLight:  '#FFF7E6',
+  teal:        '#0F766E', tealLight:  '#F0FDFA', coral:      '#B85C44',
+  coralLight:  '#FFF1ED', green:      '#047857', greenLight: '#ECFDF5',
+  orange:      '#B7791F', orangeLight:'#FFFBEB', purple:     '#635BFF',
+  magenta:     '#A855F7', dark:       '#334155', mid:        '#64748B',
+  light:       '#E2E8F0', cream:      '#FBFBF8', slate:      '#F8FAFC',
 };
 const STYLES = `
   @keyframes slideUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
@@ -40,8 +40,8 @@ function md(text){
       : <React.Fragment key={i}>{p}</React.Fragment>
   );
 }
-const PAGE_BG = {background:'linear-gradient(150deg,#f0fdf4 0%,#ecfdf5 30%,#f0f9ff 60%,#fefce8 100%)'};
-const CARD    = {background:'rgba(255,255,255,0.72)',backdropFilter:'blur(16px)'};
+const PAGE_BG = {background:'#FBFBF8'};
+const CARD    = {background:'#FFFFFF',border:'1px solid #E2E8F0',boxShadow:'0 18px 45px rgba(15,23,42,0.06)'};
 
 // ═══════════════════════════════════════════════════════════════
 // SHARED UI
@@ -51,9 +51,9 @@ function IslamicBg(){
     <svg className="absolute inset-0 w-full h-full pointer-events-none" aria-hidden="true">
       <defs>
         <pattern id="ip3" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
-          <path d="M30 0L60 30L30 60L0 30Z" fill="none" stroke={C.teal} strokeWidth="0.5" opacity="0.04"/>
-          <circle cx="30" cy="30" r="12" fill="none" stroke={C.teal} strokeWidth="0.3" opacity="0.04"/>
-          <path d="M30 18L42 30L30 42L18 30Z" fill="none" stroke={C.teal} strokeWidth="0.4" opacity="0.03"/>
+          <path d="M30 0L60 30L30 60L0 30Z" fill="none" stroke={C.teal} strokeWidth="0.5" opacity="0.025"/>
+          <circle cx="30" cy="30" r="12" fill="none" stroke={C.teal} strokeWidth="0.3" opacity="0.025"/>
+          <path d="M30 18L42 30L30 42L18 30Z" fill="none" stroke={C.teal} strokeWidth="0.4" opacity="0.018"/>
         </pattern>
       </defs>
       <rect width="100%" height="100%" fill="url(#ip3)"/>
@@ -77,26 +77,26 @@ function Confetti(){
 function Mascot({size='md'}){
   const sz={sm:'36px',md:'48px',lg:'64px'},fs={sm:'1.1rem',md:'1.5rem',lg:'2.2rem'};
   return(
-    <div className="rounded-full flex items-center justify-center flex-shrink-0" style={{
+    <div className="rounded-3xl border flex items-center justify-center flex-shrink-0" style={{
       width:sz[size],height:sz[size],fontSize:fs[size],
-      background:`linear-gradient(135deg,${C.gold},${C.orange})`,
-      boxShadow:`0 4px 16px ${rgba(C.gold,0.45)}`,
+      background:'#F8FAFC',borderColor:'#E2E8F0',
+      boxShadow:'0 10px 24px rgba(15,23,42,0.05)',
     }}>🪙</div>
   );
 }
 function ProgressBar({qNum,totalQ,score}){
   const pct=Math.min((qNum/totalQ)*100,100);
   return(
-    <div className="mb-6">
-      <div className="flex justify-between items-center mb-1.5">
-        <span className="text-xs font-semibold" style={{color:C.mid}}>Question {Math.min(qNum+1,totalQ)} of {totalQ}</span>
-        <div className="flex items-center gap-1.5">
+    <div className="mb-6 rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="flex justify-between items-center mb-3">
+        <span className="text-xs font-black uppercase tracking-[0.18em]" style={{color:C.mid}}>Question {Math.min(qNum+1,totalQ)} of {totalQ}</span>
+        <div className="flex items-center gap-1.5 rounded-2xl px-3 py-1" style={{background:C.goldLight,color:C.navy}}>
           <Star className="w-3.5 h-3.5" style={{color:C.gold}} fill={C.gold}/>
-          <span className="text-xs font-bold" style={{color:C.navy}}>{score} pts</span>
+          <span className="text-xs font-black">{score} pts</span>
         </div>
       </div>
       <div className="h-2 rounded-full overflow-hidden" style={{background:C.light}}>
-        <div className="h-full rounded-full" style={{width:`${pct}%`,background:`linear-gradient(90deg,${C.teal},${C.green})`,transition:'width 0.7s ease-out'}}/>
+        <div className="h-full rounded-full" style={{width:`${pct}%`,background:C.teal,transition:'width 0.7s ease-out'}}/>
       </div>
     </div>
   );
@@ -121,22 +121,22 @@ function FeedbackPanel({correct,text,bridge,meta}){
     : correct ? C.green : C.coral;
 
   return(
-    <div className="mt-4 rounded-xl p-5 border-2 su" style={{background:correct?C.greenLight:C.coralLight,borderColor:correct?C.green:C.coral}}>
+    <div className="mt-5 rounded-3xl p-5 su" style={{background:correct?C.greenLight:C.coralLight,color:correct?'#064E3B':'#7F1D1D'}}>
       <div className="flex items-start gap-3">
         <div className="flex-shrink-0 mt-0.5">
           {correct?<CheckCircle className="w-5 h-5" style={{color:C.green}}/>:<XCircle className="w-5 h-5" style={{color:C.coral}}/>}
         </div>
         <div className="flex-1">
           {meta ? (
-            <div className="flex items-baseline gap-2 mb-1 flex-wrap">
-              <span className="text-xl font-black" style={{color:scoreColor,fontFamily:'Georgia,serif'}}>
+            <div className="flex items-baseline gap-2 mb-2 flex-wrap">
+              <span className="text-xl font-black" style={{color:scoreColor}}>
                 {meta.ok}/{meta.total}
               </span>
-              <span className="text-sm font-bold" style={{color:scoreColor}}>
+              <span className="text-xs font-black uppercase tracking-[0.16em]" style={{color:scoreColor}}>
                 {meta.isUnscored ? 'placed' : 'correct'}
               </span>
               {!meta.isUnscored && (
-                <span className="text-xs px-2 py-0.5 rounded-full font-bold" style={{
+                <span className="text-xs px-2 py-0.5 rounded-full font-black" style={{
                   background: meta.ok===meta.total?C.green:meta.ok>=Math.ceil(meta.total*0.67)?C.gold:C.coral,
                   color:'white'
                 }}>
@@ -145,13 +145,13 @@ function FeedbackPanel({correct,text,bridge,meta}){
               )}
             </div>
           ):(
-            <div className="text-sm font-bold mb-1" style={{color:correct?C.green:C.coral}}>{correct?'Correct!':'Not quite!'}</div>
+            <div className="text-xs font-black uppercase tracking-[0.18em] mb-2" style={{color:correct?C.green:C.coral}}>{correct?'Correct':'Not quite'}</div>
           )}
-          <div className="text-sm leading-relaxed" style={{color:C.dark}}>{text}</div>
+          <div className="text-sm font-bold leading-6" style={{color:correct?'#064E3B':'#7F1D1D'}}>{text}</div>
           {bridge&&correct&&(
-            <div className="mt-3 pt-3 border-t flex items-start gap-2" style={{borderColor:rgba(C.green,0.28)}}>
+            <div className="mt-4 rounded-2xl bg-white/70 p-4 flex items-start gap-2">
               <ArrowRight className="w-4 h-4 mt-0.5 flex-shrink-0" style={{color:C.teal}}/>
-              <span className="text-xs italic" style={{color:C.teal}}>{bridge}</span>
+              <span className="text-xs font-bold leading-5" style={{color:C.teal}}>{bridge}</span>
             </div>
           )}
         </div>
@@ -163,7 +163,7 @@ function FeedbackPanel({correct,text,bridge,meta}){
 // ─── RIBA DIAGRAM ─────────────────────────────────────────────
 function RibaDiagram(){
   return(
-    <div className="rounded-2xl overflow-hidden mb-5 border-2" style={{borderColor:rgba(C.coral,0.3)}}>
+    <div className="rounded-3xl overflow-hidden mb-5 border-2" style={{borderColor:rgba(C.coral,0.3)}}>
       {/* Header */}
       <div className="px-4 py-2.5 flex items-center gap-2" style={{background:`linear-gradient(135deg,${C.coral},${C.orange})`}}>
         <span className="text-base">⚡</span>
@@ -176,10 +176,10 @@ function RibaDiagram(){
         {/* The deal */}
         <div className="flex items-stretch gap-2 mb-3">
           {/* Lender box */}
-          <div className="flex-1 rounded-xl p-3 text-center border-2" style={{background:C.greenLight,borderColor:C.green}}>
+          <div className="flex-1 rounded-2xl p-3 text-center border-2" style={{background:C.greenLight,borderColor:C.green}}>
             <div className="text-2xl mb-1">🏦</div>
             <div className="text-xs font-black" style={{color:C.navy}}>LENDER</div>
-            <div className="mt-2 px-2 py-1 rounded-lg text-[10px] font-black" style={{background:C.green,color:'white'}}>
+            <div className="mt-2 px-2 py-1 rounded-xl text-[10px] font-black" style={{background:C.green,color:'white'}}>
               ZERO RISK
             </div>
             <div className="mt-1.5 text-[9px] leading-tight" style={{color:C.green}}>
@@ -204,10 +204,10 @@ function RibaDiagram(){
           </div>
 
           {/* Borrower box */}
-          <div className="flex-1 rounded-xl p-3 text-center border-2" style={{background:C.coralLight,borderColor:C.coral}}>
+          <div className="flex-1 rounded-2xl p-3 text-center border-2" style={{background:C.coralLight,borderColor:C.coral}}>
             <div className="text-2xl mb-1">🧍</div>
             <div className="text-xs font-black" style={{color:C.navy}}>BORROWER</div>
-            <div className="mt-2 px-2 py-1 rounded-lg text-[10px] font-black" style={{background:C.coral,color:'white'}}>
+            <div className="mt-2 px-2 py-1 rounded-xl text-[10px] font-black" style={{background:C.coral,color:'white'}}>
               ALL RISK
             </div>
             <div className="mt-1.5 text-[9px] leading-tight" style={{color:C.coral}}>
@@ -217,7 +217,7 @@ function RibaDiagram(){
         </div>
 
         {/* The injustice - visual breakdown */}
-        <div className="rounded-xl p-3 border" style={{background:rgba(C.navy,0.04),borderColor:rgba(C.navy,0.1)}}>
+        <div className="rounded-2xl p-3 border" style={{background:rgba(C.navy,0.04),borderColor:rgba(C.navy,0.1)}}>
           <div className="text-[10px] font-black mb-2 text-center uppercase tracking-wide" style={{color:C.navy}}>What makes this unjust</div>
           <div className="grid grid-cols-2 gap-2">
             {[
@@ -239,14 +239,14 @@ function RibaDiagram(){
 
         {/* Contrast: ribā vs trade */}
         <div className="grid grid-cols-2 gap-2 mt-3">
-          <div className="rounded-xl p-2.5 text-center border-2" style={{background:C.coralLight,borderColor:C.coral}}>
+          <div className="rounded-2xl p-2.5 text-center border-2" style={{background:C.coralLight,borderColor:C.coral}}>
             <div className="text-xs font-black mb-0.5" style={{color:C.coral}}>❌ Ribā</div>
             <div className="text-[10px] leading-snug" style={{color:C.dark}}>
               Money lent → Money back + extra<br/>
               <span className="font-bold">No product. No service. No trade.</span>
             </div>
           </div>
-          <div className="rounded-xl p-2.5 text-center border-2" style={{background:C.greenLight,borderColor:C.green}}>
+          <div className="rounded-2xl p-2.5 text-center border-2" style={{background:C.greenLight,borderColor:C.green}}>
             <div className="text-xs font-black mb-0.5" style={{color:C.green}}>✅ Halal Trade</div>
             <div className="text-[10px] leading-snug" style={{color:C.dark}}>
               Buy for 100 → Sell for 120<br/>
@@ -268,7 +268,7 @@ function ThreeWayTable(){
   ];
   const rows=[{l:'Meaning',k:'meaning'},{l:'Core Problem',k:'problem'},{l:'Simple Test',k:'test'},{l:'Real Example',k:'example'},{l:'Who Gets Hurt',k:'hurt'},{l:'Quran',k:'quran'}];
   return(
-    <div className="rounded-xl overflow-hidden border mb-5" style={{borderColor:rgba(C.navy,0.1)}}>
+    <div className="rounded-2xl overflow-hidden border mb-5" style={{borderColor:rgba(C.navy,0.1)}}>
       <div className="grid grid-cols-3">
         {cols.map(col=>(
           <div key={col.title} className="p-3 text-center border-r last:border-r-0" style={{background:col.bg,borderColor:rgba(C.navy,0.08)}}>
@@ -295,7 +295,7 @@ function ThreeWayTable(){
 // ─── FAKE AD CARD ─────────────────────────────────────────────
 function FakeAdCard(){
   return(
-    <div className="rounded-xl overflow-hidden mb-4 shadow-lg border-2" style={{borderColor:rgba(C.gold,0.4)}}>
+    <div className="rounded-2xl overflow-hidden mb-4 shadow-sm border-2" style={{borderColor:rgba(C.gold,0.4)}}>
       <div className="px-4 py-2 flex items-center justify-between" style={{background:C.navy}}>
         <span className="text-[10px] font-bold tracking-widest uppercase" style={{color:rgba(C.gold,0.7)}}>Sponsored · Investment</span>
         <span className="text-[9px] px-2 py-0.5 rounded" style={{background:rgba(C.gold,0.15),color:C.gold}}>Ad</span>
@@ -303,7 +303,7 @@ function FakeAdCard(){
       <div className="p-4" style={{background:`linear-gradient(135deg,${C.navy} 0%,#243558 100%)`}}>
         <div className="text-center mb-3">
           <div className="text-[10px] font-bold tracking-widest mb-1" style={{color:rgba(C.gold,0.7)}}>INVEST WITH US</div>
-          <div className="text-3xl font-black" style={{color:C.gold,fontFamily:'Georgia,serif'}}>12% GUARANTEED</div>
+          <div className="text-3xl font-black" style={{color:C.gold,fontFamily:'inherit'}}>12% GUARANTEED</div>
           <div className="text-xs" style={{color:'rgba(255,255,255,0.6)'}}>Annual Returns</div>
         </div>
         <div className="space-y-1.5 mb-3">
@@ -313,7 +313,7 @@ function FakeAdCard(){
             </div>
           ))}
         </div>
-        <div className="w-full py-2 rounded-lg text-xs font-bold text-center" style={{background:`linear-gradient(135deg,${C.gold},${C.orange})`,color:C.navy}}>
+        <div className="w-full py-2 rounded-xl text-xs font-bold text-center" style={{background:C.gold,color:C.navy}}>
           INVEST NOW →
         </div>
       </div>
@@ -622,15 +622,15 @@ export default function DEANY_M1L3({ onBack, onHome, savedProgress }){
   if(screen==='intro') return(
     <div className="min-h-screen relative overflow-hidden" style={PAGE_BG}>
       <IslamicBg/><style>{STYLES}</style>
-      <div className="relative z-10 max-w-2xl mx-auto px-4 py-10">
+      <div className="relative z-10 max-w-5xl mx-auto px-4 py-10">
         <LessonNav />
         <div className="text-center mb-8 su">
           <span className="inline-block px-4 py-1.5 rounded-full text-xs font-bold mb-4" style={{background:rgba(C.gold,0.14),color:C.gold}}>MODULE 1 · LESSON 3</span>
-          <h1 className="text-3xl font-bold mb-2" style={{color:C.navy,fontFamily:'Georgia,serif'}}>Riba, Gharar, Maysir</h1>
+          <h1 className="text-3xl font-bold mb-2" style={{color:C.navy,fontFamily:'inherit'}}>Riba, Gharar, Maysir</h1>
           <p className="text-sm" style={{color:C.mid}}>Ribā. Gharar. Maysir. The three things a custodian must never allow.</p>
         </div>
-        <div className="rounded-2xl p-6 border border-white/40 shadow-lg su" style={CARD}>
-          <div className="rounded-xl p-4 mb-5 border" style={{background:rgba(C.tealLight,0.7),borderColor:rgba(C.teal,0.18)}}>
+        <div className="rounded-3xl p-6 border border-slate-200 shadow-sm su" style={CARD}>
+          <div className="rounded-2xl p-4 mb-5 border" style={{background:rgba(C.tealLight,0.7),borderColor:rgba(C.teal,0.18)}}>
             <div className="text-xs font-bold mb-1" style={{color:C.teal}}>📎 Continuing from Lesson 1.2</div>
             <p className="text-xs leading-relaxed" style={{color:C.dark}}>
               Wealth is amānah - a trust you manage responsibly. But what does 'responsibly' actually mean? What specifically can a custodian <strong>never</strong> do? This lesson answers with three precise prohibitions.
@@ -638,7 +638,7 @@ export default function DEANY_M1L3({ onBack, onHome, savedProgress }){
           </div>
           <div className="flex items-start gap-3 mb-5">
             <Mascot/>
-            <div className="rounded-xl rounded-tl-sm p-4 border border-gray-100 flex-1" style={{background:'rgba(255,255,255,0.85)'}}>
+            <div className="rounded-2xl rounded-tl-sm p-4 border border-gray-100 flex-1" style={{background:'rgba(255,255,255,0.85)'}}>
               <p className="text-sm" style={{color:C.dark}}>
                 <strong style={{color:C.teal}}>Fulus:</strong> We start with a sorting challenge - before any definitions. Trust your gut first, then I'll name what you felt. Let's build your filter! ⚖️
               </p>
@@ -650,7 +650,7 @@ export default function DEANY_M1L3({ onBack, onHome, savedProgress }){
               {term:'Gharar',arabic:'غرر',  icon:'🌫️',color:C.orange,bg:C.orangeLight},
               {term:'Maysir',arabic:'ميسر',icon:'🎲',color:C.gold,  bg:C.goldLight},
             ].map((t,i)=>(
-              <div key={i} className="text-center p-3 rounded-xl border" style={{background:t.bg,borderColor:rgba(t.color,0.25)}}>
+              <div key={i} className="text-center p-3 rounded-2xl border" style={{background:t.bg,borderColor:rgba(t.color,0.25)}}>
                 <div className="text-xl mb-1">{t.icon}</div>
                 <div className="text-sm font-bold" style={{color:t.color}}>{t.term}</div>
                 <div className="text-xs font-bold" style={{color:rgba(t.color,0.65)}}>{t.arabic}</div>
@@ -663,18 +663,18 @@ export default function DEANY_M1L3({ onBack, onHome, savedProgress }){
               {icon:<Target className="w-4 h-4"/>,label:'7 Qs',sub:'Questions'},
               {icon:<BookOpen className="w-4 h-4"/>,label:'L2→L3',sub:'Difficulty'},
             ].map((m,i)=>(
-              <div key={i} className="text-center p-3 rounded-xl border" style={{background:rgba(C.tealLight,0.5),borderColor:rgba(C.teal,0.12)}}>
+              <div key={i} className="text-center p-3 rounded-2xl border" style={{background:rgba(C.tealLight,0.5),borderColor:rgba(C.teal,0.12)}}>
                 <div className="flex justify-center mb-1" style={{color:C.teal}}>{m.icon}</div>
                 <div className="text-sm font-bold" style={{color:C.navy}}>{m.label}</div>
                 <div className="text-[10px]" style={{color:C.mid}}>{m.sub}</div>
               </div>
             ))}
           </div>
-          <div className="rounded-lg p-3 mb-5" style={{background:C.goldLight,border:`1px solid ${rgba(C.gold,0.28)}`}}>
+          <div className="rounded-xl p-3 mb-5" style={{background:C.goldLight,border:`1px solid ${rgba(C.gold,0.28)}`}}>
             <div className="text-xs font-bold mb-1" style={{color:C.gold}}>🎯 Learning Objective</div>
             <p className="text-xs leading-relaxed" style={{color:C.dark}}>Define ribā, gharar, and maysir in plain English, explain why each is harmful, give a real-world example of each, and identify which prohibition applies to a given scenario.</p>
           </div>
-          <button onClick={()=>setScreen('lesson')} className="w-full py-3.5 rounded-xl font-bold text-sm" style={{background:`linear-gradient(135deg,${C.navy},${C.teal})`,color:'white'}}>
+          <button onClick={()=>setScreen('lesson')} className="w-full py-3.5 rounded-2xl font-bold text-sm" style={{background:C.navy,color:'white'}}>
             Begin Lesson <ArrowRight className="w-4 h-4 inline ml-1 -mt-0.5"/>
           </button>
         </div>
@@ -691,11 +691,11 @@ export default function DEANY_M1L3({ onBack, onHome, savedProgress }){
       <div className="min-h-screen relative overflow-hidden" style={PAGE_BG}>
         <IslamicBg/><style>{STYLES}</style>
         {confetti&&<Confetti/>}
-        <div className="relative z-10 max-w-2xl mx-auto px-4 py-10">
+        <div className="relative z-10 max-w-5xl mx-auto px-4 py-10">
           <LessonNav />
-          <div className="rounded-2xl p-8 border border-white/40 shadow-xl text-center su" style={CARD}>
+          <div className="rounded-3xl p-8 border border-slate-200 shadow-sm text-center su" style={CARD}>
             <div className="text-4xl mb-3">🏆</div>
-            <h1 className="text-2xl font-bold mb-1" style={{color:C.navy,fontFamily:'Georgia,serif'}}>Lesson Complete!</h1>
+            <h1 className="text-2xl font-bold mb-1" style={{color:C.navy,fontFamily:'inherit'}}>Lesson Complete!</h1>
             <p className="text-sm mb-4" style={{color:C.mid}}>Riba, Gharar, Maysir</p>
             <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold mb-6" style={{background:rgba(C.gold,0.18),color:C.gold,border:`1px solid ${rgba(C.gold,0.35)}`}}>
               <Award className="w-3.5 h-3.5"/> Multiple Prohibitions Spotted! ⭐
@@ -706,12 +706,12 @@ export default function DEANY_M1L3({ onBack, onHome, savedProgress }){
                 <circle cx="48" cy="48" r="36" fill="none" stroke={ring} strokeWidth="6" strokeLinecap="round" strokeDasharray={circ} strokeDashoffset={offset} style={{transition:'stroke-dashoffset 1.5s ease-out'}}/>
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-2xl font-bold" style={{color:C.navy,fontFamily:'Georgia,serif'}}>{correct}/{total}</span>
+                <span className="text-2xl font-bold" style={{color:C.navy,fontFamily:'inherit'}}>{correct}/{total}</span>
               </div>
             </div>
             <div className="grid grid-cols-3 gap-3 mb-6">
               {[{label:'Score',value:`${score} pts`,color:C.green,bg:C.greenLight},{label:'Accuracy',value:`${pct}%`,color:C.teal,bg:C.tealLight},{label:'Level',value:'L2→L3',color:C.purple,bg:rgba(C.purple,0.1)}].map((s,i)=>(
-                <div key={i} className="p-3 rounded-xl border" style={{background:s.bg,borderColor:rgba(s.color,0.18)}}>
+                <div key={i} className="p-3 rounded-2xl border" style={{background:s.bg,borderColor:rgba(s.color,0.18)}}>
                   <div className="text-lg font-bold" style={{color:s.color}}>{s.value}</div>
                   <div className="text-[10px]" style={{color:C.mid}}>{s.label}</div>
                 </div>
@@ -723,14 +723,14 @@ export default function DEANY_M1L3({ onBack, onHome, savedProgress }){
                 {icon:'🌫️',term:'Gharar',desc:'Hidden info, foggy deal',     color:C.orange,bg:C.orangeLight},
                 {icon:'🎲',term:'Maysir',desc:'Pure chance, no exchange',    color:C.gold,  bg:C.goldLight},
               ].map((t,i)=>(
-                <div key={i} className="p-2.5 rounded-xl border text-center" style={{background:t.bg,borderColor:rgba(t.color,0.22)}}>
+                <div key={i} className="p-2.5 rounded-2xl border text-center" style={{background:t.bg,borderColor:rgba(t.color,0.22)}}>
                   <CheckCircle className="w-3.5 h-3.5 mx-auto mb-1" style={{color:t.color}}/>
                   <div className="text-xs font-bold" style={{color:t.color}}>{t.term}</div>
                   <div className="text-[9px] leading-tight mt-0.5" style={{color:C.mid}}>{t.desc}</div>
                 </div>
               ))}
             </div>
-            <div className="text-left p-4 rounded-xl mb-6" style={{background:rgba(C.greenLight,0.7),border:`1px solid ${rgba(C.green,0.18)}`}}>
+            <div className="text-left p-4 rounded-2xl mb-6" style={{background:rgba(C.greenLight,0.7),border:`1px solid ${rgba(C.green,0.18)}`}}>
               <div className="text-xs font-bold mb-2" style={{color:C.green}}>✅ Concepts Mastered</div>
               {['Ribā = guaranteed return, zero risk for lender','Gharar = hidden information, fog in the deal','Maysir = pure chance, no real exchange','Can distinguish all three from each other','Can spot multiple prohibitions in one deal'].map((c,i)=>(
                 <div key={i} className="flex items-center gap-2 py-0.5">
@@ -739,7 +739,7 @@ export default function DEANY_M1L3({ onBack, onHome, savedProgress }){
                 </div>
               ))}
             </div>
-            <div className="p-4 rounded-xl mb-6" style={{background:C.goldLight,border:`1px solid ${rgba(C.gold,0.25)}`}}>
+            <div className="p-4 rounded-2xl mb-6" style={{background:C.goldLight,border:`1px solid ${rgba(C.gold,0.25)}`}}>
               <div className="text-xs font-bold mb-3" style={{color:C.gold}}>How confident do you feel about the three prohibitions?</div>
               <div className="flex items-center gap-3 mb-2">
                 <span className="text-[10px] w-16 text-right" style={{color:C.mid}}>Still unsure</span>
@@ -750,12 +750,12 @@ export default function DEANY_M1L3({ onBack, onHome, savedProgress }){
                 {confidence<=2?"Three new concepts is a lot. They'll solidify with practice - and keep coming back in future lessons.":confidence===3?"Solid start. You know the names and the tests. Practice will sharpen this.":"You're building real analytical skills. Ready for the next step."}
               </p>
             </div>
-            <div className="p-4 rounded-xl mb-5" style={{background:rgba(C.teal,0.07),border:`1px solid ${rgba(C.teal,0.16)}`}}>
+            <div className="p-4 rounded-2xl mb-5" style={{background:rgba(C.teal,0.07),border:`1px solid ${rgba(C.teal,0.16)}`}}>
               <div className="text-xs font-bold mb-1" style={{color:C.teal}}>Up Next</div>
               <div className="text-sm font-semibold mb-0.5" style={{color:C.navy}}>Lesson 1.4: Substance Over Labels</div>
               <div className="text-xs" style={{color:C.mid}}>You know WHAT is prohibited. Now learn how to DETECT it - even when it's disguised behind marketing and fancy labels.</div>
             </div>
-            <button className="w-full py-3.5 rounded-xl font-bold text-sm" style={{background:`linear-gradient(135deg,${C.gold},${C.orange})`,color:C.navy}}>
+            <button className="w-full py-3.5 rounded-2xl font-bold text-sm" style={{background:C.gold,color:C.navy}}>
               Next Lesson <ArrowRight className="w-4 h-4 inline ml-1 -mt-0.5"/>
             </button>
           </div>
@@ -768,25 +768,25 @@ export default function DEANY_M1L3({ onBack, onHome, savedProgress }){
     <div className="min-h-screen relative overflow-hidden" style={PAGE_BG}>
       <IslamicBg/><style>{STYLES}</style>
       {streakFlash&&(
-        <div className="fixed top-4 right-4 z-50 flex items-center gap-2 px-4 py-2 rounded-full shadow-lg su" style={{background:`linear-gradient(135deg,${C.orange},${C.coral})`,color:'white'}}>
+        <div className="fixed top-4 right-4 z-50 flex items-center gap-2 px-4 py-2 rounded-full shadow-sm su" style={{background:`linear-gradient(135deg,${C.orange},${C.coral})`,color:'white'}}>
           <Flame className="w-4 h-4"/><span className="text-sm font-bold">{streak} Streak! 🔥</span>
         </div>
       )}
       {l3Toast&&(
-        <div className="fixed top-4 left-1/2 z-50 flex items-center gap-2 px-5 py-3 rounded-full shadow-xl su" style={{background:C.navy,color:C.gold,border:`2px solid ${rgba(C.gold,0.4)}`,transform:'translateX(-50%)'}}>
+        <div className="fixed top-4 left-1/2 z-50 flex items-center gap-2 px-5 py-3 rounded-full shadow-sm su" style={{background:C.navy,color:C.gold,border:`2px solid ${rgba(C.gold,0.4)}`,transform:'translateX(-50%)'}}>
           <Award className="w-4 h-4"/><span className="text-sm font-bold">Level 3 reached! That's application thinking.</span>
         </div>
       )}
       {multiToast&&(
-        <div className="fixed top-16 left-1/2 z-50 flex items-center gap-2 px-5 py-3 rounded-full shadow-xl su" style={{background:`linear-gradient(135deg,${C.coral},${C.orange})`,color:'white',transform:'translateX(-50%)'}}>
+        <div className="fixed top-16 left-1/2 z-50 flex items-center gap-2 px-5 py-3 rounded-full shadow-sm su" style={{background:`linear-gradient(135deg,${C.coral},${C.orange})`,color:'white',transform:'translateX(-50%)'}}>
           <span className="text-sm font-bold">🎯 Multiple poisons spotted!</span>
         </div>
       )}
-      <div className="relative z-10 max-w-2xl mx-auto px-4 py-6">
+      <div className="relative z-10 max-w-5xl mx-auto px-4 py-6">
         <LessonNav />
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center text-base" style={{background:rgba(C.coral,0.12),color:C.coral}}>⚖️</div>
+            <div className="w-8 h-8 rounded-xl flex items-center justify-center text-base" style={{background:rgba(C.coral,0.12),color:C.coral}}>⚖️</div>
             <div>
               <div className="text-xs font-bold" style={{color:C.navy}}>Lesson 1.3</div>
               <div className="text-[10px]" style={{color:C.mid}}>Riba, Gharar, Maysir</div>
@@ -797,8 +797,8 @@ export default function DEANY_M1L3({ onBack, onHome, savedProgress }){
           </div>
         </div>
         <ProgressBar qNum={qDoneNum} totalQ={SCORED_COUNT} score={score}/>
-        {current.type==='section'&&<SectionCard key={`s${flowIdx}`} section={current.data} onContinue={advance}/>}
-        {current.type==='question'&&<QuestionCard key={`q${flowIdx}`} q={current.data} qNum={qDoneNum} totalQ={SCORED_COUNT} onAnswer={handleAnswer} onNext={advance}/>}
+        {current.type==='section'&&<SectionCard key={`s${flowIdx}`} section={current.data} onContinue={advance}/>} 
+        {current.type==='question'&&<QuestionCard key={`q${flowIdx}`} q={current.data} qNum={qDoneNum} totalQ={SCORED_COUNT} onAnswer={handleAnswer} onNext={advance}/>} 
       </div>
     </div>
   );
@@ -809,10 +809,10 @@ export default function DEANY_M1L3({ onBack, onHome, savedProgress }){
 // ═══════════════════════════════════════════════════════════════
 function SectionCard({section,onContinue}){
   return(
-    <div className="su rounded-2xl overflow-hidden border border-white/40 shadow-lg" style={CARD}>
+    <div className="su rounded-3xl overflow-hidden border border-slate-200 shadow-sm" style={CARD}>
       <div className="px-6 py-4 flex items-center gap-3" style={{background:`linear-gradient(135deg,${C.navy},${C.teal})`}}>
         <span className="text-2xl">{section.icon}</span>
-        <h2 className="text-lg font-bold text-white" style={{fontFamily:'Georgia,serif'}}>{section.title}</h2>
+        <h2 className="text-lg font-bold text-white" style={{fontFamily:'inherit'}}>{section.title}</h2>
       </div>
       <div className="p-6">
         {section.content.map((p,i)=>(
@@ -820,7 +820,7 @@ function SectionCard({section,onContinue}){
         ))}
         {section.ribaDiagram&&<RibaDiagram/>}
         {section.quran&&(
-          <div className="rounded-xl overflow-hidden mb-5 border" style={{borderColor:rgba(C.gold,0.3)}}>
+          <div className="rounded-2xl overflow-hidden mb-5 border" style={{borderColor:rgba(C.gold,0.3)}}>
             <div className="px-4 py-2 flex items-center gap-2" style={{background:`linear-gradient(135deg,${C.navy},#2a3f6a)`}}>
               <span className="text-sm">📖</span>
               <span className="text-xs font-bold tracking-wide" style={{color:rgba(C.gold,0.9)}}>Quranic Reference - {section.quran.ref}</span>
@@ -833,7 +833,7 @@ function SectionCard({section,onContinue}){
             </div>
             {/* Translation */}
             <div className="px-4 py-4" style={{background:C.goldLight}}>
-              <p className="text-sm italic leading-relaxed mb-2" style={{color:C.navy,fontFamily:'Georgia,serif'}}>
+              <p className="text-sm italic leading-relaxed mb-2" style={{color:C.navy,fontFamily:'inherit'}}>
                 {section.quran.text}
               </p>
               <p className="text-xs font-semibold mb-2" style={{color:C.gold}}> - {section.quran.ref}</p>
@@ -846,13 +846,13 @@ function SectionCard({section,onContinue}){
           </div>
         )}
         {section.misconception&&(
-          <div className="rounded-xl p-4 mb-4 border-l-4" style={{background:C.coralLight,borderColor:C.coral}}>
+          <div className="rounded-2xl p-4 mb-4 border-l-4" style={{background:C.coralLight,borderColor:C.coral}}>
             <div className="text-xs font-bold mb-1" style={{color:C.coral}}>⚠️ Common Misconception</div>
             <p className="text-sm leading-relaxed" style={{color:C.dark}}>{md(section.misconception)}</p>
           </div>
         )}
         {section.ghararTable&&(
-          <div className="rounded-xl overflow-hidden mb-5 border" style={{borderColor:rgba(C.navy,0.1)}}>
+          <div className="rounded-2xl overflow-hidden mb-5 border" style={{borderColor:rgba(C.navy,0.1)}}>
             <div className="grid grid-cols-2 text-xs font-bold" style={{background:C.navy,color:'white'}}>
               <div className="p-2.5">🌫️ Gharar (prohibited fog)</div>
               <div className="p-2.5 border-l" style={{borderColor:'rgba(255,255,255,0.12)'}}>✅ NOT Gharar (normal risk)</div>
@@ -866,7 +866,7 @@ function SectionCard({section,onContinue}){
           </div>
         )}
         {section.maysirTable&&(
-          <div className="rounded-xl overflow-hidden mb-4 border" style={{borderColor:rgba(C.navy,0.1)}}>
+          <div className="rounded-2xl overflow-hidden mb-4 border" style={{borderColor:rgba(C.navy,0.1)}}>
             <div className="grid grid-cols-2 text-xs font-bold" style={{background:C.navy,color:'white'}}>
               <div className="p-2.5">🎲 Clearly Maysir</div>
               <div className="p-2.5 border-l" style={{borderColor:'rgba(255,255,255,0.12)'}}>✅ Not Maysir</div>
@@ -880,7 +880,7 @@ function SectionCard({section,onContinue}){
           </div>
         )}
         {section.threeWayCallout&&(
-          <div className="rounded-xl p-4 mb-4" style={{background:rgba(C.navy,0.05),border:`2px solid ${rgba(C.navy,0.12)}`}}>
+          <div className="rounded-2xl p-4 mb-4" style={{background:rgba(C.navy,0.05),border:`2px solid ${rgba(C.navy,0.12)}`}}>
             <div className="text-xs font-bold mb-2" style={{color:C.navy}}>💡 The Three-Way Distinction</div>
             {[
               {color:C.coral, label:'RIBĀ  ',text:'outcome is GUARANTEED. One side takes zero risk.'},
@@ -897,12 +897,12 @@ function SectionCard({section,onContinue}){
         )}
         {section.threeWayTable&&<ThreeWayTable/>}
         {section.takeaway&&(
-          <div className="rounded-xl p-4 mb-4" style={{background:C.goldLight,border:`1px solid ${rgba(C.gold,0.28)}`}}>
+          <div className="rounded-2xl p-4 mb-4" style={{background:C.goldLight,border:`1px solid ${rgba(C.gold,0.28)}`}}>
             <div className="text-xs font-bold mb-1" style={{color:C.gold}}>🔑 Key Takeaway</div>
             <p className="text-sm leading-relaxed" style={{color:C.dark}}>{md(section.takeaway)}</p>
           </div>
         )}
-        <button onClick={onContinue} className="w-full py-3 rounded-xl font-bold text-sm mt-1" style={{background:`linear-gradient(135deg,${C.teal},${C.green})`,color:'white'}}>
+        <button onClick={onContinue} className="w-full py-3 rounded-2xl font-bold text-sm mt-1" style={{background:C.teal,color:'white'}}>
           Continue <ArrowRight className="w-4 h-4 inline ml-1 -mt-0.5"/>
         </button>
       </div>
@@ -926,19 +926,19 @@ function QuestionCard({q,qNum,totalQ,onAnswer,onNext}){
   },[onAnswer,q.scored,q.isCapstone,q.multiPoison]);
 
   return(
-    <div className="su rounded-2xl overflow-hidden border border-white/40 shadow-lg" style={CARD}>
+    <div className="su rounded-3xl overflow-hidden border border-slate-200 shadow-sm" style={CARD}>
       <div className="p-6">
         <ModeBadge mode={q.mode} type={q.typeLabel} unscored={q.scored===false}/>
         {q.showFakeAd&&<FakeAdCard/>}
         <h3 className="text-sm font-bold leading-relaxed mb-5" style={{color:C.navy}}>{q.question}</h3>
-        {q.type==='mcq'          &&<MCQ         q={q} done={done} onFinish={finish}/>}
-        {q.type==='bucket3'      &&<Bucket3     q={q} done={done} onFinish={finish}/>}
-        {q.type==='swipe'        &&<SwipeCards  q={q} done={done} onFinish={finish}/>}
-        {q.type==='verdict'      &&<VerdictStamp q={q} done={done} onFinish={finish}/>}
-        {q.type==='word-order'   &&<WordOrder   q={q} done={done} onFinish={finish}/>}
-        {done&&fbText&&<FeedbackPanel correct={correct} text={fbText} bridge={q.bridge} meta={fbMeta}/>}
+        {q.type==='mcq'          &&<MCQ         q={q} done={done} onFinish={finish}/>} 
+        {q.type==='bucket3'      &&<Bucket3     q={q} done={done} onFinish={finish}/>} 
+        {q.type==='swipe'        &&<SwipeCards  q={q} done={done} onFinish={finish}/>} 
+        {q.type==='verdict'      &&<VerdictStamp q={q} done={done} onFinish={finish}/>} 
+        {q.type==='word-order'   &&<WordOrder   q={q} done={done} onFinish={finish}/>} 
+        {done&&fbText&&<FeedbackPanel correct={correct} text={fbText} bridge={q.bridge} meta={fbMeta}/>} 
         {done&&(
-          <button onClick={onNext} className="w-full py-3 rounded-xl font-bold text-sm mt-4" style={{background:`linear-gradient(135deg,${C.navy},${C.teal})`,color:'white'}}>
+          <button onClick={onNext} className="w-full py-3 rounded-2xl font-bold text-sm mt-4" style={{background:C.navy,color:'white'}}>
             {qNum>=totalQ-1?'Finish Lesson':'Next'} <ArrowRight className="w-4 h-4 inline ml-1 -mt-0.5"/>
           </button>
         )}
@@ -958,331 +958,172 @@ function MCQ({q,done,onFinish}){
     if(sel===null||sub)return;
     setSub(true);
     const opt=q.options[sel];
-    if(!opt.correct){setShk(sel);setTimeout(()=>setShk(null),500);}
     onFinish(opt.correct,q.feedback[opt.id],opt.correct?10:0);
+    if(!opt.correct){setShk(sel);setTimeout(()=>setShk(null),300);}
   };
   return(
-    <div>
-      <div className="grid grid-cols-1 gap-2.5 mb-4">
+    <>
+      <div className="space-y-2">
         {q.options.map((opt,i)=>{
-          const isSel=sel===i,right=sub&&opt.correct,wrong=sub&&isSel&&!opt.correct;
+          const picked=sel===i;
+          const show=sub&&picked;
           return(
-            <button key={opt.id} disabled={sub} onClick={()=>!sub&&setSel(i)}
-              className={`relative p-4 rounded-xl text-left text-sm font-medium border-2 transition-all ${shk===i?'shk':''}`}
+            <button key={opt.id} disabled={done} onClick={()=>!sub&&setSel(i)}
+              className={`w-full text-left p-4 rounded-2xl border-2 transition-all ${shk===i?'shk':''}`}
               style={{
-                background: right?C.greenLight:wrong?C.coralLight:isSel&&!sub?C.navy:'white',
-                borderColor:right?C.green:wrong?C.coral:isSel&&!sub?C.navy:'#ddd',
-                color:isSel&&!sub&&!right?'white':C.dark,
-                opacity:sub&&!isSel&&!opt.correct?0.45:1,
+                background:show?(opt.correct?C.greenLight:C.coralLight):picked?rgba(C.teal,0.08):'white',
+                borderColor:show?(opt.correct?C.green:C.coral):picked?C.teal:rgba(C.navy,0.1),
+                transform:picked&&!sub?'translateX(4px)':'none',
               }}>
-              <div className="flex items-start gap-2">
-                <span className="text-xs font-bold mt-0.5 flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center"
-                  style={{background:right?C.green:wrong?C.coral:isSel&&!sub?'rgba(255,255,255,0.25)':C.light,color:right||wrong||(isSel&&!sub)?'white':C.mid}}>
-                  {right?'✓':wrong?'✗':opt.id.toUpperCase()}
-                </span>
-                <span className="flex-1">{opt.text}</span>
+              <div className="flex items-center gap-3">
+                <span className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0" style={{background:picked?C.tealLight:C.light,color:picked?C.teal:C.mid}}>{String.fromCharCode(65+i)}</span>
+                <span className="text-sm" style={{color:C.dark}}>{opt.text}</span>
               </div>
-              {right&&<div className="absolute -top-2 -right-2 w-6 h-6 rounded-full flex items-center justify-center pop" style={{background:C.green}}><CheckCircle className="w-4 h-4 text-white"/></div>}
             </button>
           );
         })}
       </div>
       {!sub&&(
-        <button onClick={submit} disabled={sel===null}
-          className="w-full py-3 rounded-xl font-bold text-sm"
-          style={{background:sel!==null?`linear-gradient(135deg,${C.gold},${C.orange})`:C.light,color:sel!==null?C.navy:'#bbb',cursor:sel!==null?'pointer':'not-allowed'}}>
+        <button disabled={sel===null} onClick={submit} className="w-full py-3 rounded-2xl font-bold text-sm mt-4 transition-opacity" style={{background:sel===null?C.light:C.teal,color:sel===null?C.mid:'white',opacity:sel===null?0.6:1}}>
           Check Answer
         </button>
       )}
-    </div>
+    </>
   );
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 3-BUCKET SORT
+// BUCKET SORT
 // ═══════════════════════════════════════════════════════════════
 function Bucket3({q,onFinish}){
-  const [pool,    setPool]    =useState(()=>[...q.items].sort(()=>Math.random()-0.5));
-  const [buckets, setBuckets] =useState(()=>Object.fromEntries(q.buckets.map(b=>[b.id,[]])));
-  const [held,    setHeld]    =useState(null);
-  const [dragOver,setDragOver]=useState(null);
-  const [sub,     setSub]     =useState(false);
-  const [results, setResults] =useState({});
-  const [trapMsg, setTrapMsg] =useState(null);
+  const [placed,setPlaced]=useState({});
+  const [selectedItem,setSelectedItem]=useState(null);
+  const [submitted,setSubmitted]=useState(false);
 
-  const placed   =Object.values(buckets).reduce((s,a)=>s+a.length,0);
-  const allPlaced=placed===q.items.length;
-  const isUnscored=q.scored===false;
+  const unplaced=q.items.map((it,i)=>({it,i})).filter(({i})=>!placed[i]);
+  const allPlaced=Object.keys(placed).length===q.items.length;
 
-  const move=(item,bId)=>{
-    if(sub||!item)return;
-    setPool(p=>p.filter(x=>x.text!==item.text));
-    setBuckets(prev=>{
-      const n={...prev};
-      q.buckets.forEach(b=>{n[b.id]=n[b.id].filter(x=>x.text!==item.text);});
-      n[bId]=[...n[bId],item];
-      return n;
-    });
-    setHeld(null);setDragOver(null);
+  const place=(bucketId)=>{
+    if(selectedItem===null||submitted)return;
+    setPlaced(p=>({...p,[selectedItem]:bucketId}));
+    setSelectedItem(null);
   };
-  const ret=(item,bId)=>{
-    if(sub)return;
-    setBuckets(prev=>({...prev,[bId]:prev[bId].filter(x=>x.text!==item.text)}));
-    setPool(p=>[...p,item]);
+  const remove=(idx)=>{
+    if(submitted)return;
+    setPlaced(p=>{const n={...p};delete n[idx];return n;});
   };
   const submit=()=>{
-    if(!allPlaced||sub)return;
-    setSub(true);
-    const res={};let ok=0;
-    q.buckets.forEach(b=>buckets[b.id].forEach(item=>{
-      const correct=item.correct===b.id;
-      res[item.text]=correct;
-      if(correct)ok++;
-    }));
-    setResults(res);
-    const trap=q.items.find(i=>i.trap);
-    if(trap&&buckets['fair']?.some(x=>x.text===trap.text)){setTrapMsg(trap.trapMsg);}
+    if(!allPlaced||submitted)return;
+    setSubmitted(true);
+    const ok=q.items.reduce((acc,it,i)=>acc+(placed[i]===it.correct?1:0),0);
     const total=q.items.length;
-    const fbText=ok>=5?q.summaryFeedback.high:ok>=3?q.summaryFeedback.mid:q.summaryFeedback.low;
-    const pts=isUnscored?0:ok===total?10:ok>=4?5:0;
-    onFinish(isUnscored?true:ok>=4,fbText,pts,{ok,total,isUnscored});
+    const isPerfect=ok===total;
+    const isGood=ok>=Math.ceil(total*0.67);
+    let fb;
+    if(q.summaryFeedback){fb=isPerfect?q.summaryFeedback.high:isGood?q.summaryFeedback.mid:q.summaryFeedback.low;}
+    else fb=`You placed ${ok}/${total} correctly.`;
+    const trap=q.items.find((it,i)=>it.trap&&placed[i]===it.correct);
+    if(trap) fb=trap.trapMsg+"\n\n"+fb;
+    onFinish(isPerfect,fb,isPerfect?15:isGood?8:3,{ok,total,isUnscored:q.scored===false});
   };
 
   return(
     <div>
-      {trapMsg&&(
-        <div className="rounded-xl p-4 mb-4 border-l-4 su" style={{background:'white',borderColor:C.coral}}>
-          <div className="flex items-start gap-2">
-            <span className="text-lg flex-shrink-0">⚠️</span>
-            <div>
-              <div className="text-xs font-bold mb-1" style={{color:C.coral}}>Interesting choice on the loan scenario!</div>
-              <p className="text-xs leading-relaxed" style={{color:C.dark}}>{trapMsg}</p>
-            </div>
-          </div>
-        </div>
-      )}
-      <div className="grid grid-cols-3 gap-2 mb-4">
-        {q.buckets.map(bk=>(
-          <div key={bk.id}
-            onDragOver={e=>{e.preventDefault();setDragOver(bk.id);}}
-            onDragLeave={()=>setDragOver(null)}
-            onDrop={e=>{e.preventDefault();if(held)move(held,bk.id);setDragOver(null);}}
-            onClick={()=>{if(held)move(held,bk.id);}}
-            className="rounded-xl p-2 min-h-[120px] transition-all border-2"
-            style={{background:bk.bg,borderColor:dragOver===bk.id?C.gold:bk.color,borderStyle:buckets[bk.id].length||dragOver===bk.id?'solid':'dashed',transform:dragOver===bk.id?'scale(1.02)':'scale(1)'}}>
-            <div className="text-[10px] font-bold text-center mb-1" style={{color:bk.color}}>{bk.icon} {bk.label}</div>
-            {bk.desc&&<div className="text-[8px] text-center mb-1.5 leading-tight" style={{color:rgba(bk.color,0.65)}}>{bk.desc}</div>}
-            <div className="space-y-1">
-              {buckets[bk.id].map(item=>(
-                <div key={item.text} onClick={()=>!sub&&ret(item,bk.id)}
-                  className={`p-1.5 rounded-lg text-[10px] font-medium border-2 cursor-pointer transition-all leading-snug ${sub&&results[item.text]===false?'shk':''}`}
-                  style={{
-                    background:sub?(results[item.text]?C.greenLight:C.coralLight):'white',
-                    borderColor:sub?(results[item.text]?C.green:C.coral):'#e5e7eb',
-                    color:C.dark,
-                  }}>
-                  <div className="flex items-start gap-1">
-                    {sub&&results[item.text]===true &&<CheckCircle className="w-3 h-3 flex-shrink-0 mt-0.5 pop" style={{color:C.green}}/>}
-                    {sub&&results[item.text]===false&&<XCircle     className="w-3 h-3 flex-shrink-0 mt-0.5"    style={{color:C.coral}}/>}
-                    <span className="flex-1 leading-tight">{item.text}</span>
-                    {!sub&&<span className="text-[8px] opacity-30 flex-shrink-0">✕</span>}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-      {/* Mobile tap-to-move */}
-      {held&&!sub&&(
-        <div className="flex gap-2 mb-3 flex-wrap su">
-          {q.buckets.map(bk=>(
-            <button key={bk.id} onClick={()=>move(held,bk.id)} className="flex-1 py-2 rounded-xl text-xs font-bold border-2 min-w-[80px]" style={{borderColor:bk.color,color:bk.color,background:bk.bg}}>
-              {bk.icon} {bk.label}
-            </button>
-          ))}
-        </div>
-      )}
-      {pool.length>0&&(
-        <div className="mb-4">
-          <div className="text-xs font-bold mb-2 flex items-center gap-1.5" style={{color:C.mid}}>
-            <GripVertical className="w-3 h-3"/> Drag or tap to select, then tap a bucket
-          </div>
+      {unplaced.length>0&&(
+        <div className="mb-5">
+          <div className="text-xs font-bold mb-2" style={{color:C.mid}}>Tap a card, then tap a bucket</div>
           <div className="space-y-2">
-            {pool.map(item=>(
-              <div key={item.text} draggable onDragStart={e=>{setHeld(item);e.dataTransfer.setData('text/plain',item.text);}}
-                onClick={()=>setHeld(h=>h?.text===item.text?null:item)}
-                className="p-3 rounded-xl border-2 text-sm font-medium cursor-grab active:cursor-grabbing select-none transition-all"
-                style={{background:'white',color:C.navy,borderColor:held?.text===item.text?C.gold:'#ddd',boxShadow:held?.text===item.text?`0 0 0 3px ${rgba(C.gold,0.28)}`:'0 1px 4px rgba(0,0,0,0.06)'}}>
-                <div className="flex items-center gap-2"><GripVertical className="w-4 h-4 flex-shrink-0" style={{color:C.mid}}/>{item.text}</div>
-              </div>
+            {unplaced.map(({it,i})=>(
+              <button key={i} onClick={()=>setSelectedItem(i)} className="w-full p-3 rounded-2xl border-2 text-left transition-all" style={{background:selectedItem===i?C.tealLight:'white',borderColor:selectedItem===i?C.teal:rgba(C.navy,0.1)}}>
+                <div className="flex items-start gap-2">
+                  <GripVertical className="w-4 h-4 mt-0.5 flex-shrink-0" style={{color:C.mid}}/>
+                  <span className="text-sm" style={{color:C.dark}}>{it.text}</span>
+                </div>
+              </button>
             ))}
           </div>
         </div>
       )}
-      {!sub&&(
-        <button onClick={submit} disabled={!allPlaced}
-          className="w-full py-3 rounded-xl font-bold text-sm"
-          style={{background:allPlaced?`linear-gradient(135deg,${C.gold},${C.orange})`:C.light,color:allPlaced?C.navy:'#bbb',cursor:allPlaced?'pointer':'not-allowed'}}>
-          {isUnscored?'Check My Instincts':'Check Answer'} ({placed}/{q.items.length} placed)
+      <div className="grid gap-3 sm:grid-cols-3 mb-4">
+        {q.buckets.map(b=>(
+          <button key={b.id} onClick={()=>place(b.id)} disabled={selectedItem===null||submitted} className="rounded-2xl p-3 min-h-[140px] border-2 text-left transition-all" style={{background:b.bg,borderColor:selectedItem!==null&&!submitted?b.color:rgba(b.color,0.3),opacity:selectedItem===null&&!submitted?0.9:1}}>
+            <div className="text-center mb-3">
+              <div className="text-xl">{b.icon}</div>
+              <div className="text-xs font-black" style={{color:b.color}}>{b.label}</div>
+              <div className="text-[9px] mt-0.5" style={{color:C.mid}}>{b.desc}</div>
+            </div>
+            <div className="space-y-1.5">
+              {Object.entries(placed).filter(([_,bid])=>bid===b.id).map(([idx])=>{
+                const correct=submitted&&q.items[idx].correct===b.id;
+                const wrong=submitted&&q.items[idx].correct!==b.id;
+                return(
+                  <div key={idx} onClick={(e)=>{e.stopPropagation();remove(idx);}} className="p-2 rounded-xl text-[10px] leading-snug" style={{background:submitted?(correct?rgba(C.green,0.16):rgba(C.coral,0.16)):'white',border:submitted?`1px solid ${correct?C.green:C.coral}`:'1px solid transparent',color:C.dark}}>
+                    {q.items[idx].text}
+                    {submitted&&<span className="block mt-1 font-bold" style={{color:correct?C.green:C.coral}}>{correct?'✓ Correct':`→ ${q.buckets.find(x=>x.id===q.items[idx].correct)?.label}`}</span>}
+                  </div>
+                );
+              })}
+            </div>
+          </button>
+        ))}
+      </div>
+      {!submitted&&(
+        <button disabled={!allPlaced} onClick={submit} className="w-full py-3 rounded-2xl font-bold text-sm" style={{background:allPlaced?C.teal:C.light,color:allPlaced?'white':C.mid,opacity:allPlaced?1:0.6}}>
+          Check Sort
         </button>
-      )}
-      {sub&&!isUnscored&&Object.values(results).some(v=>!v)&&(
-        <div className="mt-3 p-3 rounded-xl su" style={{background:rgba(C.tealLight,0.5),border:`1px solid ${rgba(C.teal,0.18)}`}}>
-          <div className="text-[10px] font-bold mb-2" style={{color:C.teal}}>✏️ Correct placement:</div>
-          {q.items.filter(item=>!results[item.text]).map((item,i)=>{
-            const correctBk=q.buckets.find(b=>b.id===item.correct);
-            const placedInBk=q.buckets.find(b=>Object.values({...Object.fromEntries(q.buckets.map(bk=>[bk.id,buckets[bk.id]]))}).find(arr=>Array.isArray(arr)&&arr.some(x=>x.text===item.text&&b.id)));
-            return(
-              <div key={i} className="flex items-center gap-2 py-1 border-b last:border-0 text-[10px]" style={{borderColor:rgba(C.teal,0.1)}}>
-                <XCircle className="w-3 h-3 flex-shrink-0" style={{color:C.coral}}/>
-                <span className="flex-1 truncate" style={{color:C.dark}}>{item.text}</span>
-                <span className="flex-shrink-0 px-1.5 py-0.5 rounded-full font-bold" style={{background:correctBk?.bg,color:correctBk?.color,border:`1px solid ${correctBk?.color}`}}>
-                  {correctBk?.icon} {correctBk?.label}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-      )}
-      {/* For unscored (Q1) - show correct labels for ALL items after submit */}
-      {sub&&isUnscored&&(
-        <div className="mt-3 p-3 rounded-xl su" style={{background:rgba(C.navy,0.04),border:`1px solid ${rgba(C.navy,0.1)}`}}>
-          <div className="text-[10px] font-bold mb-2" style={{color:C.navy}}>📋 The correct labels (you'll understand why after this lesson):</div>
-          {q.items.map((item,i)=>{
-            const correctBk=q.buckets.find(b=>b.id===item.correct);
-            const wasCorrect=results[item.text];
-            return(
-              <div key={i} className="flex items-center gap-2 py-1 border-b last:border-0 text-[10px]" style={{borderColor:rgba(C.navy,0.07)}}>
-                {wasCorrect
-                  ?<CheckCircle className="w-3 h-3 flex-shrink-0" style={{color:C.green}}/>
-                  :<XCircle    className="w-3 h-3 flex-shrink-0" style={{color:C.coral}}/>}
-                <span className="flex-1 leading-tight" style={{color:C.dark}}>{item.text}</span>
-                <span className="flex-shrink-0 px-1.5 py-0.5 rounded-full font-bold whitespace-nowrap" style={{background:correctBk?.bg,color:correctBk?.color,border:`1px solid ${rgba(correctBk?.color||'#000',0.4)}`}}>
-                  {correctBk?.icon} {correctBk?.label}
-                </span>
-              </div>
-            );
-          })}
-        </div>
       )}
     </div>
   );
 }
 
 // ═══════════════════════════════════════════════════════════════
-// SWIPE CARDS (Q3 - Gharar vs Normal Risk)
+// SWIPE CARDS
 // ═══════════════════════════════════════════════════════════════
 function SwipeCards({q,onFinish}){
-  const cards=q.cards;
-  const [idx,   setIdx]   =useState(0);
-  const [phase, setPhase] =useState('active'); // active | flash | summary
-  const [flash, setFlash] =useState(null);
-  const [log,   setLog]   =useState([]);
-  const [swDir, setSwDir] =useState(null);     // 'left' | 'right' | null
-  const lockedRef=useRef(false);
+  const [idx,setIdx]=useState(0);
+  const [answers,setAnswers]=useState([]);
+  const [anim,setAnim]=useState('');
+  const [lastFb,setLastFb]=useState(null);
+  const [done,setDone]=useState(false);
 
-  const answer=useCallback((isRight)=>{
-    if(lockedRef.current||phase!=='active')return;
-    lockedRef.current=true;
-    const card=cards[idx];
-    const isCorrect=isRight===card.answer;
-    setSwDir(isRight?'right':'left');
-    const newLog=[...log,{card,correct:isCorrect,chose:isRight}];
-    setLog(newLog);
-    setFlash({correct:isCorrect,text:isCorrect?card.right:card.wrong});
+  const card=q.cards[idx];
+  const choose=(isRight)=>{
+    if(!card||done)return;
+    const correct=isRight===card.answer;
+    setAnim(isRight?'swR':'swL');
+    setLastFb({correct,text:correct?card.right:card.wrong});
+    const newAns=[...answers,correct];
     setTimeout(()=>{
-      setSwDir(null);
-      setPhase('flash');
-      const delay = isCorrect ? 900 : 2200;
-      setTimeout(()=>{
-        if(idx+1<cards.length){
-          lockedRef.current=false;
-          setIdx(idx+1);setFlash(null);setPhase('active');
-        } else {
-          const cc=newLog.filter(e=>e.correct).length;
-          const total=cards.length;
-          const fbText=cc===total?q.summaryFeedback.perfect:cc>=4?q.summaryFeedback.good:q.summaryFeedback.low;
-          onFinish(cc>=4,fbText,Math.round((cc/total)*10));
-          setPhase('summary');
-        }
-      },delay);
-    },350);
-  },[idx,log,cards,phase,q.summaryFeedback,onFinish]);
+      setAnswers(newAns);setAnim('');setLastFb(null);
+      if(idx<q.cards.length-1){setIdx(i=>i+1);}else{
+        setDone(true);
+        const ok=newAns.filter(Boolean).length,total=q.cards.length;
+        const fb=ok===total?q.summaryFeedback.perfect:ok>=4?q.summaryFeedback.good:q.summaryFeedback.low;
+        onFinish(ok===total,fb,ok===total?15:ok>=4?8:3,{ok,total});
+      }
+    },550);
+  };
 
-  if(phase==='summary'){
-    const cc=log.filter(e=>e.correct).length;
-    return(
-      <div className="su">
-        <div className="text-center mb-4">
-          <div className="text-4xl mb-1">{cc===cards.length?'🎉':cc>=4?'👍':'💪'}</div>
-          <div className="text-xl font-bold" style={{color:C.navy}}>{cc}/{cards.length}</div>
-        </div>
-        <div className="space-y-2 max-h-64 overflow-y-auto">
-          {log.map((e,i)=>(
-            <div key={i} className="flex items-start gap-2 p-3 rounded-xl text-xs" style={{background:e.correct?C.greenLight:C.coralLight,border:`1px solid ${rgba(e.correct?C.green:C.coral,0.22)}`}}>
-              {e.correct?<CheckCircle className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" style={{color:C.green}}/>:<XCircle className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" style={{color:C.coral}}/>}
-              <div>
-                <div className="font-medium" style={{color:C.dark}}>{e.card.text}</div>
-                <div className="text-[10px] mt-0.5 font-semibold" style={{color:e.correct?C.green:C.coral}}>
-                  Answer: {e.card.answer?q.rightLabel:q.leftLabel}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  const card=cards[idx];
-  const tiltClass=swDir==='left'?'swL':swDir==='right'?'swR':'';
-
+  if(done)return null;
   return(
     <div>
-      {/* Zone labels */}
-      <div className="flex gap-2 mb-3">
-        <div className="flex-1 py-2 rounded-xl text-center text-xs font-bold border-2" style={{borderColor:q.leftColor,color:q.leftColor,background:q.leftBg}}>
-          ← {q.leftLabel}
+      <div className="flex justify-between text-xs font-bold mb-3">
+        <span style={{color:q.leftColor}}>{q.leftLabel}</span>
+        <span style={{color:C.mid}}>{idx+1}/{q.cards.length}</span>
+        <span style={{color:q.rightColor}}>{q.rightLabel}</span>
+      </div>
+      <div className="relative h-52 mb-4">
+        <div className={`absolute inset-0 rounded-3xl p-5 border-2 flex items-center justify-center text-center ${anim}`} style={{background:'white',borderColor:rgba(C.navy,0.1),boxShadow:'0 8px 28px rgba(0,0,0,0.08)'}}>
+          <p className="text-lg font-bold leading-relaxed" style={{color:C.navy}}>{card.text}</p>
         </div>
-        <div className="flex-1 py-2 rounded-xl text-center text-xs font-bold border-2" style={{borderColor:q.rightColor,color:q.rightColor,background:q.rightBg}}>
-          {q.rightLabel} →
-        </div>
       </div>
-      {/* Dots */}
-      <div className="flex justify-center gap-1.5 mb-3">
-        {cards.map((_,i)=>(
-          <div key={i} className="w-2 h-2 rounded-full transition-all" style={{background:i<idx?(log[i]?.correct?C.green:C.coral):i===idx?C.navy:C.light}}/>
-        ))}
+      <div className="grid grid-cols-2 gap-3">
+        <button onClick={()=>choose(false)} className="py-4 rounded-2xl font-bold text-sm" style={{background:q.leftBg,color:q.leftColor,border:`2px solid ${q.leftColor}`}}>← {q.leftLabel}</button>
+        <button onClick={()=>choose(true)} className="py-4 rounded-2xl font-bold text-sm" style={{background:q.rightBg,color:q.rightColor,border:`2px solid ${q.rightColor}`}}>{q.rightLabel} →</button>
       </div>
-      {/* Card */}
-      <div className="relative mb-4 min-h-[110px]">
-        {phase==='active'&&(
-          <div className={`rounded-2xl border-2 p-6 text-center flex items-center justify-center min-h-[110px] ${tiltClass}`}
-            style={{background:'white',borderColor:rgba(C.navy,0.16),boxShadow:'0 4px 20px rgba(0,0,0,0.08)'}}>
-            <p className="text-base font-semibold leading-snug" style={{color:C.navy}}>{card.text}</p>
-          </div>
-        )}
-        {phase==='flash'&&flash&&(
-          <div className="rounded-2xl border-2 p-5 text-center min-h-[110px] flex flex-col items-center justify-center fi"
-            style={{background:flash.correct?C.greenLight:C.coralLight,borderColor:flash.correct?C.green:C.coral}}>
-            <div className="flex items-center gap-2 mb-1.5">
-              {flash.correct?<CheckCircle className="w-5 h-5" style={{color:C.green}}/>:<XCircle className="w-5 h-5" style={{color:C.coral}}/>}
-              <span className="font-bold text-sm" style={{color:flash.correct?C.green:C.coral}}>{flash.correct?'Correct!':'Not quite!'}</span>
-            </div>
-            <p className="text-xs leading-snug" style={{color:C.dark}}>{flash.text}</p>
-          </div>
-        )}
-      </div>
-      {/* Buttons */}
-      {phase==='active'&&(
-        <div className="flex gap-3">
-          <button onClick={()=>answer(false)} className="flex-1 flex items-center justify-center gap-2 py-4 rounded-xl font-bold border-2 transition-all" style={{borderColor:q.leftColor,color:q.leftColor,background:q.leftBg}}>
-            ← {q.leftLabel}
-          </button>
-          <button onClick={()=>answer(true)} className="flex-1 flex items-center justify-center gap-2 py-4 rounded-xl font-bold border-2 transition-all" style={{borderColor:q.rightColor,color:q.rightColor,background:q.rightBg}}>
-            {q.rightLabel} →
-          </button>
+      {lastFb&&(
+        <div className="mt-3 p-3 rounded-2xl text-xs font-medium su" style={{background:lastFb.correct?C.greenLight:C.coralLight,color:lastFb.correct?C.green:C.coral}}>
+          {lastFb.text}
         </div>
       )}
     </div>
@@ -1290,365 +1131,125 @@ function SwipeCards({q,onFinish}){
 }
 
 // ═══════════════════════════════════════════════════════════════
-// MATCH PAIRS (Q4)
-// ═══════════════════════════════════════════════════════════════
-// ═══════════════════════════════════════════════════════════════
-// POISON REVEAL (Q4) - tap the poison on each scenario card
-// ═══════════════════════════════════════════════════════════════
-// ═══════════════════════════════════════════════════════════════
-// VERDICT STAMP (Q4 - Courtroom Judge)
+// VERDICT STAMP
 // ═══════════════════════════════════════════════════════════════
 function VerdictStamp({q,onFinish}){
-  const [caseIdx,   setCaseIdx]   = useState(0);
-  const [stamped,   setStamped]   = useState({});   // caseNum -> stampOptionId (correct)
-  const [wrongShk,  setWrongShk]  = useState(null); // which stamp id is shaking
-  const [pressing,  setPressing]  = useState(null); // which stamp is pressed down
-  const [phase,     setPhase]     = useState('judge'); // judge | summary
-  const lockedRef = useRef(false);
-  const total = q.cases.length;
+  const [current,setCurrent]=useState(0);
+  const [answers,setAnswers]=useState({});
+  const [submitted,setSubmitted]=useState(false);
 
-  const currentCase = q.cases[caseIdx];
-  const isStamped   = !!stamped[currentCase.caseNum];
-  const stampResult = stamped[currentCase.caseNum];
+  const c=q.cases[current];
+  const selected=answers[current];
+  const allDone=Object.keys(answers).length===q.cases.length;
 
-  const pressStamp = (opt) => {
-    if(lockedRef.current || isStamped) return;
-    lockedRef.current = true;
-    setPressing(opt.id);
-
-    const correct = opt.id === currentCase.verdict;
-
-    setTimeout(()=>{
-      setPressing(null);
-      if(correct){
-        setStamped(s=>({...s,[currentCase.caseNum]:opt.id}));
-        lockedRef.current = false;
-      } else {
-        setWrongShk(opt.id);
-        setTimeout(()=>{ setWrongShk(null); lockedRef.current = false; }, 600);
-      }
-    }, 180);
+  const choose=(id)=>{
+    if(submitted)return;
+    setAnswers(a=>({...a,[current]:id}));
   };
-
-  const nextCase = () => {
-    if(caseIdx < total - 1){
-      setCaseIdx(i => i + 1);
-    } else {
-      const ok = Object.keys(stamped).length;
-      const fbText = ok===total?q.feedback.perfect:ok>=3?q.feedback.good:q.feedback.low;
-      onFinish(ok>=3, fbText, ok===total?10:ok>=3?6:ok*2, {ok,total,isUnscored:false});
-      setPhase('summary');
-    }
+  const submit=()=>{
+    if(!allDone||submitted)return;
+    setSubmitted(true);
+    const ok=q.cases.reduce((acc,cs,i)=>acc+(answers[i]===cs.verdict?1:0),0);
+    const fb=ok===4?q.feedback.perfect:ok>=3?q.feedback.good:q.feedback.low;
+    onFinish(ok===4,fb,ok===4?20:ok>=3?12:5,{ok,total:q.cases.length});
   };
-
-  if(phase==='summary'){
-    const ok=Object.keys(stamped).length;
-    return(
-      <div className="su">
-        <div className="text-center mb-5">
-          <div className="text-4xl mb-2">{ok===total?'⚖️':'📋'}</div>
-          <div className="text-2xl font-black" style={{color:C.navy,fontFamily:'Georgia,serif'}}>{ok}/{total}</div>
-          <div className="text-sm" style={{color:C.mid}}>verdicts correctly ruled</div>
-        </div>
-        <div className="space-y-3">
-          {q.cases.map(c=>{
-            const wasCorrect=!!stamped[c.caseNum];
-            const opt=q.stampOptions.find(o=>o.id===c.verdict);
-            return(
-              <div key={c.caseNum} className="rounded-xl overflow-hidden border-2" style={{borderColor:wasCorrect?C.green:C.coral}}>
-                <div className="px-3 py-2 flex items-center gap-2" style={{background:wasCorrect?`linear-gradient(135deg,${C.green},#2d7a50)`:`linear-gradient(135deg,${C.coral},#b5553c)`}}>
-                  <span className="text-sm">{c.emoji}</span>
-                  <span className="text-xs font-bold text-white flex-1">{c.title}</span>
-                  <span className="text-xs font-black px-2 py-0.5 rounded-full" style={{background:'rgba(255,255,255,0.2)',color:'white'}}>
-                    {wasCorrect?'✓ RULED':opt.label}
-                  </span>
-                </div>
-                <div className="p-3" style={{background:wasCorrect?rgba(C.greenLight,0.5):rgba(C.coralLight,0.5)}}>
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-lg">{opt.icon}</span>
-                    <span className="text-xs font-black" style={{color:opt.color}}>{opt.label}</span>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full ml-1" style={{background:opt.bg,color:opt.color}}>{opt.arabic}</span>
-                  </div>
-                  <p className="text-xs leading-snug" style={{color:C.dark}}>{c.reasoning}</p>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    );
-  }
-
-  const verdictOpt = q.stampOptions.find(o=>o.id===stampResult);
-
   return(
     <div>
-      {/* Court progress */}
-      <div className="flex items-center gap-2 mb-4">
-        <div className="text-[10px] font-bold uppercase tracking-wider" style={{color:C.mid}}>Case</div>
-        {q.cases.map((c,i)=>{
-          const done=!!stamped[c.caseNum];
-          const active=i===caseIdx;
+      <div className="mb-3 flex justify-between items-center">
+        <span className="text-xs font-bold" style={{color:C.mid}}>Case {current+1} of {q.cases.length}</span>
+        <div className="flex gap-1">{q.cases.map((_,i)=><div key={i} className="w-2 h-2 rounded-full" style={{background:answers[i]?C.teal:C.light}}/> )}</div>
+      </div>
+      <div className="rounded-3xl p-5 mb-4 border-2" style={{background:'white',borderColor:rgba(C.navy,0.1)}}>
+        <div className="flex items-center gap-3 mb-3">
+          <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl" style={{background:C.tealLight}}>{c.emoji}</div>
+          <div>
+            <div className="text-[10px] font-black tracking-widest" style={{color:C.mid}}>CASE {c.caseNum}</div>
+            <h4 className="text-lg font-bold" style={{color:C.navy}}>{c.title}</h4>
+          </div>
+        </div>
+        <p className="text-sm leading-relaxed" style={{color:C.dark}}>{c.brief}</p>
+      </div>
+      <div className="grid grid-cols-2 gap-2 mb-4">
+        {q.stampOptions.map(s=>{
+          const picked=selected===s.id;
           return(
-            <div key={c.caseNum} className="flex-1 h-1.5 rounded-full transition-all" style={{background:done?C.green:active?C.gold:C.light}}/>
+            <button key={s.id} onClick={()=>choose(s.id)} disabled={submitted} className="p-3 rounded-2xl border-2 transition-all" style={{background:picked?s.bg:'white',borderColor:picked?s.color:rgba(C.navy,0.1)}}>
+              <div className="text-xl mb-0.5">{s.icon}</div>
+              <div className="text-xs font-black" style={{color:s.color}}>{s.label}</div>
+              <div className="text-[10px] font-bold" style={{color:rgba(s.color,0.65)}}>{s.arabic}</div>
+            </button>
           );
         })}
-        <div className="text-[10px] font-bold" style={{color:C.mid}}>{caseIdx+1}/{total}</div>
       </div>
-
-      {/* Case File Card */}
-      <div className="relative rounded-2xl overflow-hidden border-2 mb-4 transition-all" style={{
-        borderColor: isStamped ? verdictOpt?.color : rgba(C.navy,0.15),
-        boxShadow: isStamped ? `0 8px 32px ${rgba(verdictOpt?.color||C.navy,0.25)}` : '0 2px 12px rgba(0,0,0,0.07)',
-      }}>
-        {/* Case header */}
-        <div className="px-4 py-3 flex items-center gap-3" style={{background:`linear-gradient(135deg,${C.navy},#253c6a)`}}>
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center text-base flex-shrink-0" style={{background:'rgba(255,255,255,0.1)'}}>
-            {currentCase.emoji}
-          </div>
-          <div className="flex-1">
-            <div className="text-[9px] font-bold tracking-widest uppercase mb-0.5" style={{color:rgba(C.gold,0.65)}}>
-              Case #{currentCase.caseNum} - Financial Compliance Review
-            </div>
-            <div className="text-sm font-bold text-white">{currentCase.title}</div>
-          </div>
-          {!isStamped && (
-            <div className="text-[9px] font-bold px-2 py-1 rounded-full" style={{background:rgba(C.gold,0.15),color:C.gold}}>
-              PENDING RULING
-            </div>
-          )}
-          {isStamped && (
-            <div className="text-[9px] font-bold px-2 py-1 rounded-full pop" style={{background:'rgba(255,255,255,0.15)',color:'white'}}>
-              ✓ RULED
-            </div>
-          )}
+      {selected&&(
+        <div className="p-3 rounded-2xl mb-4 su" style={{background:selected===c.verdict?C.greenLight:C.coralLight,border:`1px solid ${selected===c.verdict?C.green:C.coral}`}}>
+          <div className="text-xs font-bold mb-1" style={{color:selected===c.verdict?C.green:C.coral}}>{selected===c.verdict?'Correct ruling':'Not the right ruling'}</div>
+          <p className="text-xs leading-relaxed" style={{color:C.dark}}>{c.reasoning}</p>
         </div>
-
-        {/* Brief */}
-        <div className="p-4 relative" style={{background: isStamped ? rgba(verdictOpt?.bg||C.greenLight,0.6) : 'white'}}>
-          <div className="text-[9px] font-bold uppercase tracking-widest mb-2" style={{color:C.mid}}>Transaction on Record:</div>
-          <p className="text-sm leading-relaxed" style={{color:C.dark, fontFamily:'Georgia,serif',fontStyle:'italic'}}>
-            "{currentCase.brief}"
-          </p>
-
-          {/* Verdict stamp overlay */}
-          {isStamped && (
-            <div className="mt-4 su">
-              <div className="flex items-center gap-3 p-3 rounded-xl border-2" style={{background:verdictOpt?.bg,borderColor:verdictOpt?.color}}>
-                <span className="text-3xl">{verdictOpt?.icon}</span>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-0.5">
-                    <span className="text-lg font-black" style={{color:verdictOpt?.color}}>{verdictOpt?.label}</span>
-                    <span className="text-sm font-black" style={{color:rgba(verdictOpt?.color||'#000',0.6)}}>{verdictOpt?.arabic}</span>
-                  </div>
-                  <p className="text-xs leading-snug" style={{color:C.dark}}>{currentCase.reasoning}</p>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Large "VERDICT" watermark text behind content */}
-        {isStamped && (
-          <div className="absolute top-1/2 left-1/2 pointer-events-none select-none" style={{
-            transform:'translate(-50%,-55%) rotate(-12deg)',
-            fontSize:'clamp(42px,12vw,72px)',fontWeight:'900',
-            color:rgba(verdictOpt?.color||C.green,0.07),
-            fontFamily:'Georgia,serif',letterSpacing:'0.05em',
-            whiteSpace:'nowrap',zIndex:0,
-          }}>
-            {verdictOpt?.label}
-          </div>
+      )}
+      <div className="flex gap-2">
+        <button disabled={current===0} onClick={()=>setCurrent(i=>i-1)} className="flex-1 py-2.5 rounded-2xl text-sm font-bold" style={{background:C.light,color:C.mid}}>Previous</button>
+        {current<q.cases.length-1?(
+          <button disabled={!selected} onClick={()=>setCurrent(i=>i+1)} className="flex-1 py-2.5 rounded-2xl text-sm font-bold" style={{background:selected?C.teal:C.light,color:selected?'white':C.mid}}>Next Case</button>
+        ):(
+          <button disabled={!allDone||submitted} onClick={submit} className="flex-1 py-2.5 rounded-2xl text-sm font-bold" style={{background:allDone&&!submitted?C.navy:C.light,color:allDone&&!submitted?'white':C.mid}}>Submit Verdicts</button>
         )}
       </div>
-
-      {/* Stamps - shown when not yet ruled */}
-      {!isStamped && (
-        <div>
-          <div className="text-xs font-bold text-center mb-3" style={{color:C.mid}}>
-            ⚖️ Your ruling - what prohibition applies?
-          </div>
-          <div className="grid grid-cols-2 gap-2.5">
-            {q.stampOptions.map(opt=>{
-              const isPress = pressing === opt.id;
-              const isWrong = wrongShk === opt.id;
-              return(
-                <button key={opt.id} onClick={()=>pressStamp(opt)}
-                  className={`relative rounded-2xl text-left transition-all ${isWrong?'shk':''}`}
-                  style={{
-                    background: opt.bg,
-                    border: `2px solid ${rgba(opt.color,0.4)}`,
-                    padding: '14px',
-                    transform: isPress ? 'scale(0.95)' : isWrong ? 'scale(1)' : 'scale(1)',
-                    boxShadow: isPress ? 'none' : `0 4px 14px ${rgba(opt.color,0.22)}`,
-                    transition: 'transform 0.12s ease, box-shadow 0.12s ease',
-                  }}>
-                  {/* Stamp circle */}
-                  <div className="flex items-start gap-2.5">
-                    <div className="w-11 h-11 rounded-full flex items-center justify-center text-2xl border-2 flex-shrink-0" style={{
-                      borderColor: opt.color,
-                      background: 'white',
-                      boxShadow: isPress ? 'none' : `0 2px 8px ${rgba(opt.color,0.3)}`,
-                    }}>
-                      {opt.icon}
-                    </div>
-                    <div className="flex-1 pt-0.5">
-                      <div className="text-sm font-black" style={{color:opt.color}}>{opt.label}</div>
-                      <div className="text-[11px] font-bold" style={{color:rgba(opt.color,0.65)}}>{opt.arabic}</div>
-                      <div className="text-[10px] mt-0.5" style={{color:C.mid}}>
-                        {opt.id==='riba'  ?'Guaranteed increase':
-                         opt.id==='gharar'?'Hidden fog':
-                         opt.id==='maysir'?'Pure chance':'Clean deal'}
-                      </div>
-                    </div>
-                  </div>
-                  {/* Stamp border dashes */}
-                  <div className="absolute inset-1 rounded-xl pointer-events-none" style={{border:`1px dashed ${rgba(opt.color,0.25)}`}}/>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Next button after ruling */}
-      {isStamped && (
-        <button onClick={nextCase}
-          className="w-full py-3.5 rounded-xl font-bold text-sm mt-1 su"
-          style={{background:`linear-gradient(135deg,${verdictOpt?.color||C.green},${C.navy})`,color:'white'}}>
-          {caseIdx < total - 1 ? `Next Case (${caseIdx+2}/${total})` : 'See All Verdicts'}{' '}
-          <ArrowRight className="w-4 h-4 inline ml-1 -mt-0.5"/>
-        </button>
-      )}
     </div>
   );
 }
 
 // ═══════════════════════════════════════════════════════════════
-// WORD ORDER (Q6 - custodian's checklist)
+// WORD ORDER
 // ═══════════════════════════════════════════════════════════════
 function WordOrder({q,onFinish}){
-  const [slots,  setSlots]  =useState(Array(q.correctWords.length).fill(null));
-  const [bank,   setBank]   =useState(()=>[...q.wordBank]);
-  const [sub,    setSub]    =useState(false);
-  const [results,setResults]=useState([]);
-  const [shk,    setShk]    =useState([]);
+  const [slots,setSlots]=useState(Array(q.correctWords.length).fill(null));
+  const [bank,setBank]=useState(q.wordBank);
+  const [submitted,setSubmitted]=useState(false);
 
-  const allFilled=slots.every(s=>s!==null);
-
-  const placeInSlot=(word,slotIdx)=>{
-    if(sub)return;
-    // If slot already filled, return old word to bank
-    setSlots(prev=>{
-      const n=[...prev];
-      if(n[slotIdx]!==null)setBank(b=>[...b,n[slotIdx]]);
-      n[slotIdx]=word;
-      return n;
-    });
+  const put=(word)=>{
+    if(submitted)return;
+    const empty=slots.findIndex(s=>s===null);
+    if(empty===-1)return;
+    const ns=[...slots];ns[empty]=word;setSlots(ns);
     setBank(b=>b.filter(w=>w!==word));
   };
-  const removeFromSlot=(slotIdx)=>{
-    if(sub)return;
-    const word=slots[slotIdx];
-    if(!word)return;
-    setSlots(prev=>{const n=[...prev];n[slotIdx]=null;return n;});
+  const remove=(idx)=>{
+    if(submitted||!slots[idx])return;
+    const word=slots[idx];
+    const ns=[...slots];ns[idx]=null;setSlots(ns);
     setBank(b=>[...b,word]);
   };
-  const [draggingWord,setDraggingWord]=useState(null);
-
   const submit=()=>{
-    if(!allFilled||sub)return;
-    setSub(true);
-    const res=slots.map((w,i)=>w===q.correctWords[i]);
-    setResults(res);
-    const ok=res.filter(Boolean).length;
-    const total=q.correctWords.length;
-    const fbText=ok===total?q.feedback.perfect:ok>=2?q.feedback.partial:q.feedback.wrong;
-    const wrong=res.map((r,i)=>!r?i:null).filter(x=>x!==null);
-    if(wrong.length){setShk(wrong);setTimeout(()=>setShk([]),600);}
-    onFinish(ok===total,fbText,Math.round((ok/total)*10));
+    if(slots.some(s=>!s)||submitted)return;
+    setSubmitted(true);
+    const ok=slots.reduce((acc,w,i)=>acc+(w===q.correctWords[i]?1:0),0);
+    const fb=ok===q.correctWords.length?q.feedback.perfect:ok>=2?q.feedback.partial:q.feedback.wrong;
+    onFinish(ok===q.correctWords.length,fb,ok===q.correctWords.length?15:ok>=2?8:3,{ok,total:q.correctWords.length});
   };
 
   return(
     <div>
-      {/* Sentence with slots */}
-      <div className="rounded-xl p-5 mb-5 border leading-loose text-sm" style={{background:`linear-gradient(135deg,${rgba(C.tealLight,0.35)},${rgba(C.goldLight,0.25)})`,borderColor:rgba(C.teal,0.16),color:C.dark}}>
-        {q.sentenceParts.map((part,pi)=>(
-          <React.Fragment key={pi}>
-            <span>{part}</span>
-            {pi<q.sentenceParts.length-1&&(
-              <span
-                onDragOver={e=>{e.preventDefault();}}
-                onDrop={e=>{e.preventDefault();if(draggingWord)placeInSlot(draggingWord,pi);setDraggingWord(null);}}
-                onClick={()=>slots[pi]!==null&&!sub&&removeFromSlot(pi)}
-                className={`inline-flex items-center gap-1 px-3 py-1 rounded-lg font-bold border-2 transition-all mx-0.5 align-middle ${shk.includes(pi)?'shk':''} ${!sub&&!slots[pi]?'pls':''}`}
-                style={{
-                  minWidth:'70px',
-                  borderStyle:slots[pi]?'solid':'dashed',
-                  borderColor:sub?(results[pi]?C.green:C.coral):slots[pi]?C.gold:rgba(C.teal,0.5),
-                  background:sub?(results[pi]?C.greenLight:C.coralLight):slots[pi]?C.goldLight:'white',
-                  color:sub?(results[pi]?C.green:C.coral):slots[pi]?C.navy:C.mid,
-                  cursor:slots[pi]&&!sub?'pointer':'default',
-                }}>
-                {slots[pi]
-                  ? <>{slots[pi]}{sub&&results[pi]&&<CheckCircle className="w-3 h-3 pop" style={{color:C.green}}/>}{sub&&!results[pi]&&<XCircle className="w-3 h-3" style={{color:C.coral}}/>}</>
-                  : <span className="text-xs opacity-60">drop here</span>}
-              </span>
-            )}
-          </React.Fragment>
+      <div className="rounded-3xl p-5 mb-4" style={{background:rgba(C.tealLight,0.55),border:`1px solid ${rgba(C.teal,0.18)}`}}>
+        <p className="text-sm leading-loose" style={{color:C.dark}}>
+          {q.sentenceParts[0]}
+          <button onClick={()=>remove(0)} className="inline-block min-w-[70px] px-3 py-1 mx-1 rounded-2xl font-bold" style={{background:slots[0]?C.teal:'white',color:slots[0]?'white':C.mid,border:`1px solid ${slots[0]?C.teal:C.light}`}}>{slots[0]||'____'}</button>
+          {q.sentenceParts[1]}
+          <button onClick={()=>remove(1)} className="inline-block min-w-[70px] px-3 py-1 mx-1 rounded-2xl font-bold" style={{background:slots[1]?C.orange:'white',color:slots[1]?'white':C.mid,border:`1px solid ${slots[1]?C.orange:C.light}`}}>{slots[1]||'____'}</button>
+          {q.sentenceParts[2]}
+          <button onClick={()=>remove(2)} className="inline-block min-w-[70px] px-3 py-1 mx-1 rounded-2xl font-bold" style={{background:slots[2]?C.gold:'white',color:slots[2]?'white':C.mid,border:`1px solid ${slots[2]?C.gold:C.light}`}}>{slots[2]||'____'}</button>
+          {q.sentenceParts[3]}
+        </p>
+      </div>
+      <div className="flex flex-wrap gap-2 mb-4">
+        {bank.map(w=>(
+          <button key={w} onClick={()=>put(w)} disabled={submitted} className="px-4 py-2 rounded-2xl font-bold text-sm border-2" style={{background:'white',borderColor:rgba(C.navy,0.12),color:C.navy}}>{w}</button>
         ))}
       </div>
-      {/* Show correct words after wrong submission */}
-      {sub&&results.some(r=>!r)&&(
-        <div className="p-3 rounded-xl mb-4 su" style={{background:rgba(C.tealLight,0.5),border:`1px solid ${rgba(C.teal,0.18)}`}}>
-          <div className="text-[10px] font-bold mb-1.5" style={{color:C.teal}}>Correct order:</div>
-          <div className="flex gap-2 flex-wrap">
-            {q.correctWords.map((w,i)=>(
-              <span key={i} className="px-2.5 py-1 rounded-full text-xs font-bold" style={{background:C.greenLight,color:C.green,border:`1px solid ${rgba(C.green,0.28)}`}}>{i+1}. {w}</span>
-            ))}
-          </div>
-        </div>
-      )}
-      {/* Word bank */}
-      {!sub&&(
-        <>
-          <div className="text-xs font-bold mb-2" style={{color:C.mid}}>Word bank - drag or tap to place:</div>
-          <div className="flex flex-wrap gap-2 mb-4">
-            {bank.map(word=>(
-              <div key={word} draggable
-                onDragStart={()=>setDraggingWord(word)}
-                onDragEnd={()=>setDraggingWord(null)}
-                className="px-4 py-2 rounded-xl border-2 text-sm font-bold cursor-grab active:cursor-grabbing select-none transition-all"
-                style={{background:'white',color:C.navy,borderColor:draggingWord===word?C.gold:'#ddd',boxShadow:draggingWord===word?`0 0 0 3px ${rgba(C.gold,0.28)}`:'0 1px 4px rgba(0,0,0,0.06)'}}>
-                {word}
-              </div>
-            ))}
-          </div>
-          {/* Tap-to-slot for mobile */}
-          {bank.length>0&&slots.some(s=>s===null)&&(
-            <div className="mb-4">
-              <div className="text-[10px] font-semibold mb-1.5" style={{color:C.mid}}>Or tap word → tap slot:</div>
-              <div className="flex gap-2 flex-wrap mb-2">
-                {bank.map(word=>(
-                  <button key={word}
-                    onClick={()=>{
-                      const firstEmpty=slots.findIndex(s=>s===null);
-                      if(firstEmpty!==-1)placeInSlot(word,firstEmpty);
-                    }}
-                    className="px-3 py-1.5 rounded-lg border text-xs font-semibold"
-                    style={{background:C.tealLight,borderColor:rgba(C.teal,0.3),color:C.teal}}>
-                    + {word}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-          <button onClick={submit} disabled={!allFilled}
-            className="w-full py-3 rounded-xl font-bold text-sm"
-            style={{background:allFilled?`linear-gradient(135deg,${C.gold},${C.orange})`:C.light,color:allFilled?C.navy:'#bbb',cursor:allFilled?'pointer':'not-allowed'}}>
-            Check Answer
-          </button>
-        </>
+      {!submitted&&(
+        <button disabled={slots.some(s=>!s)} onClick={submit} className="w-full py-3 rounded-2xl font-bold text-sm" style={{background:slots.some(s=>!s)?C.light:C.teal,color:slots.some(s=>!s)?C.mid:'white'}}>
+          Check Checklist
+        </button>
       )}
     </div>
   );
