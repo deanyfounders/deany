@@ -396,11 +396,11 @@ const App = () => {
       id: 'module-1', title: "Principles & Basics", subtitle: "Foundation of Islamic Finance", icon: "🎯", color: "#d97706", difficulty: "Beginner", estimatedTime: "70 min", lessonCount: 5,
       mascotMessage: "Let's build a solid foundation in Islamic finance principles!",
       lessons: [
-        { id: 'lesson-1-1', title: 'The Trader Prophet', description: '', duration: '12 min', questions: [] },
+        { id: 'lesson-1-1', title: 'Islam and Wealth', description: '', duration: '12 min', questions: [] },
         { id: 'lesson-1-2', title: 'Money as Amanah', description: '', duration: '12 min', questions: [] },
-        { id: 'lesson-1-3', title: 'The Three Poisons', description: '', duration: '15 min', questions: [] },
-        { id: 'lesson-1-4', title: 'Substance Over Labels', description: '', duration: '14 min', questions: [] },
-        { id: 'lesson-1-5', title: 'Your Money Right Now', description: '', duration: '14 min', questions: [] }
+        { id: 'lesson-1-3', title: 'Riba, Gharar, Maysir', description: '', duration: '15 min', questions: [] },
+        { id: 'lesson-1-4', title: 'What Makes a Deal Halal', description: '', duration: '14 min', questions: [] },
+        { id: 'lesson-1-5', title: 'Audit Your Finances', description: '', duration: '14 min', questions: [] }
       ]
     },
     { id: 'speed-round-1', title: "Speed Round", subtitle: "Rapid-fire compliance triage", icon: "⚡", color: "#7c3aed", difficulty: "Challenge", estimatedTime: "5 min", isSpeedRound: true,
