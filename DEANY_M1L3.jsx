@@ -108,7 +108,7 @@ function ModeBadge({mode,type,unscored}){
     <div className="flex items-center gap-2 mb-4 flex-wrap">
       <span className="text-xs font-bold px-3 py-1 rounded-full" style={{background:m.bg,color:m.color}}>{m.icon} {mode}</span>
       <span className="text-xs px-2.5 py-1 rounded-full font-medium" style={{background:rgba(C.navy,0.06),color:C.mid}}>{type}</span>
-      {unscored&&<span className="text-xs px-2.5 py-1 rounded-full font-bold" style={{background:rgba(C.gold,0.15),color:C.gold}}>⚡ Discovery — not scored</span>}
+      {unscored&&<span className="text-xs px-2.5 py-1 rounded-full font-bold" style={{background:rgba(C.gold,0.15),color:C.gold}}>⚡ Discovery - not scored</span>}
     </div>
   );
 }
@@ -187,7 +187,7 @@ function RibaDiagram(){
             </div>
           </div>
 
-          {/* Centre — money flows */}
+          {/* Centre - money flows */}
           <div className="flex flex-col items-center justify-center gap-1 w-16 flex-shrink-0">
             {/* Gives AED 1000 */}
             <div className="flex items-center gap-1 w-full">
@@ -216,7 +216,7 @@ function RibaDiagram(){
           </div>
         </div>
 
-        {/* The injustice — visual breakdown */}
+        {/* The injustice - visual breakdown */}
         <div className="rounded-xl p-3 border" style={{background:rgba(C.navy,0.04),borderColor:rgba(C.navy,0.1)}}>
           <div className="text-[10px] font-black mb-2 text-center uppercase tracking-wide" style={{color:C.navy}}>What makes this unjust</div>
           <div className="grid grid-cols-2 gap-2">
@@ -329,12 +329,12 @@ function FakeAdCard(){
 // ═══════════════════════════════════════════════════════════════
 const SECTIONS=[
   {
-    id:'A',title:'Ribā — The Guaranteed Increase',icon:'🔁',iconColor:C.coral,
+    id:'A',title:'Ribā - The Guaranteed Increase',icon:'🔁',iconColor:C.coral,
     content:[
       "Remember that loan scenario you just sorted? Lending AED 1,000 and getting AED 1,200 back no matter what? That's **ribā (ربا)**.",
-      "Ribā literally means 'increase' or 'excess.' In Islamic finance, it's a guaranteed increase on money lent — money that grows simply because time passes, with **no trade, no risk, and no effort** from the lender.",
+      "Ribā literally means 'increase' or 'excess.' In Islamic finance, it's a guaranteed increase on money lent - money that grows simply because time passes, with **no trade, no risk, and no effort** from the lender.",
       "Why is it prohibited? Because the lender takes **zero risk.** If the borrower's business fails, they still owe the extra. If they lose everything, they still owe the extra. The entire burden falls on the person who can least afford it.",
-      "This is why a conventional savings account that pays 'interest' involves ribā. The bank takes your money, invests it, keeps most of the profit, and gives you a guaranteed fixed return. That's not trade — it's ribā.",
+      "This is why a conventional savings account that pays 'interest' involves ribā. The bank takes your money, invests it, keeps most of the profit, and gives you a guaranteed fixed return. That's not trade - it's ribā.",
     ],
     ribaDiagram:true,
     quran:{
@@ -343,43 +343,43 @@ const SECTIONS=[
       ref:'Quran 2:275',
       note:"The key contrast: trade = permitted (real exchange, real risk, real value created). Ribā = forbidden (no exchange, no risk for the lender, money made from money alone).",
     },
-    misconception:"'All interest is the same.' Not quite. Ribā is about a **guaranteed increase on money lent** without trade or risk. A merchant who buys for AED 100 and sells for AED 120 is NOT ribā — that's profit from real trade with real risk.",
+    misconception:"'All interest is the same.' Not quite. Ribā is about a **guaranteed increase on money lent** without trade or risk. A merchant who buys for AED 100 and sells for AED 120 is NOT ribā - that's profit from real trade with real risk.",
   },
   {
-    id:'B',title:'Gharar — The Fog in the Deal',icon:'🌫️',iconColor:C.orange,
+    id:'B',title:'Gharar - The Fog in the Deal',icon:'🌫️',iconColor:C.orange,
     content:[
-      "The second prohibition is **gharar (غرر)**. It literally means 'uncertainty' or 'hazard' — but a better translation is **'fog in the deal.'**",
+      "The second prohibition is **gharar (غرر)**. It literally means 'uncertainty' or 'hazard' - but a better translation is **'fog in the deal.'**",
       "Gharar happens when one side doesn't know what they're getting, terms are unclear, or the outcome depends on something hidden. It's not the normal uncertainty of life ('will my business succeed?'). It's **uncertainty built into the deal itself.**",
-      "The key: gharar is about **hidden information in the deal structure.** Not about whether business is risky — all business is risky. Gharar is when the deal itself is a fog machine.",
+      "The key: gharar is about **hidden information in the deal structure.** Not about whether business is risky - all business is risky. Gharar is when the deal itself is a fog machine.",
     ],
     ghararTable:[
-      {left:'Paying for a "mystery box" — you don\'t know what\'s inside.',right:'Buying a phone — you know exactly what you\'re getting.'},
+      {left:'Paying for a "mystery box" - you don\'t know what\'s inside.',right:'Buying a phone - you know exactly what you\'re getting.'},
       {left:'Investing without knowing where the money goes.',right:'Investing in a business with a clear plan (might still fail, but you know the plan).'},
       {left:'Insurance: you pay premiums, may never get anything back.',right:'A sale with a warranty: product, price, and terms are all clear.'},
     ],
   },
   {
-    id:'C',title:'Maysir — The Gamble',icon:'🎲',iconColor:C.gold,
+    id:'C',title:'Maysir - The Gamble',icon:'🎲',iconColor:C.gold,
     content:[
-      "The third prohibition is **maysir (ميسر)** — gambling. The most intuitive of the three. Any transaction where the outcome is based purely on chance, not skill, knowledge, or trade.",
-      "Why prohibited? Because it creates wealth from nothing. No product made, no service provided, no trade occurs. One wins, the other loses — purely random. **A zero-sum game dressed as opportunity.**",
-      "The simple test: is the outcome based on pure chance with no real exchange of value? If yes — maysir.",
+      "The third prohibition is **maysir (ميسر)** - gambling. The most intuitive of the three. Any transaction where the outcome is based purely on chance, not skill, knowledge, or trade.",
+      "Why prohibited? Because it creates wealth from nothing. No product made, no service provided, no trade occurs. One wins, the other loses - purely random. **A zero-sum game dressed as opportunity.**",
+      "The simple test: is the outcome based on pure chance with no real exchange of value? If yes - maysir.",
     ],
     maysirTable:[
       {left:'Betting on a football match.',right:'Investing in a business (real trade with real risk).'},
       {left:'Casino gambling.',right:'Buying a product that might appreciate in value.'},
-      {left:'Lottery tickets.',right:'Takāful — Islamic insurance where surplus is returned.'},
+      {left:'Lottery tickets.',right:'Takāful - Islamic insurance where surplus is returned.'},
     ],
     threeWayCallout:true,
   },
   {
     id:'D',title:'All Three Together',icon:'⚖️',iconColor:C.teal,
     content:[
-      "A single product can contain **more than one poison.** Conventional insurance involves ribā (premiums invested in interest), gharar (you don't know if you'll get anything back), and maysir (outcome feels like a gamble). You'll learn the alternative — takāful — in Module 4.",
+      "A single product can contain **more than one poison.** Conventional insurance involves ribā (premiums invested in interest), gharar (you don't know if you'll get anything back), and maysir (outcome feels like a gamble). You'll learn the alternative - takāful - in Module 4.",
       "If a deal contains ANY of these three, it fails the custodian test. Some deals contain all three.",
     ],
     threeWayTable:true,
-    takeaway:"Three things a custodian must never allow: **Ribā** — guaranteed profit, zero risk for lender. **Gharar** — hidden information, foggy deal. **Maysir** — pure chance, no real exchange.",
+    takeaway:"Three things a custodian must never allow: **Ribā** - guaranteed profit, zero risk for lender. **Gharar** - hidden information, foggy deal. **Maysir** - pure chance, no real exchange.",
   },
 ];
 
@@ -390,13 +390,13 @@ const QUESTIONS=[
     question:"Before we explain the rules, trust your gut. Sort these 6 financial scenarios into the category that feels right.",
     buckets:[
       {id:'fair',   label:'Feels Fair',         icon:'✅',color:C.green, bg:C.greenLight, desc:'Seems like a normal, honest deal'},
-      {id:'unclear',label:'Feels Risky/Unclear', icon:'🌫️',color:C.orange,bg:C.orangeLight,desc:"Something feels off — unclear"},
+      {id:'unclear',label:'Feels Risky/Unclear', icon:'🌫️',color:C.orange,bg:C.orangeLight,desc:"Something feels off - unclear"},
       {id:'gamble', label:'Feels Like Gambling', icon:'🎲',color:C.coral, bg:C.coralLight, desc:'This is basically a bet'},
     ],
     items:[
-      {text:'You lend AED 1,000 and they MUST repay AED 1,200 regardless of what happens.',correct:'fair',trap:true,trapMsg:"Most people think a guaranteed loan repayment is fair. It SEEMS fair. But this is the most severely prohibited transaction in Islam. It's called ribā — and you're about to learn why."},
+      {text:'You lend AED 1,000 and they MUST repay AED 1,200 regardless of what happens.',correct:'fair',trap:true,trapMsg:"Most people think a guaranteed loan repayment is fair. It SEEMS fair. But this is the most severely prohibited transaction in Islam. It's called ribā - and you're about to learn why."},
       {text:'You buy a car, inspect it, and sell it for a profit.',correct:'fair'},
-      {text:'You pay AED 500 for a mystery box — could be worth AED 50 or AED 5,000.',correct:'unclear'},
+      {text:'You pay AED 500 for a mystery box - could be worth AED 50 or AED 5,000.',correct:'unclear'},
       {text:'You invest AED 10,000 but nobody tells you where the money goes.',correct:'unclear'},
       {text:'You pay insurance premiums for 10 years, never claim, get nothing back.',correct:'unclear'},
       {text:'You bet AED 100 on a football match.',correct:'gamble'},
@@ -404,7 +404,7 @@ const QUESTIONS=[
     summaryFeedback:{
       high:"Strong instincts! You can already feel the differences. Now let's name them: ribā, gharar, and maysir.",
       mid: "Good sense! Most people get the gambling ones right but struggle with the unclear ones. That's exactly what this lesson sorts out.",
-      low: "No worries — that's why this lesson exists. By the end, you'll sort these instantly.",
+      low: "No worries - that's why this lesson exists. By the end, you'll sort these instantly.",
     },
   },
   {
@@ -419,9 +419,9 @@ const QUESTIONS=[
     ],
     feedback:{
       a:"That contradicts Lesson 1! The Prophet ﷺ was a merchant who made profit. Islam encourages fair profit from trade. Ribā is about RISK-FREE profit, not profit itself.",
-      b:"Exactly. The issue isn't profit — Islam encourages fair profit from real trade. The issue is RISK-FREE profit from money lent. One side bears everything, the other bears nothing. That's the injustice.",
-      c:"Lending is encouraged in Islam — it's called qard hasan (a good loan). What's forbidden is charging EXTRA. You can lend AED 1,000 and ask for AED 1,000 back. Not AED 1,200.",
-      d:"Even 0.1% interest is ribā. It's not the rate — it's the structure. A guaranteed return on money lent with no trade or risk. The rate is irrelevant.",
+      b:"Exactly. The issue isn't profit - Islam encourages fair profit from real trade. The issue is RISK-FREE profit from money lent. One side bears everything, the other bears nothing. That's the injustice.",
+      c:"Lending is encouraged in Islam - it's called qard hasan (a good loan). What's forbidden is charging EXTRA. You can lend AED 1,000 and ask for AED 1,000 back. Not AED 1,200.",
+      d:"Even 0.1% interest is ribā. It's not the rate - it's the structure. A guaranteed return on money lent with no trade or risk. The rate is irrelevant.",
     },
   },
   {
@@ -431,9 +431,9 @@ const QUESTIONS=[
     leftLabel:'GHARAR',leftColor:C.orange,leftBg:C.orangeLight,
     rightLabel:'NORMAL RISK',rightColor:C.green,rightBg:C.greenLight,
     cards:[
-      {text:'You buy shares in a company with published financials.',answer:true,right:'✅ Published financials = transparent. Risk, not fog.',wrong:'❌ Financials are public — you see what you\'re investing in. That\'s transparent risk, not gharar.'},
+      {text:'You buy shares in a company with published financials.',answer:true,right:'✅ Published financials = transparent. Risk, not fog.',wrong:'❌ Financials are public - you see what you\'re investing in. That\'s transparent risk, not gharar.'},
       {text:"You pay for a product you've never seen and can't inspect.",answer:false,right:'✅ Can\'t see it = the deal itself is unclear. Gharar.',wrong:'❌ Not knowing what you buy IS gharar. The fog is built into the deal.'},
-      {text:'You start a restaurant — it might fail.',answer:true,right:'✅ Might fail, but you know what you\'re starting. Life risk.',wrong:'❌ You know exactly what the business is. It might fail, but that\'s not gharar.'},
+      {text:'You start a restaurant - it might fail.',answer:true,right:'✅ Might fail, but you know what you\'re starting. Life risk.',wrong:'❌ You know exactly what the business is. It might fail, but that\'s not gharar.'},
       {text:"You invest in a fund but nobody will tell you what it holds.",answer:false,right:"✅ Secret investments = you can't see what you agreed to. Classic gharar.",wrong:"❌ If money goes somewhere unknown, the deal is hidden. That IS gharar."},
       {text:'You sell your used car to someone who test-drove it first.',answer:true,right:'✅ Test drive = full inspection. Both sides see clearly.',wrong:'❌ Buyer inspected the car. Both know what they\'re getting. No fog.'},
       {text:'You pay someone for a job but the scope is completely undefined.',answer:false,right:'✅ Undefined scope = nobody knows what\'s being paid for. Gharar.',wrong:'❌ Scope undefined = unclear exchange. That\'s gharar by definition.'},
@@ -447,7 +447,7 @@ const QUESTIONS=[
   {
     id:'q4',afterSection:'C',
     type:'verdict',mode:'SORT',typeLabel:'Give Your Verdict',level:'2/5',
-    question:"You're the financial compliance judge. Review each case — then stamp your ruling.",
+    question:"You're the financial compliance judge. Review each case - then stamp your ruling.",
     cases:[
       {
         caseNum:'01',
@@ -455,7 +455,7 @@ const QUESTIONS=[
         title:'The Guaranteed Loan',
         brief:'A lender advances AED 5,000 to a farmer. Regardless of whether the harvest succeeds or fails, the farmer must repay AED 6,250 in three months.',
         verdict:'riba',
-        reasoning:"Ribā. The lender is guaranteed AED 1,250 extra no matter what happens to the farmer. Zero risk for the lender — all risk for the borrower. This is exactly the structure Islam prohibits.",
+        reasoning:"Ribā. The lender is guaranteed AED 1,250 extra no matter what happens to the farmer. Zero risk for the lender - all risk for the borrower. This is exactly the structure Islam prohibits.",
       },
       {
         caseNum:'02',
@@ -463,7 +463,7 @@ const QUESTIONS=[
         title:'The Vague Contract',
         brief:"A business pays a freelancer AED 3,000 per month to 'grow the brand online.' No deliverables specified. No timeline. No scope. Just a monthly transfer.",
         verdict:'gharar',
-        reasoning:"Gharar. Neither party can define what 'grow the brand' actually means. The exchange itself is fog — no clarity on what is being bought or sold. That's gharar.",
+        reasoning:"Gharar. Neither party can define what 'grow the brand' actually means. The exchange itself is fog - no clarity on what is being bought or sold. That's gharar.",
       },
       {
         caseNum:'03',
@@ -471,15 +471,15 @@ const QUESTIONS=[
         title:'The Office Pot',
         brief:"Every week, 20 employees each put in AED 50. On Friday, one name is drawn at random to win the entire AED 1,000 pot. No product, no service, no trade.",
         verdict:'maysir',
-        reasoning:"Maysir. Money in, random winner, nothing exchanged. The friendly setting doesn't change the structure. Dress a lottery in any clothes — it's still a lottery.",
+        reasoning:"Maysir. Money in, random winner, nothing exchanged. The friendly setting doesn't change the structure. Dress a lottery in any clothes - it's still a lottery.",
       },
       {
         caseNum:'04',
         emoji:'📊',
         title:'The Startup Pitch',
-        brief:"An entrepreneur shows a business plan, projected revenues, and risks. You invest AED 10,000 for 8% equity. The business might fail — she's upfront about that.",
+        brief:"An entrepreneur shows a business plan, projected revenues, and risks. You invest AED 10,000 for 8% equity. The business might fail - she's upfront about that.",
         verdict:'none',
-        reasoning:"Clean deal. You can see what you're investing in. Risk is shared — she might fail, you might lose. No guaranteed return is promised. This is exactly what Islam encourages.",
+        reasoning:"Clean deal. You can see what you're investing in. Risk is shared - she might fail, you might lose. No guaranteed return is promised. This is exactly what Islam encourages.",
       },
     ],
     stampOptions:[
@@ -489,8 +489,8 @@ const QUESTIONS=[
       {id:'none',  label:'HALAL', arabic:'حلال', icon:'✅',color:C.green, bg:C.greenLight},
     ],
     feedback:{
-      perfect:"4/4 — flawless. You can identify each prohibition in a real case, and you know when a deal is clean. That's the custodian's skill.",
-      good:   "Strong. The clean deal (startup) is the tricky one — real risk with full transparency is NOT gharar. That's exactly what Islamic finance encourages.",
+      perfect:"4/4 - flawless. You can identify each prohibition in a real case, and you know when a deal is clean. That's the custodian's skill.",
+      good:   "Strong. The clean deal (startup) is the tricky one - real risk with full transparency is NOT gharar. That's exactly what Islamic finance encourages.",
       low:    "The pattern: ribā = guaranteed return on money. Gharar = can't see what you agreed to. Maysir = pure chance, no exchange. Halal = real trade, real risk, full clarity.",
     },
   },
@@ -514,7 +514,7 @@ const QUESTIONS=[
     summaryFeedback:{
       high:"All correct. You can identify which poison is which in real scenarios. That's exactly the skill this lesson builds.",
       mid: "Almost! Ribā = guaranteed money on money (both bank interest AND the friend's loan surcharge are the same prohibition). Gharar = can't see the deal. Maysir = pure chance.",
-      low: "The tests: Ribā — guaranteed return on money lent? Gharar — can both sides see clearly? Maysir — pure chance? Run each scenario through these three filters.",
+      low: "The tests: Ribā - guaranteed return on money lent? Gharar - can both sides see clearly? Maysir - pure chance? Run each scenario through these three filters.",
     },
   },
   {
@@ -525,29 +525,29 @@ const QUESTIONS=[
     correctWords:['ribā','gharar','maysir'],
     wordBank:['ribā','gharar','maysir','amānah','profit'],
     feedback:{
-      perfect:"Perfect. Ribā, gharar, maysir — the three-question checklist. Every deal, every time. This is the custodian's filter.",
+      perfect:"Perfect. Ribā, gharar, maysir - the three-question checklist. Every deal, every time. This is the custodian's filter.",
       partial:"Almost! The three checks: ribā (guaranteed return?), gharar (hidden information?), maysir (pure chance?). Amānah is the framework that makes you ask. Profit is what you're allowed to make.",
-      wrong:  "The checklist: (1) Is there RIBĀ? (2) Is there GHARAR? (3) Is it MAYSIR? Amānah is the mindset — these prohibitions are what you're checking FOR.",
+      wrong:  "The checklist: (1) Is there RIBĀ? (2) Is there GHARAR? (3) Is it MAYSIR? Amānah is the mindset - these prohibitions are what you're checking FOR.",
     },
   },
   {
     id:'q7',afterSection:'D',
-    type:'mcq',mode:'THINK',typeLabel:'Scenario — Level 3',level:'3/5',
+    type:'mcq',mode:'THINK',typeLabel:'Scenario - Level 3',level:'3/5',
     isCapstone:true,multiPoison:true,showFakeAd:true,
     question:"Which prohibition(s) does this investment ad most likely involve?",
     options:[
-      {id:'a',text:"Only gharar — because you don't know exactly where your money goes.",correct:false},
-      {id:'b',text:"Only maysir — because investing is basically gambling.",correct:false},
-      {id:'c',text:"Ribā AND gharar — guaranteed returns (ribā) plus unclear portfolio (gharar).",correct:true},
-      {id:'d',text:"None — this sounds like a legitimate investment.",correct:false},
+      {id:'a',text:"Only gharar - because you don't know exactly where your money goes.",correct:false},
+      {id:'b',text:"Only maysir - because investing is basically gambling.",correct:false},
+      {id:'c',text:"Ribā AND gharar - guaranteed returns (ribā) plus unclear portfolio (gharar).",correct:true},
+      {id:'d',text:"None - this sounds like a legitimate investment.",correct:false},
     ],
     feedback:{
-      a:"You spotted the gharar — well done. But you missed the bigger problem: 'guaranteed 12%' and 'no risk' = ribā. Whenever someone guarantees a return on your money with no risk, that's not investing — it's ribā.",
-      b:"Investing is NOT gambling. Gambling has no real trade. The problem here is that returns are GUARANTEED (ribā) and the portfolio is unclear (gharar) — not that investing is maysir.",
-      c:"Exactly. Two poisons in one deal. 'Guaranteed 12%' = ribā (risk-free return on money). 'Diversified portfolio' with no details = gharar. The ad even says 'no risk to capital' — that's literally the definition of ribā. A custodian would walk away.",
-      d:"This is EXACTLY the kind of deal that seems legitimate. 'Guaranteed returns, no risk' sounds great — until you apply the custodian's checklist. Guaranteed return = ribā. Unclear portfolio = gharar. Labels don't matter — substance does.",
+      a:"You spotted the gharar - well done. But you missed the bigger problem: 'guaranteed 12%' and 'no risk' = ribā. Whenever someone guarantees a return on your money with no risk, that's not investing - it's ribā.",
+      b:"Investing is NOT gambling. Gambling has no real trade. The problem here is that returns are GUARANTEED (ribā) and the portfolio is unclear (gharar) - not that investing is maysir.",
+      c:"Exactly. Two poisons in one deal. 'Guaranteed 12%' = ribā (risk-free return on money). 'Diversified portfolio' with no details = gharar. The ad even says 'no risk to capital' - that's literally the definition of ribā. A custodian would walk away.",
+      d:"This is EXACTLY the kind of deal that seems legitimate. 'Guaranteed returns, no risk' sounds great - until you apply the custodian's checklist. Guaranteed return = ribā. Unclear portfolio = gharar. Labels don't matter - substance does.",
     },
-    bridge:"Next lesson: Substance Over Labels — the #1 skill in Islamic finance. You now know WHAT is prohibited. Next you learn how to DETECT it, even when it's disguised behind marketing and fancy labels.",
+    bridge:"Next lesson: Substance Over Labels - the #1 skill in Islamic finance. You now know WHAT is prohibited. Next you learn how to DETECT it, even when it's disguised behind marketing and fancy labels.",
   },
 ];
 
@@ -633,14 +633,14 @@ export default function DEANY_M1L3({ onBack, onHome, savedProgress }){
           <div className="rounded-xl p-4 mb-5 border" style={{background:rgba(C.tealLight,0.7),borderColor:rgba(C.teal,0.18)}}>
             <div className="text-xs font-bold mb-1" style={{color:C.teal}}>📎 Continuing from Lesson 1.2</div>
             <p className="text-xs leading-relaxed" style={{color:C.dark}}>
-              Wealth is amānah — a trust you manage responsibly. But what does 'responsibly' actually mean? What specifically can a custodian <strong>never</strong> do? This lesson answers with three precise prohibitions.
+              Wealth is amānah - a trust you manage responsibly. But what does 'responsibly' actually mean? What specifically can a custodian <strong>never</strong> do? This lesson answers with three precise prohibitions.
             </p>
           </div>
           <div className="flex items-start gap-3 mb-5">
             <Mascot/>
             <div className="rounded-xl rounded-tl-sm p-4 border border-gray-100 flex-1" style={{background:'rgba(255,255,255,0.85)'}}>
               <p className="text-sm" style={{color:C.dark}}>
-                <strong style={{color:C.teal}}>Fulus:</strong> We start with a sorting challenge — before any definitions. Trust your gut first, then I'll name what you felt. Let's build your filter! ⚖️
+                <strong style={{color:C.teal}}>Fulus:</strong> We start with a sorting challenge - before any definitions. Trust your gut first, then I'll name what you felt. Let's build your filter! ⚖️
               </p>
             </div>
           </div>
@@ -747,13 +747,13 @@ export default function DEANY_M1L3({ onBack, onHome, savedProgress }){
                 <span className="text-[10px] w-20" style={{color:C.mid}}>Could explain</span>
               </div>
               <p className="text-xs text-center" style={{color:C.dark}}>
-                {confidence<=2?"Three new concepts is a lot. They'll solidify with practice — and keep coming back in future lessons.":confidence===3?"Solid start. You know the names and the tests. Practice will sharpen this.":"You're building real analytical skills. Ready for the next step."}
+                {confidence<=2?"Three new concepts is a lot. They'll solidify with practice - and keep coming back in future lessons.":confidence===3?"Solid start. You know the names and the tests. Practice will sharpen this.":"You're building real analytical skills. Ready for the next step."}
               </p>
             </div>
             <div className="p-4 rounded-xl mb-5" style={{background:rgba(C.teal,0.07),border:`1px solid ${rgba(C.teal,0.16)}`}}>
               <div className="text-xs font-bold mb-1" style={{color:C.teal}}>Up Next</div>
               <div className="text-sm font-semibold mb-0.5" style={{color:C.navy}}>Lesson 1.4: Substance Over Labels</div>
-              <div className="text-xs" style={{color:C.mid}}>You know WHAT is prohibited. Now learn how to DETECT it — even when it's disguised behind marketing and fancy labels.</div>
+              <div className="text-xs" style={{color:C.mid}}>You know WHAT is prohibited. Now learn how to DETECT it - even when it's disguised behind marketing and fancy labels.</div>
             </div>
             <button className="w-full py-3.5 rounded-xl font-bold text-sm" style={{background:`linear-gradient(135deg,${C.gold},${C.orange})`,color:C.navy}}>
               Next Lesson <ArrowRight className="w-4 h-4 inline ml-1 -mt-0.5"/>
@@ -823,7 +823,7 @@ function SectionCard({section,onContinue}){
           <div className="rounded-xl overflow-hidden mb-5 border" style={{borderColor:rgba(C.gold,0.3)}}>
             <div className="px-4 py-2 flex items-center gap-2" style={{background:`linear-gradient(135deg,${C.navy},#2a3f6a)`}}>
               <span className="text-sm">📖</span>
-              <span className="text-xs font-bold tracking-wide" style={{color:rgba(C.gold,0.9)}}>Quranic Reference — {section.quran.ref}</span>
+              <span className="text-xs font-bold tracking-wide" style={{color:rgba(C.gold,0.9)}}>Quranic Reference - {section.quran.ref}</span>
             </div>
             {/* Arabic text */}
             <div className="px-5 py-4 text-right border-b" style={{background:`linear-gradient(135deg,${C.navy},#1e3460)`,borderColor:rgba(C.gold,0.15)}}>
@@ -836,7 +836,7 @@ function SectionCard({section,onContinue}){
               <p className="text-sm italic leading-relaxed mb-2" style={{color:C.navy,fontFamily:'Georgia,serif'}}>
                 {section.quran.text}
               </p>
-              <p className="text-xs font-semibold mb-2" style={{color:C.gold}}>— {section.quran.ref}</p>
+              <p className="text-xs font-semibold mb-2" style={{color:C.gold}}> - {section.quran.ref}</p>
               {section.quran.note&&(
                 <div className="pt-2 border-t text-xs leading-relaxed" style={{borderColor:rgba(C.gold,0.25),color:C.dark}}>
                   <span className="font-bold" style={{color:C.navy}}>Key insight: </span>{section.quran.note}
@@ -1145,7 +1145,7 @@ function Bucket3({q,onFinish}){
           })}
         </div>
       )}
-      {/* For unscored (Q1) — show correct labels for ALL items after submit */}
+      {/* For unscored (Q1) - show correct labels for ALL items after submit */}
       {sub&&isUnscored&&(
         <div className="mt-3 p-3 rounded-xl su" style={{background:rgba(C.navy,0.04),border:`1px solid ${rgba(C.navy,0.1)}`}}>
           <div className="text-[10px] font-bold mb-2" style={{color:C.navy}}>📋 The correct labels (you'll understand why after this lesson):</div>
@@ -1171,7 +1171,7 @@ function Bucket3({q,onFinish}){
 }
 
 // ═══════════════════════════════════════════════════════════════
-// SWIPE CARDS (Q3 — Gharar vs Normal Risk)
+// SWIPE CARDS (Q3 - Gharar vs Normal Risk)
 // ═══════════════════════════════════════════════════════════════
 function SwipeCards({q,onFinish}){
   const cards=q.cards;
@@ -1293,10 +1293,10 @@ function SwipeCards({q,onFinish}){
 // MATCH PAIRS (Q4)
 // ═══════════════════════════════════════════════════════════════
 // ═══════════════════════════════════════════════════════════════
-// POISON REVEAL (Q4) — tap the poison on each scenario card
+// POISON REVEAL (Q4) - tap the poison on each scenario card
 // ═══════════════════════════════════════════════════════════════
 // ═══════════════════════════════════════════════════════════════
-// VERDICT STAMP (Q4 — Courtroom Judge)
+// VERDICT STAMP (Q4 - Courtroom Judge)
 // ═══════════════════════════════════════════════════════════════
 function VerdictStamp({q,onFinish}){
   const [caseIdx,   setCaseIdx]   = useState(0);
@@ -1408,7 +1408,7 @@ function VerdictStamp({q,onFinish}){
           </div>
           <div className="flex-1">
             <div className="text-[9px] font-bold tracking-widest uppercase mb-0.5" style={{color:rgba(C.gold,0.65)}}>
-              Case #{currentCase.caseNum} — Financial Compliance Review
+              Case #{currentCase.caseNum} - Financial Compliance Review
             </div>
             <div className="text-sm font-bold text-white">{currentCase.title}</div>
           </div>
@@ -1462,11 +1462,11 @@ function VerdictStamp({q,onFinish}){
         )}
       </div>
 
-      {/* Stamps — shown when not yet ruled */}
+      {/* Stamps - shown when not yet ruled */}
       {!isStamped && (
         <div>
           <div className="text-xs font-bold text-center mb-3" style={{color:C.mid}}>
-            ⚖️ Your ruling — what prohibition applies?
+            ⚖️ Your ruling - what prohibition applies?
           </div>
           <div className="grid grid-cols-2 gap-2.5">
             {q.stampOptions.map(opt=>{
@@ -1525,7 +1525,7 @@ function VerdictStamp({q,onFinish}){
 }
 
 // ═══════════════════════════════════════════════════════════════
-// WORD ORDER (Q6 — custodian's checklist)
+// WORD ORDER (Q6 - custodian's checklist)
 // ═══════════════════════════════════════════════════════════════
 function WordOrder({q,onFinish}){
   const [slots,  setSlots]  =useState(Array(q.correctWords.length).fill(null));
@@ -1612,7 +1612,7 @@ function WordOrder({q,onFinish}){
       {/* Word bank */}
       {!sub&&(
         <>
-          <div className="text-xs font-bold mb-2" style={{color:C.mid}}>Word bank — drag or tap to place:</div>
+          <div className="text-xs font-bold mb-2" style={{color:C.mid}}>Word bank - drag or tap to place:</div>
           <div className="flex flex-wrap gap-2 mb-4">
             {bank.map(word=>(
               <div key={word} draggable

@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 
 // ═══════════════════════════════════════════════════════════════
-// DEANY — MODULE 1, LESSON 2: Money as Amānah
+// DEANY - MODULE 1, LESSON 2: Money as Amānah
 // Blueprint: DEANY_M1L2_Blueprint.docx
 // 6 Questions • 5 Types • 3 Modes • L2→L3 • 14 Minutes
 // Question Engine v2.0 Compliant • Sahih-Only
@@ -139,9 +139,9 @@ const SECTIONS = [
     id: 'section-a',
     title: 'Two Ways to Think About Your Money',
     content: [
-      "Imagine you receive AED 50,000. Maybe it's a bonus, an inheritance, or savings you've built up. You now have a choice — not about what to do with it, but about how to **think** about it.",
-      'Both people have the same AED 50,000. But they\'ll make completely different decisions about saving, spending, investing, and giving. The difference isn\'t the amount — it\'s the mindset.',
-      'Islam teaches Mindset B. Your wealth is **amānah (أمانة)** — a trust placed in your care by its true Owner. You\'re a custodian **(khalifah, خليفة)**, not a proprietor.',
+      "Imagine you receive AED 50,000. Maybe it's a bonus, an inheritance, or savings you've built up. You now have a choice - not about what to do with it, but about how to **think** about it.",
+      'Both people have the same AED 50,000. But they\'ll make completely different decisions about saving, spending, investing, and giving. The difference isn\'t the amount - it\'s the mindset.',
+      'Islam teaches Mindset B. Your wealth is **amānah (أمانة)** - a trust placed in your care by its true Owner. You\'re a custodian **(khalifah, خليفة)**, not a proprietor.',
     ],
     mindsets: [
       {
@@ -150,7 +150,7 @@ const SECTIONS = [
       },
       {
         label: 'Mindset B: The Custodian', color: T.green, bg: T.greenLight, icon: '🔑',
-        text: "'This money has been placed in my care. I didn't create it — Allah provided it. I'm responsible for how I use it. I'll be asked about it. So I need to manage it wisely, not just spend it freely.'",
+        text: "'This money has been placed in my care. I didn't create it - Allah provided it. I'm responsible for how I use it. I'll be asked about it. So I need to manage it wisely, not just spend it freely.'",
       },
     ],
   },
@@ -158,7 +158,7 @@ const SECTIONS = [
     id: 'section-b',
     title: 'The Accountability Hadith',
     content: [
-      'This isn\'t just a nice idea. It comes with accountability. The Prophet ﷺ said that every person will be asked about their wealth on the Day of Judgement — two questions specifically.',
+      'This isn\'t just a nice idea. It comes with accountability. The Prophet ﷺ said that every person will be asked about their wealth on the Day of Judgement - two questions specifically.',
       'Two of those five questions are about money: how you **earned** it and how you **spent** it. Not one. Two. That\'s 40% of the Day of Judgement accountability focused on your financial behaviour.',
       'This is why amānah isn\'t just philosophy. It has consequences. A custodian who manages well is rewarded. A custodian who wastes, hoards, or earns through forbidden means will be asked why.',
     ],
@@ -169,10 +169,10 @@ const SECTIONS = [
   },
   {
     id: 'section-c',
-    title: 'Owner vs Custodian — The Decision Framework',
+    title: 'Owner vs Custodian - The Decision Framework',
     content: [
       "Let's make this practical. The owner mindset and the custodian mindset produce different answers to the same financial questions. Here's how:",
-      "Notice: the custodian doesn't ask **fewer** questions. They ask **better** questions. The owner asks 'can I?' The custodian asks 'should I — and is it right?'",
+      "Notice: the custodian doesn't ask **fewer** questions. They ask **better** questions. The owner asks 'can I?' The custodian asks 'should I - and is it right?'",
       "This is the amānah framework in action. Every financial decision passes through the filter: 'Is this how a responsible custodian would manage this trust?'",
     ],
     comparisonTable: [
@@ -192,34 +192,34 @@ const SECTIONS = [
       "That's amānah. Your wealth is that friend's savings. Except the friend is your Creator. And the 'intended purpose' includes taking care of yourself, your family, your community, and your future.",
     ],
     misconception: {
-      text: "'Amānah means I shouldn't spend money on things I enjoy.' Wrong. Amānah means you SHOULD enjoy your wealth — but within boundaries. The opposite of amānah isn't enjoyment. It's wastefulness **(isrāf, إسراف)** and recklessness.",
+      text: "'Amānah means I shouldn't spend money on things I enjoy.' Wrong. Amānah means you SHOULD enjoy your wealth - but within boundaries. The opposite of amānah isn't enjoyment. It's wastefulness **(isrāf, إسراف)** and recklessness.",
     },
     keyTakeaway: {
-      text: "Amānah changes everything. You're not an owner spending freely — you're a custodian managing a trust. Every financial decision passes through three checks: What is my role? (Custodian.) Is this permissible? And: will I be comfortable being asked about how I earned and spent this?",
+      text: "Amānah changes everything. You're not an owner spending freely - you're a custodian managing a trust. Every financial decision passes through three checks: What is my role? (Custodian.) Is this permissible? And: will I be comfortable being asked about how I earned and spent this?",
     },
   },
 ];
 
 const QUESTIONS = [
-  // ── Q1: MCQ — L2 RECALL — THINK ───────────────────────────
+  // ── Q1: MCQ - L2 RECALL - THINK ───────────────────────────
   {
     id: 'q1', type: 'mcq', mode: 'THINK', level: '2/5', typeLabel: 'Multiple Choice',
     afterSection: 0,
     question: "Based on the passage above, what does the word amānah mean in the context of Islamic finance?",
     options: [
-      { id: 'a', text: 'Charity — giving away your wealth to others', correct: false },
-      { id: 'b', text: 'Trust — something placed in your care by its true Owner', correct: true },
-      { id: 'c', text: 'Ownership — your right to do anything with your wealth', correct: false },
-      { id: 'd', text: 'Savings — keeping your wealth safe for the future', correct: false },
+      { id: 'a', text: 'Charity - giving away your wealth to others', correct: false },
+      { id: 'b', text: 'Trust - something placed in your care by its true Owner', correct: true },
+      { id: 'c', text: 'Ownership - your right to do anything with your wealth', correct: false },
+      { id: 'd', text: 'Savings - keeping your wealth safe for the future', correct: false },
     ],
     feedback: {
-      a: "Charity (sadaqah) is important in Islam, but that's not what amānah means. Amānah is about the entire relationship with wealth — it's a trust, not just a giving obligation.",
+      a: "Charity (sadaqah) is important in Islam, but that's not what amānah means. Amānah is about the entire relationship with wealth - it's a trust, not just a giving obligation.",
       b: "Exactly. Amānah = trust. Not charity, not ownership, not savings. It's the idea that wealth has been placed in your care and you're responsible for how you use it. This single reframe changes every financial decision.",
       c: "That's actually the OPPOSITE of amānah. Amānah means you DON'T have absolute ownership. You're a custodian managing someone else's property on trust.",
-      d: "Saving is wise, but amānah isn't about saving specifically. It's the foundational concept: all your wealth — saved, spent, invested — is a trust you're managing.",
+      d: "Saving is wise, but amānah isn't about saving specifically. It's the foundational concept: all your wealth - saved, spent, invested - is a trust you're managing.",
     },
   },
-  // ── Q2: RAPID-FIRE T/F — L2 RECALL — PLAY ─────────────────
+  // ── Q2: RAPID-FIRE T/F - L2 RECALL - PLAY ─────────────────
   {
     id: 'q2', type: 'rapid-tf', mode: 'PLAY', level: '2/5', typeLabel: 'Rapid-Fire True / False',
     afterSection: 1,
@@ -234,10 +234,10 @@ const QUESTIONS = [
     summaryFeedback: {
       perfect: "Perfect run! Two questions about wealth. Custodian, not owner. Applies to everyone. You've got the amānah framework locked in.",
       good: "Almost! Key corrections: it's TWO questions (earned + spent), and custodian means RESPONSIBLE spending, not free spending. Amānah applies to everyone with any wealth at all.",
-      low: "No worries — these are new concepts. The core: amānah = trust. You'll be asked TWO things about money (how earned, how spent). A custodian spends RESPONSIBLY, not freely. And this applies whether you have AED 100 or AED 10 million.",
+      low: "No worries - these are new concepts. The core: amānah = trust. You'll be asked TWO things about money (how earned, how spent). A custodian spends RESPONSIBLY, not freely. And this applies whether you have AED 100 or AED 10 million.",
     },
   },
-  // ── Q3: BUCKET SORT — L2 RECALL — SORT ────────────────────
+  // ── Q3: BUCKET SORT - L2 RECALL - SORT ────────────────────
   {
     id: 'q3', type: 'bucket-sort', mode: 'SORT', level: '2/5', typeLabel: 'Sort into Buckets',
     afterSection: 2,
@@ -257,10 +257,10 @@ const QUESTIONS = [
     summaryFeedback: {
       perfect: "You can already tell the difference. Owner asks 'can I?' Custodian asks 'should I?' That's the amānah filter in action.",
       good: "Nearly there! The pattern: owner questions focus on ABILITY and DESIRE. Custodian questions focus on RESPONSIBILITY and PERMISSIBILITY.",
-      low: "The key distinction: owner questions = 'what do I want?' Custodian questions = 'what is right?' Both people might end up buying the same thing — but the custodian checks whether it's appropriate first.",
+      low: "The key distinction: owner questions = 'what do I want?' Custodian questions = 'what is right?' Both people might end up buying the same thing - but the custodian checks whether it's appropriate first.",
     },
   },
-  // ── Q4: FILL IN THE BLANK (DROPDOWN) — L2 RECALL — THINK ──
+  // ── Q4: FILL IN THE BLANK (DROPDOWN) - L2 RECALL - THINK ──
   {
     id: 'q4', type: 'fill-blank', mode: 'THINK', level: '2/5', typeLabel: 'Fill in the Blanks',
     afterSection: 2,
@@ -282,7 +282,7 @@ const QUESTIONS = [
       low: "The key words: trust (not gift or reward), permissible (the custodian's question), earned and spent (the two accountability questions from the hadith). These four words summarise the entire lesson.",
     },
   },
-  // ── Q5: FLOWCHART COMPLETION — L2 RECALL — THINK ──────────
+  // ── Q5: FLOWCHART COMPLETION - L2 RECALL - THINK ──────────
   {
     id: 'q5', type: 'flowchart', mode: 'THINK', level: '2/5', typeLabel: 'Flowchart Completion',
     afterSection: 3,
@@ -296,13 +296,13 @@ const QUESTIONS = [
     ],
     feedback: {
       perfect: "Beautifully built! This flowchart is the amānah framework in action: recognise your role (custodian) → check permissibility → remember accountability. Every financial decision can run through this.",
-      good: "Almost complete! The flowchart captures the whole amānah mindset. Check the step you missed — each one builds on the last.",
+      good: "Almost complete! The flowchart captures the whole amānah mindset. Check the step you missed - each one builds on the last.",
       low: "Good effort on a new concept! The flow is: I'm a CUSTODIAN (not owner) → I check if it's PERMISSIBLE (not just profitable) → I'm accountable for how I EARNED AND SPENT (not just how much I gave away).",
     },
   },
-  // ── Q6: MCQ SCENARIO (CAPSTONE) — L3 APPLICATION — THINK ──
+  // ── Q6: MCQ SCENARIO (CAPSTONE) - L3 APPLICATION - THINK ──
   {
-    id: 'q6', type: 'mcq-scenario', mode: 'THINK', level: '3/5', typeLabel: 'Scenario — Level 3',
+    id: 'q6', type: 'mcq-scenario', mode: 'THINK', level: '3/5', typeLabel: 'Scenario - Level 3',
     afterSection: 3,
     isCapstone: true,
     scenario: "Your colleague tells you about an investment opportunity. 'It's guaranteed 15% returns. Everyone at the office is doing it. You just give them the money and they pay you back more every month.'",
@@ -310,16 +310,16 @@ const QUESTIONS = [
     options: [
       { id: 'a', text: "'How much money do I need to invest?'", correct: false },
       { id: 'b', text: "'How long until I get my returns?'", correct: false },
-      { id: 'c', text: "'Is this investment structure permissible — what is the money actually doing?'", correct: true },
+      { id: 'c', text: "'Is this investment structure permissible - what is the money actually doing?'", correct: true },
       { id: 'd', text: "'Are other people at the office making money from it?'", correct: false },
     ],
     feedback: {
       a: "That's the owner's question: 'how much does it cost me?' The custodian asks first: 'what is the money actually doing? Is the structure permissible?' Amount is important, but it's the SECOND question, not the first.",
       b: "Timeline is a practical question, but it's an owner-mindset question. The custodian's first instinct is: 'what is this money doing? Is the structure itself permissible?' Returns mean nothing if the mechanism isn't right.",
-      c: "That's the custodian's first instinct: not 'how much can I make?' but 'what is this money actually doing?' A guaranteed fixed return on money lent out sounds a lot like ribā — you'll learn exactly what that means in Lesson 3. But you already have the instinct to ask the right question. That's amānah in action.",
+      c: "That's the custodian's first instinct: not 'how much can I make?' but 'what is this money actually doing?' A guaranteed fixed return on money lent out sounds a lot like ribā - you'll learn exactly what that means in Lesson 3. But you already have the instinct to ask the right question. That's amānah in action.",
       d: "Popularity doesn't determine permissibility. 'Everyone is doing it' is irrelevant to a custodian. The first question is always: 'what is the money actually doing?' Crowd behaviour is not a Shariah standard.",
     },
-    bridgeForward: "Next: The Three Prohibitions — ribā, gharar, maysir. That 'guaranteed return' your colleague mentioned? You're about to learn exactly why it's a red flag.",
+    bridgeForward: "Next: The Three Prohibitions - ribā, gharar, maysir. That 'guaranteed return' your colleague mentioned? You're about to learn exactly why it's a red flag.",
   },
 ];
 
@@ -431,7 +431,7 @@ export default function DEANY_M1L2({ onBack, onHome, savedProgress }) {
                 📎 Continuing from Lesson 1.1
               </div>
               <p className="text-xs leading-relaxed" style={{ color: T.grayDark }}>
-                The Prophet ﷺ was a merchant and Khadija رضي الله عنها was a businesswoman. We previewed a word: <strong>amānah</strong>. Now let's explore what it actually means — because this single idea changes everything.
+                The Prophet ﷺ was a merchant and Khadija رضي الله عنها was a businesswoman. We previewed a word: <strong>amānah</strong>. Now let's explore what it actually means - because this single idea changes everything.
               </p>
             </div>
 
@@ -439,7 +439,7 @@ export default function DEANY_M1L2({ onBack, onHome, savedProgress }) {
               <Mascot size="md" />
               <div className="bg-white/80 rounded-xl rounded-tl-sm p-3.5 border border-gray-100 flex-1">
                 <p className="text-sm" style={{ color: T.grayDark }}>
-                  <b style={{ color: T.teal }}>Fulus:</b> Welcome back! Today we go deeper. The amānah principle reshapes how Muslims approach every financial decision — from choosing a bank account to evaluating an investment. Let's build your framework! 🔑
+                  <b style={{ color: T.teal }}>Fulus:</b> Welcome back! Today we go deeper. The amānah principle reshapes how Muslims approach every financial decision - from choosing a bank account to evaluating an investment. Let's build your framework! 🔑
                 </p>
               </div>
             </div>
@@ -560,7 +560,7 @@ export default function DEANY_M1L2({ onBack, onHome, savedProgress }) {
                 <span className="text-[10px] w-20" style={{ color: T.grayMed }}>Could explain it</span>
               </div>
               <div className="text-xs text-center" style={{ color: T.grayDark }}>
-                {confidence <= 2 ? "Totally normal — amānah is a big shift in thinking. It'll settle." :
+                {confidence <= 2 ? "Totally normal - amānah is a big shift in thinking. It'll settle." :
                   confidence === 3 ? "Good! The owner vs custodian distinction will keep clicking." :
                     "You're building real foundations. Ready for the next step."}
               </div>
@@ -570,7 +570,7 @@ export default function DEANY_M1L2({ onBack, onHome, savedProgress }) {
             <div className="p-4 rounded-xl mb-5" style={{ background: `${T.teal}08`, border: `1px solid ${T.teal}18` }}>
               <div className="text-xs font-bold mb-1" style={{ color: T.teal }}>Up Next</div>
               <div className="text-sm font-semibold mb-1" style={{ color: T.navy }}>Lesson 1.3: The Three Prohibitions</div>
-              <div className="text-xs" style={{ color: T.grayMed }}>Now that you think like a custodian, you'll learn the three things custodians must never do — ribā, gharar, and maysir.</div>
+              <div className="text-xs" style={{ color: T.grayMed }}>Now that you think like a custodian, you'll learn the three things custodians must never do - ribā, gharar, and maysir.</div>
             </div>
 
             <button className="w-full py-3.5 rounded-xl font-bold text-sm transition-all hover:shadow-lg"
@@ -710,7 +710,7 @@ function SectionCard({ section, onContinue }) {
               <p className="text-sm italic mb-2 leading-relaxed" style={{ color: T.navy, fontFamily: 'Georgia, serif' }}>
                 {section.hadith.text}
               </p>
-              <p className="text-xs font-semibold" style={{ color: T.gold }}>— {section.hadith.ref}</p>
+              <p className="text-xs font-semibold" style={{ color: T.gold }}> - {section.hadith.ref}</p>
             </div>
           )}
 
@@ -907,7 +907,7 @@ function MCQRenderer({ q, answered, onDone }) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// RAPID-FIRE TRUE/FALSE RENDERER (NEW — Q2)
+// RAPID-FIRE TRUE/FALSE RENDERER (NEW - Q2)
 // ═══════════════════════════════════════════════════════════════
 function RapidFireTFRenderer({ q, onDone }) {
   const cards = q.cards;
@@ -1001,7 +1001,7 @@ function RapidFireTFRenderer({ q, onDone }) {
               <div>
                 <div className="font-medium" style={{ color: T.grayDark }}>{r.card.text}</div>
                 <div className="mt-0.5 font-bold" style={{ color: r.correct ? T.green : T.coral }}>
-                  {r.timeout ? '⏰ Timed out' : r.correct ? `✓ Correct — ${r.card.answer ? 'TRUE' : 'FALSE'}` : `✗ Answer: ${r.card.answer ? 'TRUE' : 'FALSE'}`}
+                  {r.timeout ? '⏰ Timed out' : r.correct ? `✓ Correct - ${r.card.answer ? 'TRUE' : 'FALSE'}` : `✗ Answer: ${r.card.answer ? 'TRUE' : 'FALSE'}`}
                 </div>
               </div>
             </div>
@@ -1230,7 +1230,7 @@ function BucketSortRenderer({ q, onDone }) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// DROPDOWN FILL-IN-THE-BLANK RENDERER (NEW — Q4)
+// DROPDOWN FILL-IN-THE-BLANK RENDERER (NEW - Q4)
 // ═══════════════════════════════════════════════════════════════
 function DropdownFillBlankRenderer({ q, onDone }) {
   const [selected, setSelected] = useState({});
@@ -1355,7 +1355,7 @@ function DropdownFillBlankRenderer({ q, onDone }) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// FLOWCHART COMPLETION RENDERER (NEW — Q5)
+// FLOWCHART COMPLETION RENDERER (NEW - Q5)
 // ═══════════════════════════════════════════════════════════════
 function FlowchartCompletionRenderer({ q, onDone }) {
   const [selected, setSelected] = useState({}); // blankIdx -> value

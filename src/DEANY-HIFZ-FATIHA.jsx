@@ -918,6 +918,7 @@ export default function DeanyFatihaMemorisationOnly({ onBack, onHome, onGoTafsir
     return (
       <main className="min-h-screen bg-[#fbfbf8] p-6 text-slate-950">
         <div className="mx-auto max-w-5xl">
+          {onBack && <button onClick={onBack} className="mb-4 text-lg text-slate-950 hover:text-slate-600 transition" aria-label="Back">← Back</button>}
           <Card>
             <p className="text-xs font-black uppercase tracking-[0.25em] text-emerald-700">Lesson complete</p>
             <h1 className="mt-4 text-5xl font-black">{cleanCount} / {passages.length} passages clean</h1>
@@ -960,10 +961,13 @@ export default function DeanyFatihaMemorisationOnly({ onBack, onHome, onGoTafsir
     <main className="min-h-screen bg-[#fbfbf8] p-6 text-slate-950">
       <div className="mx-auto max-w-6xl space-y-5">
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <p className="text-xs font-black uppercase tracking-[0.25em] text-emerald-700">Al-Fatiha memorisation · {mode.title}</p>
-            <h1 className="mt-2 text-3xl font-black">{passage.label}</h1>
-            {progress.returnToFinal && <p className="mt-1 text-sm font-bold text-amber-700">Review this passage, then return to the full-surah test.</p>}
+          <div className="flex items-center gap-3">
+            {onBack && <button onClick={onBack} className="text-lg text-slate-950 hover:text-slate-600 transition" aria-label="Back">←</button>}
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.25em] text-emerald-700">Al-Fatiha memorisation · {mode.title}</p>
+              <h1 className="mt-2 text-3xl font-black">{passage.label}</h1>
+              {progress.returnToFinal && <p className="mt-1 text-sm font-bold text-amber-700">Review this passage, then return to the full-surah test.</p>}
+            </div>
           </div>
           <Button variant="secondary" onClick={reset}>Restart</Button>
         </div>

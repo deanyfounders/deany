@@ -187,13 +187,16 @@ function SourceReference() {
   );
 }
 
-function Header({ onRestart, progress }) {
+function Header({ onRestart, progress, onBack }) {
   return (
     <>
       <header className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <p className="text-xs font-black uppercase tracking-[0.25em] text-emerald-700">Deany Quran · Tafsir</p>
-          <h2 className="mt-2 text-2xl font-black text-slate-950">Surah Al-Fatiha</h2>
+        <div className="flex items-center gap-3">
+          {onBack && <button onClick={onBack} className="text-lg text-slate-950 hover:text-slate-600 transition" aria-label="Back">←</button>}
+          <div>
+            <p className="text-xs font-black uppercase tracking-[0.25em] text-emerald-700">Deany Quran · Tafsir</p>
+            <h2 className="mt-2 text-2xl font-black text-slate-950">Surah Al-Fatiha</h2>
+          </div>
         </div>
         <Button variant="secondary" onClick={onRestart}>Restart</Button>
       </header>
@@ -488,7 +491,7 @@ export default function DeanyFatihaTafsirBeginnerIbnKathir({ onBack, onHome, onG
   return (
     <main className="min-h-screen bg-[#fbfbf8] p-6 text-slate-950">
       <div className="mx-auto max-w-6xl space-y-5">
-        <Header onRestart={restart} progress={progress} />
+        <Header onRestart={restart} progress={progress} onBack={onBack} />
         {screen}
       </div>
     </main>

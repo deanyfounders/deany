@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { CheckCircle, XCircle, ChevronLeft, Home, ArrowRight, ArrowLeft, Flame, Star, BookOpen, Sparkles, ChevronRight, Award, Clock, Target, RotateCcw, GripVertical, Volume2 } from 'lucide-react';
 
 // ═══════════════════════════════════════════════════════════════
-// DEANY — MODULE 1, LESSON 1: The Trader Prophet ﷺ
+// DEANY - MODULE 1, LESSON 1: The Trader Prophet ﷺ
 // Blueprint: DEANY_M1L1_Blueprint.docx
 // 5 Questions • 4 Types • 3 Modes • L1→L2 • 12 Minutes
 // Question Engine v2.0 Compliant • Sahih-Only
@@ -139,23 +139,23 @@ const SECTIONS = [
     id: 'section-a',
     title: "Islam Isn't Anti-Money",
     content: [
-      "Many people begin their Islamic finance journey carrying guilt. They've absorbed the idea that money is somehow spiritually dirty — that the more pious path is to care less about wealth. This is one of the most common and most damaging misconceptions in Islamic finance.",
-      "The truth is the opposite. Islam has always been pro-commerce, pro-trade, and pro-wealth — provided that wealth is earned, managed, and spent within boundaries. The Prophet Muhammad ﷺ was himself a trader. He managed goods, negotiated deals, and built a reputation for honesty so strong that the people of Makkah called him **al-Amīn — the Trustworthy**.",
+      "Many people begin their Islamic finance journey carrying guilt. They've absorbed the idea that money is somehow spiritually dirty - that the more pious path is to care less about wealth. This is one of the most common and most damaging misconceptions in Islamic finance.",
+      "The truth is the opposite. Islam has always been pro-commerce, pro-trade, and pro-wealth - provided that wealth is earned, managed, and spent within boundaries. The Prophet Muhammad ﷺ was himself a trader. He managed goods, negotiated deals, and built a reputation for honesty so strong that the people of Makkah called him **al-Amīn - the Trustworthy**.",
       "Khadija bint Khuwaylid رضي الله عنها, the Prophet's first wife, was one of the most successful merchants in Makkah. She hired the Prophet ﷺ specifically because of his integrity. Their partnership was commercial before it was marital.",
       "This isn't trivia. It's the foundation. If you believe Islam is anti-money, you will resist every lesson that follows. So let's make sure that's cleared up right now.",
     ],
     quran: {
       text: '"And Allah has made trade permissible and has forbidden ribā."',
       ref: "Quran 2:275",
-      note: "This verse doesn't merely tolerate trade. It actively permits it. The prohibition is on ribā specifically — not on commerce, not on profit, not on wealth."
+      note: "This verse doesn't merely tolerate trade. It actively permits it. The prohibition is on ribā specifically - not on commerce, not on profit, not on wealth."
     }
   },
   {
     id: 'section-b',
     title: "A Commercial Prophet ﷺ",
     content: [
-      "Let's put some detail on this. The Prophet's ﷺ career wasn't a footnote — it was a major part of his life before revelation.",
-      "As a young man, he managed trade caravans between Makkah and Shām (Greater Syria). These were serious commercial expeditions — weeks of travel, significant capital at risk, negotiations with foreign merchants. He was trusted with other people's goods and money.",
+      "Let's put some detail on this. The Prophet's ﷺ career wasn't a footnote - it was a major part of his life before revelation.",
+      "As a young man, he managed trade caravans between Makkah and Shām (Greater Syria). These were serious commercial expeditions - weeks of travel, significant capital at risk, negotiations with foreign merchants. He was trusted with other people's goods and money.",
       "Khadija رضي الله عنها was so impressed by his honesty and results that she proposed a business arrangement, then marriage. She was already one of the wealthiest traders in Makkah. This was a commercially literate household.",
       "After prophethood, the Prophet ﷺ didn't abandon commerce. He regulated it. He set rules for fair dealing, prohibited exploitation, and created a market in Madinah with specific ethical standards. The message was never 'stop trading.' It was **'trade honestly.'**"
     ],
@@ -165,16 +165,16 @@ const SECTIONS = [
     id: 'section-c',
     title: "The Amānah Mindset (Preview)",
     content: [
-      "So Islam is pro-wealth. But it's not a free-for-all. There's a concept that changes everything about how a Muslim relates to money. It's called **amānah** (أمانة) — which means 'trust' or 'something entrusted to you.'",
-      "The idea: you don't truly own your wealth. You're managing it on behalf of its real Owner. You're a custodian, not a proprietor. This single reframe — from 'my money' to 'money I'm responsible for' — is the foundation of everything in Islamic finance.",
-      "We'll explore amānah fully in the next lesson. For now, just hold this idea: **wealth is a tool you've been entrusted with.** How you earn it, grow it, and spend it — that's where the rules come in."
+      "So Islam is pro-wealth. But it's not a free-for-all. There's a concept that changes everything about how a Muslim relates to money. It's called **amānah** (أمانة) - which means 'trust' or 'something entrusted to you.'",
+      "The idea: you don't truly own your wealth. You're managing it on behalf of its real Owner. You're a custodian, not a proprietor. This single reframe - from 'my money' to 'money I'm responsible for' - is the foundation of everything in Islamic finance.",
+      "We'll explore amānah fully in the next lesson. For now, just hold this idea: **wealth is a tool you've been entrusted with.** How you earn it, grow it, and spend it - that's where the rules come in."
     ]
   },
   {
     id: 'section-d',
     title: "Why This Matters For You",
     content: [
-      "Here's why this lesson isn't just history. The reason many Muslims struggle with financial decisions — savings, mortgages, investments, insurance — is that they don't have a framework. They feel vaguely guilty about money but can't articulate why or what to do about it.",
+      "Here's why this lesson isn't just history. The reason many Muslims struggle with financial decisions - savings, mortgages, investments, insurance - is that they don't have a framework. They feel vaguely guilty about money but can't articulate why or what to do about it.",
       "This course gives you that framework. And it starts here: Islam is pro-wealth. The Prophet ﷺ was a merchant. Khadija رضي الله عنها was a businesswoman. Wealth managed responsibly is an act of worship, not a source of shame.",
       "Everything in the next 6 modules builds on this. If you take one thing from today: **your money is not the problem. How it's handled might be.** And you're about to learn how to handle it."
     ]
@@ -182,7 +182,7 @@ const SECTIONS = [
 ];
 
 const QUESTIONS = [
-  // ── Q1: MC — L1 RECOGNITION — THINK ────────────────────────
+  // ── Q1: MC - L1 RECOGNITION - THINK ────────────────────────
   {
     id: 'q1', type: 'mcq', mode: 'THINK', level: '1/5', typeLabel: 'Multiple Choice',
     afterSection: 0,
@@ -194,13 +194,13 @@ const QUESTIONS = [
       { id: 'd', text: "Al-Qā'id (The Leader)", correct: false },
     ],
     feedback: {
-      a: "Exactly right! Al-Amīn — the Trustworthy. This wasn't just a nickname. It was his commercial reputation. People trusted him with their goods and their money. That's the foundation Islamic finance is built on.",
-      b: "Not quite. Al-Ḥakīm means 'The Wise' — that's one of Allah's names, not the Prophet's commercial title. He was known as al-Amīn because traders trusted him with their goods.",
-      c: "Close instinct — the Prophet ﷺ was generous, but his business reputation was specifically al-Amīn (The Trustworthy). In commerce, trustworthiness is the foundation.",
-      d: "He did become a leader, but his commercial reputation in Makkah was al-Amīn — The Trustworthy. This title came from his trading days, before prophethood."
+      a: "Exactly right! Al-Amīn - the Trustworthy. This wasn't just a nickname. It was his commercial reputation. People trusted him with their goods and their money. That's the foundation Islamic finance is built on.",
+      b: "Not quite. Al-Ḥakīm means 'The Wise' - that's one of Allah's names, not the Prophet's commercial title. He was known as al-Amīn because traders trusted him with their goods.",
+      c: "Close instinct - the Prophet ﷺ was generous, but his business reputation was specifically al-Amīn (The Trustworthy). In commerce, trustworthiness is the foundation.",
+      d: "He did become a leader, but his commercial reputation in Makkah was al-Amīn - The Trustworthy. This title came from his trading days, before prophethood."
     }
   },
-  // ── Q2: SWIPE T/F — L1 RECOGNITION — PLAY ─────────────────
+  // ── Q2: SWIPE T/F - L1 RECOGNITION - PLAY ─────────────────
   {
     id: 'q2', type: 'swipe', mode: 'PLAY', level: '1/5', typeLabel: 'Swipe True / False',
     afterSection: 1,
@@ -209,23 +209,23 @@ const QUESTIONS = [
       { text: "The Prophet ﷺ was a merchant before prophethood.", answer: true,
         right: "✅ Yes! Trading was his profession.", wrong: "❌ Actually, he managed caravans for years before revelation." },
       { text: "Islam teaches that wealth is spiritually dirty.", answer: false,
-        right: "✅ Correct — that's the misconception we're clearing up.", wrong: "❌ This is exactly the myth. Islam is pro-wealth, not anti-money." },
+        right: "✅ Correct - that's the misconception we're clearing up.", wrong: "❌ This is exactly the myth. Islam is pro-wealth, not anti-money." },
       { text: "Khadija رضي الله عنها was one of Makkah's most successful merchants.", answer: true,
         right: "✅ One of Makkah's leading entrepreneurs.", wrong: "❌ She was! She hired the Prophet ﷺ because of his honesty." },
       { text: "The Prophet ﷺ stopped all trading after receiving revelation.", answer: false,
-        right: "✅ He regulated trade, he didn't stop it.", wrong: "❌ He created an ethical marketplace in Madinah — more trade, not less." },
+        right: "✅ He regulated trade, he didn't stop it.", wrong: "❌ He created an ethical marketplace in Madinah - more trade, not less." },
       { text: "The Quran says 'Allah has made trade permissible.'", answer: true,
-        right: "✅ Quran 2:275 — trade is explicitly permitted.", wrong: "❌ It's directly in the Quran (2:275). Trade is halal." },
+        right: "✅ Quran 2:275 - trade is explicitly permitted.", wrong: "❌ It's directly in the Quran (2:275). Trade is halal." },
       { text: "Piety requires giving up all your money.", answer: false,
         right: "✅ Wealth managed as a trust (amānah) IS piety.", wrong: "❌ Piety = managing wealth responsibly, not rejecting it." },
     ],
     summaryFeedback: {
       perfect: "Perfect! You've got the core message: Islam is pro-commerce, pro-wealth, and always has been. The Prophet ﷺ lived it.",
-      good: "Almost there! The key idea: Islam doesn't reject wealth — it sets rules for how wealth is earned and used.",
+      good: "Almost there! The key idea: Islam doesn't reject wealth - it sets rules for how wealth is earned and used.",
       low: "That's okay! Many people carry these misconceptions. The point is: Islam has always been pro-trade. Wealth managed well is worship."
     }
   },
-  // ── Q3: DRAG-DROP WORD ORDER — L2 RECALL — SORT ────────────
+  // ── Q3: DRAG-DROP WORD ORDER - L2 RECALL - SORT ────────────
   {
     id: 'q3', type: 'word-order', mode: 'SORT', level: '2/5', typeLabel: 'Drag & Drop',
     afterSection: 2,
@@ -234,12 +234,12 @@ const QUESTIONS = [
     correctWords: ["trust", "entrusted", "own"],
     wordBank: ["trust", "entrusted", "own", "earn", "deserve"],
     feedback: {
-      perfect: "Perfectly assembled! 'Wealth is a trust you have been entrusted with, not something you truly own.' This is the amānah principle — and it's the foundation of everything you'll learn next.",
+      perfect: "Perfectly assembled! 'Wealth is a trust you have been entrusted with, not something you truly own.' This is the amānah principle - and it's the foundation of everything you'll learn next.",
       partial: "Close! The key idea: wealth is a TRUST, you're ENTRUSTED with it, and you don't truly OWN it. That shift from owner to custodian changes every financial decision.",
-      wrong: "Good instinct — you do earn money, and you may feel you deserve it. But the Islamic framing is different: it's a trust (amānah) placed in your care. You manage it, you don't own it."
+      wrong: "Good instinct - you do earn money, and you may feel you deserve it. But the Islamic framing is different: it's a trust (amānah) placed in your care. You manage it, you don't own it."
     }
   },
-  // ── Q4: BUCKET SORT — L2 RECALL — SORT ─────────────────────
+  // ── Q4: BUCKET SORT - L2 RECALL - SORT ─────────────────────
   {
     id: 'q4', type: 'bucket-sort', mode: 'SORT', level: '2/5', typeLabel: 'Sort into Buckets',
     afterSection: 3,
@@ -259,25 +259,25 @@ const QUESTIONS = [
     summaryFeedback: {
       perfect: "You've nailed it. You can already distinguish the Islamic view of wealth from the misconceptions most people carry. That's exactly the foundation we need.",
       good: "Nearly there! The pattern: anything that says wealth is BAD is the misconception. Islam says wealth is GOOD when managed responsibly.",
-      low: "No worries — these misconceptions are extremely common. That's exactly why this lesson exists. The Islamic view: wealth is a trust, trade is encouraged, honest profit is halal."
+      low: "No worries - these misconceptions are extremely common. That's exactly why this lesson exists. The Islamic view: wealth is a trust, trade is encouraged, honest profit is halal."
     }
   },
-  // ── Q5: MC SCENARIO (CAPSTONE) — L2 RECALL — THINK ─────────
+  // ── Q5: MC SCENARIO (CAPSTONE) - L2 RECALL - THINK ─────────
   {
     id: 'q5', type: 'mcq-scenario', mode: 'THINK', level: '2/5', typeLabel: 'Scenario',
     afterSection: 3,
     scenario: "Your friend says: 'I don't think Muslims should worry about money. Isn't it better to focus on prayer and leave the finances to sort themselves out?'",
     question: "Based on what you've learned, which response best reflects the Islamic view?",
     options: [
-      { id: 'a', text: "'You're right — money is a worldly distraction. Focus on worship.'", correct: false },
-      { id: 'b', text: "'Actually, the Prophet ﷺ was a merchant. Islam encourages earning and managing wealth responsibly — that's part of worship too.'", correct: true },
+      { id: 'a', text: "'You're right - money is a worldly distraction. Focus on worship.'", correct: false },
+      { id: 'b', text: "'Actually, the Prophet ﷺ was a merchant. Islam encourages earning and managing wealth responsibly - that's part of worship too.'", correct: true },
       { id: 'c', text: "'Making money is the most important thing. Islam wants you to be wealthy.'", correct: false },
       { id: 'd', text: "'I'm not sure. It's complicated.'", correct: false },
     ],
     feedback: {
-      a: "That's the misconception we just debunked! The Prophet ﷺ didn't ignore money — he traded, he regulated markets, and he taught us how to handle wealth. Dismissing finances isn't piety. It's neglecting a responsibility.",
-      b: "Exactly. The Prophet ﷺ was a trader. Khadija رضي الله عنها was a businesswoman. Managing wealth responsibly IS worship. You're not choosing between faith and finances — they're connected.",
-      c: "Close, but too far the other way. Islam doesn't say wealth is the MOST important thing. It says wealth is a trust (amānah) — a tool to be managed responsibly. The goal isn't maximum money. It's honest, ethical stewardship.",
+      a: "That's the misconception we just debunked! The Prophet ﷺ didn't ignore money - he traded, he regulated markets, and he taught us how to handle wealth. Dismissing finances isn't piety. It's neglecting a responsibility.",
+      b: "Exactly. The Prophet ﷺ was a trader. Khadija رضي الله عنها was a businesswoman. Managing wealth responsibly IS worship. You're not choosing between faith and finances - they're connected.",
+      c: "Close, but too far the other way. Islam doesn't say wealth is the MOST important thing. It says wealth is a trust (amānah) - a tool to be managed responsibly. The goal isn't maximum money. It's honest, ethical stewardship.",
       d: "We understand the hesitation, but it's actually not that complicated at this level. Islam's view is clear: wealth is permitted, trade is encouraged, and managing money well is part of responsible living. Trust yourself!"
     },
     bridgeForward: "Next lesson: we'll explore amānah in depth. If wealth is a trust, what does that mean for how you save, spend, and invest?"
@@ -379,7 +379,7 @@ export default function DEANY_M1L1({ onBack, onHome, savedProgress }) {
               The Trader Prophet ﷺ
             </h1>
             <p className="text-sm max-w-md mx-auto" style={{color:T.grayMed}}>
-              Islam is pro-wealth, pro-commerce — and the Prophet ﷺ lived it.
+              Islam is pro-wealth, pro-commerce - and the Prophet ﷺ lived it.
             </p>
           </div>
 
@@ -629,7 +629,7 @@ function SectionCard({ section, onContinue }) {
               <p className="text-sm italic mb-1" style={{color:T.navy, fontFamily:'Georgia, serif'}}>
                 {section.quran.text}
               </p>
-              <p className="text-xs font-semibold mb-2" style={{color:T.gold}}>— {section.quran.ref}</p>
+              <p className="text-xs font-semibold mb-2" style={{color:T.gold}}> - {section.quran.ref}</p>
               {section.quran.note && (
                 <p className="text-xs leading-relaxed" style={{color:T.grayDark}}>{section.quran.note}</p>
               )}
@@ -1140,7 +1140,7 @@ function WordOrderRenderer({ q, answered, onDone }) {
       {/* Word Bank */}
       <div className="mb-4">
         <div className="text-xs font-bold mb-2 flex items-center gap-1.5" style={{color:T.grayMed}}>
-          <GripVertical className="w-3 h-3"/> Word Bank — drag or tap to place
+          <GripVertical className="w-3 h-3"/> Word Bank - drag or tap to place
         </div>
         <div className="flex flex-wrap gap-2">
           {bank.map((word, i) => (
