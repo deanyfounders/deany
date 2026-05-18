@@ -1497,7 +1497,7 @@ export default function DEANY_M1L5({ onBack, onHome, savedProgress }){
         <LessonNav />
         <div className="text-center mb-8 su">
           <span className="inline-block px-4 py-1.5 rounded-full text-xs font-bold mb-3" style={{background:rgba(C.gold,0.14),color:C.gold}}>MODULE 1 CAPSTONE · LESSON 5</span>
-          <h1 className="text-3xl font-bold mb-2" style={{color:C.navy,fontFamily:'Georgia,serif'}}>Your Money Right Now</h1>
+          <h1 className="text-3xl font-bold mb-2" style={{color:C.navy,fontFamily:'Georgia,serif'}}>Audit Your Finances</h1>
           <p className="text-sm" style={{color:C.mid}}>Not guilt. Awareness. The toolkit meets real life.</p>
         </div>
         <div className="rounded-2xl p-6 border border-white/40 shadow-lg su" style={CARD}>

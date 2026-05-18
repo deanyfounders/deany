@@ -316,7 +316,7 @@ function CarLoanTable(){
 const SECTIONS=[
   {
     id:'A',
-    title:'What Is Substance Over Labels?',
+    title:'What Makes a Deal Halal?',
     body:[
       "What you just experienced is the core principle of Islamic financial analysis. It has an Arabic name: **al-ʿibra lil-maqāsid wa-l-maʿānī, lā lil-alfāz wa-l-mabānī**. In plain English: what matters is the PURPOSE and REALITY of a deal  -  not its WORDS and APPEARANCE.",
       "This means: it does not matter what a financial product is called. It doesn't matter if it has an Islamic label, a Shariah certificate, or Arabic branding. What matters is what the deal is **actually doing**.",
@@ -1332,7 +1332,7 @@ export default function DEANY_M1L4({ onBack, onHome, savedProgress }){
         <LessonNav />
         <div className="text-center mb-8 su">
           <span className="inline-block px-4 py-1.5 rounded-full text-xs font-bold mb-4" style={{background:rgba(C.gold,0.14),color:C.gold}}>MODULE 1 · LESSON 4</span>
-          <h1 className="text-3xl font-bold mb-2" style={{color:C.navy,fontFamily:'Georgia,serif'}}>Substance Over Labels</h1>
+          <h1 className="text-3xl font-bold mb-2" style={{color:C.navy,fontFamily:'Georgia,serif'}}>What Makes a Deal Halal</h1>
           <p className="text-sm" style={{color:C.mid}}>Ignore what a deal is called. Look at what it's doing.</p>
         </div>
         <div className="rounded-2xl p-6 border border-white/40 shadow-lg su" style={CARD}>
@@ -1352,7 +1352,7 @@ export default function DEANY_M1L4({ onBack, onHome, savedProgress }){
           </div>
           <div className="grid grid-cols-2 gap-3 mb-5">
             {[
-              {icon:'🏷️',term:'Substance Over Labels',desc:'What a deal DOES matters'},
+              {icon:'🏷️',term:'What Makes a Deal Halal',desc:'What a deal DOES matters'},
               {icon:'🔑',term:'Five Questions',desc:'Portable evaluation tool'},
               {icon:'🎭',term:'Hilah',desc:'حيلة  -  legal tricks in disguise'},
               {icon:'🔍',term:'Applied Analysis',desc:'Test any product yourself'},
@@ -1405,7 +1405,7 @@ export default function DEANY_M1L4({ onBack, onHome, savedProgress }){
           <div className="rounded-2xl p-8 border border-white/40 shadow-xl text-center su" style={CARD}>
             <div className="text-4xl mb-3">🔑</div>
             <h1 className="text-2xl font-bold mb-1" style={{color:C.navy,fontFamily:'Georgia,serif'}}>Lesson Complete!</h1>
-            <p className="text-sm mb-4" style={{color:C.mid}}>Substance Over Labels</p>
+            <p className="text-sm mb-4" style={{color:C.mid}}>What Makes a Deal Halal</p>
             <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold mb-6" style={{background:rgba(C.gold,0.18),color:C.gold,border:`1px solid ${rgba(C.gold,0.35)}`}}>
               <Award className="w-3.5 h-3.5"/> Five Questions Unlocked ⭐
             </div>

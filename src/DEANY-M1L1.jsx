@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { CheckCircle, XCircle, ChevronLeft, Home, ArrowRight, ArrowLeft, Flame, Star, BookOpen, Sparkles, ChevronRight, Award, Clock, Target, RotateCcw, GripVertical, Volume2 } from 'lucide-react';
 
 // ═══════════════════════════════════════════════════════════════
-// DEANY - MODULE 1, LESSON 1: The Trader Prophet ﷺ
+// DEANY - MODULE 1, LESSON 1: Islam and Wealth
 // Blueprint: DEANY_M1L1_Blueprint.docx
 // 5 Questions • 4 Types • 3 Modes • L1→L2 • 12 Minutes
 // Question Engine v2.0 Compliant • Sahih-Only
@@ -376,7 +376,7 @@ export default function DEANY_M1L1({ onBack, onHome, savedProgress }) {
               MODULE 1 • LESSON 1
             </div>
             <h1 className="text-3xl font-bold mb-2" style={{color:T.navy, fontFamily:'Georgia, serif'}}>
-              The Trader Prophet ﷺ
+              Islam and Wealth
             </h1>
             <p className="text-sm max-w-md mx-auto" style={{color:T.grayMed}}>
               Islam is pro-wealth, pro-commerce - and the Prophet ﷺ lived it.
@@ -441,7 +441,7 @@ export default function DEANY_M1L1({ onBack, onHome, savedProgress }) {
           <div className="bg-white/70 backdrop-blur-xl border border-white/40 shadow-xl rounded-2xl p-8 text-center">
             <div className="text-4xl mb-3">🏆</div>
             <h1 className="text-2xl font-bold mb-1" style={{color:T.navy, fontFamily:'Georgia, serif'}}>Lesson Complete!</h1>
-            <p className="text-sm mb-6" style={{color:T.grayMed}}>The Trader Prophet ﷺ</p>
+            <p className="text-sm mb-6" style={{color:T.grayMed}}>Islam and Wealth</p>
 
             {/* Score Ring */}
             <div className="relative inline-block mb-6">
@@ -542,7 +542,7 @@ export default function DEANY_M1L1({ onBack, onHome, savedProgress }) {
             <div className="w-8 h-8 rounded-lg flex items-center justify-center text-sm" style={{background:`${T.gold}15`, color:T.gold}}>📖</div>
             <div>
               <div className="text-xs font-bold" style={{color:T.navy}}>Lesson 1.1</div>
-              <div className="text-[10px]" style={{color:T.grayMed}}>The Trader Prophet ﷺ</div>
+              <div className="text-[10px]" style={{color:T.grayMed}}>Islam and Wealth</div>
             </div>
           </div>
           <div className="flex items-center gap-2">

@@ -626,7 +626,7 @@ export default function DEANY_M1L3({ onBack, onHome, savedProgress }){
         <LessonNav />
         <div className="text-center mb-8 su">
           <span className="inline-block px-4 py-1.5 rounded-full text-xs font-bold mb-4" style={{background:rgba(C.gold,0.14),color:C.gold}}>MODULE 1 · LESSON 3</span>
-          <h1 className="text-3xl font-bold mb-2" style={{color:C.navy,fontFamily:'Georgia,serif'}}>The Three Prohibitions</h1>
+          <h1 className="text-3xl font-bold mb-2" style={{color:C.navy,fontFamily:'Georgia,serif'}}>Riba, Gharar, Maysir</h1>
           <p className="text-sm" style={{color:C.mid}}>Ribā. Gharar. Maysir. The three things a custodian must never allow.</p>
         </div>
         <div className="rounded-2xl p-6 border border-white/40 shadow-lg su" style={CARD}>
@@ -696,7 +696,7 @@ export default function DEANY_M1L3({ onBack, onHome, savedProgress }){
           <div className="rounded-2xl p-8 border border-white/40 shadow-xl text-center su" style={CARD}>
             <div className="text-4xl mb-3">🏆</div>
             <h1 className="text-2xl font-bold mb-1" style={{color:C.navy,fontFamily:'Georgia,serif'}}>Lesson Complete!</h1>
-            <p className="text-sm mb-4" style={{color:C.mid}}>The Three Prohibitions</p>
+            <p className="text-sm mb-4" style={{color:C.mid}}>Riba, Gharar, Maysir</p>
             <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold mb-6" style={{background:rgba(C.gold,0.18),color:C.gold,border:`1px solid ${rgba(C.gold,0.35)}`}}>
               <Award className="w-3.5 h-3.5"/> Multiple Prohibitions Spotted! ⭐
             </div>
@@ -789,7 +789,7 @@ export default function DEANY_M1L3({ onBack, onHome, savedProgress }){
             <div className="w-8 h-8 rounded-lg flex items-center justify-center text-base" style={{background:rgba(C.coral,0.12),color:C.coral}}>⚖️</div>
             <div>
               <div className="text-xs font-bold" style={{color:C.navy}}>Lesson 1.3</div>
-              <div className="text-[10px]" style={{color:C.mid}}>The Three Prohibitions</div>
+              <div className="text-[10px]" style={{color:C.mid}}>Riba, Gharar, Maysir</div>
             </div>
           </div>
           <div className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold" style={{background:C.goldLight,color:C.gold}}>
