@@ -48,7 +48,7 @@ const TASHAHHUD = [
   { id: "honour", label: "Honour belongs to Allah", ar: "ٱلتَّحِيَّاتُ لِلَّٰهِ وَٱلصَّلَوَاتُ وَٱلطَّيِّبَاتُ", tr: "At-tahiyyatu lillahi was-salawatu wat-tayyibat", meaning: "All greetings, prayers, and pure good words belong to Allah." },
   { id: "prophet", label: "Peace on the Prophet ﷺ", ar: "ٱلسَّلَامُ عَلَيْكَ أَيُّهَا ٱلنَّبِيُّ وَرَحْمَةُ ٱللَّٰهِ وَبَرَكَاتُهُ", tr: "As-salamu ʿalayka ayyuhan-nabiyyu wa rahmatullahi wa barakatuh", meaning: "Peace be upon you, O Prophet, and Allah's mercy and blessings." },
   { id: "believers", label: "Peace on the believers", ar: "ٱلسَّلَامُ عَلَيْنَا وَعَلَىٰ عِبَادِ ٱللَّٰهِ ٱلصَّالِحِينَ", tr: "As-salamu ʿalayna wa ʿala ʿibadillahiṣ-ṣalihin", meaning: "Peace be upon us and upon Allah's righteous servants." },
-  { id: "testimony", label: "The testimony", ar: "أَشْهَدُ أَنْ لَا إِلَـٰهَ إِلَّا ٱللَّٰهُ وَأَشْهَدُ أَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُولُهُ", tr: "Ashhadu an la ilaha illa Allah, wa ashhadu anna Muhammadan ʿabduhu wa rasuluh", meaning: "I testify that there is no god but Allah, and Muhammad is His servant and Messenger." },
+  { id: "testimony", label: "The testimony", ar: "أَشْهَدُ أَنْ لَا إِلَـٰهَ إِلَّا ٱللَّٰهُ وَأَشْهَدُ أَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُولُهُ", tr: "Ashhadu an la ilaha illa Allah, wa ashhadu anna Muhammadan ʿabduhu wa rasuluh", meaning: "I testify that there is no God but Allah, and Muhammad is His servant and Messenger." },
 ];
 const ORDER = TASHAHHUD.map((x) => x.id);
 

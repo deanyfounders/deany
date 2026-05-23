@@ -14,14 +14,14 @@ const lesson = {
 const shortShahadah = {
   ar: "أَشْهَدُ أَنْ لَا إِلَٰهَ إِلَّا اللَّهُ وَأَشْهَدُ أَنَّ مُحَمَّدًا رَسُولُ اللَّهِ",
   tr: "Ashhadu an la ilaha illa Allah, wa ashhadu anna Muhammadan rasulullah.",
-  en: "I testify that there is no god except Allah, and I testify that Muhammad is the Messenger of Allah.",
+  en: "I testify that there is no God except Allah, and I testify that Muhammad is the Messenger of Allah.",
 };
 
 const longShahadah = {
   line1: "أَشْهَدُ أَنْ لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ",
   line2: "وَأَشْهَدُ أَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُولُهُ",
   tr: "Ashhadu an la ilaha illa Allah, wahdahu la sharika lah, wa ashhadu anna Muhammadan abduhu wa rasuluh.",
-  en: "I testify that there is no god except Allah, alone, with no partner. And I testify that Muhammad is His servant and His Messenger.",
+  en: "I testify that there is no God except Allah, alone, with no partner. And I testify that Muhammad is His servant and His Messenger.",
 };
 
 const q1 = {
@@ -48,8 +48,8 @@ const q3Items = [
   { text: "Allah", applies: false, feedback: "The Shahadah excepts Allah from the negation. The word illa, except, does this work. He is the only true ilah, the only object of worship the Shahadah affirms." },
   { text: "The wealth one accumulates", applies: true, feedback: "Wealth can become an ilah when its accumulation shapes choices more than the pursuit of Allah's approval does. The Shahadah denies wealth that place." },
   { text: "Social status or reputation", applies: true, feedback: "Status can become an ilah. When the desire for it begins to shape decisions and self-understanding, it has moved into the place worship belongs in." },
-  { text: "The Prophet Muhammad \uFDFA", applies: false, feedback: "The Prophet \uFDFA is not a god. He is Allah's Messenger. The second testimony is structurally careful: it uses rasul, Messenger, never ilah, god. It testifies to his messengership, not his divinity." },
-  { text: "One's own desires and ego", applies: true, feedback: "The Qur'an warns about taking desire as a god in 45:23. Ego can become an ilah when self-interest occupies the place that worship belongs in. The Shahadah's negation applies." },
+  { text: "The Prophet Muhammad \uFDFA", applies: false, feedback: "The Prophet \uFDFA is not a God. He is Allah's Messenger. The second testimony is structurally careful: it uses rasul, Messenger, never ilah, God. It testifies to his messengership, not his divinity." },
+  { text: "One's own desires and ego", applies: true, feedback: "The Qur'an warns about taking desire as a God in 45:23. Ego can become an ilah when self-interest occupies the place that worship belongs in. The Shahadah's negation applies." },
 ];
 
 const q4 = {
@@ -262,7 +262,7 @@ function BridgePage({ next }) {
     </div>
     <Card className="border-teal-200 bg-teal-50">
       <p className="text-xs font-black uppercase tracking-[0.2em] text-teal-800">Hadith anchor</p>
-      <p className="mt-4 font-serif text-lg italic leading-8 text-slate-800">"Islam is built upon five: testifying that there is no god but Allah and that Muhammad is the Messenger of Allah..."</p>
+      <p className="mt-4 font-serif text-lg italic leading-8 text-slate-800">"Islam is built upon five: testifying that there is no God but Allah and that Muhammad is the Messenger of Allah..."</p>
       <p className="mt-3 text-xs font-bold text-slate-500">Sahih al-Bukhari 8 / Sahih Muslim 16c</p>
     </Card>
     <Button variant="gold" onClick={next}>Begin</Button>
@@ -305,14 +305,14 @@ function NegationPage({ next }) {
     <Card><Pill tone="gold">Structure</Pill><h2 className="mt-4 text-3xl font-black tracking-tight text-slate-950">Negation, then affirmation.</h2><p className="mt-3 leading-8 text-slate-700">The first testimony has two halves, in a specific order.</p></Card>
     <Card className="overflow-hidden p-0">
       <div className="grid md:grid-cols-2">
-        <div className="bg-slate-100 p-6 text-center"><Arabic size="text-4xl">لَا إِلَٰهَ</Arabic><p className="mt-2 font-black text-slate-700">la ilaha</p><p className="text-sm text-slate-500">there is no god</p></div>
+        <div className="bg-slate-100 p-6 text-center"><Arabic size="text-4xl">لَا إِلَٰهَ</Arabic><p className="mt-2 font-black text-slate-700">la ilaha</p><p className="text-sm text-slate-500">there is no God</p></div>
         <div className="bg-amber-100 p-6 text-center"><Arabic size="text-4xl" className="text-amber-950">إِلَّا اللَّهُ</Arabic><p className="mt-2 font-black text-amber-900">illa Allah</p><p className="text-sm text-amber-800">except Allah</p></div>
       </div>
     </Card>
     <Card>
       <p className="leading-8 text-slate-700">The Arabic structure is called <span className="font-black">nafy wa ithbat</span>: negation and affirmation. The order is deliberate. You do not start by affirming Allah. You start by negating everything else.</p>
       <p className="mt-5 text-xs font-black uppercase tracking-[0.2em] text-slate-500">What ilah actually means</p>
-      <p className="mt-3 leading-8 text-slate-700">The word <span className="font-black">ilah</span> is often translated as "god," but the Arabic is more specific. It refers to what is worshipped, or what occupies the place worship belongs in.</p>
+      <p className="mt-3 leading-8 text-slate-700">The word <span className="font-black">ilah</span> is often translated as "God," but the Arabic is more specific. It refers to what is worshipped, or what occupies the place worship belongs in.</p>
       <p className="mt-3 leading-8 text-slate-700">Money can become an ilah. Status can become an ilah. The desire for approval can become an ilah. The Shahadah negates every false claim on the human capacity for worship before affirming the only true object of it.</p>
       <p className="mt-3 font-semibold leading-8 text-slate-950">The Shahadah clears the field, then states the truth.</p>
     </Card>
@@ -323,7 +323,7 @@ function NegationPage({ next }) {
 function WhyBothPage({ next }) {
   return <div className="grid gap-5">
     <Card><Pill tone="teal">Structure visible</Pill><h2 className="mt-4 text-3xl font-black tracking-tight text-slate-950">Why both testimonies?</h2></Card>
-    <Card className="border-amber-300 bg-[#FBF6EC]"><Arabic size="text-3xl" className="text-center">أَشْهَدُ أَنْ لَا إِلَٰهَ إِلَّا اللَّهُ</Arabic><p className="mt-3 text-center font-serif italic text-slate-600">Ashhadu an la ilaha illa Allah</p><p className="mt-2 text-center font-semibold text-slate-800">I testify there is no god except Allah.</p></Card>
+    <Card className="border-amber-300 bg-[#FBF6EC]"><Arabic size="text-3xl" className="text-center">أَشْهَدُ أَنْ لَا إِلَٰهَ إِلَّا اللَّهُ</Arabic><p className="mt-3 text-center font-serif italic text-slate-600">Ashhadu an la ilaha illa Allah</p><p className="mt-2 text-center font-semibold text-slate-800">I testify there is no God except Allah.</p></Card>
     <Card className="border-amber-300 bg-[#FBF6EC]"><Arabic size="text-3xl" className="text-center">وَأَشْهَدُ أَنَّ مُحَمَّدًا رَسُولُ اللَّهِ</Arabic><p className="mt-3 text-center font-serif italic text-slate-600">Wa ashhadu anna Muhammadan rasulullah</p><p className="mt-2 text-center font-semibold text-slate-800">And I testify that Muhammad is the Messenger of Allah.</p></Card>
     <Card>
       <p className="leading-8 text-slate-700">The first testimony establishes Allah's exclusive right to worship. The second establishes how that worship is to be performed.</p>
@@ -375,7 +375,7 @@ function LongerFormPage({ next }) {
     </Card>
     <Card className="border-teal-200 bg-teal-50">
       <p className="text-xs font-black uppercase tracking-[0.2em] text-teal-800">Hadith</p>
-      <p className="mt-4 font-serif text-lg italic leading-8 text-slate-800">"Islam is built upon five: testifying that there is no god but Allah and that Muhammad is the Messenger of Allah, establishing prayer, paying zakat, fasting Ramadan, and pilgrimage to the House for whoever is able."</p>
+      <p className="mt-4 font-serif text-lg italic leading-8 text-slate-800">"Islam is built upon five: testifying that there is no God but Allah and that Muhammad is the Messenger of Allah, establishing prayer, paying zakat, fasting Ramadan, and pilgrimage to the House for whoever is able."</p>
       <p className="mt-3 text-xs font-bold text-slate-500">Sahih al-Bukhari 8 / Sahih Muslim 16c</p>
       <p className="mt-4 leading-8 text-slate-800">The Shahadah is named first. Every other pillar follows from it. Prayer without belief is empty motion. Zakat without belief is charity. The Shahadah is what makes the other four pillars worship.</p>
     </Card>
