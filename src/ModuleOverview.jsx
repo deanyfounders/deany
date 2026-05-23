@@ -3,28 +3,122 @@ import { Check, Lock, ChevronLeft, Home, Zap, ArrowRight, Clock, Play, BookOpen 
 
 const focusRing = "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C6A24A] focus-visible:ring-offset-2";
 
-const LESSON_META = {
-  'lesson-1-1': { type: 'Concept', desc: 'Why Islam is pro-trade and how the Prophet was a merchant.' },
-  'lesson-1-2': { type: 'Concept', desc: 'The custodian mindset that changes how you think about wealth.' },
-  'lesson-1-3': { type: 'Interactive Cases', desc: 'Spot the three prohibited structures in real finance scenarios.' },
-  'lesson-1-4': { type: 'Scenario', desc: 'Learn to judge a deal by what it does, not what it is called.' },
-  'lesson-1-5': { type: 'Practice', desc: 'Apply the toolkit to your own financial situation.' },
+const MODULE_DATA = {
+  'module-1': {
+    badge: 'Foundation Module',
+    desc: 'Learn the core filters behind halal finance: amanah, riba, gharar, maysir, and deal structure.',
+    mastery: [
+      'Explain wealth as amanah',
+      'Identify riba, gharar, and maysir',
+      'Judge whether a deal structure is halal',
+      'Apply the custodian mindset to real scenarios',
+    ],
+    concepts: [
+      { label: 'Amanah', color: 'emerald' },
+      { label: 'Riba', color: 'coral' },
+      { label: 'Gharar', color: 'coral' },
+      { label: 'Maysir', color: 'coral' },
+      { label: 'Halal Deal Structure', color: 'gold' },
+    ],
+    lessonMeta: {
+      'lesson-1-1': { type: 'Concept', desc: 'Why Islam is pro-trade and how the Prophet was a merchant.' },
+      'lesson-1-2': { type: 'Concept', desc: 'The custodian mindset that changes how you think about wealth.' },
+      'lesson-1-3': { type: 'Interactive Cases', desc: 'Spot the three prohibited structures in real finance scenarios.' },
+      'lesson-1-4': { type: 'Scenario', desc: 'Learn to judge a deal by what it does, not what it is called.' },
+      'lesson-1-5': { type: 'Practice', desc: 'Apply the toolkit to your own financial situation.' },
+    },
+  },
+  shahada: {
+    badge: 'Beginner Module',
+    desc: 'Understand the declaration that opens the door to Islam: its words, its meaning, and what it asks of you.',
+    mastery: [
+      'Recite and understand the Shahadah',
+      'Explain what la ilaha illa Allah negates and affirms',
+      'Understand why the second testimony matters',
+      'Know what it means to live by the Shahadah',
+    ],
+    concepts: [
+      { label: 'Tawhid', color: 'emerald' },
+      { label: 'Shahadah', color: 'gold' },
+      { label: 'Ilah', color: 'emerald' },
+      { label: 'Rasul', color: 'emerald' },
+    ],
+    lessonMeta: {
+      'b1-l1': { type: 'Concept', desc: 'The testimony that opens the door to Islam.' },
+      'b1-l2': { type: 'Concept', desc: 'Why the Shahadah does not stop at illa Allah.' },
+      'b1-l3': { type: 'Reflection', desc: 'What it means to live on the other side of the doorway.' },
+    },
+  },
+  salah: {
+    badge: 'Beginner Module',
+    desc: 'Learn to pray with understanding: the times, the movements, the words, and how to handle mistakes.',
+    mastery: [
+      'Know the five prayer times and their purposes',
+      'Perform wudu and understand its conditions',
+      'Pray a complete salah from start to salam',
+      'Handle mistakes calmly with sajdah al-sahw',
+      'Join a congregation and pray with others',
+    ],
+    concepts: [
+      { label: 'Wudu', color: 'emerald' },
+      { label: "Rak'ah", color: 'emerald' },
+      { label: 'Al-Fatihah', color: 'gold' },
+      { label: 'Sajdah al-Sahw', color: 'gold' },
+      { label: 'Tashahhud', color: 'emerald' },
+    ],
+    lessonMeta: {
+      's2-l1': { type: 'Concept', desc: 'Why salah is five appointments, not five obligations.' },
+      's2-l2': { type: 'Practice', desc: 'Wudu, direction, and the conditions before prayer.' },
+      's2-l3': { type: 'Interactive', desc: 'The structure of standing, bowing, and prostrating.' },
+      's2-l4': { type: 'Interactive', desc: 'The words attached to each movement of prayer.' },
+      's2-l5': { type: 'Scenario', desc: 'What to do when something goes wrong in salah.' },
+      's2-l6': { type: 'Practice', desc: 'A complete walk-through of Fajr from start to salam.' },
+      's2-l7': { type: 'Scenario', desc: 'Following the imam, joining late, and leading at home.' },
+    },
+  },
+  'quran-memorisation': {
+    badge: 'Quran Module',
+    desc: 'Memorise Surah Al-Fatiha passage by passage with audio, repetition, and self-testing.',
+    mastery: [
+      'Recite Al-Fatiha from memory',
+      'Recognise each passage by sound and text',
+      'Self-correct using structured review',
+    ],
+    concepts: [
+      { label: 'Al-Fatiha', color: 'gold' },
+      { label: 'Hifz', color: 'emerald' },
+      { label: 'Tajweed Basics', color: 'emerald' },
+    ],
+    lessonMeta: {
+      'hifz-fatiha': { type: 'Memorisation', desc: 'The Opening - 7 verses, passage by passage.' },
+    },
+  },
+  'quran-tafsir': {
+    badge: 'Quran Module',
+    desc: 'Understand what you recite: the meaning, context, and lessons of Surah Al-Fatiha.',
+    mastery: [
+      'Explain the meaning of each ayah in Al-Fatiha',
+      'Understand the structure and flow of the surah',
+      'Connect the words of prayer to their purpose',
+    ],
+    concepts: [
+      { label: 'Tafsir', color: 'emerald' },
+      { label: 'Al-Fatiha', color: 'gold' },
+      { label: 'Ibn Kathir', color: 'emerald' },
+    ],
+    lessonMeta: {
+      'tafsir-fatiha': { type: 'Tafsir', desc: 'Verse-by-verse meaning and context.' },
+    },
+  },
 };
 
-const CONCEPTS = [
-  { label: 'Amanah', color: 'emerald' },
-  { label: 'Riba', color: 'coral' },
-  { label: 'Gharar', color: 'coral' },
-  { label: 'Maysir', color: 'coral' },
-  { label: 'Halal Deal Structure', color: 'gold' },
-];
-
-const MASTERY = [
-  'Explain wealth as amanah',
-  'Identify riba, gharar, and maysir',
-  'Judge whether a deal structure is halal',
-  'Apply the custodian mindset to real scenarios',
-];
+const getModuleData = (modId) => MODULE_DATA[modId] || {
+  badge: 'Module',
+  desc: '',
+  mastery: [],
+  concepts: [],
+  lessonMeta: {},
+};
 
 const GeoPattern = () => (
   <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-[0.025]" xmlns="http://www.w3.org/2000/svg">
@@ -132,6 +226,7 @@ const ModuleBlock = ({ mod, mi, completedLessons, loadProgress, onSelectLesson, 
   );
 
   const nextLesson = curIdx >= 0 ? lessons[curIdx] : null;
+  const data = getModuleData(mod.id);
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_1.1fr] lg:items-start">
@@ -147,7 +242,7 @@ const ModuleBlock = ({ mod, mi, completedLessons, loadProgress, onSelectLesson, 
                 style={{ background: 'linear-gradient(135deg, #C6A24A, #A77F22)' }}>
                 <BookOpen className="w-5 h-5 text-white" />
               </div>
-              <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#C6A24A]">Foundation Module</span>
+              <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#C6A24A]">{data.badge}</span>
             </div>
 
             <h2 className="text-2xl lg:text-3xl font-bold text-[#0F172A] leading-tight" style={{ fontFamily: 'Georgia,serif' }}>
@@ -155,9 +250,11 @@ const ModuleBlock = ({ mod, mi, completedLessons, loadProgress, onSelectLesson, 
             </h2>
             {mod.subtitle && <p className="text-[#64748B] mt-1.5 text-sm">{mod.subtitle}</p>}
 
-            <p className="text-sm text-[#64748B] mt-4 leading-relaxed">
-              Learn the core filters behind halal finance: amanah, riba, gharar, maysir, and deal structure.
-            </p>
+            {data.desc && (
+              <p className="text-sm text-[#64748B] mt-4 leading-relaxed">
+                {data.desc}
+              </p>
+            )}
 
             {/* Progress */}
             <div className="mt-6">
@@ -191,10 +288,11 @@ const ModuleBlock = ({ mod, mi, completedLessons, loadProgress, onSelectLesson, 
         </div>
 
         {/* What you'll master */}
+        {data.mastery.length > 0 && (
         <div className="rounded-3xl bg-white border border-[#E5E7EB] shadow-[0_2px_12px_rgba(15,23,42,0.04)] p-6">
           <h3 className="text-sm font-bold uppercase tracking-[0.12em] text-[#0F172A] mb-4">What you'll master</h3>
           <div className="space-y-3">
-            {MASTERY.map((item) => (
+            {data.mastery.map((item) => (
               <div key={item} className="flex items-start gap-3">
                 <div className="w-5 h-5 rounded-full bg-[#ECFDF5] flex items-center justify-center flex-shrink-0 mt-0.5">
                   <Check className="w-3 h-3 text-[#0F766E]" strokeWidth={3} />
@@ -204,12 +302,14 @@ const ModuleBlock = ({ mod, mi, completedLessons, loadProgress, onSelectLesson, 
             ))}
           </div>
         </div>
+        )}
 
         {/* Key concepts */}
+        {data.concepts.length > 0 && (
         <div className="rounded-3xl bg-white border border-[#E5E7EB] shadow-[0_2px_12px_rgba(15,23,42,0.04)] p-6">
           <h3 className="text-sm font-bold uppercase tracking-[0.12em] text-[#0F172A] mb-4">Key concepts</h3>
           <div className="flex flex-wrap gap-2">
-            {CONCEPTS.map((c) => (
+            {data.concepts.map((c) => (
               <span key={c.label} className={`text-xs font-semibold px-3 py-1.5 rounded-full ${
                 c.color === 'emerald' ? 'bg-[#ECFDF5] text-[#0F766E]' :
                 c.color === 'coral' ? 'bg-[#FFF1ED] text-[#B85C44]' :
@@ -218,6 +318,7 @@ const ModuleBlock = ({ mod, mi, completedLessons, loadProgress, onSelectLesson, 
             ))}
           </div>
         </div>
+        )}
       </div>
 
       {/* Right column: Lesson journey */}
@@ -233,7 +334,7 @@ const ModuleBlock = ({ mod, mi, completedLessons, loadProgress, onSelectLesson, 
               const saved = !!loadProgress?.(lesson.id);
               return (
                 <LessonRow key={lesson.id} lesson={lesson} i={i} st={st} saved={saved}
-                  onClick={() => handleLessonClick(lesson, i)} isCurrent={i === curIdx} />
+                  onClick={() => handleLessonClick(lesson, i)} isCurrent={i === curIdx} meta={data.lessonMeta[lesson.id] || {}} />
               );
             })}
           </div>
@@ -243,11 +344,10 @@ const ModuleBlock = ({ mod, mi, completedLessons, loadProgress, onSelectLesson, 
   );
 };
 
-const LessonRow = ({ lesson, i, st, saved, onClick, isCurrent }) => {
+const LessonRow = ({ lesson, i, st, saved, onClick, isCurrent, meta = {} }) => {
   const isDone = st === 'done';
   const isCur = st === 'current';
   const isOpen = st === 'open';
-  const meta = LESSON_META[lesson.id] || {};
 
   return (
     <div className="relative flex items-start py-3">
