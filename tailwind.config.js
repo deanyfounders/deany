@@ -22,6 +22,17 @@ export default {
           error:       '#C53030',
           'error-light':'#FEF2F2',
           'gold-tint': '#FFF8E7',
+          // Emerald palette
+          'em-cream':  '#F8F4ED',
+          'em-forest': '#1B4332',
+          'em-gold':   '#C9A961',
+          'em-gold-dk':'#8A6F2F',
+          'em-sage':   '#6B8E7F',
+          'em-body':   '#2A2520',
+          'em-muted':  '#6B6356',
+          'em-terra':  '#B8694D',
+          'em-flame':  '#D85A30',
+          'em-dark':   '#0F2E22',
         },
       },
       fontFamily: {

@@ -22,12 +22,10 @@ import DeanyB1L1 from './DEANY-B1L1.jsx';
 import DeanyB1L2 from './DEANY-B1L2.jsx';
 import DeanyB1L3 from './DEANY-B1L3.jsx';
 import QuranicQuote from './components/QuranicQuote.jsx';
-import LandingPage from './LandingPage.jsx';
-import Dashboard from './Dashboard.jsx';
-import {
-  CheckCircle, XCircle, Star, Trophy, ArrowRight, Sparkles, BookOpen, Home,
+import { 
+  CheckCircle, XCircle, Star, Trophy, ArrowRight, Sparkles, BookOpen, Home, 
   Lightbulb, Award, Menu, X, ChevronLeft, Flame, Zap, Target,
-  Calendar, Clock, Gift, Lock, Play, Settings, User, Share2,
+  Calendar, Clock, Gift, Lock, Play, Settings, User, Share2, 
   ChevronRight, Eye
 } from 'lucide-react';
 
@@ -145,11 +143,6 @@ const clearProgress = (id) => { try { localStorage.removeItem(`deany-progress-${
 
 // ---- Main App ----------------------------------------------------
 const App = () => {
-  const [hasEntered, setHasEntered] = useState(() => {
-    try { return localStorage.getItem('deany-entered') === '1'; } catch { return false; }
-  });
-  const enterApp = () => { setHasEntered(true); try { localStorage.setItem('deany-entered', '1'); } catch {} setScreen('home'); };
-  const exitToLanding = () => { setHasEntered(false); try { localStorage.removeItem('deany-entered'); } catch {} setScreen('home'); };
   const [screen, setScreen] = useState('home');
   const [selectedMainTopic, setSelectedMainTopic] = useState(null);
   const [selectedModule, setSelectedModule] = useState(null);
@@ -787,31 +780,156 @@ const App = () => {
   }
 
   if (screen == 'home') {
-    // Show landing page for first-time visitors, dashboard for returning users
-    if (!hasEntered) {
-      return (
-        <LandingPage
-          onGetStarted={enterApp}
-          onCalibration={() => { enterApp(); setScreen('compass'); }}
-          onPreviewLesson={() => { enterApp(); selectMainTopic('islamic-finance'); }}
-        />
-      );
-    }
+    const xpNext = level * 100, xpPct = (xp / xpNext) * 100;
 
-    // Dashboard for returning users
+    // Compute per-topic stats
+    const getTopicStats = (topicId) => {
+      const mods = modules[topicId] || [];
+      const modCount = mods.length;
+      let totalLessons = 0, completedCount = 0;
+      mods.forEach(mod => {
+        const lessons = mod.lessons || [];
+        totalLessons += lessons.length;
+        lessons.forEach((_, i) => {
+          if (completedLessons[`${mod.id}-lesson-${i}`]) completedCount++;
+        });
+      });
+      return { modCount, totalLessons, completedCount, pct: totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0 };
+    };
+
     return (
-      <Dashboard
-        dailyStreak={dailyStreak} coins={coins} xp={xp} level={level} totalPoints={totalPoints}
-        mainTopics={mainTopics} modules={modules} completedLessons={completedLessons}
-        lastSelectedTopicId={lastSelectedTopicId}
-        onSelectTopic={selectMainTopic}
-        onSelectLesson={(lesson, idx, mod) => {
-          setSelectedModule(mod);
-          selectLes(lesson, idx);
-        }}
-        onCalibration={() => setScreen('compass')}
-        onLogout={exitToLanding}
-      />
+      <div className="min-h-screen relative overflow-hidden" style={pageBg}>
+        <IslamicPattern />
+        <nav className="sticky top-0 z-40 bg-white/60 backdrop-blur-2xl border-b border-emerald-100/50 shadow-sm">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 flex justify-between items-center h-14">
+            <div className="flex items-center gap-2.5">
+              <Mascot size="sm" />
+              <div><span className="text-lg font-bold tracking-tight" style={{fontFamily:"Georgia,serif",color:'#065f46'}}>Deany</span><div className="text-[10px] text-emerald-600/60" style={{fontFamily:"Georgia,serif"}}>Learn Islam Beautifully</div></div>
+              <button onClick={() => setScreen('compass')} className="hidden sm:inline-flex items-center gap-1 ml-3 px-3 py-1.5 rounded-lg text-xs font-medium text-deany-steel border border-deany-border hover:bg-deany-cream transition-all duration-200">
+                <Target className="w-3 h-3" />Calibration Quiz
+              </button>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="hidden sm:flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold" style={{background:'linear-gradient(135deg,#fef3c7,#fed7aa)',border:'1px solid #fbbf24',color:'#b45309'}}><Flame className="w-3.5 h-3.5" />{dailyStreak}</div>
+              <div className="hidden sm:flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold" style={{background:'linear-gradient(135deg,#fef9c3,#fef08a)',border:'1px solid #facc15',color:'#a16207'}}>🪙 {coins}</div>
+              <div className="hidden md:flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold" style={{background:'linear-gradient(135deg,#d1fae5,#a7f3d0)',border:'1px solid #34d399',color:'#047857'}}><Trophy className="w-3.5 h-3.5" />Lvl {level}</div>
+            </div>
+          </div>
+        </nav>
+
+        <section className="relative max-w-5xl mx-auto px-4 pt-10 pb-6 md:pt-16" style={{ animation: 'slideUp 0.6s ease-out both' }}>
+          <div className="max-w-2xl mx-auto text-center space-y-5">
+            <p className="font-arabic text-lg sm:text-xl text-deany-sage leading-relaxed" dir="rtl">
+              بسم الله الرحمن الرحيم
+            </p>
+            <div className="inline-flex items-center gap-1.5 bg-white/50 backdrop-blur-sm px-3 py-1 rounded-full border border-emerald-200/50 text-xs font-medium text-gray-500"><Target className="w-3 h-3 text-emerald-600" />Daily Goal: 35/50 XP</div>
+            <h1 className="text-4xl sm:text-6xl font-bold text-gray-900 leading-[1.1]" style={{fontFamily:"Georgia,serif"}}>
+              Learn Islam
+            </h1>
+            <p className="text-sm text-deany-steel" style={{fontFamily:'Georgia,serif'}}>{(() => { const h = new Date().getHours(); return h >= 5 && h < 12 ? 'Start your day with knowledge.' : h < 17 ? 'Continue your journey.' : h < 21 ? 'Reflect and learn.' : 'End your day with wisdom.'; })()}</p>
+            <div className="pt-2">
+              <button onClick={() => lastSelectedTopicId ? selectMainTopic(lastSelectedTopicId) : document.getElementById('paths')?.scrollIntoView({behavior:'smooth'})}
+                className="group inline-flex items-center gap-2.5 px-8 py-4 rounded-xl text-lg font-bold text-white shadow-xl transition-all hover:shadow-emerald-500/25 hover:-translate-y-0.5"
+                style={{background:'linear-gradient(135deg,#059669,#0d9488)'}}>
+                {lastSelectedTopicId ? <><Play className="w-5 h-5" />Continue Learning</> : <><BookOpen className="w-5 h-5" />Choose Your Path</>}
+                <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+              </button>
+            </div>
+          </div>
+        </section>
+
+        {/* Ayah of the Day */}
+        <section className="max-w-2xl mx-auto px-4 pb-8" style={{ animation: 'slideUp 0.6s ease-out 0.1s both' }}>
+          <QuranicQuote />
+        </section>
+
+        {/* Dashboard — XP + Stats */}
+        <section className="max-w-lg mx-auto px-4 pb-10" style={{ animation: 'slideUp 0.6s ease-out 0.2s both' }}>
+          <div className={`${glass} rounded-2xl p-5`}>
+            {/* XP bar */}
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold" style={{background:'linear-gradient(135deg,#059669,#0d9488)'}}>{level}</div>
+                <span className="text-xs font-bold text-deany-navy">Level {level}</span>
+              </div>
+              <span className="text-[11px] text-deany-muted">{xp}/{xpNext} XP</span>
+            </div>
+            <div className="w-full bg-deany-border rounded-full h-2 overflow-hidden">
+              <div className="h-2 rounded-full transition-all duration-700" style={{width:`${Math.max(xpPct,3)}%`,background:'linear-gradient(90deg,#10b981,#14b8a6,#06b6d4)'}}/>
+            </div>
+            {/* Divider */}
+            <div className="h-px bg-deany-border my-4" />
+            {/* Stats grid */}
+            <div className="grid grid-cols-4 gap-2">
+              {[{l:'Points',v:totalPoints,c:'#b45309',bg:'from-amber-50 to-orange-50',bc:'#fbbf24'},{l:'Streak',v:`🔥 ${dailyStreak}`,c:'#c2410c',bg:'from-red-50 to-orange-50',bc:'#f97316'},{l:'Coins',v:`🪙 ${coins}`,c:'#a16207',bg:'from-yellow-50 to-amber-50',bc:'#eab308'},{l:'Level',v:level,c:'#047857',bg:'from-emerald-50 to-teal-50',bc:'#10b981'}].map((s,i) => (
+                <div key={i} className={`bg-gradient-to-br ${s.bg} rounded-xl p-3 text-center border`} style={{borderColor:s.bc+'30'}}>
+                  <div className="text-base font-bold" style={{color:s.c}}>{s.v}</div>
+                  <div className="text-[10px] text-deany-muted font-medium mt-0.5">{s.l}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="paths" className="relative py-12" style={{background:'linear-gradient(180deg,transparent,rgba(255,255,255,0.4),transparent)', animation: 'slideUp 0.6s ease-out 0.3s both'}}>
+          <div className="max-w-5xl mx-auto px-4">
+            <div className="flex items-center gap-3 mb-8">
+              <div className="flex-1 h-px bg-deany-border" />
+              <h2 className="text-xl font-semibold text-deany-navy" style={{ fontFamily: 'Georgia, serif' }}>Learning Paths</h2>
+              <div className="flex-1 h-px bg-deany-border" />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              {mainTopics.map(t => {
+                const stats = getTopicStats(t.id);
+                return (
+                  <button key={t.id} onClick={() => selectMainTopic(t.id)}
+                    className="group relative overflow-hidden rounded-2xl p-6 text-left transition-all duration-300 hover:shadow-xl hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-deany-gold focus-visible:ring-offset-2"
+                    style={{ background: `linear-gradient(135deg, ${t.color}, ${t.color}dd)`, minHeight: '200px' }}>
+                    <IslamicPattern color="#fff" opacity={0.04} />
+                    <div className="relative z-10 flex flex-col h-full justify-between">
+                      <div>
+                        <div className="text-4xl mb-3 drop-shadow-lg group-hover:scale-110 transition-transform duration-300 inline-block">
+                          {t.icon}
+                        </div>
+                        <h3 className="text-xl font-bold text-white" style={{ fontFamily: 'Georgia, serif' }}>
+                          {t.title}
+                        </h3>
+                        <p className="text-white/70 text-sm mt-1">{t.subtitle}</p>
+                      </div>
+                      <div className="mt-5">
+                        <p className="text-white/60 text-xs mb-2">
+                          {stats.modCount} {stats.modCount === 1 ? 'module' : 'modules'}{stats.totalLessons > 0 ? ` · ${stats.totalLessons} lessons` : ''}
+                        </p>
+                        {stats.totalLessons > 0 && (
+                          <div className="w-full h-1.5 bg-white/20 rounded-full overflow-hidden">
+                            <div className="h-full bg-white/80 rounded-full transition-all duration-500" style={{ width: `${Math.max(stats.pct, 0)}%` }} />
+                          </div>
+                        )}
+                        <div className="flex items-center gap-1.5 mt-3 text-white/80 text-sm font-medium group-hover:text-white transition-colors">
+                          {lastSelectedTopicId === t.id ? <><Play className="w-3.5 h-3.5" /> Continue</> : <><ArrowRight className="w-3.5 h-3.5" /> Explore</>}
+                        </div>
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        <section className="max-w-5xl mx-auto px-4 py-6" style={{ animation: 'slideUp 0.6s ease-out 0.4s both' }}>
+          <div className="relative rounded-2xl p-6 text-white overflow-hidden" style={{background:'linear-gradient(135deg,#7c3aed,#6d28d9,#4f46e5)'}}>
+            <IslamicPattern color="#fff" opacity={0.05} />
+            <div className="relative z-10 flex items-center justify-between flex-wrap gap-4">
+              <div><div className="flex items-center gap-2 mb-1.5"><Zap className="w-4 h-4" /><h3 className="text-base font-bold">Today's Challenge</h3></div><p className="text-white/70 text-xs max-w-sm">Complete 3 lessons to maintain your streak!</p></div>
+              <div className="flex items-center gap-2">
+                <button className="bg-white text-violet-700 px-4 py-2 rounded-lg font-semibold text-xs shadow-md">Accept</button>
+                <div className="flex items-center gap-1 bg-white/15 px-3 py-1.5 rounded-lg text-xs"><Gift className="w-3.5 h-3.5" /><span className="font-semibold">+50 XP</span></div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
     );
   }
 
