@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { Check, Lock, ChevronLeft, Home, Zap, ArrowRight, Clock, Play, BookOpen } from 'lucide-react';
 
-const focusRing = "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C6A24A] focus-visible:ring-offset-2";
+const focusRing = "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C9A961] focus-visible:ring-offset-2";
 
 const MODULE_DATA = {
   'module-1': {
@@ -121,12 +121,12 @@ const getModuleData = (modId) => MODULE_DATA[modId] || {
 };
 
 const GeoPattern = () => (
-  <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-[0.025]" xmlns="http://www.w3.org/2000/svg">
+  <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-[0.03]" xmlns="http://www.w3.org/2000/svg">
     <defs>
       <pattern id="geo-elegant" x="0" y="0" width="80" height="80" patternUnits="userSpaceOnUse">
-        <path d="M40 0L80 40L40 80L0 40Z" fill="none" stroke="#0F172A" strokeWidth="0.6"/>
-        <circle cx="40" cy="40" r="16" fill="none" stroke="#0F172A" strokeWidth="0.4"/>
-        <circle cx="40" cy="40" r="4" fill="none" stroke="#C6A24A" strokeWidth="0.3"/>
+        <path d="M40 0L80 40L40 80L0 40Z" fill="none" stroke="#C9A961" strokeWidth="0.5"/>
+        <circle cx="40" cy="40" r="16" fill="none" stroke="#C9A961" strokeWidth="0.3"/>
+        <circle cx="40" cy="40" r="4" fill="none" stroke="#C9A961" strokeWidth="0.3"/>
       </pattern>
     </defs>
     <rect width="100%" height="100%" fill="url(#geo-elegant)"/>
@@ -135,10 +135,10 @@ const GeoPattern = () => (
 
 const HeroGlow = () => (
   <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-3xl" aria-hidden="true">
-    <div className="absolute -top-20 -right-20 w-60 h-60 rounded-full opacity-[0.07]"
-      style={{ background: 'radial-gradient(circle, #0F766E 0%, transparent 70%)' }} />
+    <div className="absolute -top-20 -right-20 w-60 h-60 rounded-full opacity-[0.06]"
+      style={{ background: 'radial-gradient(circle, #6B8E7F 0%, transparent 70%)' }} />
     <div className="absolute -bottom-10 -left-10 w-40 h-40 rounded-full opacity-[0.05]"
-      style={{ background: 'radial-gradient(circle, #C6A24A 0%, transparent 70%)' }} />
+      style={{ background: 'radial-gradient(circle, #C9A961 0%, transparent 70%)' }} />
   </div>
 );
 
@@ -147,7 +147,7 @@ const ModuleOverview = ({
 }) => {
   if (!modules?.length) return null;
   return (
-    <div className="min-h-screen relative" style={{ background: '#FBFBF7' }}>
+    <div className="min-h-screen relative" style={{ background: '#F8F4ED' }}>
       <style>{`
         @keyframes slideUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
         @keyframes pulseGold{0%,100%{box-shadow:0 0 0 0 rgba(198,162,74,0.3)}50%{box-shadow:0 0 0 8px rgba(198,162,74,0)}}
@@ -158,11 +158,12 @@ const ModuleOverview = ({
         {/* Nav */}
         <div className="flex justify-between items-center mb-8">
           <button onClick={onBack}
-            className={`flex items-center gap-1.5 text-[#64748B] hover:text-[#0F172A] transition-colors text-sm font-medium min-h-[48px] px-1 ${focusRing}`}>
-            <ChevronLeft className="w-4 h-4" /><span>Topics</span>
+            className={`flex items-center gap-1.5 text-[#6B6356] hover:text-[#1B4332] transition-colors text-sm font-medium min-h-[48px] px-1 ${focusRing}`}>
+            <ChevronLeft className="w-4 h-4" /><span>Home</span>
           </button>
           <button onClick={onHome}
-            className={`flex items-center gap-1.5 bg-[#0F172A] text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-md hover:bg-[#1e293b] transition-all min-h-[48px] ${focusRing}`}>
+            className={`flex items-center gap-1.5 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-md hover:brightness-105 transition-all min-h-[48px] ${focusRing}`}
+            style={{ background: '#C9A961' }}>
             <Home className="w-4 h-4" /><span>Home</span>
           </button>
         </div>
@@ -198,28 +199,28 @@ const ModuleBlock = ({ mod, mi, completedLessons, loadProgress, onSelectLesson, 
 
   if (mod.isSpeedRound) return (
     <button onClick={() => onSelectModule(mod, mi)}
-      className={`w-full rounded-3xl p-6 text-left bg-white border border-[#E5E7EB] shadow-[0_2px_12px_rgba(15,23,42,0.04)] hover:shadow-[0_8px_24px_rgba(15,23,42,0.08)] hover:-translate-y-0.5 transition-all duration-200 mb-6 ${focusRing}`}>
+      className={`w-full rounded-3xl p-6 text-left bg-white border border-[rgba(201,169,97,0.25)] shadow-[0_2px_12px_rgba(42,37,32,0.04)] hover:shadow-[0_8px_24px_rgba(42,37,32,0.08)] hover:-translate-y-0.5 transition-all duration-200 mb-6 ${focusRing}`}>
       <div className="flex items-center gap-5">
         <div className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg text-white flex-shrink-0"
           style={{ background: 'linear-gradient(135deg, #7c3aed, #6d28d9)' }}><Zap className="w-7 h-7" /></div>
         <div className="flex-1">
-          <h3 className="font-bold text-[#0F172A]" style={{ fontFamily: 'Georgia,serif' }}>{mod.title}</h3>
-          <p className="text-sm text-[#64748B]">{mod.subtitle}</p>
+          <h3 className="font-bold text-[#1B4332]" style={{ fontFamily: 'Georgia,serif' }}>{mod.title}</h3>
+          <p className="text-sm text-[#6B6356]">{mod.subtitle}</p>
         </div>
-        <ArrowRight className="w-5 h-5 text-[#64748B]" />
+        <ArrowRight className="w-5 h-5 text-[#6B6356]" />
       </div>
     </button>
   );
 
   if (!lessons.length) return (
-    <div className="rounded-3xl p-6 opacity-60 bg-white border border-[#E5E7EB] shadow-[0_2px_12px_rgba(15,23,42,0.04)] mb-6">
+    <div className="rounded-3xl p-6 opacity-60 bg-white border border-[rgba(201,169,97,0.25)] shadow-[0_2px_12px_rgba(42,37,32,0.04)] mb-6">
       <div className="flex items-center gap-5">
-        <div className="w-14 h-14 rounded-2xl flex items-center justify-center bg-[#F1F5F9] flex-shrink-0">
-          <Lock className="w-6 h-6 text-[#94a3b8]" /></div>
+        <div className="w-14 h-14 rounded-2xl flex items-center justify-center bg-[rgba(201,169,97,0.08)] flex-shrink-0">
+          <Lock className="w-6 h-6 text-[#9A9389]" /></div>
         <div>
-          <h3 className="font-bold text-[#64748B]" style={{ fontFamily: 'Georgia,serif' }}>{mod.title}</h3>
-          <p className="text-sm text-[#94a3b8]">{mod.subtitle}</p>
-          <span className="text-xs px-2.5 py-0.5 rounded-full font-medium bg-[#FFF7E6] text-[#A77F22] mt-1.5 inline-block">Coming Soon</span>
+          <h3 className="font-bold text-[#6B6356]" style={{ fontFamily: 'Georgia,serif' }}>{mod.title}</h3>
+          <p className="text-sm text-[#9A9389]">{mod.subtitle}</p>
+          <span className="text-xs px-2.5 py-0.5 rounded-full font-medium bg-[rgba(201,169,97,0.12)] text-[#8A6F2F] mt-1.5 inline-block">Coming Soon</span>
         </div>
       </div>
     </div>
@@ -233,25 +234,25 @@ const ModuleBlock = ({ mod, mi, completedLessons, loadProgress, onSelectLesson, 
       {/* Left column */}
       <div className="space-y-5">
         {/* Hero card */}
-        <div className="relative rounded-3xl bg-white border border-[#E5E7EB] shadow-[0_4px_20px_rgba(15,23,42,0.06)] p-7 overflow-hidden">
+        <div className="relative rounded-3xl bg-white border border-[rgba(201,169,97,0.25)] shadow-[0_4px_20px_rgba(42,37,32,0.06)] p-7 overflow-hidden">
           <HeroGlow />
           <div className="relative">
             {/* Emblem + badge */}
             <div className="flex items-center gap-3 mb-5">
               <div className="w-11 h-11 rounded-2xl flex items-center justify-center shadow-sm"
-                style={{ background: 'linear-gradient(135deg, #C6A24A, #A77F22)' }}>
+                style={{ background: '#C9A961' }}>
                 <BookOpen className="w-5 h-5 text-white" />
               </div>
-              <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#C6A24A]">{data.badge}</span>
+              <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#C9A961]">{data.badge}</span>
             </div>
 
-            <h2 className="text-2xl lg:text-3xl font-bold text-[#0F172A] leading-tight" style={{ fontFamily: 'Georgia,serif' }}>
+            <h2 className="text-2xl lg:text-3xl font-bold text-[#1B4332] leading-tight" style={{ fontFamily: 'Georgia,serif' }}>
               {mod.title}
             </h2>
-            {mod.subtitle && <p className="text-[#64748B] mt-1.5 text-sm">{mod.subtitle}</p>}
+            {mod.subtitle && <p className="text-[#6B6356] mt-1.5 text-sm">{mod.subtitle}</p>}
 
             {data.desc && (
-              <p className="text-sm text-[#64748B] mt-4 leading-relaxed">
+              <p className="text-sm text-[#6B6356] mt-4 leading-relaxed">
                 {data.desc}
               </p>
             )}
@@ -259,16 +260,16 @@ const ModuleBlock = ({ mod, mi, completedLessons, loadProgress, onSelectLesson, 
             {/* Progress */}
             <div className="mt-6">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-semibold text-[#64748B]">
+                <span className="text-xs font-semibold text-[#6B6356]">
                   {pct}% complete
                 </span>
-                <span className="text-xs text-[#94a3b8]">
+                <span className="text-xs text-[#9A9389]">
                   {lessons.length} lessons · {totalMin} min total
                 </span>
               </div>
-              <div className="h-2 bg-[#E7DED2] rounded-full overflow-hidden">
+              <div className="h-2 bg-[rgba(201,169,97,0.2)] rounded-full overflow-hidden">
                 <div className="h-full rounded-full transition-all duration-500 ease-out"
-                  style={{ width: `${pct}%`, background: 'linear-gradient(90deg, #0F766E, #10b981)' }} />
+                  style={{ width: `${pct}%`, background: '#C9A961' }} />
               </div>
             </div>
 
@@ -279,7 +280,7 @@ const ModuleBlock = ({ mod, mi, completedLessons, loadProgress, onSelectLesson, 
                   flex items-center justify-center gap-2 min-h-[48px]
                   shadow-[0_2px_8px_rgba(198,162,74,0.3)] hover:shadow-[0_4px_16px_rgba(198,162,74,0.4)]
                   hover:brightness-105 active:brightness-95 transition-all duration-200 ${focusRing}`}
-                style={{ background: 'linear-gradient(135deg, #C6A24A, #B89340)' }}>
+                style={{ background: '#C9A961' }}>
                 <Play className="w-4 h-4" fill="white" />
                 {doneCount > 0 ? 'Continue Learning' : 'Start Learning'}
               </button>
@@ -289,15 +290,15 @@ const ModuleBlock = ({ mod, mi, completedLessons, loadProgress, onSelectLesson, 
 
         {/* What you'll master */}
         {data.mastery.length > 0 && (
-        <div className="rounded-3xl bg-white border border-[#E5E7EB] shadow-[0_2px_12px_rgba(15,23,42,0.04)] p-6">
-          <h3 className="text-sm font-bold uppercase tracking-[0.12em] text-[#0F172A] mb-4">What you'll master</h3>
+        <div className="rounded-3xl bg-white border border-[rgba(201,169,97,0.25)] shadow-[0_2px_12px_rgba(42,37,32,0.04)] p-6">
+          <h3 className="text-sm font-bold uppercase tracking-[0.12em] text-[#1B4332] mb-4">What you'll master</h3>
           <div className="space-y-3">
             {data.mastery.map((item) => (
               <div key={item} className="flex items-start gap-3">
-                <div className="w-5 h-5 rounded-full bg-[#ECFDF5] flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <Check className="w-3 h-3 text-[#0F766E]" strokeWidth={3} />
+                <div className="w-5 h-5 rounded-full bg-[rgba(107,142,127,0.12)] flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <Check className="w-3 h-3 text-[#6B8E7F]" strokeWidth={3} />
                 </div>
-                <p className="text-sm text-[#334155] leading-relaxed">{item}</p>
+                <p className="text-sm text-[#2A2520] leading-relaxed">{item}</p>
               </div>
             ))}
           </div>
@@ -306,14 +307,14 @@ const ModuleBlock = ({ mod, mi, completedLessons, loadProgress, onSelectLesson, 
 
         {/* Key concepts */}
         {data.concepts.length > 0 && (
-        <div className="rounded-3xl bg-white border border-[#E5E7EB] shadow-[0_2px_12px_rgba(15,23,42,0.04)] p-6">
-          <h3 className="text-sm font-bold uppercase tracking-[0.12em] text-[#0F172A] mb-4">Key concepts</h3>
+        <div className="rounded-3xl bg-white border border-[rgba(201,169,97,0.25)] shadow-[0_2px_12px_rgba(42,37,32,0.04)] p-6">
+          <h3 className="text-sm font-bold uppercase tracking-[0.12em] text-[#1B4332] mb-4">Key concepts</h3>
           <div className="flex flex-wrap gap-2">
             {data.concepts.map((c) => (
               <span key={c.label} className={`text-xs font-semibold px-3 py-1.5 rounded-full ${
-                c.color === 'emerald' ? 'bg-[#ECFDF5] text-[#0F766E]' :
-                c.color === 'coral' ? 'bg-[#FFF1ED] text-[#B85C44]' :
-                'bg-[#FFF7E6] text-[#A77F22]'
+                c.color === 'emerald' ? 'bg-[rgba(107,142,127,0.12)] text-[#6B8E7F]' :
+                c.color === 'coral' ? 'bg-[rgba(184,105,77,0.1)] text-[#B8694D]' :
+                'bg-[rgba(201,169,97,0.12)] text-[#8A6F2F]'
               }`}>{c.label}</span>
             ))}
           </div>
@@ -323,10 +324,10 @@ const ModuleBlock = ({ mod, mi, completedLessons, loadProgress, onSelectLesson, 
 
       {/* Right column: Lesson journey */}
       <div>
-        <h3 className="text-sm font-bold uppercase tracking-[0.12em] text-[#64748B] mb-5 lg:mt-1">Learning path</h3>
+        <h3 className="text-sm font-bold uppercase tracking-[0.12em] text-[#6B6356] mb-5 lg:mt-1">Learning path</h3>
         <div className="relative">
           {/* Timeline line */}
-          <div className="absolute left-[23px] top-6 bottom-6 w-0.5" style={{ background: '#E7DED2' }} aria-hidden="true" />
+          <div className="absolute left-[23px] top-6 bottom-6 w-0.5" style={{ background: 'rgba(201,169,97,0.2)' }} aria-hidden="true" />
 
           <div className="flex flex-col">
             {lessons.map((lesson, i) => {
@@ -357,16 +358,16 @@ const LessonRow = ({ lesson, i, st, saved, onClick, isCurrent, meta = {} }) => {
           <span className="absolute inset-0 rounded-full" style={{ animation: 'pulseGold 2s ease-in-out infinite' }} />
         )}
         <div className={`relative w-10 h-10 rounded-full flex items-center justify-center
-          ${isDone ? 'bg-[#0F766E] shadow-[0_2px_8px_rgba(15,118,110,0.25)]' :
+          ${isDone ? 'bg-[#6B8E7F] shadow-[0_2px_8px_rgba(107,142,127,0.3)]' :
             isCur ? 'shadow-[0_2px_8px_rgba(198,162,74,0.35)]' :
-            'bg-[#F1F5F9] shadow-sm'}`}
-          style={isCur ? { background: 'linear-gradient(135deg, #C6A24A, #A77F22)' } : undefined}>
+            'bg-[rgba(201,169,97,0.08)] shadow-sm'}`}
+          style={isCur ? { background: '#C9A961' } : undefined}>
           {isDone ? (
             <Check className="w-5 h-5 text-white" strokeWidth={3} />
           ) : isCur ? (
             <Play className="w-4 h-4 text-white" fill="white" />
           ) : (
-            <span className="text-sm font-bold text-[#94a3b8]">{i + 1}</span>
+            <span className="text-sm font-bold text-[#9A9389]">{i + 1}</span>
           )}
         </div>
       </div>
@@ -375,40 +376,40 @@ const LessonRow = ({ lesson, i, st, saved, onClick, isCurrent, meta = {} }) => {
       <button onClick={onClick}
         className={`flex-1 ml-4 rounded-2xl p-5 text-left transition-all duration-200 min-h-[48px] ${focusRing}
           ${isCur
-            ? 'bg-white border-l-[3px] border-[#C6A24A] border-t border-r border-b border-t-[#E5E7EB] border-r-[#E5E7EB] border-b-[#E5E7EB] shadow-[0_4px_20px_rgba(15,23,42,0.07)] hover:shadow-[0_8px_28px_rgba(15,23,42,0.1)]'
+            ? 'bg-white border-l-[3px] border-[#C9A961] border-t border-r border-b border-t-[#E5E7EB] border-r-[#E5E7EB] border-b-[#E5E7EB] shadow-[0_4px_20px_rgba(42,37,32,0.07)] hover:shadow-[0_8px_28px_rgba(42,37,32,0.1)]'
             : isDone
-            ? 'bg-white border border-[#E5E7EB] shadow-[0_1px_6px_rgba(15,23,42,0.03)] hover:shadow-[0_4px_16px_rgba(15,23,42,0.06)] hover:-translate-y-0.5'
-            : 'bg-white/80 border border-[#E5E7EB]/70 shadow-[0_1px_4px_rgba(15,23,42,0.02)] opacity-70 hover:opacity-90 hover:shadow-[0_2px_10px_rgba(15,23,42,0.05)]'
+            ? 'bg-white border border-[rgba(201,169,97,0.25)] shadow-[0_1px_6px_rgba(42,37,32,0.03)] hover:shadow-[0_4px_16px_rgba(42,37,32,0.06)] hover:-translate-y-0.5'
+            : 'bg-white/80 border border-[rgba(201,169,97,0.25)]/70 shadow-[0_1px_4px_rgba(42,37,32,0.02)] opacity-70 hover:opacity-90 hover:shadow-[0_2px_10px_rgba(42,37,32,0.05)]'
           }`}>
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#C6A24A]">Lesson {i + 1}</p>
+              <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#C9A961]">Lesson {i + 1}</p>
               {meta.type && (
-                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#F8FAFC] text-[#64748B] border border-[#E5E7EB]">
+                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[rgba(201,169,97,0.06)] text-[#6B6356] border border-[rgba(201,169,97,0.25)]">
                   {meta.type}
                 </span>
               )}
             </div>
-            <h3 className="font-bold text-[#0F172A] mt-1 leading-snug" style={{ fontFamily: 'Georgia,serif' }}>
+            <h3 className="font-bold text-[#1B4332] mt-1 leading-snug" style={{ fontFamily: 'Georgia,serif' }}>
               {lesson.title}
             </h3>
             {meta.desc && (
-              <p className={`text-xs leading-relaxed mt-1.5 ${isOpen ? 'text-[#94a3b8]' : 'text-[#64748B]'}`}>
+              <p className={`text-xs leading-relaxed mt-1.5 ${isOpen ? 'text-[#9A9389]' : 'text-[#6B6356]'}`}>
                 {meta.desc}
               </p>
             )}
             <div className="flex items-center gap-3 mt-2.5 flex-wrap">
-              <span className="text-xs flex items-center gap-1 text-[#94a3b8]">
+              <span className="text-xs flex items-center gap-1 text-[#9A9389]">
                 <Clock className="w-3.5 h-3.5" />{lesson.duration}
               </span>
               {isDone && (
-                <span className="text-xs font-semibold text-[#0F766E] flex items-center gap-1">
+                <span className="text-xs font-semibold text-[#6B8E7F] flex items-center gap-1">
                   <Check className="w-3 h-3" />Completed
                 </span>
               )}
               {saved && !isDone && (
-                <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-[#FFF7E6] text-[#A77F22]">
+                <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-[rgba(201,169,97,0.12)] text-[#8A6F2F]">
                   In Progress
                 </span>
               )}
@@ -417,7 +418,7 @@ const LessonRow = ({ lesson, i, st, saved, onClick, isCurrent, meta = {} }) => {
 
           {isCur && (
             <div className="flex-shrink-0">
-              <span className="text-[10px] font-bold uppercase tracking-[0.12em] px-2.5 py-1 rounded-full bg-[#FFF7E6] text-[#A77F22]">
+              <span className="text-[10px] font-bold uppercase tracking-[0.12em] px-2.5 py-1 rounded-full bg-[rgba(201,169,97,0.12)] text-[#8A6F2F]">
                 Start
               </span>
             </div>

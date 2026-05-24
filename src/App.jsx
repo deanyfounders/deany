@@ -871,29 +871,15 @@ const App = () => {
     const isHist = selectedMainTopic.id == 'islamic-history';
     const isFin = selectedMainTopic.id == 'islamic-finance';
 
-    // Islamic Finance: full learning path with all modules + lessons inline
-    if (isFin) {
+    // Islamic History uses custom epoch/level navigation
+    if (isHist) {
       return (
-        <ModuleOverview
-          modules={mods}
-          completedLessons={completedLessons}
-          loadProgress={loadProgress}
-          onSelectLesson={selectLes}
-          onSelectModule={selectModule}
-          onBack={goHome}
-          onHome={goHome}
-        />
-      );
-    }
-
-    return (
-      <div className="min-h-screen relative" style={pageBg}>
-        <IslamicPattern /><div className="relative z-10 max-w-5xl mx-auto px-4 py-8">
-          <NavHeader onBack={goHome} onHome={goHome} backLabel="Topics" />
-          <div className={`${glass} rounded-2xl p-6 mb-6`}>
-            <div className="flex items-center gap-4"><div className="w-14 h-14 rounded-xl flex items-center justify-center text-3xl shadow-sm" style={{background:'rgba(201,169,97,0.12)'}}>{selectedMainTopic.icon}</div><div><h1 className="text-2xl font-bold" style={{fontFamily:"Georgia,serif",color:'#1B4332'}}>{selectedMainTopic.title}</h1><p className="text-xs" style={{color:'#6B6356'}}>{selectedMainTopic.subtitle} · {mods.length} modules</p></div></div>
-          </div>
-          {isHist ? (
+        <div className="min-h-screen relative" style={pageBg}>
+          <IslamicPattern /><div className="relative z-10 max-w-5xl mx-auto px-4 py-8">
+            <NavHeader onBack={goHome} onHome={goHome} backLabel="Home" />
+            <div className={`${glass} rounded-2xl p-6 mb-6`}>
+              <div className="flex items-center gap-4"><div className="w-14 h-14 rounded-xl flex items-center justify-center text-3xl shadow-sm" style={{background:'rgba(201,169,97,0.12)'}}>{selectedMainTopic.icon}</div><div><h1 className="text-2xl font-bold" style={{fontFamily:"Georgia,serif",color:'#1B4332'}}>{selectedMainTopic.title}</h1><p className="text-xs" style={{color:'#6B6356'}}>{selectedMainTopic.subtitle} · {mods.length} epochs</p></div></div>
+            </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {mods.map((e, i) => (
                 <button key={e.id} onClick={() => selectModule(e)} className={`group ${glassHover} rounded-xl p-6 text-center`}>
@@ -903,23 +889,22 @@ const App = () => {
                 </button>
               ))}
             </div>
-          ) : (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {mods.map(m => (
-                <button key={m.id} onClick={() => selectModule(m)} className={`group ${glassHover} rounded-xl p-5 text-left`}>
-                  <div className="w-12 h-12 mb-2 rounded-lg flex items-center justify-center text-2xl shadow-sm group-hover:scale-110 transition-transform" style={{background:'rgba(201,169,97,0.1)'}}>{m.icon}</div>
-                  <h3 className="font-bold text-sm mb-0.5" style={{color:'#1B4332'}}>{m.title}</h3><p className="text-[11px] mb-2" style={{color:'#6B6356'}}>{m.subtitle}</p>
-                  {m.lessons?.length ? (
-                    <span className="inline-flex items-center gap-1 text-[10px] px-2.5 py-1 rounded-full font-semibold" style={{background:'rgba(201,169,97,0.12)',color:'#8A6F2F'}}>{m.lessons.length} {m.lessons.length === 1 ? 'lesson' : 'lessons'} <ArrowRight className="w-2.5 h-2.5" /></span>
-                  ) : (
-                    <span className="inline-flex items-center gap-1 text-[10px] px-2.5 py-1 rounded-full font-semibold" style={{background:'rgba(107,99,86,0.08)',color:'#6B6356'}}>Coming Soon</span>
-                  )}
-                </button>
-              ))}
-            </div>
-          )}
+          </div>
         </div>
-      </div>
+      );
+    }
+
+    // All other topics (Finance, 5 Pillars, Quran): use ModuleOverview
+    return (
+      <ModuleOverview
+        modules={mods}
+        completedLessons={completedLessons}
+        loadProgress={loadProgress}
+        onSelectLesson={selectLes}
+        onSelectModule={selectModule}
+        onBack={goHome}
+        onHome={goHome}
+      />
     );
   }
 
