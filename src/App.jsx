@@ -964,6 +964,9 @@ const App = () => {
       return (
         <div className="min-h-screen relative flex items-center justify-center px-4" style={pageBg}>
           <IslamicPattern /><div className="relative z-10 max-w-md w-full">
+            <div className="flex justify-start mb-4">
+              <button onClick={goModules} className="flex items-center gap-1.5 bg-white/50 text-gray-500 px-3 py-1.5 rounded-lg text-xs font-medium border border-gray-200/50"><Home className="w-3.5 h-3.5" />Exit</button>
+            </div>
             <div className={`${glass} rounded-2xl overflow-hidden`} style={{animation:'fadeSlideIn 0.2s ease-out'}}>
               <div className="h-1.5" style={{background: speedFeedback.correct ? 'linear-gradient(90deg,#22c55e,#10b981)' : 'linear-gradient(90deg,#ef4444,#f97316)'}} />
               <div className="p-6 text-center">
@@ -1039,6 +1042,9 @@ const App = () => {
       return (
         <div className="min-h-screen relative flex items-center justify-center px-4 py-8" style={pageBg}>
           <IslamicPattern /><GlossaryPopup /><div className="relative z-10 max-w-xl w-full">
+            <div className="flex justify-start mb-4">
+              <button onClick={goHome} className="flex items-center gap-1.5 bg-white/50 backdrop-blur-sm text-gray-500 px-3 py-1.5 rounded-lg text-xs font-medium border border-gray-200/50"><Home className="w-3.5 h-3.5" />Exit</button>
+            </div>
             <div className={`${glass} rounded-2xl overflow-hidden`} style={{animation:'fadeSlideIn 0.3s ease-out'}}>
               <div className="h-1" style={{background:'linear-gradient(90deg,#3b82f6,#6366f1)'}} />
               <div className="p-6">

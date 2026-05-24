@@ -619,7 +619,7 @@ export default function DeanyCompass({ onBack, onHome }) {
       <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-deany-border">
         <div className="max-w-2xl mx-auto px-5 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            {onBack && step === "welcome" && (
+            {onBack && (
               <button onClick={onBack} className="text-sm text-deany-steel hover:text-deany-navy transition-colors duration-200 flex items-center gap-1">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
                 Back
