@@ -203,10 +203,10 @@ const Dashboard = ({
               </div>
             )}
             <div style={{ display: 'flex', justifyContent: 'center', gap: 10, paddingTop: 14, borderTop: `1px solid rgba(201,169,97,0.15)`, marginTop: 14 }}>
-              <button disabled title="Coming soon"
-                style={{ background: 'rgba(201,169,97,0.1)', border: 'none', borderRadius: 10, padding: '8px 14px', fontSize: 12,
-                  color: C.goldDk, display: 'flex', alignItems: 'center', gap: 6, cursor: 'not-allowed', opacity: 0.5 }}>
-                <Play size={14} /> Recite
+              <button disabled
+                style={{ background: 'rgba(201,169,97,0.06)', border: 'none', borderRadius: 10, padding: '8px 14px', fontSize: 12,
+                  color: C.muted, display: 'flex', alignItems: 'center', gap: 6, cursor: 'not-allowed', opacity: 0.5 }}>
+                <Play size={14} /> Recite <span style={{ fontSize: 9, opacity: 0.7 }}>(soon)</span>
               </button>
               {dailyItem.tafseer && (
                 <button onClick={() => setShowTafseer(!showTafseer)}
@@ -241,25 +241,27 @@ const Dashboard = ({
               <Flame size={13} color={C.flame} /> {xpNeeded} XP to keep your {dailyStreak}-day streak
             </div>
           </div>
-          {/* Quick sessions */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {[
-              { t: 'Quick review', d: '2 min · flashcards', xp: '+10 XP' },
-              { t: 'One lesson', d: '5 min · next up', xp: '+25 XP' },
-              { t: 'Deep dive', d: '15 min · scenario', xp: '+75 XP' },
-            ].map((s, i) => (
-              <button key={i} onClick={() => {
-                if (continueData && i === 1) onSelectLesson(continueData.lesson, continueData.index, continueData.mod);
-              }}
-                style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: 12, padding: '11px 14px', textAlign: 'left',
+          {/* Quick session */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, justifyContent: 'center', height: '100%' }}>
+            {continueData ? (
+              <button onClick={() => onSelectLesson(continueData.lesson, continueData.index, continueData.mod)}
+                style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: 12, padding: '16px 14px', textAlign: 'left',
                   display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', minHeight: 48 }}>
                 <div>
-                  <div style={{ fontSize: 13, fontWeight: 500, color: C.forest }}>{s.t}</div>
-                  <div style={{ fontSize: 11, color: C.muted }}>{s.d}</div>
+                  <div style={{ fontSize: 13, fontWeight: 500, color: C.forest }}>One lesson</div>
+                  <div style={{ fontSize: 11, color: C.muted }}>5 min · next up</div>
                 </div>
-                <div style={{ fontSize: 11, color: C.goldDk, fontWeight: 500 }}>{s.xp}</div>
+                <div style={{ fontSize: 11, color: C.goldDk, fontWeight: 500 }}>+25 XP</div>
               </button>
-            ))}
+            ) : (
+              <div style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: 12, padding: '16px 14px',
+                textAlign: 'center', color: C.muted, fontSize: 12 }}>
+                Complete a lesson to unlock quick sessions
+              </div>
+            )}
+            <div style={{ fontSize: 11, color: C.muted, textAlign: 'center', lineHeight: 1.4 }}>
+              More session types coming soon
+            </div>
           </div>
         </section>
 
@@ -319,8 +321,7 @@ const Dashboard = ({
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8 }}>
               <div style={{ fontSize: 11, padding: '4px 10px', background: 'rgba(255,255,255,0.18)', color: '#fff', borderRadius: 12, fontWeight: 500 }}>+50 XP</div>
-              <button style={{ background: '#fff', color: C.sageDk, border: 'none', borderRadius: 10, padding: '8px 18px', fontSize: 13,
-                fontWeight: 500, cursor: 'pointer', minHeight: 48 }}>Accept</button>
+              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.7)', fontStyle: 'italic' }}>Auto-tracked</div>
             </div>
           </div>
         </section>
@@ -373,9 +374,9 @@ const Dashboard = ({
               {/* Explore */}
               <div>
                 <Eyebrow style={{ marginBottom: 10 }}>EXPLORE</Eyebrow>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 12, color: C.body }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 12, color: C.muted }}>
                   {['About Deany', 'How it works', 'Sources & scholars', 'Reflections journal', 'Privacy'].map(l => (
-                    <span key={l} style={{ cursor: 'pointer' }}>{l}</span>
+                    <span key={l}>{l}</span>
                   ))}
                 </div>
               </div>

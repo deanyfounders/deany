@@ -467,7 +467,7 @@ function QuizStep({ question, questionNumber, totalEstimate, onAnswer }) {
 
 // ── Step: Results ───────────────���─────────────────────────���──────────────
 
-function ResultsStep({ selectedTopics, selfRatings, answers, onHome, onRestart }) {
+function ResultsStep({ selectedTopics, selfRatings, answers, onHome, onComplete, onRestart }) {
   const placements = useMemo(
     () => computePlacements(selectedTopics, selfRatings, answers),
     [selectedTopics, selfRatings, answers]
@@ -552,7 +552,8 @@ function ResultsStep({ selectedTopics, selfRatings, answers, onHome, onRestart }
             try {
               localStorage.setItem("deany-compass-result", JSON.stringify({ placements, accuracy, ts: Date.now() }));
             } catch {}
-            if (onHome) onHome();
+            if (onComplete) onComplete();
+            else if (onHome) onHome();
           }}>
             Start Learning
           </Button>
@@ -565,7 +566,7 @@ function ResultsStep({ selectedTopics, selfRatings, answers, onHome, onRestart }
 
 // ── Main Component ─────────────��─────────────────────────────────────────
 
-export default function DeanyCompass({ onBack, onHome }) {
+export default function DeanyCompass({ onBack, onHome, onComplete }) {
   const [step, setStep] = useState("welcome"); // welcome | topics | assess | quiz | results
   const [selectedTopics, setSelectedTopics] = useState([]);
   const [selfRatings, setSelfRatings] = useState({});
@@ -663,7 +664,7 @@ export default function DeanyCompass({ onBack, onHome }) {
 
         {(step === "results" || quizDone) && (
           <ResultsStep selectedTopics={selectedTopics} selfRatings={effectiveRatings}
-            answers={answers} onHome={onHome} onRestart={reset} />
+            answers={answers} onHome={onHome} onComplete={onComplete} onRestart={reset} />
         )}
       </div>
     </div>

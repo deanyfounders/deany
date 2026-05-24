@@ -32,7 +32,7 @@ import {
 } from 'lucide-react';
 
 // ---- Shared Components --------------------------------------------
-const IslamicPattern = ({ opacity = 0.035, color = "#065f46" }) => (
+const IslamicPattern = ({ opacity = 0.03, color = "#C9A961" }) => (
   <svg className="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
     <defs>
       <pattern id="geo" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
@@ -57,12 +57,39 @@ const Mascot = ({ size = 'md', className = "" }) => {
 
 const NavHeader = ({ onBack, onHome, backLabel = "Back" }) => (
   <div className="flex justify-between items-center mb-6">
-    <button onClick={onBack} className="flex items-center gap-1.5 text-gray-600 hover:text-emerald-700 transition-colors text-sm font-medium">
+    <button onClick={onBack} className="flex items-center gap-1.5 transition-colors text-sm font-medium" style={{color:'#6B6356'}} onMouseEnter={e=>e.currentTarget.style.color='#1B4332'} onMouseLeave={e=>e.currentTarget.style.color='#6B6356'}>
       <ChevronLeft className="w-4 h-4" /><span>{backLabel}</span>
     </button>
-    <button onClick={onHome} className="flex items-center gap-1.5 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all" style={{background: 'linear-gradient(135deg, #059669, #0d9488)'}}>
+    <button onClick={onHome} className="flex items-center gap-1.5 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all" style={{background:'#C9A961'}}>
       <Home className="w-4 h-4" /><span>Home</span>
     </button>
+  </div>
+);
+
+const ExitConfirmModal = ({ onStay, onLeave, questionsAnswered, totalQuestions }) => (
+  <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50" style={{animation:'fadeSlideIn 0.2s ease-out'}}
+    onClick={(e) => { if (e.target === e.currentTarget) onStay(); }}>
+    <div className="bg-white rounded-2xl max-w-sm w-full shadow-2xl overflow-hidden">
+      <div className="h-1" style={{background:'linear-gradient(90deg,#f59e0b,#ea580c)'}} />
+      <div className="p-6 text-center">
+        <div className="w-12 h-12 mx-auto rounded-full bg-amber-50 flex items-center justify-center mb-4">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#b45309" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+        <h3 className="text-lg font-bold text-gray-900 mb-1" style={{fontFamily:'Georgia,serif'}}>Leave this quiz?</h3>
+        <p className="text-sm text-gray-500 mb-5">You've answered {questionsAnswered} of {totalQuestions} questions. Your progress won't be saved.</p>
+        <div className="flex gap-3">
+          <button onClick={onLeave}
+            className="flex-1 px-4 py-3 rounded-xl text-sm font-medium text-gray-700 border border-gray-200 hover:bg-gray-50 transition-all">
+            Leave
+          </button>
+          <button onClick={onStay}
+            className="flex-1 px-4 py-3 rounded-xl text-sm font-medium text-white shadow-md hover:brightness-105 transition-all"
+            style={{background:'linear-gradient(135deg,#059669,#0d9488)'}}>
+            Stay
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 );
 
@@ -78,9 +105,9 @@ const Confetti = () => (
 );
 
 // ---- Styles ------------------------------------------------------
-const pageBg = { background: 'linear-gradient(150deg, #f0fdf4 0%, #ecfdf5 30%, #f0f9ff 60%, #fefce8 100%)' };
-const glass = "bg-white/70 backdrop-blur-xl border border-white/40 shadow-lg";
-const glassHover = `${glass} transition-all duration-300 hover:shadow-xl hover:-translate-y-1`;
+const pageBg = { background: '#F8F4ED' };
+const glass = "bg-white border border-[rgba(201,169,97,0.25)] shadow-sm";
+const glassHover = `${glass} transition-all duration-300 hover:shadow-md hover:-translate-y-1`;
 
 // ---- Glossary (Islamic History) ----------------------------------
 const GLOSSARY_ENTRIES = [
@@ -182,6 +209,8 @@ const App = () => {
   const [speedRoundIdx, setSpeedRoundIdx] = useState(0);
   const [speedResults, setSpeedResults] = useState([]);
   const [speedFeedback, setSpeedFeedback] = useState(null);
+  const [showExitConfirm, setShowExitConfirm] = useState(false);
+  const exitActionRef = useRef(null);
   const modalRef = useRef(null);
   const shuffleRef = useRef({});
   const audioCtxRef = useRef(null);
@@ -554,6 +583,20 @@ const App = () => {
   const goModules = () => { setScreen('modules'); setSelectedModule(null); setSelectedLesson(null); };
   const goLessons = () => { setScreen(selectedEpoch && selectedLevel ? 'history-lessons' : selectedModule ? 'lessons' : 'modules'); setSelectedLesson(null); };
 
+  // Exit confirmation for quizzes/speed rounds with progress
+  const tryExit = (action) => {
+    const hasQuizProgress = screen === 'quiz' && currentQuestion > 0;
+    const hasSpeedProgress = screen === 'speed-round' && speedRoundIdx > 0;
+    if (hasQuizProgress || hasSpeedProgress) {
+      exitActionRef.current = action;
+      setShowExitConfirm(true);
+    } else {
+      action();
+    }
+  };
+  const confirmExit = () => { setShowExitConfirm(false); if (exitActionRef.current) exitActionRef.current(); exitActionRef.current = null; };
+  const cancelExit = () => { setShowExitConfirm(false); exitActionRef.current = null; };
+
   const handleMC = (i) => { if (!showExplanation) setSelectedAnswer(i); };
   const submitMC = () => {
     if (selectedAnswer == null || showExplanation) return;
@@ -729,7 +772,7 @@ const App = () => {
   }
 
   if (screen === 'prayer-vis') {
-    return <DEANYPrayerVis onBack={goHome} onHome={goHome} />;
+    return <DEANYPrayerVis onBack={goLessons} onHome={goHome} />;
   }
 
   if (screen === 's2-l1') {
@@ -783,7 +826,11 @@ const App = () => {
   // HOME
   // ═══════════════════════════════════════════════════════════════
   if (screen === 'compass') {
-    return <DeanyCompass onBack={goHome} onHome={goHome} />;
+    return <DeanyCompass
+      onBack={() => { if (!hasEntered) { setScreen('home'); } else { goHome(); } }}
+      onHome={() => { if (!hasEntered) { setScreen('home'); } else { goHome(); } }}
+      onComplete={() => { if (!hasEntered) enterApp(); else goHome(); }}
+    />;
   }
 
   if (screen == 'home') {
@@ -792,8 +839,9 @@ const App = () => {
       return (
         <LandingPage
           onGetStarted={enterApp}
-          onCalibration={() => { enterApp(); setScreen('compass'); }}
+          onCalibration={() => setScreen('compass')}
           onPreviewLesson={() => { enterApp(); selectMainTopic('islamic-finance'); }}
+          onSelectPath={(id) => { enterApp(); selectMainTopic(id); }}
         />
       );
     }
@@ -843,15 +891,15 @@ const App = () => {
         <IslamicPattern /><div className="relative z-10 max-w-5xl mx-auto px-4 py-8">
           <NavHeader onBack={goHome} onHome={goHome} backLabel="Topics" />
           <div className={`${glass} rounded-2xl p-6 mb-6`}>
-            <div className="flex items-center gap-4"><div className={`w-14 h-14 rounded-xl flex items-center justify-center text-3xl shadow-md bg-gradient-to-br ${selectedMainTopic.gradient}`}>{selectedMainTopic.icon}</div><div><h1 className="text-2xl font-bold text-gray-900" style={{fontFamily:"Georgia,serif"}}>{selectedMainTopic.title}</h1><p className="text-gray-500 text-xs">{selectedMainTopic.subtitle} · {mods.length} modules</p></div></div>
+            <div className="flex items-center gap-4"><div className="w-14 h-14 rounded-xl flex items-center justify-center text-3xl shadow-sm" style={{background:'rgba(201,169,97,0.12)'}}>{selectedMainTopic.icon}</div><div><h1 className="text-2xl font-bold" style={{fontFamily:"Georgia,serif",color:'#1B4332'}}>{selectedMainTopic.title}</h1><p className="text-xs" style={{color:'#6B6356'}}>{selectedMainTopic.subtitle} · {mods.length} modules</p></div></div>
           </div>
           {isHist ? (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {mods.map((e, i) => (
                 <button key={e.id} onClick={() => selectModule(e)} className={`group ${glassHover} rounded-xl p-6 text-center`}>
-                  <div className="w-8 h-8 mx-auto rounded-full flex items-center justify-center text-white text-xs font-bold mb-2 shadow-sm" style={{background:'linear-gradient(135deg,#0ea5e9,#3b82f6)'}}>{i+1}</div>
-                  <div className="text-3xl mb-2">{e.icon}</div><h3 className="font-bold text-gray-900 text-xs mb-0.5">{e.title}</h3><p className="text-[10px] text-gray-500 mb-2">{e.subtitle}</p>
-                  <span className="inline-flex items-center gap-1 text-[10px] px-2 py-1 rounded-full font-semibold text-sky-700 bg-sky-50">Explore <ArrowRight className="w-2.5 h-2.5" /></span>
+                  <div className="w-8 h-8 mx-auto rounded-full flex items-center justify-center text-white text-xs font-bold mb-2 shadow-sm" style={{background:'#C9A961'}}>{i+1}</div>
+                  <div className="text-3xl mb-2">{e.icon}</div><h3 className="font-bold text-xs mb-0.5" style={{color:'#1B4332'}}>{e.title}</h3><p className="text-[10px] mb-2" style={{color:'#6B6356'}}>{e.subtitle}</p>
+                  <span className="inline-flex items-center gap-1 text-[10px] px-2 py-1 rounded-full font-semibold" style={{color:'#8A6F2F',background:'rgba(201,169,97,0.12)'}}>Explore <ArrowRight className="w-2.5 h-2.5" /></span>
                 </button>
               ))}
             </div>
@@ -859,12 +907,12 @@ const App = () => {
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {mods.map(m => (
                 <button key={m.id} onClick={() => selectModule(m)} className={`group ${glassHover} rounded-xl p-5 text-left`}>
-                  <div className="w-12 h-12 mb-2 rounded-lg flex items-center justify-center text-2xl shadow-sm group-hover:scale-110 transition-transform" style={{background:m.color+'12'}}>{m.icon}</div>
-                  <h3 className="font-bold text-gray-900 text-sm mb-0.5">{m.title}</h3><p className="text-[11px] text-gray-500 mb-2">{m.subtitle}</p>
+                  <div className="w-12 h-12 mb-2 rounded-lg flex items-center justify-center text-2xl shadow-sm group-hover:scale-110 transition-transform" style={{background:'rgba(201,169,97,0.1)'}}>{m.icon}</div>
+                  <h3 className="font-bold text-sm mb-0.5" style={{color:'#1B4332'}}>{m.title}</h3><p className="text-[11px] mb-2" style={{color:'#6B6356'}}>{m.subtitle}</p>
                   {m.lessons?.length ? (
-                    <span className="inline-flex items-center gap-1 text-[10px] px-2.5 py-1 rounded-full font-semibold" style={{background:m.color+'12',color:m.color}}>{m.lessons.length} {m.lessons.length === 1 ? 'lesson' : 'lessons'} <ArrowRight className="w-2.5 h-2.5" /></span>
+                    <span className="inline-flex items-center gap-1 text-[10px] px-2.5 py-1 rounded-full font-semibold" style={{background:'rgba(201,169,97,0.12)',color:'#8A6F2F'}}>{m.lessons.length} {m.lessons.length === 1 ? 'lesson' : 'lessons'} <ArrowRight className="w-2.5 h-2.5" /></span>
                   ) : (
-                    <span className="inline-flex items-center gap-1 text-[10px] px-2.5 py-1 rounded-full font-semibold bg-deany-border text-deany-muted">Coming Soon</span>
+                    <span className="inline-flex items-center gap-1 text-[10px] px-2.5 py-1 rounded-full font-semibold" style={{background:'rgba(107,99,86,0.08)',color:'#6B6356'}}>Coming Soon</span>
                   )}
                 </button>
               ))}
@@ -895,12 +943,12 @@ const App = () => {
     return (
       <div className="min-h-screen relative" style={pageBg}><IslamicPattern /><div className="relative z-10 max-w-3xl mx-auto px-4 py-8">
         <NavHeader onBack={() => setScreen('modules')} onHome={goHome} backLabel="Epochs" />
-        <div className={`${glass} rounded-2xl p-6 mb-6 text-center`}><div className="text-5xl mb-2">{selectedEpoch.icon}</div><h1 className="text-xl font-bold text-gray-900" style={{fontFamily:"Georgia,serif"}}>{selectedEpoch.title}</h1><p className="text-gray-500 text-xs">{selectedEpoch.subtitle}</p></div>
+        <div className={`${glass} rounded-2xl p-6 mb-6 text-center`}><div className="text-5xl mb-2">{selectedEpoch.icon}</div><h1 className="text-xl font-bold" style={{fontFamily:"Georgia,serif",color:'#1B4332'}}>{selectedEpoch.title}</h1><p className="text-xs" style={{color:'#6B6356'}}>{selectedEpoch.subtitle}</p></div>
         <div className="space-y-2.5">{selectedEpoch.levels.map((l, i) => (
           <button key={l.id} onClick={() => selectLvl(l)} className={`w-full ${glassHover} rounded-xl p-4 text-left group`}>
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3"><div className={`w-11 h-11 rounded-lg flex items-center justify-center text-xl text-white shadow-md ${i==0?'bg-gradient-to-br from-green-500 to-emerald-600':i==1?'bg-gradient-to-br from-blue-500 to-sky-600':'bg-gradient-to-br from-purple-500 to-indigo-600'}`}>{['🌱','📚','🎓'][i]}</div><div><h3 className="font-bold text-gray-900 text-sm">{l.name}</h3>{l.lessons && <p className="text-[10px] text-gray-500">{l.lessons.length} lessons</p>}</div></div>
-              <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-emerald-600 group-hover:translate-x-0.5 transition-all" />
+              <div className="flex items-center gap-3"><div className="w-11 h-11 rounded-lg flex items-center justify-center text-xl shadow-sm" style={{background:i===0?'rgba(107,142,127,0.15)':i===1?'rgba(201,169,97,0.15)':'rgba(184,105,77,0.15)'}}>{['🌱','📚','🎓'][i]}</div><div><h3 className="font-bold text-sm" style={{color:'#1B4332'}}>{l.name}</h3>{l.lessons && <p className="text-[10px]" style={{color:'#6B6356'}}>{l.lessons.length} lessons</p>}</div></div>
+              <ArrowRight className="w-4 h-4 transition-all" style={{color:'#C9A961'}} />
             </div>
           </button>
         ))}</div>
@@ -913,12 +961,12 @@ const App = () => {
     return (
       <div className="min-h-screen relative" style={pageBg}><IslamicPattern /><div className="relative z-10 max-w-4xl mx-auto px-4 py-8">
         <NavHeader onBack={() => setScreen('epoch-levels')} onHome={goHome} backLabel="Levels" />
-        <div className={`${glass} rounded-2xl p-4 mb-6`}><div className="flex items-center gap-3"><div className="w-10 h-10 rounded-lg bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center text-xl shadow-sm">{selectedEpoch.icon}</div><div><h1 className="text-lg font-bold text-gray-900" style={{fontFamily:"Georgia,serif"}}>{selectedEpoch.title}</h1><p className="text-gray-500 text-[10px]">{selectedLevel.name}</p></div></div></div>
+        <div className={`${glass} rounded-2xl p-4 mb-6`}><div className="flex items-center gap-3"><div className="w-10 h-10 rounded-lg flex items-center justify-center text-xl shadow-sm" style={{background:'rgba(201,169,97,0.12)'}}>{selectedEpoch.icon}</div><div><h1 className="text-lg font-bold" style={{fontFamily:"Georgia,serif",color:'#1B4332'}}>{selectedEpoch.title}</h1><p className="text-[10px]" style={{color:'#6B6356'}}>{selectedLevel.name}</p></div></div></div>
         <div className="grid sm:grid-cols-2 gap-3">{selectedLevel.lessons.map(l => (
           <button key={l.id} onClick={() => selectHistLesson(l)} className={`group ${glassHover} rounded-xl p-5 text-center`}>
-            <div className="text-3xl mb-2">{l.icon}</div><h3 className="font-bold text-gray-900 text-xs mb-0.5">{l.title}</h3><p className="text-[10px] text-gray-500 mb-2">{l.subtitle}</p>
-            <div className="flex items-center justify-center gap-2 text-[10px] text-gray-400 mb-2"><Clock className="w-2.5 h-2.5" />{l.estimatedTime}<BookOpen className="w-2.5 h-2.5 ml-1" />{l.questions.length}Q</div>
-            <span className="inline-flex items-center gap-1 text-[10px] px-2.5 py-1 rounded-full font-semibold text-white shadow-sm" style={{background:'linear-gradient(135deg,#0ea5e9,#3b82f6)'}}>Start <ArrowRight className="w-2.5 h-2.5" /></span>
+            <div className="text-3xl mb-2">{l.icon}</div><h3 className="font-bold text-xs mb-0.5" style={{color:'#1B4332'}}>{l.title}</h3><p className="text-[10px] mb-2" style={{color:'#6B6356'}}>{l.subtitle}</p>
+            <div className="flex items-center justify-center gap-2 text-[10px] mb-2" style={{color:'#6B6356'}}><Clock className="w-2.5 h-2.5" />{l.estimatedTime}<BookOpen className="w-2.5 h-2.5 ml-1" />{l.questions.length}Q</div>
+            <span className="inline-flex items-center gap-1 text-[10px] px-2.5 py-1 rounded-full font-semibold text-white shadow-sm" style={{background:'#C9A961'}}>Start <ArrowRight className="w-2.5 h-2.5" /></span>
           </button>
         ))}</div>
       </div></div>
@@ -953,7 +1001,7 @@ const App = () => {
                   <div><div className="font-medium text-gray-800 text-[11px] mb-0.5">{r.question}</div><div className="text-[10px] text-gray-500">{r.reasoning}</div></div>
                 </div>
               ))}</div>
-              <button onClick={goModules} className="w-full py-3 rounded-xl font-bold text-sm text-white" style={{background:'linear-gradient(135deg,#059669,#0d9488)'}}>Back to Modules</button>
+              <button onClick={goLessons} className="w-full py-3 rounded-xl font-bold text-sm text-white" style={{background:'linear-gradient(135deg,#059669,#0d9488)'}}>Back to Lessons</button>
             </div>
           </div>
         </div>
@@ -965,8 +1013,9 @@ const App = () => {
         <div className="min-h-screen relative flex items-center justify-center px-4" style={pageBg}>
           <IslamicPattern /><div className="relative z-10 max-w-md w-full">
             <div className="flex justify-start mb-4">
-              <button onClick={goModules} className="flex items-center gap-1.5 bg-white/50 text-gray-500 px-3 py-1.5 rounded-lg text-xs font-medium border border-gray-200/50"><Home className="w-3.5 h-3.5" />Exit</button>
+              <button onClick={() => tryExit(goLessons)} className="flex items-center gap-1.5 text-gray-600 hover:text-emerald-700 transition-colors text-sm font-medium"><ChevronLeft className="w-4 h-4" />Lessons</button>
             </div>
+            {showExitConfirm && <ExitConfirmModal onStay={cancelExit} onLeave={confirmExit} questionsAnswered={speedRoundIdx} totalQuestions={total} />}
             <div className={`${glass} rounded-2xl overflow-hidden`} style={{animation:'fadeSlideIn 0.2s ease-out'}}>
               <div className="h-1.5" style={{background: speedFeedback.correct ? 'linear-gradient(90deg,#22c55e,#10b981)' : 'linear-gradient(90deg,#ef4444,#f97316)'}} />
               <div className="p-6 text-center">
@@ -995,9 +1044,10 @@ const App = () => {
       <div className="min-h-screen relative flex items-center justify-center px-4" style={pageBg}>
         <IslamicPattern /><div className="relative z-10 max-w-md w-full">
           <div className="flex justify-between items-center mb-4">
-            <button onClick={goModules} className="flex items-center gap-1.5 bg-white/50 text-gray-500 px-3 py-1.5 rounded-lg text-xs font-medium border border-gray-200/50"><Home className="w-3.5 h-3.5" />Exit</button>
+            <button onClick={() => tryExit(goLessons)} className="flex items-center gap-1.5 text-gray-600 hover:text-emerald-700 transition-colors text-sm font-medium"><ChevronLeft className="w-4 h-4" />Lessons</button>
             <div className="px-3 py-1 rounded-full text-xs font-bold" style={{background:'linear-gradient(135deg,#ede9fe,#ddd6fe)',border:'1px solid #a78bfa',color:'#6d28d9'}}>⚡ {speedRoundIdx + 1}/{total}</div>
           </div>
+          {showExitConfirm && <ExitConfirmModal onStay={cancelExit} onLeave={confirmExit} questionsAnswered={speedRoundIdx} totalQuestions={total} />}
           <div className={`${glass} rounded-2xl overflow-hidden`} style={{animation:'fadeSlideIn 0.25s ease-out'}}>
             <div className="h-1.5" style={{background:'linear-gradient(90deg,#7c3aed,#6366f1)'}} />
             <div className="p-6">
@@ -1042,8 +1092,9 @@ const App = () => {
       return (
         <div className="min-h-screen relative flex items-center justify-center px-4 py-8" style={pageBg}>
           <IslamicPattern /><GlossaryPopup /><div className="relative z-10 max-w-xl w-full">
-            <div className="flex justify-start mb-4">
-              <button onClick={goHome} className="flex items-center gap-1.5 bg-white/50 backdrop-blur-sm text-gray-500 px-3 py-1.5 rounded-lg text-xs font-medium border border-gray-200/50"><Home className="w-3.5 h-3.5" />Exit</button>
+            <div className="flex justify-between items-center mb-4">
+              <button onClick={goLessons} className="flex items-center gap-1.5 text-gray-600 hover:text-emerald-700 transition-colors text-sm font-medium"><ChevronLeft className="w-4 h-4" />Lessons</button>
+              <button onClick={goHome} className="flex items-center gap-1.5 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all" style={{background:'linear-gradient(135deg,#059669,#0d9488)'}}><Home className="w-4 h-4" />Home</button>
             </div>
             <div className={`${glass} rounded-2xl overflow-hidden`} style={{animation:'fadeSlideIn 0.3s ease-out'}}>
               <div className="h-1" style={{background:'linear-gradient(90deg,#3b82f6,#6366f1)'}} />
@@ -1075,12 +1126,13 @@ const App = () => {
         <GlossaryPopup />
         <IslamicPattern /><div className="relative z-10 max-w-xl mx-auto px-4 py-5">
           <div className="flex justify-between items-center mb-3">
-            <button onClick={goHome} className="flex items-center gap-1.5 bg-white/50 backdrop-blur-sm text-gray-500 px-3 py-1.5 rounded-lg text-xs font-medium border border-gray-200/50"><Home className="w-3.5 h-3.5" />Exit</button>
+            <button onClick={() => tryExit(goLessons)} className="flex items-center gap-1.5 text-gray-600 hover:text-emerald-700 transition-colors text-sm font-medium"><ChevronLeft className="w-4 h-4" />Lessons</button>
             <div className="flex items-center gap-1.5">
               <div className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs" style={{background:'linear-gradient(135deg,#fef9c3,#fef08a)',border:'1px solid #facc15'}}><Star className="w-3 h-3 text-amber-600 fill-amber-500" /><span className="font-bold text-amber-700">{quizScore}</span></div>
               {streak > 0 && <div className={`px-2.5 py-1 rounded-full text-xs font-bold ${showStreakAnim?'animate-pulse':''}`} style={{background:'linear-gradient(135deg,#fed7aa,#fecaca)',border:'1px solid #f97316',color:'#c2410c'}}>{streak}🔥</div>}
             </div>
           </div>
+          {showExitConfirm && <ExitConfirmModal onStay={cancelExit} onLeave={confirmExit} questionsAnswered={currentQuestion} totalQuestions={total} />}
           <div className={`${glass} rounded-xl p-3.5 mb-4`}>
             <div className="flex items-center gap-2.5 mb-2"><Mascot size="sm" className="!w-8 !h-8 !text-lg" /><div className="flex-grow min-w-0"><h2 className="font-bold text-gray-900 text-xs truncate">{selectedLesson?.title||selectedModule?.title}</h2><div className="flex justify-between text-[10px] text-gray-400"><span>Q{currentQuestion+1}/{total}</span><div className="flex items-center gap-0.5">{[...Array(Math.min(total,15))].map((_,i) => <div key={i} className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${i < currentQuestion ? 'bg-emerald-400' : i === currentQuestion ? 'bg-emerald-600 w-2.5' : 'bg-gray-200'}`} />)}</div><span>{Math.round(pct)}%</span></div></div></div>
             <div className="w-full bg-gray-100 rounded-full h-1.5"><div className="h-1.5 rounded-full transition-all duration-500" style={{width:`${pct}%`,background:'linear-gradient(90deg,#10b981,#14b8a6)'}}/></div>
@@ -1398,7 +1450,10 @@ const App = () => {
     return (
       <div className="min-h-screen relative" style={pageBg}>
         <IslamicPattern /><div className="relative z-10 max-w-3xl mx-auto px-4 py-8">
-          <div className="flex justify-end mb-4"><button onClick={goHome} className="flex items-center gap-1.5 bg-white/50 text-gray-500 px-4 py-2 rounded-lg text-xs font-medium border border-gray-200/50"><Home className="w-3.5 h-3.5" />Home</button></div>
+          <div className="flex justify-between items-center mb-4">
+            <button onClick={goLessons} className="flex items-center gap-1.5 text-gray-600 hover:text-emerald-700 transition-colors text-sm font-medium"><ChevronLeft className="w-4 h-4" />Lessons</button>
+            <button onClick={goHome} className="flex items-center gap-1.5 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all" style={{background:'linear-gradient(135deg,#059669,#0d9488)'}}><Home className="w-4 h-4" />Home</button>
+          </div>
           <div className={`${glass} rounded-2xl p-8 mb-6 text-center`}>
             <div className="flex justify-center items-center gap-3 mb-4"><Mascot size="md" /><Trophy className="w-14 h-14 text-amber-500" /></div>
             <h1 className="text-2xl font-bold text-gray-900 mb-1" style={{fontFamily:"Georgia,serif"}}>Quiz Complete!</h1>

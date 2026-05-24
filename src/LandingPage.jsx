@@ -76,7 +76,7 @@ const FAQItem = ({ q, a, defaultOpen }) => {
 // ═════════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ═════════════════════════════════════════════════════════════════
-const LandingPage = ({ onGetStarted, onPreviewLesson, onCalibration }) => {
+const LandingPage = ({ onGetStarted, onPreviewLesson, onCalibration, onSelectPath }) => {
   const [mobileNav, setMobileNav] = useState(false);
 
   const scrollTo = (id) => { document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }); setMobileNav(false); };
@@ -202,7 +202,7 @@ const LandingPage = ({ onGetStarted, onPreviewLesson, onCalibration }) => {
         animation: 'slideUp 0.6s ease-out 0.2s both' }}>
         <SectionHead eyebrow="FOUR PATHS" title="Pick one, or weave them together" />
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 10 }}>
-          {paths.map(p => <PathCard key={p.title} {...p} onClick={onGetStarted} />)}
+          {paths.map(p => <PathCard key={p.title} {...p} onClick={() => onSelectPath ? onSelectPath(p.topicId) : onGetStarted()} />)}
         </div>
       </section>
 
