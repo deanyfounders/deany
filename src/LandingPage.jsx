@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import DeanyButton from './components/DeanyButton.jsx';
 import { PillarsIcon, FinanceIcon, QuranIcon, HistoryIcon } from './components/PathIcons.jsx';
+import { playClick } from './utils/clickSound.js';
 
 // ── Palette constants ──────────────────────────────────────────
 const C = {
@@ -51,7 +52,7 @@ const AvatarStack = ({ size = 20 }) => (
 
 // ── Path card ──────────────────────────────────────────────────
 const PathCard = ({ stripe, title, desc, icon: Icon, iconColor, onClick }) => (
-  <button onClick={onClick} style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: 14, overflow: 'hidden',
+  <button onClick={() => { playClick(); onClick?.(); }} style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: 14, overflow: 'hidden',
     textAlign: 'left', cursor: 'pointer', width: '100%', boxShadow: S.card,
     transition: 'box-shadow .28s cubic-bezier(.2,.7,.3,1), transform .28s cubic-bezier(.2,.7,.3,1)' }}
     onMouseEnter={e => { e.currentTarget.style.boxShadow = S.cardRaised; e.currentTarget.style.transform = 'translateY(-4px)'; }}
@@ -82,7 +83,7 @@ const FAQItem = ({ q, a, defaultOpen }) => {
   return (
     <div style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: 12, padding: '14px 16px', boxShadow: S.card,
       transition: 'box-shadow .2s ease' }}>
-      <button onClick={() => setOpen(!open)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+      <button onClick={() => { playClick(); setOpen(!open); }} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         width: '100%', background: 'none', border: 'none', cursor: 'pointer', padding: 0, minHeight: 28 }}>
         <span style={{ fontSize: 13, color: C.forest, fontWeight: 500, textAlign: 'left' }}>{q}</span>
         <span style={{ transform: open ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform .25s ease', flexShrink: 0, marginLeft: 8 }}>

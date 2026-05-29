@@ -1,4 +1,5 @@
 import React from 'react';
+import { playClick } from '../utils/clickSound.js';
 
 /**
  * Pressable button with tactile offset-edge press effect.
@@ -45,6 +46,7 @@ const DeanyButton = ({
 
   const handleMouseDown = (e) => {
     if (disabled || isGhost) return;
+    playClick();
     e.currentTarget.style.transform = 'translateY(4px)';
     e.currentTarget.style.boxShadow = '0 0 0 transparent';
   };

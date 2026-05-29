@@ -4,6 +4,7 @@ import { PillarsIcon, FinanceIcon, QuranIcon, HistoryIcon } from './components/P
 import { getTodayContent } from './data/dailyContent.js';
 import TafseerPanel from './components/TafseerPanel.jsx';
 import DeanyButton from './components/DeanyButton.jsx';
+import { playClick } from './utils/clickSound.js';
 
 // ── Palette ────────────────────────────────────────────────────
 const C = {
@@ -226,14 +227,14 @@ const Dashboard = ({
                 <Play size={14} /> Recite
               </button>
               {dailyItem.tafseer && (
-                <button onClick={() => setShowTafseer(!showTafseer)}
+                <button onClick={() => { playClick(); setShowTafseer(!showTafseer); }}
                   style={{ background: showTafseer ? 'rgba(201,169,97,0.2)' : 'rgba(201,169,97,0.1)', border: 'none', borderRadius: 10,
                     padding: '8px 14px', fontSize: 12, color: C.goldDk, display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer',
                     transition: 'background .2s ease' }}>
                   <BookOpen size={14} /> Tafseer
                 </button>
               )}
-              <button onClick={() => setReflected(!reflected)}
+              <button onClick={() => { playClick(); setReflected(!reflected); }}
                 style={{ background: reflected ? 'rgba(201,169,97,0.25)' : 'rgba(201,169,97,0.1)', border: 'none', borderRadius: 10,
                   padding: '8px 14px', fontSize: 12, color: C.goldDk, display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer',
                   transition: 'background .2s ease' }}>
@@ -269,7 +270,7 @@ const Dashboard = ({
           {/* Quick session */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, justifyContent: 'center', height: '100%' }}>
             {continueData ? (
-              <button onClick={() => onSelectLesson(continueData.lesson, continueData.index, continueData.mod)}
+              <button onClick={() => { playClick(); onSelectLesson(continueData.lesson, continueData.index, continueData.mod); }}
                 style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: 12, padding: '16px 14px', textAlign: 'left',
                   display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', minHeight: 48, boxShadow: S.card,
                   transition: 'box-shadow .28s cubic-bezier(.2,.7,.3,1), transform .28s cubic-bezier(.2,.7,.3,1)' }}
@@ -305,7 +306,7 @@ const Dashboard = ({
                 'quran-arabic': 'rgba(27,67,50,0.1)', 'islamic-history': 'rgba(184,105,77,0.12)' }[t.id] || 'rgba(107,142,127,0.12)';
               const diffColor = { '5-pillars': C.sageDk, 'islamic-finance': C.goldDk, 'quran-arabic': C.forest, 'islamic-history': '#8A4A36' }[t.id] || C.sageDk;
               return (
-                <button key={t.id} onClick={() => onSelectTopic(t.id)}
+                <button key={t.id} onClick={() => { playClick(); onSelectTopic(t.id); }}
                   style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: 14, overflow: 'hidden', textAlign: 'left',
                     cursor: 'pointer', boxShadow: S.card,
                     transition: 'box-shadow .28s cubic-bezier(.2,.7,.3,1), transform .28s cubic-bezier(.2,.7,.3,1)' }}
