@@ -30,6 +30,10 @@
               sans: ['"Source Sans 3"', 'system-ui', '-apple-system', 'sans-serif'],
               arabic: ['"Noto Naskh Arabic"', '"Traditional Arabic"', 'serif'],
             },
+            boxShadow: {
+              card:        '0 1px 2px rgba(26,35,50,.05), 0 8px 24px rgba(26,35,50,.08)',
+              'card-raised': '0 4px 8px rgba(26,35,50,.08), 0 18px 44px rgba(26,35,50,.14)',
+            },
             animation: {
               'pulse-gold': 'pulseGold 2s ease-in-out infinite',
             },
@@ -43,9 +47,23 @@
         },
       }
     </script>
+    <style>
+      body { margin: 0; background: #F8F4ED; }
+      #deany-shell { display: flex; align-items: center; justify-content: center; min-height: 100vh; flex-direction: column; gap: 12px; }
+      #deany-shell .logo { width: 36px; height: 36px; border-radius: 50%; background: #C9A961; display: flex; align-items: center; justify-content: center; color: #fff; font-family: Georgia, serif; font-size: 18px; }
+      #deany-shell .name { font-family: Georgia, serif; font-size: 18px; color: #1B4332; font-weight: 500; }
+      #deany-shell .dot { width: 6px; height: 6px; border-radius: 50%; background: #C9A961; animation: shellPulse 1.2s ease-in-out infinite; }
+      @keyframes shellPulse { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div id="deany-shell">
+        <div class="logo">د</div>
+        <div class="name">Deany</div>
+        <div class="dot"></div>
+      </div>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

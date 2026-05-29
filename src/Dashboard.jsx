@@ -1,7 +1,9 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Flame, Star, Clock, ArrowRight, Trophy, BookOpen, Play } from 'lucide-react';
+import { PillarsIcon, FinanceIcon, QuranIcon, HistoryIcon } from './components/PathIcons.jsx';
 import { getTodayContent } from './data/dailyContent.js';
 import TafseerPanel from './components/TafseerPanel.jsx';
+import DeanyButton from './components/DeanyButton.jsx';
 
 // ── Palette ────────────────────────────────────────────────────
 const C = {
@@ -12,6 +14,10 @@ const C = {
   body: '#2A2520', muted: '#6B6356',
   terra: '#B8694D', flame: '#D85A30',
   border: 'rgba(201,169,97,0.25)',
+};
+const S = {
+  card: '0 1px 2px rgba(26,35,50,.05), 0 8px 24px rgba(26,35,50,.08)',
+  cardRaised: '0 4px 8px rgba(26,35,50,.08), 0 18px 44px rgba(26,35,50,.14)',
 };
 const serif = 'Georgia, serif';
 const arabic = "'Amiri', 'Noto Naskh Arabic', serif";
@@ -85,12 +91,18 @@ const Dashboard = ({
   };
 
   const pathColors = { '5-pillars': C.sage, 'islamic-finance': C.gold, 'quran-arabic': C.forest, 'islamic-history': C.terra };
+  const pathIcons = { '5-pillars': PillarsIcon, 'islamic-finance': FinanceIcon, 'quran-arabic': QuranIcon, 'islamic-history': HistoryIcon };
   const pathDifficulty = { '5-pillars': 'Beginner', 'islamic-finance': 'Intermediate', 'quran-arabic': 'Beginner', 'islamic-history': 'Advanced' };
 
-  // XP ring SVG
-  const ringR = 46, ringCirc = 2 * Math.PI * ringR;
+  // XP ring SVG (mount-animated)
+  const ringR = 46, ringStroke = 10, ringCirc = 2 * Math.PI * ringR;
   const ringFill = Math.min(xpToday / xpGoal, 1);
-  const ringOffset = ringCirc * (1 - ringFill);
+  const ringTargetOffset = ringCirc * (1 - ringFill);
+  const [ringAnimOffset, setRingAnimOffset] = useState(ringCirc); // start empty
+  useEffect(() => {
+    const t = setTimeout(() => setRingAnimOffset(ringTargetOffset), 100);
+    return () => clearTimeout(t);
+  }, [ringTargetOffset]);
 
   return (
     <div style={{ background: C.cream, color: C.body, minHeight: '100vh', paddingBottom: 28 }}>
@@ -108,7 +120,10 @@ const Dashboard = ({
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '5px 10px', background: 'rgba(216,90,48,0.08)', borderRadius: 20 }}>
-            <Flame size={14} color={C.flame} /><span style={{ fontSize: 13, fontWeight: 500, color: C.flame }}>{dailyStreak}</span>
+            <span style={{ display: 'inline-flex', animation: 'flameFlicker 2s ease-in-out infinite' }}>
+              <Flame size={14} color={C.flame} />
+            </span>
+            <span style={{ fontSize: 14, fontWeight: 600, color: C.flame }}>{dailyStreak}</span>
           </div>
           <div className="hidden sm:flex" style={{ alignItems: 'center', gap: 5, padding: '5px 10px', background: 'rgba(201,169,97,0.12)', borderRadius: 20 }}>
             <Star size={14} color={C.gold} /><span style={{ fontSize: 13, fontWeight: 500, color: C.goldDk }}>{totalPoints || xp}</span>
@@ -139,19 +154,21 @@ const Dashboard = ({
         {/* ── B3. CONTINUE LEARNING ───────────────────────────── */}
         <section style={{ marginBottom: 18, animation: 'slideUp 0.6s ease-out 0.1s both' }}>
           {continueData ? (
-            <div style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: 14, padding: '20px 22px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, flexWrap: 'wrap' }}>
+            <div style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: 14, overflow: 'hidden', boxShadow: S.cardRaised }}>
+              <div style={{ height: 3, background: `linear-gradient(90deg, ${C.gold}, ${C.sage})` }} />
+              <div style={{ padding: '18px 22px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, flexWrap: 'wrap' }}>
                 <div style={{ flex: 1, minWidth: 200 }}>
                   <Eyebrow>CONTINUE LEARNING · {continueData.topic.title.toUpperCase()}</Eyebrow>
                   <div style={{ fontFamily: serif, fontSize: 20, fontWeight: 500, color: C.forest, lineHeight: 1.3, marginTop: 6, marginBottom: 4 }}>
                     Lesson {continueData.index + 1}: {continueData.lesson.title}
                   </div>
                   {continueData.lesson.description && (
-                    <div style={{ fontSize: 13, color: C.muted, lineHeight: 1.5, marginBottom: 14 }}>{continueData.lesson.description}</div>
+                    <div style={{ fontSize: 13, color: C.body, lineHeight: 1.5, marginBottom: 14 }}>{continueData.lesson.description}</div>
                   )}
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <div style={{ flex: 1, height: 5, background: 'rgba(201,169,97,0.15)', borderRadius: 3, overflow: 'hidden' }}>
-                      <div style={{ width: `${Math.round((continueData.index / continueData.total) * 100)}%`, height: '100%', background: C.gold }} />
+                    <div style={{ flex: 1, height: 6, background: 'rgba(201,169,97,0.15)', borderRadius: 3, overflow: 'hidden' }}>
+                      <div style={{ width: `${Math.round((continueData.index / continueData.total) * 100)}%`, height: '100%', background: C.gold, borderRadius: 3,
+                        transition: 'width 1s ease-out', animation: 'progressGrow 1s ease-out both' }} />
                     </div>
                     <div style={{ fontSize: 11, color: C.muted, whiteSpace: 'nowrap' }}>{continueData.index} of {continueData.total} lessons</div>
                   </div>
@@ -160,29 +177,28 @@ const Dashboard = ({
                   {continueData.lesson.duration && (
                     <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: C.muted }}><Clock size={13} />{continueData.lesson.duration}</div>
                   )}
-                  <button onClick={() => onSelectLesson(continueData.lesson, continueData.index, continueData.mod)}
-                    style={{ background: C.gold, color: '#fff', border: 'none', borderRadius: 10, padding: '10px 18px', fontSize: 13,
-                      fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, minHeight: 48 }}>
+                  <DeanyButton variant="primary" onClick={() => onSelectLesson(continueData.lesson, continueData.index, continueData.mod)}
+                    style={{ padding: '10px 18px' }}>
                     Resume <ArrowRight size={14} />
-                  </button>
+                  </DeanyButton>
                 </div>
               </div>
             </div>
           ) : (
-            <div style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: 14, padding: '28px 22px', textAlign: 'center' }}>
+            <div style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: 14, padding: '28px 22px', textAlign: 'center', boxShadow: S.cardRaised }}>
               <Eyebrow style={{ marginBottom: 10 }}>BEGIN YOUR JOURNEY</Eyebrow>
               <div style={{ fontFamily: serif, fontSize: 20, fontWeight: 500, color: C.forest, marginBottom: 6 }}>Your path starts here</div>
               <p style={{ fontSize: 13, color: C.muted, marginBottom: 18 }}>Take the Calibration Quiz to find your starting point.</p>
-              <button onClick={onCalibration}
-                style={{ background: C.gold, color: '#fff', border: 'none', borderRadius: 10, padding: '10px 22px', fontSize: 13,
-                  fontWeight: 500, cursor: 'pointer', minHeight: 48 }}>Take the Calibration Quiz</button>
+              <DeanyButton variant="primary" onClick={onCalibration} style={{ padding: '10px 22px' }}>
+                Take the Calibration Quiz
+              </DeanyButton>
             </div>
           )}
         </section>
 
         {/* ── B4. DAILY VERSE ─────────────────────────────────── */}
         <section style={{ marginBottom: 18, animation: 'slideUp 0.6s ease-out 0.15s both' }}>
-          <div style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: 14, padding: 22, textAlign: 'center' }}>
+          <div style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: 14, padding: 22, textAlign: 'center', boxShadow: S.card }}>
             <Eyebrow style={{ marginBottom: 14 }}>
               {dailyItem.type === 'ayah' ? "TODAY'S VERSE" : "HADITH OF THE DAY"}
             </Eyebrow>
@@ -205,19 +221,22 @@ const Dashboard = ({
             <div style={{ display: 'flex', justifyContent: 'center', gap: 10, paddingTop: 14, borderTop: `1px solid rgba(201,169,97,0.15)`, marginTop: 14 }}>
               <button disabled
                 style={{ background: 'rgba(201,169,97,0.06)', border: 'none', borderRadius: 10, padding: '8px 14px', fontSize: 12,
-                  color: C.muted, display: 'flex', alignItems: 'center', gap: 6, cursor: 'not-allowed', opacity: 0.5 }}>
-                <Play size={14} /> Recite <span style={{ fontSize: 9, opacity: 0.7 }}>(soon)</span>
+                  color: C.muted, display: 'flex', alignItems: 'center', gap: 6, cursor: 'not-allowed', opacity: 0.5,
+                  transition: 'background .2s ease, color .2s ease' }}>
+                <Play size={14} /> Recite
               </button>
               {dailyItem.tafseer && (
                 <button onClick={() => setShowTafseer(!showTafseer)}
                   style={{ background: showTafseer ? 'rgba(201,169,97,0.2)' : 'rgba(201,169,97,0.1)', border: 'none', borderRadius: 10,
-                    padding: '8px 14px', fontSize: 12, color: C.goldDk, display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}>
+                    padding: '8px 14px', fontSize: 12, color: C.goldDk, display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer',
+                    transition: 'background .2s ease' }}>
                   <BookOpen size={14} /> Tafseer
                 </button>
               )}
               <button onClick={() => setReflected(!reflected)}
                 style={{ background: reflected ? 'rgba(201,169,97,0.25)' : 'rgba(201,169,97,0.1)', border: 'none', borderRadius: 10,
-                  padding: '8px 14px', fontSize: 12, color: C.goldDk, display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}>
+                  padding: '8px 14px', fontSize: 12, color: C.goldDk, display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer',
+                  transition: 'background .2s ease' }}>
                 <Star size={14} /> {reflected ? 'Saved' : 'Reflect'}
               </button>
             </div>
@@ -228,25 +247,34 @@ const Dashboard = ({
         <section style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 18, animation: 'slideUp 0.6s ease-out 0.2s both' }}>
           {/* XP Ring */}
           <div style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: 14, padding: 18, display: 'flex',
-            flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
-            <svg width="110" height="110" viewBox="0 0 110 110" style={{ marginBottom: 10 }}>
-              <circle cx="55" cy="55" r={ringR} fill="none" stroke="rgba(201,169,97,0.15)" strokeWidth="8" />
-              <circle cx="55" cy="55" r={ringR} fill="none" stroke={C.gold} strokeWidth="8"
-                strokeDasharray={ringCirc} strokeDashoffset={ringOffset} strokeLinecap="round"
-                transform="rotate(-90 55 55)" style={{ transition: 'stroke-dashoffset 1s ease-out' }} />
-              <text x="55" y="52" textAnchor="middle" fontFamily={serif} fontSize="22" fontWeight="500" fill={C.forest}>{xpToday}</text>
-              <text x="55" y="68" textAnchor="middle" fontSize="10" fill={C.muted}>of {xpGoal} XP</text>
+            flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', boxShadow: S.card }}>
+            <svg width="120" height="120" viewBox="0 0 120 120" style={{ marginBottom: 10 }}>
+              <circle cx="60" cy="60" r={ringR} fill="none" stroke="rgba(201,169,97,0.12)" strokeWidth={ringStroke} />
+              <circle cx="60" cy="60" r={ringR} fill="none" stroke={C.gold} strokeWidth={ringStroke}
+                strokeDasharray={ringCirc} strokeDashoffset={ringAnimOffset} strokeLinecap="round"
+                transform="rotate(-90 60 60)" style={{ transition: 'stroke-dashoffset 1s ease-out' }} />
+              <text x="60" y="57" textAnchor="middle" fontFamily={serif} fontSize="24" fontWeight="500" fill={C.forest}>{xpToday}</text>
+              <text x="60" y="73" textAnchor="middle" fontSize="10" fill={C.muted}>of {xpGoal} XP</text>
             </svg>
-            <div style={{ fontSize: 12, color: C.body, display: 'flex', alignItems: 'center', gap: 5 }}>
-              <Flame size={13} color={C.flame} /> {xpNeeded} XP to keep your {dailyStreak}-day streak
-            </div>
+            {xpToday === 0 ? (
+              <div style={{ fontSize: 12, color: C.muted, textAlign: 'center', lineHeight: 1.4 }}>
+                Your first lesson today fills this ring
+              </div>
+            ) : (
+              <div style={{ fontSize: 12, color: C.body, display: 'flex', alignItems: 'center', gap: 5 }}>
+                <Flame size={13} color={C.flame} /> {xpNeeded} XP to keep your {dailyStreak}-day streak
+              </div>
+            )}
           </div>
           {/* Quick session */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, justifyContent: 'center', height: '100%' }}>
             {continueData ? (
               <button onClick={() => onSelectLesson(continueData.lesson, continueData.index, continueData.mod)}
                 style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: 12, padding: '16px 14px', textAlign: 'left',
-                  display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', minHeight: 48 }}>
+                  display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', minHeight: 48, boxShadow: S.card,
+                  transition: 'box-shadow .28s cubic-bezier(.2,.7,.3,1), transform .28s cubic-bezier(.2,.7,.3,1)' }}
+                onMouseEnter={e => { e.currentTarget.style.boxShadow = S.cardRaised; e.currentTarget.style.transform = 'translateY(-4px)'; }}
+                onMouseLeave={e => { e.currentTarget.style.boxShadow = S.card; e.currentTarget.style.transform = 'translateY(0)'; }}>
                 <div>
                   <div style={{ fontSize: 13, fontWeight: 500, color: C.forest }}>One lesson</div>
                   <div style={{ fontSize: 11, color: C.muted }}>5 min · next up</div>
@@ -259,8 +287,8 @@ const Dashboard = ({
                 Complete a lesson to unlock quick sessions
               </div>
             )}
-            <div style={{ fontSize: 11, color: C.muted, textAlign: 'center', lineHeight: 1.4 }}>
-              More session types coming soon
+            <div style={{ fontSize: 11, color: C.muted, textAlign: 'center', lineHeight: 1.4, fontStyle: 'italic' }}>
+              Review modes arriving soon
             </div>
           </div>
         </section>
@@ -279,21 +307,23 @@ const Dashboard = ({
               return (
                 <button key={t.id} onClick={() => onSelectTopic(t.id)}
                   style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: 14, overflow: 'hidden', textAlign: 'left',
-                    cursor: 'pointer', transition: 'box-shadow 0.2s, transform 0.2s' }}
-                  onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.06)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'none'; }}>
+                    cursor: 'pointer', boxShadow: S.card,
+                    transition: 'box-shadow .28s cubic-bezier(.2,.7,.3,1), transform .28s cubic-bezier(.2,.7,.3,1)' }}
+                  onMouseEnter={e => { e.currentTarget.style.boxShadow = S.cardRaised; e.currentTarget.style.transform = 'translateY(-4px)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.boxShadow = S.card; e.currentTarget.style.transform = 'translateY(0)'; }}>
                   <div style={{ height: 4, background: stripe }} />
                   <div style={{ padding: '14px 16px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
-                      <BookOpen size={20} color={stripe} />
+                      {React.createElement(pathIcons[t.id] || BookOpen, { size: 22, color: stripe })}
                       <span style={{ fontSize: 10, padding: '2px 8px', background: diffBg, color: diffColor, borderRadius: 10 }}>{diff}</span>
                     </div>
                     <div style={{ fontFamily: serif, fontSize: 16, fontWeight: 500, color: C.forest, marginBottom: 2 }}>{t.title}</div>
-                    <div style={{ fontSize: 12, color: C.muted, marginBottom: 10, lineHeight: 1.4 }}>{t.subtitle}</div>
+                    <div style={{ fontSize: 12, color: C.body, marginBottom: 10, lineHeight: 1.4 }}>{t.subtitle}</div>
                     {stats.pct > 0 ? (
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <div style={{ flex: 1, height: 4, background: 'rgba(201,169,97,0.15)', borderRadius: 2, overflow: 'hidden' }}>
-                          <div style={{ width: `${stats.pct}%`, height: '100%', background: C.gold }} />
+                        <div style={{ flex: 1, height: 6, background: 'rgba(201,169,97,0.15)', borderRadius: 3, overflow: 'hidden' }}>
+                          <div style={{ width: `${stats.pct}%`, height: '100%', background: C.gold, borderRadius: 3,
+                            animation: 'progressGrow 1s ease-out both' }} />
                         </div>
                         <span style={{ fontSize: 10, color: C.goldDk, fontWeight: 500 }}>{stats.pct}%</span>
                       </div>
@@ -328,7 +358,7 @@ const Dashboard = ({
 
         {/* ── B8. COMMUNITY ───────────────────────────────────── */}
         <section style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 18, animation: 'slideUp 0.6s ease-out 0.35s both' }}>
-          <div style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: 14, padding: '14px 16px' }}>
+          <div style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: 14, padding: '14px 16px', boxShadow: S.card }}>
             <Eyebrow style={{ marginBottom: 8 }}>LEARNING TOGETHER</Eyebrow>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
               <AvatarStack />
@@ -336,7 +366,7 @@ const Dashboard = ({
             </div>
             <div style={{ fontSize: 12, color: C.muted, lineHeight: 1.4 }}>studying Islamic Finance this week</div>
           </div>
-          <div style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: 14, padding: '14px 16px' }}>
+          <div style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: 14, padding: '14px 16px', boxShadow: S.card }}>
             <Eyebrow style={{ marginBottom: 10 }}>WEEKLY LEADERBOARD</Eyebrow>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {[{ n: 'Yusuf K.', xp: '820 XP', c: C.gold }, { n: 'Fatima A.', xp: '740 XP', c: C.sage }, { n: 'Bilal R.', xp: '685 XP', c: C.muted }].map((u, i) => (
@@ -354,7 +384,7 @@ const Dashboard = ({
 
         {/* ── B9. FOOTER ──────────────────────────────────────── */}
         <section style={{ animation: 'slideUp 0.6s ease-out 0.4s both' }}>
-          <div style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: 14, padding: '16px 18px', marginBottom: 14 }}>
+          <div style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: 14, padding: '16px 18px', marginBottom: 14, boxShadow: S.card }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr', gap: 18, alignItems: 'start' }}>
               {/* Prayer times — static placeholder */}
               <div>
@@ -386,8 +416,9 @@ const Dashboard = ({
                 <Eyebrow style={{ marginBottom: 10 }}>THIS MONTH</Eyebrow>
                 <div style={{ fontFamily: serif, fontSize: 15, color: C.forest, fontWeight: 500, marginBottom: 4 }}>Jumada al-Akhirah</div>
                 <div style={{ fontSize: 11, color: C.muted, lineHeight: 1.5 }}>1447 AH<br />Day 15 of 30</div>
-                <div style={{ marginTop: 8, height: 4, background: 'rgba(201,169,97,0.15)', borderRadius: 2, overflow: 'hidden' }}>
-                  <div style={{ width: '50%', height: '100%', background: C.gold }} />
+                <div style={{ marginTop: 8, height: 6, background: 'rgba(201,169,97,0.15)', borderRadius: 3, overflow: 'hidden' }}>
+                  <div style={{ width: '50%', height: '100%', background: C.gold, borderRadius: 3,
+                    animation: 'progressGrow 1s ease-out both' }} />
                 </div>
               </div>
             </div>

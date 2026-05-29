@@ -39,6 +39,10 @@ export default {
         sans: ['"Source Sans 3"', 'system-ui', '-apple-system', 'sans-serif'],
         arabic: ['"Noto Naskh Arabic"', '"Traditional Arabic"', 'serif'],
       },
+      boxShadow: {
+        card:        '0 1px 2px rgba(26,35,50,.05), 0 8px 24px rgba(26,35,50,.08)',
+        'card-raised': '0 4px 8px rgba(26,35,50,.08), 0 18px 44px rgba(26,35,50,.14)',
+      },
       borderRadius: {
         '2xl': '1rem',
         '3xl': '1.5rem',

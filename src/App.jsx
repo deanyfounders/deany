@@ -93,16 +93,194 @@ const ExitConfirmModal = ({ onStay, onLeave, questionsAnswered, totalQuestions }
   </div>
 );
 
-const Confetti = () => (
-  <div className="fixed inset-0 pointer-events-none" style={{zIndex: 100}}>
-    {[...Array(30)].map((_, i) => (
-      <div key={i} className="absolute" style={{ left: `${Math.random()*100}%`, top: '-20px', fontSize: `${14+Math.random()*10}px`,
-        animation: `confettiFall ${2+Math.random()*2}s ease-out forwards`, animationDelay: `${Math.random()*1.2}s` }}>
-        {['✦','✧','☆','🌟','✨'][Math.floor(Math.random()*5)]}
+const Confetti = () => {
+  const colors = ['#C9A961','#6B8E7F','#B8694D','#1B4332','#8A6F2F'];
+  return (
+    <div className="fixed inset-0 pointer-events-none" style={{zIndex: 100}}>
+      {[...Array(40)].map((_, i) => {
+        const c = colors[i % colors.length];
+        const size = 5 + Math.random() * 6;
+        const isCircle = Math.random() > 0.5;
+        return (
+          <div key={i} className="absolute" style={{ left: `${Math.random()*100}%`, top: '-12px',
+            width: size, height: size, background: c, opacity: 0.8,
+            borderRadius: isCircle ? '50%' : '1px', transform: `rotate(${Math.random()*360}deg)`,
+            animation: `confettiFall ${2.5+Math.random()*2}s ease-out forwards`, animationDelay: `${Math.random()*0.8}s` }} />
+        );
+      })}
+    </div>
+  );
+};
+
+// ---- Celebration Results Component --------------------------------
+const CelebrationResults = ({ quizScore, quizResults, eXP, eC, pct, correct, title, goLessons, goHome, isLesson, glass, selectedResultQuestion, setSelectedResultQuestion, fmt }) => {
+  const [countXP, setCountXP] = useState(0);
+  const [showConfetti, setShowConfetti] = useState(true);
+  const ringR = 40, ringCirc = 2 * Math.PI * ringR;
+  const [ringOff, setRingOff] = useState(ringCirc);
+
+  useEffect(() => {
+    // XP count-up
+    const target = eXP;
+    if (target === 0) return;
+    const step = Math.max(1, Math.floor(target / 30));
+    const timer = setInterval(() => {
+      setCountXP(prev => {
+        const next = prev + step;
+        if (next >= target) { clearInterval(timer); return target; }
+        return next;
+      });
+    }, 30);
+    // Ring fill
+    const ringT = setTimeout(() => setRingOff(ringCirc * (1 - Math.min(pct / 100, 1))), 200);
+    // Hide confetti after 3s
+    const confT = setTimeout(() => setShowConfetti(false), 3500);
+    return () => { clearInterval(timer); clearTimeout(ringT); clearTimeout(confT); };
+  }, []);
+
+  const serif = 'Georgia, serif';
+  const arabic = "'Amiri', 'Noto Naskh Arabic', serif";
+  const CC = { gold: '#C9A961', goldDk: '#8A6F2F', forest: '#1B4332', cream: '#F8F4ED', muted: '#6B6356', body: '#2A2520', sage: '#6B8E7F', terra: '#B8694D' };
+  const encouragement = pct >= 80 ? ['Outstanding', 'أحسنت'] : pct >= 60 ? ['Well done', 'ما شاء الله'] : ['Keep going', 'بارك الله فيك'];
+
+  return (
+    <div className="min-h-screen relative" style={{ background: CC.cream }}>
+      {showConfetti && <Confetti />}
+      <IslamicPattern />
+      <div className="relative z-10 max-w-3xl mx-auto px-4 py-8">
+        <div className="flex justify-between items-center mb-4">
+          <button onClick={goLessons} className="flex items-center gap-1.5 transition-colors text-sm font-medium" style={{color:CC.muted}}
+            onMouseEnter={e=>e.currentTarget.style.color=CC.forest} onMouseLeave={e=>e.currentTarget.style.color=CC.muted}>
+            <ChevronLeft className="w-4 h-4" />Lessons
+          </button>
+          <button onClick={goHome} className="flex items-center gap-1.5 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all" style={{background:CC.gold}}>
+            <Home className="w-4 h-4" />Home
+          </button>
+        </div>
+
+        <div className={`${glass} rounded-2xl p-8 mb-6 text-center`} style={{animation:'fadeSlideIn 0.4s ease-out'}}>
+          {/* XP Ring celebration */}
+          <div style={{ display:'flex', justifyContent:'center', marginBottom: 16 }}>
+            <svg width="100" height="100" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r={ringR} fill="none" stroke="rgba(201,169,97,0.12)" strokeWidth="8" />
+              <circle cx="50" cy="50" r={ringR} fill="none" stroke={CC.gold} strokeWidth="8"
+                strokeDasharray={ringCirc} strokeDashoffset={ringOff} strokeLinecap="round"
+                transform="rotate(-90 50 50)" style={{ transition: 'stroke-dashoffset 1.2s ease-out' }} />
+              <text x="50" y="48" textAnchor="middle" fontFamily={serif} fontSize="18" fontWeight="600" fill={CC.forest}>+{countXP}</text>
+              <text x="50" y="62" textAnchor="middle" fontSize="9" fill={CC.muted}>XP</text>
+            </svg>
+          </div>
+
+          <h1 style={{ fontFamily: serif, fontSize: 24, fontWeight: 500, color: CC.forest, marginBottom: 4 }}>Lesson Complete</h1>
+          <p style={{ fontSize: 13, color: CC.muted, marginBottom: 6 }}>{title}</p>
+
+          {/* Encouraging line + Arabic */}
+          <div style={{ marginBottom: 20 }}>
+            <div style={{ display:'inline-block', padding:'6px 16px', borderRadius:20, background:'rgba(201,169,97,0.12)', fontSize:13, fontWeight:500, color:CC.goldDk }}>
+              {encouragement[0]}
+            </div>
+            <div style={{ fontFamily:arabic, fontSize:18, color:CC.goldDk, marginTop:8, direction:'rtl' }}>
+              {encouragement[1]}
+            </div>
+          </div>
+
+          {/* Stats row */}
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:10, marginBottom:20 }}>
+            {[
+              { l:'Points', v:quizScore, c:CC.goldDk, bg:'rgba(201,169,97,0.08)' },
+              { l:'XP earned', v:`+${eXP}`, c:CC.forest, bg:'rgba(107,142,127,0.08)' },
+              { l:'Correct', v:`${correct}/${quizResults.length}`, c:CC.sage, bg:'rgba(107,142,127,0.08)' },
+              { l:'Accuracy', v:`${pct}%`, c:CC.terra, bg:'rgba(184,105,77,0.08)' },
+            ].map((s,i) => (
+              <div key={i} style={{ background:s.bg, borderRadius:12, padding:'12px 8px', textAlign:'center' }}>
+                <div style={{ fontSize:20, fontWeight:600, color:s.c, fontFamily:serif }}>{s.v}</div>
+                <div style={{ fontSize:10, color:CC.muted, marginTop:2 }}>{s.l}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Streak alive line */}
+          <div style={{ fontSize:12, color:CC.muted, marginBottom:20, display:'flex', alignItems:'center', justifyContent:'center', gap:6 }}>
+            <Flame size={14} color="#D85A30" style={{ animation:'flameFlicker 2s ease-in-out infinite' }} />
+            +{eXP} XP · Streak alive
+          </div>
+
+          <div style={{ display:'flex', gap:10, justifyContent:'center' }}>
+            <button onClick={goLessons} style={{ background:CC.gold, color:'#fff', border:'none', borderRadius:10, padding:'10px 20px', fontSize:13,
+              fontWeight:500, cursor:'pointer', display:'flex', alignItems:'center', gap:6, minHeight:48, boxShadow:`0 4px 0 ${CC.goldDk}`,
+              transition:'transform .08s ease, box-shadow .08s ease' }}
+              onMouseDown={e=>{e.currentTarget.style.transform='translateY(4px)';e.currentTarget.style.boxShadow='0 0 0 transparent';}}
+              onMouseUp={e=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow=`0 4px 0 ${CC.goldDk}`;}}
+              onMouseLeave={e=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow=`0 4px 0 ${CC.goldDk}`;}}>
+              <BookOpen size={14} />{isLesson ? 'Back to Lessons' : 'More Lessons'}
+            </button>
+            <button onClick={goHome} style={{ background:'transparent', color:CC.forest, border:`1.5px solid rgba(27,67,50,0.25)`, borderRadius:10,
+              padding:'10px 20px', fontSize:13, fontWeight:500, cursor:'pointer', display:'flex', alignItems:'center', gap:6, minHeight:48, boxShadow:'0 4px 0 rgba(27,67,50,0.12)',
+              transition:'transform .08s ease, box-shadow .08s ease' }}
+              onMouseDown={e=>{e.currentTarget.style.transform='translateY(4px)';e.currentTarget.style.boxShadow='0 0 0 transparent';}}
+              onMouseUp={e=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow='0 4px 0 rgba(27,67,50,0.12)';}}
+              onMouseLeave={e=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow='0 4px 0 rgba(27,67,50,0.12)';}}>
+              <Home size={14} />Dashboard
+            </button>
+          </div>
+        </div>
+
+        <h2 style={{ fontFamily:serif, fontSize:18, fontWeight:500, color:CC.forest, marginBottom:12 }}>Review Answers</h2>
+        <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+          {quizResults.map((r,i) => (
+            <button key={i} onClick={() => setSelectedResultQuestion(i)}
+              style={{ width:'100%', padding:'14px 16px', borderRadius:12, border:`1px solid ${r.correct?'rgba(107,142,127,0.25)':'rgba(201,169,97,0.25)'}`,
+                background:r.correct?'rgba(107,142,127,0.04)':'rgba(201,169,97,0.04)', textAlign:'left', cursor:'pointer',
+                transition:'box-shadow .2s ease, transform .2s ease', boxShadow:'0 1px 2px rgba(26,35,50,.05)' }}
+              onMouseEnter={e=>{e.currentTarget.style.boxShadow='0 4px 12px rgba(26,35,50,.1)';e.currentTarget.style.transform='translateY(-1px)';}}
+              onMouseLeave={e=>{e.currentTarget.style.boxShadow='0 1px 2px rgba(26,35,50,.05)';e.currentTarget.style.transform='translateY(0)';}}>
+              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+                  <div style={{ width:28, height:28, borderRadius:8, display:'flex', alignItems:'center', justifyContent:'center',
+                    background:r.correct?'rgba(107,142,127,0.12)':'rgba(201,169,97,0.12)' }}>
+                    {r.correct ? <CheckCircle size={16} color="#6B8E7F" /> : <Lightbulb size={16} color="#C9A961" />}
+                  </div>
+                  <div>
+                    <div style={{ fontSize:12, fontWeight:600, color:CC.forest }}>Q{i+1}</div>
+                    <div style={{ fontSize:11, color:CC.muted, maxWidth:280, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{r.question}</div>
+                  </div>
+                </div>
+                <ArrowRight size={14} color={CC.muted} />
+              </div>
+            </button>
+          ))}
+        </div>
       </div>
-    ))}
-  </div>
-);
+
+      {selectedResultQuestion !== null && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50" style={{animation:'fadeSlideIn 0.2s ease-out'}} onClick={(e) => { if (e.target == e.currentTarget) setSelectedResultQuestion(null); }}>
+          <div style={{ background:'#fff', borderRadius:16, maxWidth:500, width:'100%', maxHeight:'85vh', overflowY:'auto', boxShadow:'0 25px 60px rgba(0,0,0,0.12)' }}>
+            <div style={{ height:3, background:quizResults[selectedResultQuestion].correct ? CC.sage : CC.gold }} />
+            <div style={{ padding:24 }}>
+              <div style={{ textAlign:'center', marginBottom:16 }}>
+                <span style={{ display:'inline-flex', alignItems:'center', gap:6, padding:'6px 14px', borderRadius:20, fontSize:12, fontWeight:600, color:'#fff',
+                  background:quizResults[selectedResultQuestion].correct ? CC.sage : CC.gold }}>
+                  {quizResults[selectedResultQuestion].correct ? <><CheckCircle size={14} />Correct</> : <><Lightbulb size={14} />Review</>}
+                </span>
+              </div>
+              <p style={{ fontSize:14, fontWeight:600, color:CC.forest, marginBottom:10 }}>{quizResults[selectedResultQuestion].question}</p>
+              <p style={{ fontSize:13, color:CC.muted, lineHeight:1.6, marginBottom:16 }}>{fmt(quizResults[selectedResultQuestion].explanation)}</p>
+              <button onClick={() => setSelectedResultQuestion(null)}
+                style={{ width:'100%', padding:'12px', borderRadius:10, fontSize:13, fontWeight:500, color:'#fff', border:'none', cursor:'pointer',
+                  background:quizResults[selectedResultQuestion].correct ? CC.sage : CC.gold, boxShadow:`0 4px 0 ${quizResults[selectedResultQuestion].correct ? '#4A6358' : CC.goldDk}`,
+                  transition:'transform .08s ease, box-shadow .08s ease' }}
+                onMouseDown={e=>{e.currentTarget.style.transform='translateY(4px)';e.currentTarget.style.boxShadow='0 0 0 transparent';}}
+                onMouseUp={e=>{e.currentTarget.style.transform='translateY(0)';}}
+                onMouseLeave={e=>{e.currentTarget.style.transform='translateY(0)';}}>
+                Got It
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 // ---- Styles ------------------------------------------------------
 const pageBg = { background: '#F8F4ED' };
@@ -531,7 +709,7 @@ const App = () => {
     if (selectedMainTopic?.id == 'islamic-finance' && mod.lessons) { setSelectedModule(mod); setScreen('lessons'); return; }
     if (mod.id === 'salah' && mod.lessons) { setSelectedModule(mod); setScreen('lessons'); return; }
     if (mod.lessons?.length) { setSelectedModule(mod); setScreen('lessons'); return; }
-    if (!mod.questions?.length) { alert('Coming soon!'); return; }
+    if (!mod.questions?.length) return;
     setSelectedModule(mod); resetQuiz(mod.questions); setScreen('quiz');
   };
 
@@ -1433,54 +1611,12 @@ const App = () => {
     const pct = Math.round((correct/quizResults.length)*100);
     const eXP = quizScore*2, eC = Math.floor(quizScore/2);
     return (
-      <div className="min-h-screen relative" style={pageBg}>
-        <IslamicPattern /><div className="relative z-10 max-w-3xl mx-auto px-4 py-8">
-          <div className="flex justify-between items-center mb-4">
-            <button onClick={goLessons} className="flex items-center gap-1.5 text-gray-600 hover:text-emerald-700 transition-colors text-sm font-medium"><ChevronLeft className="w-4 h-4" />Lessons</button>
-            <button onClick={goHome} className="flex items-center gap-1.5 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all" style={{background:'linear-gradient(135deg,#059669,#0d9488)'}}><Home className="w-4 h-4" />Home</button>
-          </div>
-          <div className={`${glass} rounded-2xl p-8 mb-6 text-center`}>
-            <div className="flex justify-center items-center gap-3 mb-4"><Mascot size="md" /><Trophy className="w-14 h-14 text-amber-500" /></div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-1" style={{fontFamily:"Georgia,serif"}}>Quiz Complete!</h1>
-            <p className="text-gray-500 text-sm mb-5">{selectedLesson?.title || selectedModule?.title}</p>
-            <div className={`inline-block px-4 py-2 rounded-xl text-sm font-semibold mb-5 ${pct>=80?'bg-green-100 text-green-700 border border-green-200':pct>=60?'bg-blue-100 text-blue-700 border border-blue-200':'bg-orange-100 text-orange-700 border border-orange-200'}`}>{pct>=80?'🌟 Outstanding!':pct>=60?'👍 Good Job!':'💪 Keep Practicing!'}</div>
-            <div className="grid grid-cols-4 gap-2.5 mb-5">
-              {[{l:'Points',v:quizScore,c:'#b45309',bg:'from-amber-50 to-orange-50'},{l:'XP',v:eXP,c:'#047857',bg:'from-emerald-50 to-teal-50'},{l:'Correct',v:`${correct}/${quizResults.length}`,c:'#7c3aed',bg:'from-purple-50 to-indigo-50'},{l:'Accuracy',v:`${pct}%`,c:'#0284c7',bg:'from-sky-50 to-blue-50'}].map((s,i) => (
-                <div key={i} className={`bg-gradient-to-br ${s.bg} rounded-lg p-3 text-center border border-white/50`}><div className="text-xl font-bold" style={{color:s.c}}>{s.v}</div><div className="text-[10px] text-gray-500">{s.l}</div></div>
-              ))}
-            </div>
-            <div className="bg-amber-50 rounded-lg p-3 mb-5 border border-amber-200 flex items-center justify-center gap-6">
-              <div className="flex items-center gap-2"><span className="text-2xl">🪙</span><div className="text-left"><div className="text-lg font-bold text-amber-700">+{eC}</div><div className="text-[10px] text-gray-500">Coins</div></div></div>
-              <div className="w-px h-8 bg-amber-200" />
-              <div className="flex items-center gap-2"><Zap className="w-6 h-6 text-orange-600" /><div className="text-left"><div className="text-lg font-bold text-orange-700">+{eXP}</div><div className="text-[10px] text-gray-500">XP</div></div></div>
-            </div>
-            <div className="flex gap-3 justify-center">
-              <button onClick={goLessons} className="flex items-center gap-1.5 text-white px-5 py-2.5 rounded-lg text-xs font-semibold shadow-md" style={{background:'linear-gradient(135deg,#059669,#0d9488)'}}><BookOpen className="w-4 h-4" />{selectedLesson ? 'Back to Lessons' : 'More Lessons'}</button>
-              <button className="flex items-center gap-1.5 bg-white text-gray-700 px-5 py-2.5 rounded-lg text-xs font-semibold shadow-md border border-gray-200"><Share2 className="w-4 h-4" />Share</button>
-            </div>
-          </div>
-          <h2 className="text-lg font-bold text-gray-900 mb-3" style={{fontFamily:"Georgia,serif"}}>Review Answers</h2>
-          <div className="space-y-2">{quizResults.map((r,i) => (
-            <button key={i} onClick={() => setSelectedResultQuestion(i)} className={`w-full p-3.5 rounded-lg border transition-all text-left hover:shadow-md ${r.correct ? 'bg-green-50/50 border-green-200 hover:border-green-300' : 'bg-blue-50/50 border-blue-200 hover:border-blue-300'}`}>
-              <div className="flex items-center justify-between"><div className="flex items-center gap-3"><div className={`w-8 h-8 rounded-md flex items-center justify-center ${r.correct?'bg-green-100':'bg-blue-100'}`}>{r.correct?<CheckCircle className="w-5 h-5 text-green-600"/>:<Lightbulb className="w-5 h-5 text-blue-600"/>}</div><div><div className="font-bold text-gray-900 text-xs">Q{i+1}</div><div className="text-[10px] text-gray-500 line-clamp-1">{r.question}</div></div></div><ArrowRight className="w-3.5 h-3.5 text-gray-300"/></div>
-            </button>
-          ))}</div>
-        </div>
-
-        {selectedResultQuestion !== null && (
-          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50" style={{animation:'fadeSlideIn 0.2s ease-out'}} onClick={(e) => { if (e.target == e.currentTarget) setSelectedResultQuestion(null); }}>
-            <div className="bg-white rounded-2xl max-w-lg w-full max-h-[85vh] overflow-y-auto shadow-2xl">
-              <div className="h-1" style={{background: quizResults[selectedResultQuestion].correct ? 'linear-gradient(90deg,#22c55e,#10b981)' : 'linear-gradient(90deg,#3b82f6,#6366f1)'}} />
-              <div className={`p-6 ${quizResults[selectedResultQuestion].correct ? 'bg-gradient-to-b from-green-50/50' : 'bg-gradient-to-b from-blue-50/50'}`}>
-                <div className="text-center mb-4"><div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs text-white shadow-md" style={{background: quizResults[selectedResultQuestion].correct ? 'linear-gradient(135deg,#22c55e,#10b981)' : 'linear-gradient(135deg,#3b82f6,#6366f1)'}}>{quizResults[selectedResultQuestion].correct ? <><CheckCircle className="w-3.5 h-3.5" />Correct!</> : <><Lightbulb className="w-3.5 h-3.5" />Review</>}</div></div>
-                <p className="text-gray-900 font-semibold text-sm mb-3">{quizResults[selectedResultQuestion].question}</p>
-                <p className="text-gray-700 text-sm leading-relaxed mb-4">{fmt(quizResults[selectedResultQuestion].explanation)}</p>
-                <button onClick={() => setSelectedResultQuestion(null)} className="w-full py-3 rounded-xl font-bold text-xs text-white shadow-md" style={{background: quizResults[selectedResultQuestion].correct ? 'linear-gradient(135deg,#22c55e,#10b981)' : 'linear-gradient(135deg,#3b82f6,#6366f1)'}}>Got It</button>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
+      <CelebrationResults
+        quizScore={quizScore} quizResults={quizResults} eXP={eXP} eC={eC} pct={pct} correct={correct}
+        title={selectedLesson?.title || selectedModule?.title} goLessons={goLessons} goHome={goHome}
+        isLesson={!!selectedLesson} glass={glass} selectedResultQuestion={selectedResultQuestion}
+        setSelectedResultQuestion={setSelectedResultQuestion} fmt={fmt}
+      />
     );
   }
 
@@ -1493,6 +1629,12 @@ styleTag.textContent = `
 @keyframes confettiFall { 0% { transform: translateY(0) rotate(0); opacity:1; } 100% { transform: translateY(100vh) rotate(360deg); opacity:0; } }
 @keyframes fadeSlideIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
 @keyframes colBounce { 0% { transform: scale(0.85) translateY(8px); opacity:0.5; } 50% { transform: scale(1.05) translateY(-3px); } 70% { transform: scale(0.98) translateY(1px); } 100% { transform: scale(1) translateY(0); opacity:1; } }
+@keyframes slideUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+@keyframes flameFlicker { 0%,100% { transform: scale(1); } 30% { transform: scale(1.08) rotate(-2deg); } 60% { transform: scale(0.96) rotate(1deg); } }
+@keyframes progressGrow { from { transform: scaleX(0); transform-origin: left; } to { transform: scaleX(1); transform-origin: left; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
+.deany-btn-focus:focus { outline: none; }
+.deany-btn-focus:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(201,168,76,0.45) !important; }
 `;
 if (!document.getElementById('deany-styles')) { styleTag.id = 'deany-styles'; document.head.appendChild(styleTag); }
 
