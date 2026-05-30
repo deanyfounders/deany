@@ -680,11 +680,11 @@ const App = () => {
       { id: 'e1-adv', name: "Advanced", locked: false },
       ]
     },
-    { id: 'epoch-2', title: "Epoch 2: Birth of Islam", subtitle: "610–632 CE", icon: "🌅", locked: false, questions: [] },
-    { id: 'epoch-3', title: "Epoch 3: Rightly Guided Caliphs", subtitle: "632–661 CE", icon: "👑", locked: false, questions: [] },
-    { id: 'epoch-4', title: "Epoch 4: Umayyads & Abbasids", subtitle: "661–1258 CE", icon: "🏛️", locked: false, questions: [] },
-    { id: 'epoch-5', title: "Epoch 5: Sultanates & Empires", subtitle: "1258–1800", icon: "🗺️", locked: false, questions: [] },
-    { id: 'epoch-6', title: "Epoch 6: Colonialism to Today", subtitle: "1800–Present", icon: "🌐", locked: false, questions: [] },
+    { id: 'epoch-2', title: "Epoch 2: Birth of Islam", subtitle: "610–632 CE", icon: "🌅", comingSoon: true, questions: [] },
+    { id: 'epoch-3', title: "Epoch 3: Rightly Guided Caliphs", subtitle: "632–661 CE", icon: "👑", comingSoon: true, questions: [] },
+    { id: 'epoch-4', title: "Epoch 4: Umayyads & Abbasids", subtitle: "661–1258 CE", icon: "🏛️", comingSoon: true, questions: [] },
+    { id: 'epoch-5', title: "Epoch 5: Sultanates & Empires", subtitle: "1258–1800", icon: "🗺️", comingSoon: true, questions: [] },
+    { id: 'epoch-6', title: "Epoch 6: Colonialism to Today", subtitle: "1800–Present", icon: "🌐", comingSoon: true, questions: [] },
     ]
   };
 
@@ -1059,7 +1059,13 @@ const App = () => {
               <div className="flex items-center gap-4"><div className="w-14 h-14 rounded-xl flex items-center justify-center text-3xl shadow-sm" style={{background:'rgba(201,169,97,0.12)'}}>{selectedMainTopic.icon}</div><div><h1 className="text-2xl font-bold" style={{fontFamily:"Georgia,serif",color:'#1B4332'}}>{selectedMainTopic.title}</h1><p className="text-xs" style={{color:'#6B6356'}}>{selectedMainTopic.subtitle} · {mods.length} epochs</p></div></div>
             </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {mods.map((e, i) => (
+              {mods.map((e, i) => e.comingSoon ? (
+                <div key={e.id} className={`${glass} rounded-xl p-6 text-center opacity-50`}>
+                  <div className="w-8 h-8 mx-auto rounded-full flex items-center justify-center text-white text-xs font-bold mb-2" style={{background:'#9A9389'}}>{i+1}</div>
+                  <div className="text-3xl mb-2">{e.icon}</div><h3 className="font-bold text-xs mb-0.5" style={{color:'#6B6356'}}>{e.title}</h3><p className="text-[10px] mb-2" style={{color:'#6B6356'}}>{e.subtitle}</p>
+                  <span className="inline-flex items-center gap-1 text-[10px] px-2 py-1 rounded-full font-semibold" style={{color:'#8A6F2F',background:'rgba(201,169,97,0.12)'}}>Coming Soon</span>
+                </div>
+              ) : (
                 <button key={e.id} onClick={() => selectModule(e)} className={`group ${glassHover} rounded-xl p-6 text-center`}>
                   <div className="w-8 h-8 mx-auto rounded-full flex items-center justify-center text-white text-xs font-bold mb-2 shadow-sm" style={{background:'#C9A961'}}>{i+1}</div>
                   <div className="text-3xl mb-2">{e.icon}</div><h3 className="font-bold text-xs mb-0.5" style={{color:'#1B4332'}}>{e.title}</h3><p className="text-[10px] mb-2" style={{color:'#6B6356'}}>{e.subtitle}</p>
@@ -1107,14 +1113,24 @@ const App = () => {
       <div className="min-h-screen relative" style={pageBg}><IslamicPattern /><div className="relative z-10 max-w-3xl mx-auto px-4 py-8">
         <NavHeader onBack={() => setScreen('modules')} onHome={goHome} backLabel="Epochs" />
         <div className={`${glass} rounded-2xl p-6 mb-6 text-center`}><div className="text-5xl mb-2">{selectedEpoch.icon}</div><h1 className="text-xl font-bold" style={{fontFamily:"Georgia,serif",color:'#1B4332'}}>{selectedEpoch.title}</h1><p className="text-xs" style={{color:'#6B6356'}}>{selectedEpoch.subtitle}</p></div>
-        <div className="space-y-2.5">{selectedEpoch.levels.map((l, i) => (
-          <button key={l.id} onClick={() => selectLvl(l)} className={`w-full ${glassHover} rounded-xl p-4 text-left group`}>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3"><div className="w-11 h-11 rounded-lg flex items-center justify-center text-xl shadow-sm" style={{background:i===0?'rgba(107,142,127,0.15)':i===1?'rgba(201,169,97,0.15)':'rgba(184,105,77,0.15)'}}>{['🌱','📚','🎓'][i]}</div><div><h3 className="font-bold text-sm" style={{color:'#1B4332'}}>{l.name}</h3>{l.lessons && <p className="text-[10px]" style={{color:'#6B6356'}}>{l.lessons.length} lessons</p>}</div></div>
-              <ArrowRight className="w-4 h-4 transition-all" style={{color:'#C9A961'}} />
+        <div className="space-y-2.5">{selectedEpoch.levels.map((l, i) => {
+          const hasContent = l.lessons?.length > 0;
+          return hasContent ? (
+            <button key={l.id} onClick={() => selectLvl(l)} className={`w-full ${glassHover} rounded-xl p-4 text-left group`}>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3"><div className="w-11 h-11 rounded-lg flex items-center justify-center text-xl shadow-sm" style={{background:i===0?'rgba(107,142,127,0.15)':i===1?'rgba(201,169,97,0.15)':'rgba(184,105,77,0.15)'}}>{['🌱','📚','🎓'][i]}</div><div><h3 className="font-bold text-sm" style={{color:'#1B4332'}}>{l.name}</h3><p className="text-[10px]" style={{color:'#6B6356'}}>{l.lessons.length} lessons</p></div></div>
+                <ArrowRight className="w-4 h-4 transition-all" style={{color:'#C9A961'}} />
+              </div>
+            </button>
+          ) : (
+            <div key={l.id} className={`${glass} rounded-xl p-4 opacity-50`}>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3"><div className="w-11 h-11 rounded-lg flex items-center justify-center text-xl" style={{background:i===1?'rgba(201,169,97,0.15)':'rgba(184,105,77,0.15)'}}>{['🌱','📚','🎓'][i]}</div><div><h3 className="font-bold text-sm" style={{color:'#6B6356'}}>{l.name}</h3><p className="text-[10px]" style={{color:'#9A9389'}}>Coming soon</p></div></div>
+                <span className="text-[10px] px-2.5 py-0.5 rounded-full font-medium" style={{color:'#8A6F2F',background:'rgba(201,169,97,0.12)'}}>Coming Soon</span>
+              </div>
             </div>
-          </button>
-        ))}</div>
+          );
+        })}</div>
       </div></div>
     );
   }
@@ -1125,13 +1141,22 @@ const App = () => {
       <div className="min-h-screen relative" style={pageBg}><IslamicPattern /><div className="relative z-10 max-w-4xl mx-auto px-4 py-8">
         <NavHeader onBack={() => setScreen('epoch-levels')} onHome={goHome} backLabel="Levels" />
         <div className={`${glass} rounded-2xl p-4 mb-6`}><div className="flex items-center gap-3"><div className="w-10 h-10 rounded-lg flex items-center justify-center text-xl shadow-sm" style={{background:'rgba(201,169,97,0.12)'}}>{selectedEpoch.icon}</div><div><h1 className="text-lg font-bold" style={{fontFamily:"Georgia,serif",color:'#1B4332'}}>{selectedEpoch.title}</h1><p className="text-[10px]" style={{color:'#6B6356'}}>{selectedLevel.name}</p></div></div></div>
-        <div className="grid sm:grid-cols-2 gap-3">{selectedLevel.lessons.map(l => (
-          <button key={l.id} onClick={() => selectHistLesson(l)} className={`group ${glassHover} rounded-xl p-5 text-center`}>
-            <div className="text-3xl mb-2">{l.icon}</div><h3 className="font-bold text-xs mb-0.5" style={{color:'#1B4332'}}>{l.title}</h3><p className="text-[10px] mb-2" style={{color:'#6B6356'}}>{l.subtitle}</p>
-            <div className="flex items-center justify-center gap-2 text-[10px] mb-2" style={{color:'#6B6356'}}><Clock className="w-2.5 h-2.5" />{l.estimatedTime}<BookOpen className="w-2.5 h-2.5 ml-1" />{l.questions.length}Q</div>
-            <span className="inline-flex items-center gap-1 text-[10px] px-2.5 py-1 rounded-full font-semibold text-white shadow-sm" style={{background:'#C9A961'}}>Start <ArrowRight className="w-2.5 h-2.5" /></span>
-          </button>
-        ))}</div>
+        <div className="grid sm:grid-cols-2 gap-3">{selectedLevel.lessons.map(l => {
+          const hasContent = l.questions?.length > 0 || l.conceptCards?.length > 0 || ['creation','arabia-before-islam'].includes(l.id);
+          return hasContent ? (
+            <button key={l.id} onClick={() => selectHistLesson(l)} className={`group ${glassHover} rounded-xl p-5 text-center`}>
+              <div className="text-3xl mb-2">{l.icon}</div><h3 className="font-bold text-xs mb-0.5" style={{color:'#1B4332'}}>{l.title}</h3><p className="text-[10px] mb-2" style={{color:'#6B6356'}}>{l.subtitle}</p>
+              <div className="flex items-center justify-center gap-2 text-[10px] mb-2" style={{color:'#6B6356'}}><Clock className="w-2.5 h-2.5" />{l.estimatedTime}</div>
+              <span className="inline-flex items-center gap-1 text-[10px] px-2.5 py-1 rounded-full font-semibold text-white shadow-sm" style={{background:'#C9A961'}}>Start <ArrowRight className="w-2.5 h-2.5" /></span>
+            </button>
+          ) : (
+            <div key={l.id} className={`${glass} rounded-xl p-5 text-center opacity-50`}>
+              <div className="text-3xl mb-2">{l.icon}</div><h3 className="font-bold text-xs mb-0.5" style={{color:'#6B6356'}}>{l.title}</h3><p className="text-[10px] mb-2" style={{color:'#9A9389'}}>{l.subtitle}</p>
+              <div className="flex items-center justify-center gap-2 text-[10px] mb-2" style={{color:'#9A9389'}}><Clock className="w-2.5 h-2.5" />{l.estimatedTime}</div>
+              <span className="inline-flex items-center gap-1 text-[10px] px-2.5 py-1 rounded-full font-medium" style={{color:'#8A6F2F',background:'rgba(201,169,97,0.12)'}}>Coming Soon</span>
+            </div>
+          );
+        })}</div>
       </div></div>
     );
   }

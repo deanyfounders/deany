@@ -1,6 +1,7 @@
 /**
- * Synthesised mechanical-keyboard click using Web Audio API.
- * Short, crisp transient — no audio files needed.
+ * Premium "creamy thock" mechanical keyboard sound.
+ * Dampened tactile press — no harsh click, no rattle, no echo.
+ * Three layers: soft tactile top, muted thock body, warm sub rumble.
  */
 
 let ctx = null;
@@ -16,44 +17,86 @@ export function playClick() {
     if (ac.state === 'suspended') ac.resume();
     const now = ac.currentTime;
 
-    // Layer 1: sharp tick (noise burst through tight bandpass)
-    const bufLen = Math.floor(ac.sampleRate * 0.012); // 12ms
-    const buf = ac.createBuffer(1, bufLen, ac.sampleRate);
-    const data = buf.getChannelData(0);
-    for (let i = 0; i < bufLen; i++) {
-      // Decaying noise
-      const env = 1 - i / bufLen;
-      data[i] = (Math.random() * 2 - 1) * env * env;
+    // Master compressor — glues layers, prevents harshness
+    const comp = ac.createDynamicsCompressor();
+    comp.threshold.value = -18;
+    comp.knee.value = 12;
+    comp.ratio.value = 6;
+    comp.attack.value = 0.001;
+    comp.release.value = 0.04;
+    comp.connect(ac.destination);
+
+    // ── Layer 1: Soft tactile top ──────────────────────────
+    // Very short filtered noise — the initial "tac" of the keypress
+    // Low-passed to remove harshness, shaped with fast exponential decay
+    const tacLen = Math.floor(ac.sampleRate * 0.006); // 6ms — ultra short
+    const tacBuf = ac.createBuffer(1, tacLen, ac.sampleRate);
+    const tacData = tacBuf.getChannelData(0);
+    for (let i = 0; i < tacLen; i++) {
+      const t = i / tacLen;
+      // Fast exponential decay envelope
+      const env = Math.exp(-t * 8);
+      tacData[i] = (Math.random() * 2 - 1) * env;
     }
-    const noise = ac.createBufferSource();
-    noise.buffer = buf;
+    const tacSrc = ac.createBufferSource();
+    tacSrc.buffer = tacBuf;
 
-    const bp = ac.createBiquadFilter();
-    bp.type = 'bandpass';
-    bp.frequency.value = 3800;
-    bp.Q.value = 2.5;
+    // Lowpass removes harsh high-end — creamy, not clicky
+    const tacLP = ac.createBiquadFilter();
+    tacLP.type = 'lowpass';
+    tacLP.frequency.value = 2200;
+    tacLP.Q.value = 0.7;
 
-    const noiseGain = ac.createGain();
-    noiseGain.gain.setValueAtTime(0.25, now);
-    noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.025);
+    const tacGain = ac.createGain();
+    tacGain.gain.setValueAtTime(0.14, now);
+    tacGain.gain.exponentialRampToValueAtTime(0.001, now + 0.018);
 
-    noise.connect(bp).connect(noiseGain).connect(ac.destination);
-    noise.start(now);
-    noise.stop(now + 0.03);
+    tacSrc.connect(tacLP).connect(tacGain).connect(comp);
+    tacSrc.start(now);
+    tacSrc.stop(now + 0.02);
 
-    // Layer 2: bottom-out thud (low osc)
-    const osc = ac.createOscillator();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(400, now);
-    osc.frequency.exponentialRampToValueAtTime(80, now + 0.015);
+    // ── Layer 2: Muted thock body ──────────────────────────
+    // Bandpassed noise — the dampened "thock" resonance of the switch housing
+    // Sits in the mid-low range, decays quickly
+    const thockLen = Math.floor(ac.sampleRate * 0.025); // 25ms
+    const thockBuf = ac.createBuffer(1, thockLen, ac.sampleRate);
+    const thockData = thockBuf.getChannelData(0);
+    for (let i = 0; i < thockLen; i++) {
+      const t = i / thockLen;
+      const env = Math.exp(-t * 5);
+      thockData[i] = (Math.random() * 2 - 1) * env;
+    }
+    const thockSrc = ac.createBufferSource();
+    thockSrc.buffer = thockBuf;
 
-    const oscGain = ac.createGain();
-    oscGain.gain.setValueAtTime(0.18, now);
-    oscGain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
+    const thockBP = ac.createBiquadFilter();
+    thockBP.type = 'bandpass';
+    thockBP.frequency.value = 800;
+    thockBP.Q.value = 1.2;
 
-    osc.connect(oscGain).connect(ac.destination);
-    osc.start(now);
-    osc.stop(now + 0.04);
+    const thockGain = ac.createGain();
+    thockGain.gain.setValueAtTime(0.18, now);
+    thockGain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+
+    thockSrc.connect(thockBP).connect(thockGain).connect(comp);
+    thockSrc.start(now + 0.001); // tiny delay after tactile top
+    thockSrc.stop(now + 0.05);
+
+    // ── Layer 3: Warm sub rumble ───────────────────────────
+    // Sine wave sweep — the deep "bottom out" feel of the keystroke
+    // Very low, very short, felt more than heard
+    const sub = ac.createOscillator();
+    sub.type = 'sine';
+    sub.frequency.setValueAtTime(180, now);
+    sub.frequency.exponentialRampToValueAtTime(60, now + 0.03);
+
+    const subGain = ac.createGain();
+    subGain.gain.setValueAtTime(0.12, now);
+    subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
+
+    sub.connect(subGain).connect(comp);
+    sub.start(now + 0.002);
+    sub.stop(now + 0.06);
   } catch (_) {
     // Silently fail if audio not available
   }
