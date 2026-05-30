@@ -9,13 +9,14 @@ import { playClick } from './utils/clickSound.js';
 
 // ── Palette constants ──────────────────────────────────────────
 const C = {
-  cream: '#F8F4ED', white: '#FFFFFF',
-  gold: '#C9A961', goldDk: '#8A6F2F',
-  sage: '#6B8E7F', sageDk: '#4A6358',
-  forest: '#1B4332', dark: '#0F2E22',
-  body: '#2A2520', muted: '#6B6356',
-  terra: '#B8694D',
-  border: 'rgba(201,169,97,0.25)',
+  canvas: '#FBFAF6', surface: '#FFFFFF', heroWash: '#EAF7F5',
+  gold: '#F0B429', goldDk: '#C8901A', goldSoft: '#FCEFCF', goldText: '#5A3E00',
+  teal: '#22A39A', tealDk: '#1A8C82', tealDeep: '#0F4C5C',
+  tealSoft: '#DCF3EF', tealPale: '#7FD8CE',
+  coral: '#EF6F53', coralSoft: '#FBE5DE',
+  blue: '#2E6E8E', blueSoft: '#E0EDF7',
+  text: '#173A4A', textDeep: '#0F4C5C', textMuted: '#5E7480', textFaint: '#94A3AA',
+  border: 'rgba(15,76,92,0.15)',
 };
 const S = {
   card: '0 1px 2px rgba(26,35,50,.05), 0 8px 24px rgba(26,35,50,.08)',
@@ -24,9 +25,55 @@ const S = {
 const serif = 'Georgia, serif';
 const arabic = "'Amiri', 'Noto Naskh Arabic', serif";
 
+// ── Mosque hero illustration (inline SVG) ────────────────────────
+const MosqueHero = () => (
+  <svg width="240" height="190" viewBox="0 0 240 190" fill="none" aria-hidden="true"
+    style={{ width: '100%', maxWidth: 280, height: 'auto' }}>
+    {/* stars + sparkle (gold) */}
+    <circle cx="40" cy="30" r="2.4" fill={C.gold} />
+    <circle cx="205" cy="42" r="2" fill={C.gold} />
+    <circle cx="178" cy="20" r="1.5" fill={C.gold} />
+    <circle cx="58" cy="54" r="1.5" fill={C.gold} />
+    <path d="M30 48 l1.5 4 l4 1.5 l-4 1.5 l-1.5 4 l-1.5 -4 l-4 -1.5 l4 -1.5Z" fill={C.gold} />
+    {/* crescent (gold) */}
+    <path d="M196 28 a14 14 0 1 0 7 25 a11 11 0 1 1 -7 -25Z" fill={C.gold} />
+    {/* minarets (teal-dark) with gold caps */}
+    <rect x="40" y="78" width="14" height="86" rx="3" fill={C.tealDk} />
+    <rect x="186" y="78" width="14" height="86" rx="3" fill={C.tealDk} />
+    <path d="M40 78 a7 7 0 0 1 14 0Z" fill={C.gold} />
+    <path d="M186 78 a7 7 0 0 1 14 0Z" fill={C.gold} />
+    {/* main building (teal-deep) */}
+    <rect x="62" y="96" width="116" height="68" rx="4" fill={C.tealDeep} />
+    {/* dome (teal) + finial */}
+    <path d="M120 38 C 152 38, 172 70, 172 100 L68 100 C68 70, 88 38, 120 38Z" fill={C.teal} />
+    <path d="M120 38 a4 4 0 0 1 8 0 l-4 4Z" fill={C.gold} />
+    <rect x="116" y="38" width="8" height="4" fill={C.gold} />
+    {/* arched door (gold) + side arches (teal-pale) */}
+    <path d="M104 164 L104 130 C104 119, 136 119, 136 130 L136 164Z" fill={C.gold} />
+    <path d="M80 164 L80 140 C80 132, 96 132, 96 140 L96 164Z" fill={C.tealPale} />
+    <path d="M144 164 L144 140 C144 132, 160 132, 160 140 L160 164Z" fill={C.tealPale} />
+    <circle cx="120" cy="118" r="5" fill={C.tealPale} />
+    {/* ground line */}
+    <rect x="36" y="164" width="168" height="6" rx="3" fill={C.tealDeep} />
+  </svg>
+);
+
+// ── Trust dots ──────────────────────────────────────────────────
+const TrustDots = () => (
+  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+    <div style={{ display: 'flex' }}>
+      {[C.teal, C.gold, C.coral].map((bg, i) => (
+        <div key={i} style={{ width: 22, height: 22, borderRadius: '50%', background: bg,
+          border: `2px solid ${C.heroWash}`, marginLeft: i ? -6 : 0, position: 'relative', zIndex: 3 - i }} />
+      ))}
+    </div>
+    <span style={{ fontSize: 11, color: C.textFaint }}>Trusted by 1,247 learners across 38 countries</span>
+  </div>
+);
+
 // ── Eyebrow ────────────────────────────────────────────────────
 const Eyebrow = ({ children }) => (
-  <div style={{ fontSize: 10, letterSpacing: '1.5px', color: C.gold, fontWeight: 500, marginBottom: 6, textTransform: 'uppercase' }}>
+  <div style={{ fontSize: 10, letterSpacing: '1.5px', color: C.teal, fontWeight: 500, marginBottom: 6, textTransform: 'uppercase' }}>
     {children}
   </div>
 );
@@ -35,34 +82,34 @@ const Eyebrow = ({ children }) => (
 const SectionHead = ({ eyebrow, title, sub }) => (
   <div style={{ textAlign: 'center', marginBottom: 24 }}>
     {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
-    <h2 style={{ fontFamily: serif, fontSize: 24, fontWeight: 500, color: C.forest, margin: 0, lineHeight: 1.3 }}>{title}</h2>
-    {sub && <p style={{ fontSize: 13, color: C.body, lineHeight: 1.6, maxWidth: 440, margin: '10px auto 0' }}>{sub}</p>}
+    <h2 style={{ fontFamily: serif, fontSize: 24, fontWeight: 500, color: C.tealDeep, margin: 0, lineHeight: 1.3 }}>{title}</h2>
+    {sub && <p style={{ fontSize: 13, color: C.textMuted, lineHeight: 1.6, maxWidth: 440, margin: '10px auto 0' }}>{sub}</p>}
   </div>
 );
 
 // ── Avatar stack ───────────────────────────────────────────────
 const AvatarStack = ({ size = 20 }) => (
   <div style={{ display: 'flex' }}>
-    {[{ bg: C.sage, l: 'S' }, { bg: C.gold, l: 'F' }, { bg: C.forest, l: 'M' }, { bg: C.terra, l: 'A' }].map((a, i) => (
+    {[{ bg: C.teal, l: 'S' }, { bg: C.gold, l: 'F' }, { bg: C.tealDeep, l: 'M' }, { bg: C.coral, l: 'A' }].map((a, i) => (
       <div key={i} style={{ width: size, height: size, borderRadius: '50%', background: a.bg, color: '#fff', fontSize: size * 0.45,
-        display: 'flex', alignItems: 'center', justifyContent: 'center', border: `1.5px solid ${C.cream}`, marginLeft: i ? -6 : 0 }}>{a.l}</div>
+        display: 'flex', alignItems: 'center', justifyContent: 'center', border: `1.5px solid ${C.canvas}`, marginLeft: i ? -6 : 0 }}>{a.l}</div>
     ))}
   </div>
 );
 
-// ── Path card ──────────────────────────────────────────────────
-const PathCard = ({ stripe, title, desc, icon: Icon, iconColor, onClick }) => (
-  <button onClick={() => { playClick(); onClick?.(); }} style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: 14, overflow: 'hidden',
-    textAlign: 'left', cursor: 'pointer', width: '100%', boxShadow: S.card,
+// ── Topic tile (colored icon chip) ──────────────────────────────
+const TopicTile = ({ chipBg, chipColor, title, level, icon: Icon, onClick }) => (
+  <button onClick={() => { playClick(); onClick?.(); }} style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14,
+    textAlign: 'center', cursor: 'pointer', width: '100%', padding: '20px 12px', boxShadow: S.card,
+    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
     transition: 'box-shadow .28s cubic-bezier(.2,.7,.3,1), transform .28s cubic-bezier(.2,.7,.3,1)' }}
     onMouseEnter={e => { e.currentTarget.style.boxShadow = S.cardRaised; e.currentTarget.style.transform = 'translateY(-4px)'; }}
     onMouseLeave={e => { e.currentTarget.style.boxShadow = S.card; e.currentTarget.style.transform = 'translateY(0)'; }}>
-    <div style={{ height: 3, background: stripe }} />
-    <div style={{ padding: '14px 16px' }}>
-      <div style={{ marginBottom: 6 }}><Icon size={22} color={iconColor} /></div>
-      <div style={{ fontFamily: serif, fontSize: 15, fontWeight: 500, color: C.forest }}>{title}</div>
-      <div style={{ fontSize: 11, color: C.muted, lineHeight: 1.5, marginTop: 2 }}>{desc}</div>
+    <div style={{ width: 48, height: 48, borderRadius: 14, background: chipBg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <Icon size={22} color={chipColor} />
     </div>
+    <div style={{ fontSize: 12.5, fontWeight: 600, color: C.text }}>{title}</div>
+    <div style={{ fontSize: 11, color: C.textFaint }}>{level}</div>
   </button>
 );
 
@@ -81,18 +128,18 @@ const FAQItem = ({ q, a, defaultOpen }) => {
   }, [open]);
 
   return (
-    <div style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: 12, padding: '14px 16px', boxShadow: S.card,
+    <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12, padding: '14px 16px', boxShadow: S.card,
       transition: 'box-shadow .2s ease' }}>
       <button onClick={() => { playClick(); setOpen(!open); }} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         width: '100%', background: 'none', border: 'none', cursor: 'pointer', padding: 0, minHeight: 28 }}>
-        <span style={{ fontSize: 13, color: C.forest, fontWeight: 500, textAlign: 'left' }}>{q}</span>
+        <span style={{ fontSize: 13, color: C.tealDeep, fontWeight: 500, textAlign: 'left' }}>{q}</span>
         <span style={{ transform: open ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform .25s ease', flexShrink: 0, marginLeft: 8 }}>
-          {open ? <Minus size={14} color={C.goldDk} /> : <Plus size={14} color={C.goldDk} />}
+          {open ? <Minus size={14} color={C.teal} /> : <Plus size={14} color={C.teal} />}
         </span>
       </button>
       <div style={{ maxHeight: height === 'auto' ? 500 : height, overflow: 'hidden', transition: 'max-height .25s ease-out, opacity .2s ease',
         opacity: open ? 1 : 0 }}>
-        <div ref={bodyRef} style={{ fontSize: 12, color: C.muted, lineHeight: 1.6, paddingTop: 8 }}>{a}</div>
+        <div ref={bodyRef} style={{ fontSize: 12, color: C.textMuted, lineHeight: 1.6, paddingTop: 8 }}>{a}</div>
       </div>
     </div>
   );
@@ -107,96 +154,105 @@ const LandingPage = ({ onGetStarted, onPreviewLesson, onCalibration, onSelectPat
   const scrollTo = (id) => { document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }); setMobileNav(false); };
 
   const paths = [
-    { stripe: C.sage, title: '5 Pillars', desc: 'Shahada, Salah, Zakat, Sawm, Hajj. The foundation, taught in plain language.', icon: PillarsIcon, iconColor: C.sage, topicId: '5-pillars' },
-    { stripe: C.gold, title: 'Islamic Finance', desc: 'Riba, gharar, halal deal structure. Practical filters for modern money.', icon: FinanceIcon, iconColor: C.gold, topicId: 'islamic-finance' },
-    { stripe: C.forest, title: 'Quran & Arabic', desc: 'Letters, words, ayat. Learn to read what you have only heard.', icon: QuranIcon, iconColor: C.forest, topicId: 'quran-arabic' },
-    { stripe: C.terra, title: 'Islamic History', desc: 'Prophets, caliphates, the golden age. Context for everything else.', icon: HistoryIcon, iconColor: C.terra, topicId: 'islamic-history' },
+    { chipBg: C.tealSoft, chipColor: C.tealDk, title: '5 Pillars', level: 'Foundation', icon: PillarsIcon, topicId: '5-pillars' },
+    { chipBg: C.goldSoft, chipColor: C.goldDk, title: 'Islamic Finance', level: 'Practical', icon: FinanceIcon, topicId: 'islamic-finance' },
+    { chipBg: C.blueSoft, chipColor: C.blue, title: 'Quran & Arabic', level: 'Language', icon: QuranIcon, topicId: 'quran-arabic' },
+    { chipBg: C.coralSoft, chipColor: C.coral, title: 'Islamic History', level: 'Context', icon: HistoryIcon, topicId: 'islamic-history' },
   ];
 
   return (
-    <div style={{ background: C.cream, color: C.body, minHeight: '100vh' }}>
+    <div style={{ background: C.canvas, color: C.text, minHeight: '100vh' }}>
+      <style>{`
+        @media (max-width: 639px) {
+          .topic-grid { grid-template-columns: repeat(2, 1fr) !important; }
+          .showcase-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
 
       {/* ── A1. NAV ─────────────────────────────────────────── */}
       <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 22px',
-        borderBottom: `1px solid rgba(201,169,97,0.2)`, background: 'rgba(248,244,237,0.8)', position: 'sticky', top: 0, zIndex: 50,
+        borderBottom: `1px solid rgba(15,76,92,0.1)`, background: 'rgba(251,250,246,0.85)', position: 'sticky', top: 0, zIndex: 50,
         backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}>
         {/* Logo */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 28, height: 28, borderRadius: '50%', background: C.gold, display: 'flex', alignItems: 'center',
+          <div style={{ width: 28, height: 28, borderRadius: '50%', background: C.teal, display: 'flex', alignItems: 'center',
             justifyContent: 'center', color: '#fff', fontFamily: serif, fontSize: 14, fontWeight: 500 }}>د</div>
-          <span style={{ fontFamily: serif, fontSize: 17, fontWeight: 500, color: C.forest }}>Deany</span>
+          <span style={{ fontFamily: serif, fontSize: 17, fontWeight: 500, color: C.tealDeep }}>Deany</span>
         </div>
         {/* Center links - desktop */}
         <div className="hidden sm:flex" style={{ alignItems: 'center', gap: 18 }}>
           {['How it works', 'Paths', 'Sources', 'FAQ'].map(l => (
             <button key={l} onClick={() => scrollTo(l.toLowerCase().replace(/ /g, '-'))}
-              style={{ fontSize: 12, color: C.muted, background: 'none', border: 'none', cursor: 'pointer', transition: 'color .15s ease' }}
-              onMouseEnter={e => e.currentTarget.style.color = C.forest}
-              onMouseLeave={e => e.currentTarget.style.color = C.muted}>{l}</button>
+              style={{ fontSize: 12, color: C.textMuted, background: 'none', border: 'none', cursor: 'pointer', transition: 'color .15s ease' }}
+              onMouseEnter={e => e.currentTarget.style.color = C.tealDeep}
+              onMouseLeave={e => e.currentTarget.style.color = C.textMuted}>{l}</button>
           ))}
         </div>
         {/* Right */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <button onClick={onGetStarted} className="hidden sm:inline"
-            style={{ fontSize: 12, color: C.forest, background: 'none', border: 'none', cursor: 'pointer' }}>Sign in</button>
+            style={{ fontSize: 12, color: C.tealDeep, background: 'none', border: 'none', cursor: 'pointer' }}>Sign in</button>
           <DeanyButton variant="primary" onClick={onGetStarted} style={{ padding: '7px 14px', fontSize: 12, minHeight: 36 }}>
             Get started
           </DeanyButton>
           {/* Mobile hamburger */}
           <button className="sm:hidden" onClick={() => setMobileNav(!mobileNav)}
             style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
-            {mobileNav ? <X size={20} color={C.forest} /> : <Menu size={20} color={C.forest} />}
+            {mobileNav ? <X size={20} color={C.tealDeep} /> : <Menu size={20} color={C.tealDeep} />}
           </button>
         </div>
       </nav>
 
       {/* Mobile nav dropdown */}
       {mobileNav && (
-        <div className="sm:hidden" style={{ background: C.cream, borderBottom: `1px solid ${C.border}`, padding: '12px 22px', display: 'flex', flexDirection: 'column', gap: 12,
+        <div className="sm:hidden" style={{ background: C.canvas, borderBottom: `1px solid ${C.border}`, padding: '12px 22px', display: 'flex', flexDirection: 'column', gap: 12,
           animation: 'fadeSlideIn 0.2s ease-out' }}>
           {['How it works', 'Paths', 'Sources', 'FAQ'].map(l => (
             <button key={l} onClick={() => scrollTo(l.toLowerCase().replace(/ /g, '-'))}
-              style={{ fontSize: 13, color: C.muted, background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', padding: 0 }}>{l}</button>
+              style={{ fontSize: 13, color: C.textMuted, background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', padding: 0 }}>{l}</button>
           ))}
         </div>
       )}
 
       {/* ── A2. HERO ────────────────────────────────────────── */}
-      <section style={{ textAlign: 'center', padding: '54px 22px 40px', maxWidth: 1100, margin: '0 auto',
-        animation: 'slideUp 0.6s ease-out both' }}>
-        <div style={{ fontFamily: arabic, fontSize: 14, color: C.goldDk, marginBottom: 18, direction: 'rtl' }}>
-          بِسْمِ اللَّهِ
-        </div>
-        <h1 style={{ fontFamily: serif, fontSize: 'clamp(32px, 6vw, 44px)', fontWeight: 500, margin: '0 0 16px', color: C.forest,
-          lineHeight: 1.1, letterSpacing: '-0.5px' }}>
-          Start where you are.
-        </h1>
-        <p style={{ fontSize: 15, color: C.body, lineHeight: 1.65, maxWidth: 460, margin: '0 auto 26px' }}>
-          Ten-minute lessons on the Pillars, the Quran, Islamic finance, and history. Reviewed by scholars. No prerequisites.
-        </p>
-        <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 24 }}>
-          <DeanyButton variant="primary" onClick={onCalibration || onGetStarted}>
-            Take the Calibration Quiz
-          </DeanyButton>
-          <DeanyButton variant="secondary" onClick={() => scrollTo('how-it-works')}>
-            How it works
-          </DeanyButton>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center', fontSize: 11, color: C.muted }}>
-          <AvatarStack />
-          <span>Trusted by 1,247 learners across 38 countries</span>
+      <section style={{ background: `linear-gradient(180deg, ${C.heroWash} 0%, ${C.canvas} 100%)`,
+        padding: '54px 22px 40px', animation: 'slideUp 0.6s ease-out both' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 40, flexWrap: 'wrap', justifyContent: 'center' }}>
+          {/* Left column */}
+          <div style={{ flex: '1 1 360px', maxWidth: 520 }}>
+            <h1 style={{ fontFamily: serif, fontSize: 'clamp(32px, 6vw, 44px)', fontWeight: 500, margin: '0 0 16px', color: C.textDeep,
+              lineHeight: 1.12, letterSpacing: '-0.5px' }}>
+              Start where you are.
+            </h1>
+            <p style={{ fontSize: 14, color: C.textMuted, lineHeight: 1.65, maxWidth: 340, margin: '0 0 26px' }}>
+              Ten-minute lessons on the Pillars, the Quran, Islamic finance, and history. Reviewed by scholars. No prerequisites.
+            </p>
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 20 }}>
+              <DeanyButton variant="primary" onClick={onCalibration || onGetStarted}>
+                Take the Calibration Quiz
+              </DeanyButton>
+              <DeanyButton variant="secondary" onClick={() => scrollTo('how-it-works')}>
+                How it works
+              </DeanyButton>
+            </div>
+            <TrustDots />
+          </div>
+          {/* Right column — mosque illustration */}
+          <div style={{ flex: '0 1 280px', display: 'flex', justifyContent: 'center' }}>
+            <MosqueHero />
+          </div>
         </div>
       </section>
 
       {/* ── A3. TRUST STRIP ─────────────────────────────────── */}
-      <section style={{ background: C.white, borderTop: `1px solid rgba(201,169,97,0.2)`, borderBottom: `1px solid rgba(201,169,97,0.2)`,
+      <section style={{ background: C.surface, borderTop: `1px solid rgba(15,76,92,0.1)`, borderBottom: `1px solid rgba(15,76,92,0.1)`,
         padding: '14px 22px', animation: 'slideUp 0.6s ease-out 0.1s both' }}>
         <div style={{ maxWidth: 700, margin: '0 auto', display: 'flex', justifyContent: 'space-around', alignItems: 'center',
-          flexWrap: 'wrap', gap: '8px 16px', fontSize: 11, color: C.muted, textAlign: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><ShieldCheck size={14} color={C.forest} /> Scholar reviewed</div>
+          flexWrap: 'wrap', gap: '8px 16px', fontSize: 11, color: C.textMuted, textAlign: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><ShieldCheck size={14} color={C.tealDeep} /> Scholar reviewed</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><BookOpen size={14} color={C.gold} /> Cited sources</div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Heart size={14} color={C.terra} /> Free forever core</div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Users size={14} color={C.sage} /> Open to all faiths</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Heart size={14} color={C.coral} /> Free forever core</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Users size={14} color={C.teal} /> Open to all faiths</div>
         </div>
       </section>
 
@@ -210,47 +266,67 @@ const LandingPage = ({ onGetStarted, onPreviewLesson, onCalibration, onSelectPat
             { n: '2', t: 'Learn in bites', d: 'Lessons of 5 to 15 minutes on the Pillars, Quran, Finance, and History.' },
             { n: '3', t: 'Reflect daily', d: 'Save verses, journal reflections, and build a quiet daily habit.' },
           ].map(s => (
-            <div key={s.n} style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: 14, padding: '18px 16px', boxShadow: S.card }}>
-              <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'rgba(201,169,97,0.15)', color: C.goldDk,
+            <div key={s.n} style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14, padding: '18px 16px', boxShadow: S.card }}>
+              <div style={{ width: 32, height: 32, borderRadius: '50%', background: C.tealSoft, color: C.tealDeep,
                 display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: serif, fontSize: 15, fontWeight: 500, marginBottom: 12 }}>{s.n}</div>
-              <div style={{ fontFamily: serif, fontSize: 15, fontWeight: 500, color: C.forest, marginBottom: 4 }}>{s.t}</div>
-              <div style={{ fontSize: 12, color: C.body, lineHeight: 1.5 }}>{s.d}</div>
+              <div style={{ fontFamily: serif, fontSize: 15, fontWeight: 500, color: C.tealDeep, marginBottom: 4 }}>{s.t}</div>
+              <div style={{ fontSize: 12, color: C.text, lineHeight: 1.5 }}>{s.d}</div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* ── A5. FOUR PATHS ──────────────────────────────────── */}
-      <section id="paths" style={{ padding: '24px 22px 40px', maxWidth: 700, margin: '0 auto',
-        animation: 'slideUp 0.6s ease-out 0.2s both' }}>
-        <SectionHead eyebrow="FOUR PATHS" title="Pick one, or weave them together" />
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 10 }}>
-          {paths.map(p => <PathCard key={p.title} {...p} onClick={() => onSelectPath ? onSelectPath(p.topicId) : onGetStarted()} />)}
+      {/* ── A5. FOUR PATHS (topic tiles) ────────────────────── */}
+      <section id="paths" style={{ padding: '40px 22px', background: C.surface }}>
+        <div style={{ maxWidth: 700, margin: '0 auto' }}>
+          <SectionHead eyebrow="PICK A PATH" title="Pick one, or weave them together" />
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}
+            className="topic-grid">
+            {paths.map(p => <TopicTile key={p.title} {...p} onClick={() => onSelectPath ? onSelectPath(p.topicId) : onGetStarted()} />)}
+          </div>
         </div>
       </section>
 
-      {/* ── A6. SAMPLE LESSON ───────────────────────────────── */}
-      <section style={{ padding: '32px 22px 40px', background: 'rgba(201,169,97,0.05)' }}>
-        <div style={{ maxWidth: 700, margin: '0 auto' }}>
-          <SectionHead eyebrow="WHAT A LESSON LOOKS LIKE" title="Try one before you sign up" />
-          <div style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: 14, padding: '20px 22px', maxWidth: 480, margin: '0 auto', boxShadow: S.card }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-              <span style={{ fontSize: 10, padding: '3px 9px', background: 'rgba(107,142,127,0.15)', color: C.sageDk, borderRadius: 10 }}>Concept</span>
-              <span style={{ fontSize: 11, color: C.muted, display: 'flex', alignItems: 'center', gap: 4 }}><Clock size={12} /> 12 min · Free preview</span>
+      {/* ── A6. INTERACTIVE LESSONS SHOWCASE ─────────────────── */}
+      <section style={{ padding: '48px 22px', background: C.canvas }}>
+        <div style={{ maxWidth: 800, margin: '0 auto' }}>
+          <SectionHead eyebrow="INTERACTIVE LESSONS" title="Learn by doing, not just reading"
+            sub="Every lesson uses hands-on interactions to help concepts stick." />
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }} className="showcase-grid">
+            {/* Drag & match */}
+            <div style={{ background: C.surface, borderRadius: 14, padding: '20px 16px', boxShadow: `${S.card}, 0 4px 16px rgba(34,163,154,0.10)`,
+              transition: 'box-shadow .28s ease, transform .28s ease' }}
+              onMouseEnter={e => { e.currentTarget.style.boxShadow = `${S.cardRaised}, 0 8px 24px rgba(34,163,154,0.15)`; e.currentTarget.style.transform = 'translateY(-3px)'; }}
+              onMouseLeave={e => { e.currentTarget.style.boxShadow = `${S.card}, 0 4px 16px rgba(34,163,154,0.10)`; e.currentTarget.style.transform = 'translateY(0)'; }}>
+              <div style={{ background: C.tealSoft, borderRadius: 10, padding: '16px 14px', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ background: C.teal, color: '#fff', fontSize: 11, fontWeight: 600, padding: '4px 12px', borderRadius: 20 }}>Zakat</span>
+                <span style={{ border: `1.5px dashed ${C.tealDk}`, borderRadius: 20, padding: '4px 12px', fontSize: 11, color: C.tealDk }}>Drop here</span>
+              </div>
+              <div style={{ fontSize: 12, fontWeight: 600, color: C.text }}>Drag & match</div>
             </div>
-            <div style={{ fontFamily: serif, fontSize: 20, fontWeight: 500, color: C.forest, marginBottom: 4 }}>Lesson 1: Islam and Wealth</div>
-            <p style={{ fontSize: 13, color: C.muted, lineHeight: 1.5, marginBottom: 14 }}>
-              Why Islam is pro-trade and how the Prophet was a merchant before he was a Prophet.
-            </p>
-            {/* REVIEW:QURAN - Verify translation accuracy for ayah reference */}
-            <div style={{ background: 'rgba(248,244,237,0.7)', borderRadius: 8, padding: '11px 14px', marginBottom: 14, fontSize: 12,
-              color: C.body, lineHeight: 1.5, fontFamily: serif, fontStyle: 'italic' }}>
-              "And Allah has permitted trade and forbidden interest."{' '}
-              <span style={{ fontStyle: 'normal', fontSize: 10, color: C.goldDk, letterSpacing: '0.5px' }}>AL-BAQARAH 2:275</span>
+            {/* Fill in the blank */}
+            <div style={{ background: C.surface, borderRadius: 14, padding: '20px 16px', boxShadow: `${S.card}, 0 4px 16px rgba(240,180,41,0.10)`,
+              transition: 'box-shadow .28s ease, transform .28s ease' }}
+              onMouseEnter={e => { e.currentTarget.style.boxShadow = `${S.cardRaised}, 0 8px 24px rgba(240,180,41,0.15)`; e.currentTarget.style.transform = 'translateY(-3px)'; }}
+              onMouseLeave={e => { e.currentTarget.style.boxShadow = `${S.card}, 0 4px 16px rgba(240,180,41,0.10)`; e.currentTarget.style.transform = 'translateY(0)'; }}>
+              <div style={{ background: C.goldSoft, borderRadius: 10, padding: '16px 14px', marginBottom: 14, fontSize: 12, color: C.text, lineHeight: 1.6 }}>
+                The second pillar is <span style={{ borderBottom: `2px solid ${C.gold}`, paddingBottom: 1, minWidth: 60, display: 'inline-block' }}>&nbsp;</span>
+              </div>
+              <div style={{ fontSize: 12, fontWeight: 600, color: C.text }}>Fill in the blank</div>
             </div>
-            <DeanyButton variant="primary" onClick={onPreviewLesson || onGetStarted} style={{ padding: '9px 16px', fontSize: 12 }}>
-              Preview this lesson <ArrowRight size={13} />
-            </DeanyButton>
+            {/* Scenario card */}
+            <div style={{ background: C.surface, borderRadius: 14, padding: '20px 16px', boxShadow: `${S.card}, 0 4px 16px rgba(239,111,83,0.10)`,
+              transition: 'box-shadow .28s ease, transform .28s ease' }}
+              onMouseEnter={e => { e.currentTarget.style.boxShadow = `${S.cardRaised}, 0 8px 24px rgba(239,111,83,0.15)`; e.currentTarget.style.transform = 'translateY(-3px)'; }}
+              onMouseLeave={e => { e.currentTarget.style.boxShadow = `${S.card}, 0 4px 16px rgba(239,111,83,0.10)`; e.currentTarget.style.transform = 'translateY(0)'; }}>
+              <div style={{ background: C.coralSoft, borderRadius: 10, padding: '16px 14px', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={C.coral} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                </svg>
+                <span style={{ fontSize: 11, color: C.coral, fontWeight: 500 }}>What would you do?</span>
+              </div>
+              <div style={{ fontSize: 12, fontWeight: 600, color: C.text }}>Scenario card</div>
+            </div>
           </div>
         </div>
       </section>
@@ -260,17 +336,17 @@ const LandingPage = ({ onGetStarted, onPreviewLesson, onCalibration, onSelectPat
         <SectionHead eyebrow="SOURCES & SCHOLARS" title="Built on trusted ground"
           sub="Every lesson is reviewed by qualified scholars before publication and cites primary sources you can verify." />
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 14 }}>
-          <div style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: 14, padding: '16px 18px', boxShadow: S.card }}>
-            <div style={{ fontSize: 11, color: C.goldDk, fontWeight: 500, marginBottom: 10 }}>PRIMARY SOURCES</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 12, color: C.body, lineHeight: 1.4 }}>
+          <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14, padding: '16px 18px', boxShadow: S.card }}>
+            <div style={{ fontSize: 11, color: C.teal, fontWeight: 500, marginBottom: 10, letterSpacing: '0.5px' }}>PRIMARY SOURCES</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 12, color: C.text, lineHeight: 1.4 }}>
               {['Quran with Saheeh International translation', 'Sahih al-Bukhari and Sahih Muslim', 'Tafsir Ibn Kathir and al-Tabari', 'AAOIFI standards for finance'].map(s => (
-                <div key={s} style={{ display: 'flex', alignItems: 'flex-start', gap: 6 }}><Check size={12} color={C.sage} style={{ marginTop: 2, flexShrink: 0 }} />{s}</div>
+                <div key={s} style={{ display: 'flex', alignItems: 'flex-start', gap: 6 }}><Check size={12} color={C.teal} style={{ marginTop: 2, flexShrink: 0 }} />{s}</div>
               ))}
             </div>
           </div>
-          <div style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: 14, padding: '16px 18px', boxShadow: S.card }}>
-            <div style={{ fontSize: 11, color: C.goldDk, fontWeight: 500, marginBottom: 10 }}>REVIEW PROCESS</div>
-            <p style={{ fontSize: 12, color: C.body, lineHeight: 1.6, margin: 0 }}>
+          <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14, padding: '16px 18px', boxShadow: S.card }}>
+            <div style={{ fontSize: 11, color: C.teal, fontWeight: 500, marginBottom: 10, letterSpacing: '0.5px' }}>REVIEW PROCESS</div>
+            <p style={{ fontSize: 12, color: C.text, lineHeight: 1.6, margin: 0 }}>
               Each lesson passes three checks before it goes live: a scholar review for doctrine, a teacher review for clarity,
               and a citation audit. Disagreements between schools are flagged, not flattened.
             </p>
@@ -279,16 +355,16 @@ const LandingPage = ({ onGetStarted, onPreviewLesson, onCalibration, onSelectPat
       </section>
 
       {/* ── A8. TESTIMONIALS ────────────────────────────────── */}
-      <section style={{ padding: '32px 22px 40px', background: 'rgba(107,142,127,0.06)' }}>
+      <section style={{ padding: '32px 22px 40px', background: C.tealSoft }}>
         <div style={{ maxWidth: 800, margin: '0 auto' }}>
           <SectionHead eyebrow="FROM OUR LEARNERS" title="Built for every starting point" />
           <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 12 }}>
             {/* Featured testimonial */}
-            <div style={{ background: C.forest, borderRadius: 14, padding: '24px 22px', boxShadow: S.cardRaised }}>
-              <p style={{ fontSize: 16, color: C.cream, lineHeight: 1.6, fontFamily: serif, fontStyle: 'italic', marginBottom: 12, marginTop: 0 }}>
+            <div style={{ background: C.tealDeep, borderRadius: 14, padding: '24px 22px', boxShadow: S.cardRaised }}>
+              <p style={{ fontSize: 16, color: C.canvas, lineHeight: 1.6, fontFamily: serif, fontStyle: 'italic', marginBottom: 12, marginTop: 0 }}>
                 "I converted last year. Deany helped me actually understand the Pillars, not just memorize them."
               </p>
-              <div style={{ fontSize: 12, color: 'rgba(248,244,237,0.7)' }}>Sarah, new Muslim · Manchester</div>
+              <div style={{ fontSize: 12, color: 'rgba(251,250,246,0.7)' }}>Sarah, new Muslim · Manchester</div>
             </div>
             {/* Smaller testimonials */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10 }}>
@@ -296,11 +372,11 @@ const LandingPage = ({ onGetStarted, onPreviewLesson, onCalibration, onSelectPat
                 { q: 'Not Muslim, just curious. The Finance path opened my eyes to a different way of thinking about money.', n: 'Marcus, finance grad', c: 'Toronto' },
                 { q: 'Born Muslim, never studied properly. Deany makes it feel approachable, not intimidating.', n: 'Ahmed, learner', c: 'Dubai' },
               ].map((t, i) => (
-                <div key={i} style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: 14, padding: '14px 16px', boxShadow: S.card }}>
-                  <p style={{ fontSize: 12, color: C.body, lineHeight: 1.55, fontFamily: serif, fontStyle: 'italic', marginBottom: 10, marginTop: 0 }}>
+                <div key={i} style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14, padding: '14px 16px', boxShadow: S.card }}>
+                  <p style={{ fontSize: 12, color: C.text, lineHeight: 1.55, fontFamily: serif, fontStyle: 'italic', marginBottom: 10, marginTop: 0 }}>
                     "{t.q}"
                   </p>
-                  <div style={{ fontSize: 11, color: C.muted }}>{t.n} · {t.c}</div>
+                  <div style={{ fontSize: 11, color: C.textMuted }}>{t.n} · {t.c}</div>
                 </div>
               ))}
             </div>
@@ -322,33 +398,33 @@ const LandingPage = ({ onGetStarted, onPreviewLesson, onCalibration, onSelectPat
       </section>
 
       {/* ── A10. FINAL CTA ──────────────────────────────────── */}
-      <section style={{ padding: '48px 22px', background: C.forest, textAlign: 'center' }}>
+      <section style={{ padding: '48px 22px', background: C.tealDeep, textAlign: 'center' }}>
         <div style={{ maxWidth: 500, margin: '0 auto' }}>
           <div style={{ fontFamily: arabic, fontSize: 14, color: C.gold, marginBottom: 14, direction: 'rtl' }}>
             ابدأ من حيث أنت
           </div>
-          <h2 style={{ fontFamily: serif, fontSize: 'clamp(24px, 4vw, 30px)', fontWeight: 500, color: C.cream, lineHeight: 1.2, margin: '0 0 10px' }}>
+          <h2 style={{ fontFamily: serif, fontSize: 'clamp(24px, 4vw, 30px)', fontWeight: 500, color: C.canvas, lineHeight: 1.2, margin: '0 0 10px' }}>
             Your first lesson is two minutes away
           </h2>
-          <p style={{ fontSize: 13, color: 'rgba(248,244,237,0.7)', marginBottom: 22, lineHeight: 1.6 }}>
+          <p style={{ fontSize: 13, color: 'rgba(251,250,246,0.7)', marginBottom: 22, lineHeight: 1.6 }}>
             Take the Calibration Quiz, find your path, and start today.
           </p>
-          <DeanyButton variant="primary" onClick={onCalibration || onGetStarted} style={{ color: C.forest }}>
+          <DeanyButton variant="primary" onClick={onCalibration || onGetStarted}>
             Take the Calibration Quiz
           </DeanyButton>
-          <div style={{ fontSize: 11, color: 'rgba(248,244,237,0.5)', marginTop: 14 }}>Free core content · No card required</div>
+          <div style={{ fontSize: 11, color: 'rgba(251,250,246,0.5)', marginTop: 14 }}>Free core content · No card required</div>
         </div>
       </section>
 
       {/* ── A11. FOOTER ─────────────────────────────────────── */}
-      <footer style={{ padding: '18px 22px', background: C.dark, display: 'flex', justifyContent: 'space-between',
+      <footer style={{ padding: '18px 22px', background: C.tealDeep, display: 'flex', justifyContent: 'space-between',
         alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div style={{ width: 22, height: 22, borderRadius: '50%', background: C.gold, display: 'flex', alignItems: 'center',
+          <div style={{ width: 22, height: 22, borderRadius: '50%', background: C.teal, display: 'flex', alignItems: 'center',
             justifyContent: 'center', color: '#fff', fontFamily: serif, fontSize: 11 }}>د</div>
-          <span style={{ fontFamily: serif, fontSize: 13, color: C.cream }}>Deany</span>
+          <span style={{ fontFamily: serif, fontSize: 13, color: C.canvas }}>Deany</span>
         </div>
-        <div style={{ display: 'flex', gap: 14, fontSize: 11, color: 'rgba(248,244,237,0.6)' }}>
+        <div style={{ display: 'flex', gap: 14, fontSize: 11, color: 'rgba(251,250,246,0.6)' }}>
           <span>About</span><span>Sources</span><span>Privacy</span><span>Contact</span>
         </div>
       </footer>

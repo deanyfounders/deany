@@ -7,11 +7,12 @@ import { playClick } from '../utils/clickSound.js';
  */
 
 const C = {
-  gold: '#C9A961', goldDk: '#8A6F2F',
-  forest: '#1B4332', dark: '#0F2E22',
-  cream: '#F8F4ED',
-  body: '#2A2520', muted: '#6B6356',
-  border: 'rgba(201,169,97,0.25)',
+  gold: '#F0B429', goldDk: '#C8901A',
+  goldText: '#5A3E00',
+  teal: '#22A39A', tealDk: '#1A8C82', tealDeep: '#0F4C5C',
+  canvas: '#FBFAF6', surface: '#FFFFFF',
+  text: '#173A4A', textMuted: '#5E7480',
+  border: 'rgba(15,76,92,0.15)',
 };
 
 const base = {
@@ -24,16 +25,16 @@ const base = {
 
 const variants = {
   primary: {
-    background: C.gold, color: '#fff',
+    background: C.gold, color: C.goldText,
     boxShadow: `0 4px 0 ${C.goldDk}`,
   },
   secondary: {
-    background: 'transparent', color: C.forest,
-    border: `1.5px solid rgba(27,67,50,0.25)`,
-    boxShadow: `0 4px 0 rgba(27,67,50,0.12)`,
+    background: C.surface, color: C.text,
+    border: `1.5px solid rgba(15,76,92,0.18)`,
+    boxShadow: `0 4px 0 rgba(15,76,92,0.10)`,
   },
   ghost: {
-    background: 'transparent', color: C.muted,
+    background: 'transparent', color: C.textMuted,
     boxShadow: 'none',
   },
 };
@@ -60,7 +61,7 @@ const DeanyButton = ({
   const handleMouseEnter = (e) => {
     if (disabled) return;
     if (isGhost) {
-      e.currentTarget.style.color = C.forest;
+      e.currentTarget.style.color = C.text;
     } else {
       e.currentTarget.style.filter = 'brightness(1.03)';
     }
@@ -71,7 +72,7 @@ const DeanyButton = ({
     e.currentTarget.style.filter = 'none';
     e.currentTarget.style.transform = 'translateY(0)';
     e.currentTarget.style.boxShadow = isGhost ? 'none' : v.boxShadow;
-    if (isGhost) e.currentTarget.style.color = C.muted;
+    if (isGhost) e.currentTarget.style.color = C.textMuted;
   };
 
   const disabledStyle = disabled ? {
