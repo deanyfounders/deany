@@ -99,7 +99,7 @@ const MC_SCENARIO = {
 function shuffle(a) { const b = [...a]; for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; }
 
 /* ═══ MAIN APP ═══ */
-export default function DEANYS2L3({ onBack, onHome }) {
+export default function DEANYS2L3({ onBack, onHome, onGoToNext }) {
   const savedPage = useMemo(() => { try { const d = localStorage.getItem("deany-progress-s2-l3"); return d ? (JSON.parse(d).page || 0) : 0; } catch { return 0; } }, []);
   const [page, setPage] = useState(savedPage);
   const [scores, setScores] = useState({ q1: 0, q2: 0, q3: 0, q4: 0, q5: 0 });
@@ -1118,7 +1118,7 @@ function PCheckpoint({ scores, total, rm }) {
         <div style={{ fontFamily: F.ui, fontWeight: 700, fontSize: 13, color: T.teal, marginBottom: 3 }}>Next: Lesson 4 - "The Words That Rise"</div>
         <p style={{ margin: 0, fontFamily: F.body, fontSize: 12.5, color: T.grayDark, lineHeight: 1.7 }}>You know the movements. Next, learn what you SAY at each position, and what those words mean.</p>
       </Box>
-      <div style={{ textAlign: "center", marginTop: 18 }}><Btn style={{ minWidth: 240, fontSize: 15, padding: "15px 40px" }}>{pass ? "Continue to Lesson 4" : "Review Lesson"}</Btn></div>
+      <div style={{ textAlign: "center", marginTop: 18 }}><Btn onClick={pass ? onGoToNext : () => { setIdx(0); setAll([]); }} style={{ minWidth: 240, fontSize: 15, padding: "15px 40px" }}>{pass ? "Continue to Lesson 4" : "Review Lesson"}</Btn></div>
     </div>
   </div>;
 }

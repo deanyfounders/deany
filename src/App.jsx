@@ -930,23 +930,23 @@ const App = () => {
 
   // M1L2 check comes first so it doesn't fall into M1L1's block.
   if (screen === 'lesson-component-5') {
-    return <DEANY_M1L5 onBack={goLessons} onHome={goHome} savedProgress={loadProgress('lesson-1-5')} />;
+    return <DEANY_M1L5 onBack={goLessons} onHome={goHome} onGoToNext={goLessons} savedProgress={loadProgress('lesson-1-5')} />;
   }
 
   if (screen === 'lesson-component-4') {
-    return <DEANY_M1L4 onBack={goLessons} onHome={goHome} savedProgress={loadProgress('lesson-1-4')} />;
+    return <DEANY_M1L4 onBack={goLessons} onHome={goHome} onGoToNext={() => setScreen('lesson-component-5')} savedProgress={loadProgress('lesson-1-4')} />;
   }
 
   if (screen === 'lesson-component-3') {
-    return <DEANY_M1L3 onBack={goLessons} onHome={goHome} savedProgress={loadProgress('lesson-1-3')} />;
+    return <DEANY_M1L3 onBack={goLessons} onHome={goHome} onGoToNext={() => setScreen('lesson-component-4')} savedProgress={loadProgress('lesson-1-3')} />;
   }
 
   if (screen === 'lesson-component-2') {
-    return <DEANY_M1L2 onBack={goLessons} onHome={goHome} savedProgress={loadProgress('lesson-1-2')} />;
+    return <DEANY_M1L2 onBack={goLessons} onHome={goHome} onGoToNext={() => setScreen('lesson-component-3')} savedProgress={loadProgress('lesson-1-2')} />;
   }
 
   if (screen === 'lesson-component') {
-    return <DEANY_M1L1 onBack={goLessons} onHome={goHome} savedProgress={loadProgress('lesson-1-1')} />;
+    return <DEANY_M1L1 onBack={goLessons} onHome={goHome} onGoToNext={() => setScreen('lesson-component-2')} savedProgress={loadProgress('lesson-1-1')} />;
   }
 
   if (screen === 'prayer-vis') {
@@ -954,13 +954,13 @@ const App = () => {
   }
 
   if (screen === 's2-l1') {
-    return <DEANYS2L1 onBack={goLessons} onHome={goHome} />;
+    return <DEANYS2L1 onBack={goLessons} onHome={goHome} onGoToNext={() => setScreen('s2-l2')} />;
   }
   if (screen === 's2-l2') {
-    return <DEANYS2L2 onBack={goLessons} onHome={goHome} />;
+    return <DEANYS2L2 onBack={goLessons} onHome={goHome} onGoToNext={() => setScreen('s2-l3')} />;
   }
   if (screen === 's2-l3') {
-    return <DEANYS2L3 onBack={goLessons} onHome={goHome} />;
+    return <DEANYS2L3 onBack={goLessons} onHome={goHome} onGoToNext={() => setScreen('s2-l4')} />;
   }
   if (screen === 's2-l4') {
     return <DEANYS2L4 onBack={goLessons} onHome={goHome} onGoToHifz={() => setScreen('hifz-fatiha')} />;

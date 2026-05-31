@@ -1437,7 +1437,7 @@ function QuestionCard({q,qIdx,totalQ,score,onAnswer,onNext}){
 // ===============================================================
 // MAIN APP
 // ===============================================================
-export default function DEANY_M1L5({ onBack, onHome, savedProgress }){
+export default function DEANY_M1L5({ onBack, onHome, onGoToNext, savedProgress }){
   const [screen,      setScreen]      = useState(savedProgress ? 'lesson' : 'intro');
   const [flowIdx,     setFlowIdx]     = useState(savedProgress?.flowIdx ?? 0);
   const [score,       setScore]       = useState(savedProgress?.score ?? 0);
@@ -1636,10 +1636,10 @@ export default function DEANY_M1L5({ onBack, onHome, savedProgress }){
             </div>
             {/* CTAs */}
             <div className="space-y-3">
-              <button className="w-full py-3.5 rounded-xl font-bold text-sm pls" style={{background:`linear-gradient(135deg,${C.gold},${C.orange})`,color:C.navy}}>
+              <button onClick={onGoToNext} className="w-full py-3.5 rounded-xl font-bold text-sm pls" style={{background:`linear-gradient(135deg,${C.gold},${C.orange})`,color:C.navy}}>
                 Continue to Module 2 <ArrowRight className="w-4 h-4 inline ml-1 -mt-0.5"/>
               </button>
-              <button className="w-full py-3 rounded-xl font-bold text-sm" style={{background:'transparent',color:C.navy,border:`2px solid ${rgba(C.navy,0.25)}`}}>
+              <button onClick={onBack} className="w-full py-3 rounded-xl font-bold text-sm" style={{background:'transparent',color:C.navy,border:`2px solid ${rgba(C.navy,0.25)}`}}>
                 Review Module 1
               </button>
             </div>

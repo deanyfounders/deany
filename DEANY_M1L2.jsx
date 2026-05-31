@@ -326,7 +326,7 @@ const QUESTIONS = [
 // ═══════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ═══════════════════════════════════════════════════════════════
-export default function DEANY_M1L2({ onBack, onHome, savedProgress }) {
+export default function DEANY_M1L2({ onBack, onHome, onGoToNext, savedProgress }) {
   const [phase, setPhase] = useState(savedProgress ? 'content' : 'intro');
   const [score, setScore] = useState(savedProgress?.score ?? 0);
   const [streak, setStreak] = useState(savedProgress?.streak ?? 0);
@@ -573,7 +573,7 @@ export default function DEANY_M1L2({ onBack, onHome, savedProgress }) {
               <div className="text-xs" style={{ color: T.grayMed }}>Now that you think like a custodian, you'll learn the three things custodians must never do - ribā, gharar, and maysir.</div>
             </div>
 
-            <button className="w-full py-3.5 rounded-xl font-bold text-sm transition-all hover:shadow-lg"
+            <button onClick={onGoToNext} className="w-full py-3.5 rounded-xl font-bold text-sm transition-all hover:shadow-lg"
               style={{ background: `linear-gradient(135deg, ${T.gold}, ${T.orange})`, color: T.navy }}>
               Next Lesson <ArrowRight className="w-4 h-4 inline ml-1 -mt-0.5" />
             </button>

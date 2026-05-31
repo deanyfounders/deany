@@ -565,7 +565,7 @@ const SCORED_COUNT=QUESTIONS.filter(q=>q.scored!==false).length;
 // ═══════════════════════════════════════════════════════════════
 // ROOT
 // ═══════════════════════════════════════════════════════════════
-export default function DEANY_M1L3({ onBack, onHome, savedProgress }){
+export default function DEANY_M1L3({ onBack, onHome, onGoToNext, savedProgress }){
   const [screen,      setScreen]      = useState(savedProgress ? 'lesson' : 'intro');
   const [flowIdx,     setFlowIdx]     = useState(savedProgress?.flowIdx ?? 0);
   const [score,       setScore]       = useState(savedProgress?.score ?? 0);
@@ -755,7 +755,7 @@ export default function DEANY_M1L3({ onBack, onHome, savedProgress }){
               <div className="text-sm font-semibold mb-0.5" style={{color:C.navy}}>Lesson 1.4: Substance Over Labels</div>
               <div className="text-xs" style={{color:C.mid}}>You know WHAT is prohibited. Now learn how to DETECT it - even when it's disguised behind marketing and fancy labels.</div>
             </div>
-            <button className="w-full py-3.5 rounded-2xl font-bold text-sm" style={{background:C.gold,color:C.navy}}>
+            <button onClick={onGoToNext} className="w-full py-3.5 rounded-2xl font-bold text-sm" style={{background:C.gold,color:C.navy}}>
               Next Lesson <ArrowRight className="w-4 h-4 inline ml-1 -mt-0.5"/>
             </button>
           </div>

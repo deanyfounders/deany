@@ -287,7 +287,7 @@ const QUESTIONS = [
 // ═══════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ═══════════════════════════════════════════════════════════════
-export default function DEANY_M1L1({ onBack, onHome, savedProgress }) {
+export default function DEANY_M1L1({ onBack, onHome, onGoToNext, savedProgress }) {
   // ── State ────────────────────────────────────────────────────
   const [phase, setPhase] = useState(savedProgress ? 'content' : 'intro'); // intro | content | question | complete
   const [contentIdx, setContentIdx] = useState(0); // which section
@@ -508,7 +508,7 @@ export default function DEANY_M1L1({ onBack, onHome, savedProgress }) {
               <div className="text-xs" style={{color:T.grayMed}}>You'll explore why this single idea changes everything about how you relate to wealth.</div>
             </div>
 
-            <button className="w-full py-3.5 rounded-xl font-bold text-sm transition-all hover:shadow-lg" style={{background:`linear-gradient(135deg, ${T.gold}, ${T.orange})`, color:T.navy}}>
+            <button onClick={onGoToNext} className="w-full py-3.5 rounded-xl font-bold text-sm transition-all hover:shadow-lg" style={{background:`linear-gradient(135deg, ${T.gold}, ${T.orange})`, color:T.navy}}>
               Next Lesson <ArrowRight className="w-4 h-4 inline ml-1 -mt-0.5"/>
             </button>
           </div>

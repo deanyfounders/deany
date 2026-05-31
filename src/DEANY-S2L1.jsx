@@ -142,7 +142,7 @@ function shuffle(arr) {
 /* ═══════════════════════════════════════════════════════════════
    MAIN APP
    ═══════════════════════════════════════════════════════════════ */
-export default function DEANYS2L1({ onBack, onHome }) {
+export default function DEANYS2L1({ onBack, onHome, onGoToNext }) {
   const savedPage = useMemo(() => { try { const d = localStorage.getItem("deany-progress-s2-l1"); return d ? (JSON.parse(d).page || 0) : 0; } catch { return 0; } }, []);
   const [page, setPage] = useState(savedPage);
   const [scores, setScores] = useState({ q1: 0, q2: 0, q3: 0, q4: 0 });
@@ -1915,7 +1915,7 @@ function PageCheckpoint({ scores, total, rm }) {
         </AccentBox>
 
         <div style={{ textAlign: "center", marginTop: 18 }}>
-          <PrimaryButton style={{ minWidth: 240, fontSize: 15, padding: "15px 40px" }}>
+          <PrimaryButton onClick={passed ? onGoToNext : () => setPage(0)} style={{ minWidth: 240, fontSize: 15, padding: "15px 40px" }}>
             {passed ? "Continue to Lesson 2 \u2192" : "Review Lesson"}
           </PrimaryButton>
         </div>

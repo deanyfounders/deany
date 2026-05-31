@@ -1273,7 +1273,7 @@ function QuestionCard({q,qIdx,totalQ,score,onAnswer,onNext}){
 // ═══════════════════════════════════════════════════════════════
 // MAIN APP
 // ═══════════════════════════════════════════════════════════════
-export default function DEANY_M1L4({ onBack, onHome, savedProgress }){
+export default function DEANY_M1L4({ onBack, onHome, onGoToNext, savedProgress }){
   const [screen,   setScreen]   = useState(savedProgress ? 'lesson' : 'intro');
   const [flowIdx,  setFlowIdx]  = useState(savedProgress?.flowIdx ?? 0);
   const [score,    setScore]    = useState(savedProgress?.score ?? 0);
@@ -1469,12 +1469,15 @@ export default function DEANY_M1L4({ onBack, onHome, savedProgress }){
               <p className="text-xs italic" style={{color:C.dark}}>{confText}</p>
             </div>
             {/* Next preview */}
-            <div className="p-4 rounded-xl text-left" style={{background:C.goldLight,border:`1px solid ${rgba(C.gold,0.25)}`}}>
+            <div className="p-4 rounded-xl text-left mb-5" style={{background:C.goldLight,border:`1px solid ${rgba(C.gold,0.25)}`}}>
               <div className="text-xs font-bold mb-1" style={{color:C.gold}}>📍 Up Next: Lesson 1.5  -  Your Money Right Now</div>
               <p className="text-xs leading-relaxed" style={{color:C.dark}}>
                 Everything you have learned  -  amānah, the three prohibitions, the Five Questions  -  applied to YOUR actual finances. Time to audit.
               </p>
             </div>
+            <button onClick={onGoToNext} className="w-full py-3.5 rounded-xl font-bold text-sm" style={{background:`linear-gradient(135deg,${C.gold},${C.orange})`,color:C.navy}}>
+              Next Lesson <ArrowRight className="w-4 h-4 inline ml-1 -mt-0.5"/>
+            </button>
           </div>
         </div>
       </div>
