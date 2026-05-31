@@ -168,7 +168,7 @@ const PATH_ACCENTS = {
 /*  ModuleOverview — root                                           */
 /* ================================================================ */
 const ModuleOverview = ({
-  modules, completedLessons, loadProgress, onSelectLesson, onSelectModule, onBack, onHome,
+  modules, topicId, completedLessons, loadProgress, onSelectLesson, onSelectModule, onBack, onHome,
 }) => {
   if (!modules?.length) return null;
 
@@ -206,7 +206,7 @@ const ModuleOverview = ({
         </div>
 
         {modules.map((mod, mi) => (
-          <ModuleBlock key={mod.id} mod={mod} mi={mi} completedLessons={completedLessons}
+          <ModuleBlock key={mod.id} mod={mod} mi={mi} topicId={topicId} completedLessons={completedLessons}
             loadProgress={loadProgress} onSelectLesson={onSelectLesson} onSelectModule={onSelectModule} />
         ))}
       </div>
@@ -217,7 +217,7 @@ const ModuleOverview = ({
 /* ================================================================ */
 /*  ModuleBlock — the two-column layout per module                  */
 /* ================================================================ */
-const ModuleBlock = ({ mod, mi, completedLessons, loadProgress, onSelectLesson, onSelectModule }) => {
+const ModuleBlock = ({ mod, mi, topicId, completedLessons, loadProgress, onSelectLesson, onSelectModule }) => {
   const lessons = mod.lessons || [];
   const isDone = (i) => !!completedLessons[`${mod.id}-lesson-${i}`];
   const doneCount = lessons.filter((_, i) => isDone(i)).length;
@@ -275,7 +275,7 @@ const ModuleBlock = ({ mod, mi, completedLessons, loadProgress, onSelectLesson, 
   );
 
   const data = getModuleData(mod.id);
-  const accent = PATH_ACCENTS['5-pillars']; // default teal for 5 Pillars
+  const accent = PATH_ACCENTS[topicId] || PATH_ACCENTS['5-pillars'];
 
   return (
     <div style={{ display: 'grid', gap: 32, marginBottom: 48 }} className="mo-grid">
@@ -292,7 +292,7 @@ const ModuleBlock = ({ mod, mi, completedLessons, loadProgress, onSelectLesson, 
           </div>
           <div>
             <div style={{ fontSize: 9, fontWeight: 600, letterSpacing: '1.4px', textTransform: 'uppercase',
-              color: C.teal, lineHeight: 1 }}>
+              color: accent.accent, lineHeight: 1 }}>
               Module {mi + 1} · {mod.difficulty || 'Beginner'}
             </div>
             <h2 style={{ fontFamily: serif, fontSize: 21, fontWeight: 600, color: C.textDeep,
@@ -316,7 +316,7 @@ const ModuleBlock = ({ mod, mi, completedLessons, loadProgress, onSelectLesson, 
             <span style={{ fontSize: 10, color: C.textFaint }}>{lessons.length} lessons · {totalMin} min</span>
           </div>
           <div style={{ height: 6, borderRadius: 3, background: C.track, overflow: 'hidden' }}>
-            <div style={{ height: '100%', borderRadius: 3, background: C.teal, width: `${pct}%`,
+            <div style={{ height: '100%', borderRadius: 3, background: accent.accent, width: `${pct}%`,
               transition: 'width .5s ease-out' }} />
           </div>
         </div>
@@ -325,13 +325,13 @@ const ModuleBlock = ({ mod, mi, completedLessons, loadProgress, onSelectLesson, 
         {data.mastery.length > 0 && (
           <div style={{ background: C.canvas, borderRadius: 12, padding: 18, marginBottom: 16 }}>
             <div style={{ fontSize: 9, fontWeight: 600, letterSpacing: '1.4px', textTransform: 'uppercase',
-              color: C.teal, marginBottom: 12 }}>
+              color: accent.accent, marginBottom: 12 }}>
               What you'll master
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {data.mastery.map((item) => (
                 <div key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-                  <span style={{ color: C.tealDk, fontWeight: 700, fontSize: 13, lineHeight: '18px', flexShrink: 0 }}>
+                  <span style={{ color: accent.icon, fontWeight: 700, fontSize: 13, lineHeight: '18px', flexShrink: 0 }}>
                     &#10003;
                   </span>
                   <span style={{ fontSize: 12.5, color: C.text, lineHeight: 1.45 }}>{item}</span>
@@ -377,7 +377,7 @@ const ModuleBlock = ({ mod, mi, completedLessons, loadProgress, onSelectLesson, 
       {/* ── RIGHT: Lesson timeline ─────────────────────────────── */}
       <div>
         <div style={{ fontSize: 9, fontWeight: 600, letterSpacing: '1.4px', textTransform: 'uppercase',
-          color: C.teal, marginBottom: 20 }}>
+          color: accent.accent, marginBottom: 20 }}>
           Learning path
         </div>
 
@@ -390,7 +390,7 @@ const ModuleBlock = ({ mod, mi, completedLessons, loadProgress, onSelectLesson, 
             return (
               <LessonTimelineRow key={lesson.id} lesson={lesson} index={i} state={st}
                 saved={saved} isLast={isLast} meta={meta} isCurrent={i === curIdx}
-                onClick={() => handleLessonClick(lesson, i)} />
+                accent={accent} onClick={() => handleLessonClick(lesson, i)} />
             );
           })}
         </div>
@@ -402,13 +402,14 @@ const ModuleBlock = ({ mod, mi, completedLessons, loadProgress, onSelectLesson, 
 /* ================================================================ */
 /*  LessonTimelineRow — node + connector + card                     */
 /* ================================================================ */
-const LessonTimelineRow = ({ lesson, index, state, saved, isLast, meta, isCurrent, onClick }) => {
+const LessonTimelineRow = ({ lesson, index, state, saved, isLast, meta, isCurrent, accent, onClick }) => {
   const isDone = state === 'done';
   const isCur = state === 'current';
   const isLocked = state === 'locked';
 
-  /* Connector color: solid teal above completed nodes, faint otherwise */
-  const connectorColor = isDone ? C.teal : C.track;
+  /* Connector color: solid accent above completed nodes, faint otherwise */
+  const ac = accent || PATH_ACCENTS['5-pillars'];
+  const connectorColor = isDone ? ac.accent : C.track;
   const nextConnectorColor = C.track; // below current/locked = faint
 
   return (
@@ -428,8 +429,8 @@ const LessonTimelineRow = ({ lesson, index, state, saved, isLast, meta, isCurren
           width: 36, height: 36, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
           flexShrink: 0, position: 'relative', zIndex: 2,
           ...(isDone ? {
-            background: C.teal,
-            boxShadow: '0 2px 8px rgba(34,163,154,0.3)',
+            background: ac.accent,
+            boxShadow: `0 2px 8px ${ac.accent}4D`,
           } : isCur ? {
             background: C.gold,
             boxShadow: `0 3px 0 ${C.goldDk}, 0 2px 10px rgba(240,180,41,0.3)`,
@@ -451,7 +452,7 @@ const LessonTimelineRow = ({ lesson, index, state, saved, isLast, meta, isCurren
         {/* Bottom connector segment */}
         {!isLast && (
           <div style={{ width: 2, flexGrow: 1, minHeight: 12,
-            background: isDone ? C.teal : C.track }} />
+            background: isDone ? ac.accent : C.track }} />
         )}
       </div>
 
@@ -462,9 +463,9 @@ const LessonTimelineRow = ({ lesson, index, state, saved, isLast, meta, isCurren
           borderRadius: 14, padding: '18px 20px', textAlign: 'left',
           background: C.surface,
           border: isCur ? 'none' : `1px solid rgba(15,76,92,0.10)`,
-          borderLeft: isCur ? `4px solid ${C.teal}` : undefined,
+          borderLeft: isCur ? `4px solid ${ac.accent}` : undefined,
           boxShadow: isCur
-            ? `0 4px 20px rgba(34,163,154,0.12), ${S.card}`
+            ? `0 4px 20px ${ac.accent}1F, ${S.card}`
             : isDone ? S.card : '0 1px 4px rgba(26,35,50,.03)',
           opacity: isLocked ? 0.88 : 1,
           cursor: isLocked ? 'default' : 'pointer',
@@ -480,7 +481,7 @@ const LessonTimelineRow = ({ lesson, index, state, saved, isLast, meta, isCurren
         }}
         onMouseLeave={e => {
           e.currentTarget.style.boxShadow = isCur
-            ? `0 4px 20px rgba(34,163,154,0.12), ${S.card}`
+            ? `0 4px 20px ${ac.accent}1F, ${S.card}`
             : isDone ? S.card : '0 1px 4px rgba(26,35,50,.03)';
           e.currentTarget.style.transform = 'translateY(0)';
         }}>
@@ -489,7 +490,7 @@ const LessonTimelineRow = ({ lesson, index, state, saved, isLast, meta, isCurren
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 6 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
             <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '1.2px', textTransform: 'uppercase',
-              color: (isDone || isCur) ? C.teal : C.textFaint }}>
+              color: (isDone || isCur) ? ac.accent : C.textFaint }}>
               Lesson {index + 1}
             </span>
             {meta.type && (() => {
@@ -513,7 +514,7 @@ const LessonTimelineRow = ({ lesson, index, state, saved, isLast, meta, isCurren
 
           {/* Completed check */}
           {isDone && (
-            <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, fontWeight: 600, color: C.teal }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, fontWeight: 600, color: ac.accent }}>
               <Check size={12} strokeWidth={3} />Done
             </span>
           )}

@@ -1087,6 +1087,7 @@ const App = () => {
     return (
       <ModuleOverview
         modules={mods}
+        topicId={selectedMainTopic.id}
         completedLessons={completedLessons}
         loadProgress={loadProgress}
         onSelectLesson={selectLes}
@@ -1102,6 +1103,7 @@ const App = () => {
     return (
       <ModuleOverview
         modules={[selectedModule]}
+        topicId={selectedMainTopic?.id}
         completedLessons={completedLessons}
         loadProgress={loadProgress}
         onSelectLesson={selectLes}
