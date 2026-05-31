@@ -375,7 +375,7 @@ function HomeFormation({ next }) {
   );
 }
 
-function ModuleComplete({ score }) {
+function ModuleComplete({ score, onBack }) {
   const pct = Math.round((score / lesson.maxScore) * 100);
   const lessons = ["Appointments With Allah", "Wudu", "The Rak'ah", "The Words That Rise", "When Things Go Wrong", "Your First Real Salah", "Praying With Others"];
   return (
@@ -385,10 +385,11 @@ function ModuleComplete({ score }) {
         <h2 className="mt-5 text-4xl font-black tracking-tight">Complete.</h2>
         <p className="mt-3 text-lg leading-8 text-slate-700">You finished the final lesson. You can now pray alone, join a congregation, join late, and lead at home with the basic foundations.</p>
         <div className="mt-6 grid gap-2">{lessons.map((l) => <p key={l} className="font-black text-emerald-700">✓ {l}</p>)}</div>
-        <blockquote className="mt-6 rounded-3xl bg-white p-5 text-lg font-black text-slate-950 ring-1 ring-amber-200">“Pray as you have seen me praying.”<p className="mt-2 text-sm font-semibold text-slate-500">Sahih al-Bukhari 631</p></blockquote>
+        <blockquote className="mt-6 rounded-3xl bg-white p-5 text-lg font-black text-slate-950 ring-1 ring-amber-200">"Pray as you have seen me praying."<p className="mt-2 text-sm font-semibold text-slate-500">Sahih al-Bukhari 631</p></blockquote>
       </Card>
       <Card><h3 className="text-2xl font-black">Final score: {score}/{lesson.maxScore} · {pct}%</h3><p className="mt-2 leading-7 text-slate-700">This preview is set up for canvas. The download can stay as a backup, but this is now the default format.</p></Card>
       <div className="grid gap-3 md:grid-cols-3"><Card><Pill tone="gold">Available</Pill><h3 className="mt-3 font-black">Memorise al-Fatihah</h3><p className="mt-2 text-sm text-slate-600">Move into the Quran module.</p></Card><Card><Pill tone="purple">Soon</Pill><h3 className="mt-3 font-black">Intermediate Salah</h3><p className="mt-2 text-sm text-slate-600">Jumu'ah, Witr, voluntary prayers.</p></Card><Card><Pill tone="teal">Soon</Pill><h3 className="mt-3 font-black">Prayer streak</h3><p className="mt-2 text-sm text-slate-600">Track your five prayers.</p></Card></div>
+      {onBack && <Card><div className="flex justify-center"><Button onClick={onBack}>Back to lessons</Button></div></Card>}
     </div>
   );
 }
@@ -427,7 +428,7 @@ export default function DEANYS2L7({ onBack, onHome }) {
     <MC data={questions.q5} tag="Question 5" next={() => setPage(11)} onScore={(value) => setQuestionScore("q5", value)} />,
     <HomeFormation next={() => setPage(12)} />,
     <MC data={questions.q6} tag="Question 6" next={() => setPage(13)} onScore={(value) => setQuestionScore("q6", value)} />,
-    <ModuleComplete score={totalScore} />,
+    <ModuleComplete score={totalScore} onBack={onBack} />,
   ];
 
   const safePage = Math.min(Math.max(page, 0), pages.length - 1);

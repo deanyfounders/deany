@@ -406,10 +406,11 @@ const Dashboard = ({
               {/* Explore */}
               <div>
                 <Eyebrow style={{ marginBottom: 10 }}>EXPLORE</Eyebrow>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 12, color: C.textMuted }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 12, color: C.textFaint }}>
                   {['About Deany', 'How it works', 'Sources & scholars', 'Reflections journal', 'Privacy'].map(l => (
-                    <span key={l}>{l}</span>
+                    <span key={l} style={{ opacity: 0.7 }}>{l}</span>
                   ))}
+                  <span style={{ fontSize: 10, color: C.textFaint, fontStyle: 'italic', marginTop: 4 }}>Coming soon</span>
                 </div>
               </div>
               {/* This month */}

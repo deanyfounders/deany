@@ -963,13 +963,13 @@ const App = () => {
     return <DEANYS2L3 onBack={goLessons} onHome={goHome} onGoToNext={() => setScreen('s2-l4')} />;
   }
   if (screen === 's2-l4') {
-    return <DEANYS2L4 onBack={goLessons} onHome={goHome} onGoToHifz={() => setScreen('hifz-fatiha')} />;
+    return <DEANYS2L4 onBack={goLessons} onHome={goHome} onGoToHifz={() => setScreen('hifz-fatiha')} onGoToNext={() => setScreen('s2-l5')} />;
   }
   if (screen === 's2-l5') {
-    return <DEANYS2L5 onBack={goLessons} onHome={goHome} />;
+    return <DEANYS2L5 onBack={goLessons} onHome={goHome} onGoToNext={() => setScreen('s2-l6')} />;
   }
   if (screen === 's2-l6') {
-    return <DEANYS2L6 onBack={goLessons} onHome={goHome} />;
+    return <DEANYS2L6 onBack={goLessons} onHome={goHome} onGoToNext={() => setScreen('s2-l7')} />;
   }
   if (screen === 's2-l7') {
     return <DEANYS2L7 onBack={goLessons} onHome={goHome} />;

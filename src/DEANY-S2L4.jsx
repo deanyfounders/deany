@@ -109,7 +109,7 @@ const P = ({ children }) => <p style={{ fontFamily: F.body, fontSize: 16, lineHe
 const Ar = ({ children, size = 28 }) => <div dir="rtl" lang="ar" style={{ fontFamily: F.ar, fontSize: size, lineHeight: 1.9, color: T.navy, textAlign: "center" }}>{children}</div>;
 const Tag = ({ children, colour = T.teal }) => <span style={{ fontFamily: F.ui, fontSize: 10, fontWeight: 900, letterSpacing: 1.3, background: `${colour}18`, color: colour, borderRadius: 999, padding: "5px 10px", textTransform: "uppercase" }}>{children}</span>;
 
-export default function DEANYS2L4({ onBack, onHome, onGoToHifz }) {
+export default function DEANYS2L4({ onBack, onHome, onGoToHifz, onGoToNext }) {
   const [page, setPage] = useState(0);
   const [scores, setScores] = useState({ q1: null, q2: null, q3: null, q4: null, q5: null, q6: null });
   const [reduce, setReduce] = useState(false);
@@ -140,7 +140,7 @@ export default function DEANYS2L4({ onBack, onHome, onGoToHifz }) {
     <StructurePage next={() => setPage(10)} />,
     <MCPage q={q6} label="Question 6" onDone={(v) => done("q6", v)} />,
     <Takeaway next={() => setPage(12)} />,
-    <Checkpoint scores={scores} reset={() => { setScores({ q1: null, q2: null, q3: null, q4: null, q5: null, q6: null }); setPage(0); }} onGoToHifz={onGoToHifz} />,
+    <Checkpoint scores={scores} reset={() => { setScores({ q1: null, q2: null, q3: null, q4: null, q5: null, q6: null }); setPage(0); }} onGoToHifz={onGoToHifz} onGoToNext={onGoToNext} onBack={onBack} />,
   ];
   const progress = Math.round(((page + 1) / pages.length) * 100);
   return <main style={{ minHeight: "100vh", background: T.cream, color: T.navy }}>
@@ -427,11 +427,11 @@ function Takeaway({ next }) {
   return <div><H eyebrow="Takeaway" title="The words are now attached to the movements" /><Box colour={T.gold} bg={T.goldPale}><P>You do not need to master everything in one day. But you now have the map: where each phrase belongs, why al-Fatihah is central, and how the tashahhud closes the prayer with testimony and peace.</P></Box><div style={{ textAlign: "center" }}><Button onClick={next}>See Results</Button></div></div>;
 }
 
-function Checkpoint({ scores, reset, onGoToHifz }) {
+function Checkpoint({ scores, reset, onGoToHifz, onGoToNext, onBack }) {
   const max = { q1: 1, q2: 6, q3: 2, q4: 6, q5: 5, q6: 1 };
   const total = Object.entries(max).reduce((n, [k]) => n + (scores[k] ?? 0), 0);
   const outOf = Object.values(max).reduce((a, b) => a + b, 0);
   const pct = Math.round((total / outOf) * 100);
   const items = ["Al-Fatihah structure", "Core movement recitations", "Sitting words placed correctly", "Salawat introduced", "Scenario judgement"];
-  return <div><H eyebrow="Checkpoint" title="Lesson complete" /><Box colour={pct >= 70 ? T.green : T.gold} bg={pct >= 70 ? T.greenLight : T.goldPale}><div style={{ textAlign: "center" }}><div style={{ fontFamily: F.display, fontSize: 58, color: T.navy }}>{pct}%</div><P>{total}/{outOf} points</P></div></Box><Box colour={T.teal} bg={T.tealLight}><Tag colour={T.teal}>Mastered</Tag>{items.map((x) => <div key={x} style={{ fontFamily: F.ui, fontWeight: 800, marginTop: 10 }}>✓ {x}</div>)}</Box><Box colour={T.gold} bg={T.goldPale}><Tag colour={T.gold}>Ready for practice</Tag><P>You can now attach the main words to the main movements of salah. Keep practising slowly and correctly.</P></Box><div style={{ display: "flex", justifyContent: "center", gap: 10, flexWrap: "wrap" }}><Button onClick={reset}>Restart Lesson</Button><Button variant="ghost" onClick={onGoToHifz}>Continue to Hifz</Button></div></div>;
+  return <div><H eyebrow="Checkpoint" title="Lesson complete" /><Box colour={pct >= 70 ? T.green : T.gold} bg={pct >= 70 ? T.greenLight : T.goldPale}><div style={{ textAlign: "center" }}><div style={{ fontFamily: F.display, fontSize: 58, color: T.navy }}>{pct}%</div><P>{total}/{outOf} points</P></div></Box><Box colour={T.teal} bg={T.tealLight}><Tag colour={T.teal}>Mastered</Tag>{items.map((x) => <div key={x} style={{ fontFamily: F.ui, fontWeight: 800, marginTop: 10 }}>✓ {x}</div>)}</Box><Box colour={T.gold} bg={T.goldPale}><Tag colour={T.gold}>Ready for practice</Tag><P>You can now attach the main words to the main movements of salah. Keep practising slowly and correctly.</P></Box><div style={{ display: "flex", justifyContent: "center", gap: 10, flexWrap: "wrap" }}><Button onClick={onGoToNext}>Continue to Lesson 5</Button><Button variant="ghost" onClick={onGoToHifz}>Practice Hifz</Button></div><div style={{ textAlign: "center", marginTop: 10 }}><button onClick={onBack} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 13, fontFamily: F.ui, color: T.grayMed, fontWeight: 500 }}>Back to lessons</button></div></div>;
 }
