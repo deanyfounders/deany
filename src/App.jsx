@@ -758,8 +758,8 @@ const App = () => {
     if (questions) buildShuffleMaps(questions);
   };
   const goHome = () => { setScreen('home'); setSelectedMainTopic(null); setSelectedModule(null); setSelectedLesson(null); };
-  const goModules = () => { setScreen('modules'); setSelectedModule(null); setSelectedLesson(null); };
-  const goLessons = () => { setScreen(selectedEpoch && selectedLevel ? 'history-lessons' : selectedModule ? 'lessons' : 'modules'); setSelectedLesson(null); };
+  const goModules = () => { if (!selectedMainTopic) { goHome(); return; } setScreen('modules'); setSelectedModule(null); setSelectedLesson(null); };
+  const goLessons = () => { if (!selectedMainTopic) { goHome(); return; } setScreen(selectedEpoch && selectedLevel ? 'history-lessons' : selectedModule ? 'lessons' : 'modules'); setSelectedLesson(null); };
 
   // Exit confirmation for quizzes/speed rounds with progress
   const tryExit = (action) => {
@@ -1032,6 +1032,10 @@ const App = () => {
         lastSelectedTopicId={lastSelectedTopicId}
         onSelectTopic={selectMainTopic}
         onSelectLesson={(lesson, idx, mod) => {
+          if (!selectedMainTopic) {
+            const topic = mainTopics.find(t => (modules[t.id] || []).some(m => m.id === mod.id));
+            if (topic) { setSelectedMainTopic(topic); setLastSelectedTopicId(topic.id); }
+          }
           setSelectedModule(mod);
           selectLes(lesson, idx);
         }}
@@ -1045,6 +1049,7 @@ const App = () => {
   // MODULES
   // ═══════════════════════════════════════════════════════════════
   if (screen == 'modules') {
+    if (!selectedMainTopic) { goHome(); return null; }
     const mods = modules[selectedMainTopic.id] || [];
     const isHist = selectedMainTopic.id == 'islamic-history';
     const isFin = selectedMainTopic.id == 'islamic-finance';
