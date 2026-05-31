@@ -1,8 +1,26 @@
 import React, { useCallback } from 'react';
 import { Check, Lock, ChevronLeft, Home, Zap, ArrowRight, Clock, Play, BookOpen } from 'lucide-react';
+import DeanyButton from './components/DeanyButton.jsx';
 
-const focusRing = "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C9A961] focus-visible:ring-offset-2";
+/* ── Bright palette (mirrors Dashboard C) ─────────────────────────── */
+const C = {
+  canvas: '#FBFAF6', surface: '#FFFFFF',
+  gold: '#F0B429', goldDk: '#C8901A', goldSoft: '#FCEFCF', goldText: '#5A3E00',
+  teal: '#22A39A', tealDk: '#1A8C82', tealDeep: '#0F4C5C', tealSoft: '#DCF3EF',
+  coral: '#EF6F53', coralSoft: '#FBE5DE',
+  blue: '#2E6E8E', blueSoft: '#E0EDF7',
+  text: '#173A4A', textDeep: '#0F4C5C', textMuted: '#5E7480', textFaint: '#94A3AA',
+  track: '#EDE6D6',
+};
+const S = {
+  card: '0 1px 2px rgba(26,35,50,.05), 0 8px 24px rgba(26,35,50,.08)',
+  cardRaised: '0 4px 8px rgba(26,35,50,.08), 0 18px 44px rgba(26,35,50,.14)',
+};
+const serif = 'Georgia, serif';
+const focusRing = { outline: 'none' };
+const focusVisibleRing = '0 0 0 2px #FBFAF6, 0 0 0 4px #22A39A';
 
+/* ── Module enrichment data ────────────────────────────────────────── */
 const MODULE_DATA = {
   'module-1': {
     badge: 'Foundation Module',
@@ -14,11 +32,11 @@ const MODULE_DATA = {
       'Apply the custodian mindset to real scenarios',
     ],
     concepts: [
-      { label: 'Amanah', color: 'emerald' },
+      { label: 'Amanah', color: 'blue' },
       { label: 'Riba', color: 'coral' },
-      { label: 'Gharar', color: 'coral' },
-      { label: 'Maysir', color: 'coral' },
-      { label: 'Halal Deal Structure', color: 'gold' },
+      { label: 'Gharar', color: 'teal' },
+      { label: 'Maysir', color: 'gold' },
+      { label: 'Halal Deal Structure', color: 'blue' },
     ],
     lessonMeta: {
       'lesson-1-1': { type: 'Concept', desc: 'Why Islam is pro-trade and how the Prophet was a merchant.' },
@@ -38,10 +56,10 @@ const MODULE_DATA = {
       'Know what it means to live by the Shahadah',
     ],
     concepts: [
-      { label: 'Tawhid', color: 'emerald' },
+      { label: 'Tawhid', color: 'blue' },
       { label: 'Shahadah', color: 'gold' },
-      { label: 'Ilah', color: 'emerald' },
-      { label: 'Rasul', color: 'emerald' },
+      { label: 'Ilah', color: 'teal' },
+      { label: 'Rasul', color: 'coral' },
     ],
     lessonMeta: {
       'b1-l1': { type: 'Concept', desc: 'The testimony that opens the door to Islam.' },
@@ -60,11 +78,11 @@ const MODULE_DATA = {
       'Join a congregation and pray with others',
     ],
     concepts: [
-      { label: 'Wudu', color: 'emerald' },
-      { label: "Rak'ah", color: 'emerald' },
+      { label: 'Wudu', color: 'blue' },
+      { label: "Rak'ah", color: 'teal' },
       { label: 'Al-Fatihah', color: 'gold' },
-      { label: 'Sajdah al-Sahw', color: 'gold' },
-      { label: 'Tashahhud', color: 'emerald' },
+      { label: 'Sajdah al-Sahw', color: 'coral' },
+      { label: 'Tashahhud', color: 'blue' },
     ],
     lessonMeta: {
       's2-l1': { type: 'Concept', desc: 'Why salah is five appointments, not five obligations.' },
@@ -86,8 +104,8 @@ const MODULE_DATA = {
     ],
     concepts: [
       { label: 'Al-Fatiha', color: 'gold' },
-      { label: 'Hifz', color: 'emerald' },
-      { label: 'Tajweed Basics', color: 'emerald' },
+      { label: 'Hifz', color: 'teal' },
+      { label: 'Tajweed Basics', color: 'blue' },
     ],
     lessonMeta: {
       'hifz-fatiha': { type: 'Memorisation', desc: 'The Opening - 7 verses, passage by passage.' },
@@ -102,9 +120,9 @@ const MODULE_DATA = {
       'Connect the words of prayer to their purpose',
     ],
     concepts: [
-      { label: 'Tafsir', color: 'emerald' },
+      { label: 'Tafsir', color: 'teal' },
       { label: 'Al-Fatiha', color: 'gold' },
-      { label: 'Ibn Kathir', color: 'emerald' },
+      { label: 'Ibn Kathir', color: 'blue' },
     ],
     lessonMeta: {
       'tafsir-fatiha': { type: 'Tafsir', desc: 'Verse-by-verse meaning and context.' },
@@ -113,58 +131,77 @@ const MODULE_DATA = {
 };
 
 const getModuleData = (modId) => MODULE_DATA[modId] || {
-  badge: 'Module',
-  desc: '',
-  mastery: [],
-  concepts: [],
-  lessonMeta: {},
+  badge: 'Module', desc: '', mastery: [], concepts: [], lessonMeta: {},
 };
 
-const GeoPattern = () => (
-  <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-[0.03]" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <pattern id="geo-elegant" x="0" y="0" width="80" height="80" patternUnits="userSpaceOnUse">
-        <path d="M40 0L80 40L40 80L0 40Z" fill="none" stroke="#C9A961" strokeWidth="0.5"/>
-        <circle cx="40" cy="40" r="16" fill="none" stroke="#C9A961" strokeWidth="0.3"/>
-        <circle cx="40" cy="40" r="4" fill="none" stroke="#C9A961" strokeWidth="0.3"/>
-      </pattern>
-    </defs>
-    <rect width="100%" height="100%" fill="url(#geo-elegant)"/>
-  </svg>
-);
+/* ── Pill color cycle (blue → teal → gold → coral, repeating) ──── */
+const PILL_COLORS = [
+  { bg: C.blueSoft, text: C.blue },
+  { bg: C.tealSoft, text: C.tealDk },
+  { bg: C.goldSoft, text: C.goldText },
+  { bg: C.coralSoft, text: C.coral },
+];
+const pillColor = (i) => PILL_COLORS[i % PILL_COLORS.length];
 
-const HeroGlow = () => (
-  <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-3xl" aria-hidden="true">
-    <div className="absolute -top-20 -right-20 w-60 h-60 rounded-full opacity-[0.06]"
-      style={{ background: 'radial-gradient(circle, #6B8E7F 0%, transparent 70%)' }} />
-    <div className="absolute -bottom-10 -left-10 w-40 h-40 rounded-full opacity-[0.05]"
-      style={{ background: 'radial-gradient(circle, #C9A961 0%, transparent 70%)' }} />
-  </div>
-);
+/* ── Type badge colors ─────────────────────────────────────────── */
+const typeBadgeColor = (type) => {
+  if (!type) return null;
+  const t = type.toLowerCase();
+  if (t.includes('concept') || t.includes('interactive') || t.includes('memoris') || t.includes('tafsir'))
+    return { bg: C.tealSoft, text: C.tealDk };
+  if (t.includes('reflect'))
+    return { bg: C.coralSoft, text: C.coral };
+  if (t.includes('practice') || t.includes('scenario'))
+    return { bg: C.goldSoft, text: C.goldText };
+  return { bg: C.blueSoft, text: C.blue };
+};
 
+/* ── Path accent colors per topic ──────────────────────────────── */
+const PATH_ACCENTS = {
+  '5-pillars':       { soft: C.tealSoft, icon: C.tealDk, accent: C.teal },
+  'islamic-finance': { soft: C.goldSoft, icon: C.goldText, accent: C.gold },
+  'quran-arabic':    { soft: C.blueSoft, icon: C.blue, accent: C.blue },
+  'islamic-history': { soft: C.coralSoft, icon: C.coral, accent: C.coral },
+};
+
+/* ================================================================ */
+/*  ModuleOverview — root                                           */
+/* ================================================================ */
 const ModuleOverview = ({
   modules, completedLessons, loadProgress, onSelectLesson, onSelectModule, onBack, onHome,
 }) => {
   if (!modules?.length) return null;
-  return (
-    <div className="min-h-screen relative" style={{ background: '#F8F4ED' }}>
-      <style>{`
-        @keyframes slideUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-        @keyframes pulseGold{0%,100%{box-shadow:0 0 0 0 rgba(198,162,74,0.3)}50%{box-shadow:0 0 0 8px rgba(198,162,74,0)}}
-      `}</style>
-      <GeoPattern />
 
-      <div className="relative z-10 max-w-6xl mx-auto px-4 py-6" style={{ animation: 'slideUp 0.5s ease-out both' }}>
-        {/* Nav */}
-        <div className="flex justify-between items-center mb-8">
-          <button onClick={onBack}
-            className={`flex items-center gap-1.5 text-[#6B6356] hover:text-[#1B4332] transition-colors text-sm font-medium min-h-[48px] px-1 ${focusRing}`}>
-            <ChevronLeft className="w-4 h-4" /><span>Home</span>
+  return (
+    <div style={{ background: C.canvas, minHeight: '100vh' }}>
+      <style>{`
+        @media (prefers-reduced-motion: reduce) {
+          *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+        }
+        .mo-focus:focus { outline: none; }
+        .mo-focus:focus-visible { box-shadow: ${focusVisibleRing}; }
+        .mo-grid { grid-template-columns: 1fr; }
+        @media (min-width: 768px) { .mo-grid { grid-template-columns: 45fr 55fr; align-items: start; } }
+      `}</style>
+
+      <div style={{ maxWidth: 1120, margin: '0 auto', padding: '24px 20px 48px' }}>
+        {/* Nav bar */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
+          <button onClick={onBack} className="mo-focus"
+            style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none',
+              cursor: 'pointer', color: C.textMuted, fontSize: 13, fontWeight: 500, minHeight: 48, padding: '0 4px',
+              transition: 'color .15s', ...focusRing }}
+            onMouseEnter={e => e.currentTarget.style.color = C.textDeep}
+            onMouseLeave={e => e.currentTarget.style.color = C.textMuted}>
+            <ChevronLeft size={16} /><span>Back</span>
           </button>
-          <button onClick={onHome}
-            className={`flex items-center gap-1.5 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-md hover:brightness-105 transition-all min-h-[48px] ${focusRing}`}
-            style={{ background: '#C9A961' }}>
-            <Home className="w-4 h-4" /><span>Home</span>
+          <button onClick={onHome} className="mo-focus"
+            style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none',
+              cursor: 'pointer', color: C.textMuted, fontSize: 13, fontWeight: 500, minHeight: 48, padding: '0 4px',
+              transition: 'color .15s', ...focusRing }}
+            onMouseEnter={e => e.currentTarget.style.color = C.textDeep}
+            onMouseLeave={e => e.currentTarget.style.color = C.textMuted}>
+            <Home size={16} /><span>Home</span>
           </button>
         </div>
 
@@ -177,251 +214,338 @@ const ModuleOverview = ({
   );
 };
 
+/* ================================================================ */
+/*  ModuleBlock — the two-column layout per module                  */
+/* ================================================================ */
 const ModuleBlock = ({ mod, mi, completedLessons, loadProgress, onSelectLesson, onSelectModule }) => {
   const lessons = mod.lessons || [];
   const isDone = (i) => !!completedLessons[`${mod.id}-lesson-${i}`];
   const doneCount = lessons.filter((_, i) => isDone(i)).length;
   const pct = lessons.length > 0 ? Math.round((doneCount / lessons.length) * 100) : 0;
   const curIdx = lessons.findIndex((_, i) => !isDone(i));
-  const totalMin = lessons.reduce((sum, l) => {
-    const m = parseInt(l.duration) || 0;
-    return sum + m;
-  }, 0);
+  const totalMin = lessons.reduce((sum, l) => sum + (parseInt(l.duration) || 0), 0);
   const getState = (i) => {
     if (isDone(i)) return 'done';
     if (i === curIdx) return 'current';
-    return 'open';
+    return 'locked';
   };
 
   const handleLessonClick = useCallback((lesson, i) => {
     onSelectLesson(lesson, i);
   }, [onSelectLesson]);
 
+  /* Speed round — keep existing card */
   if (mod.isSpeedRound) return (
-    <button onClick={() => onSelectModule(mod, mi)}
-      className={`w-full rounded-3xl p-6 text-left bg-white border border-[rgba(201,169,97,0.25)] shadow-[0_2px_12px_rgba(42,37,32,0.04)] hover:shadow-[0_8px_24px_rgba(42,37,32,0.08)] hover:-translate-y-0.5 transition-all duration-200 mb-6 ${focusRing}`}>
-      <div className="flex items-center gap-5">
-        <div className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg text-white flex-shrink-0"
-          style={{ background: 'linear-gradient(135deg, #7c3aed, #6d28d9)' }}><Zap className="w-7 h-7" /></div>
-        <div className="flex-1">
-          <h3 className="font-bold text-[#1B4332]" style={{ fontFamily: 'Georgia,serif' }}>{mod.title}</h3>
-          <p className="text-sm text-[#6B6356]">{mod.subtitle}</p>
-        </div>
-        <ArrowRight className="w-5 h-5 text-[#6B6356]" />
+    <button onClick={() => onSelectModule(mod, mi)} className="mo-focus"
+      style={{ width: '100%', borderRadius: 16, padding: 24, textAlign: 'left', background: C.surface,
+        border: `1px solid rgba(15,76,92,0.12)`, boxShadow: S.card, cursor: 'pointer',
+        display: 'flex', alignItems: 'center', gap: 20, marginBottom: 24,
+        transition: 'box-shadow .2s, transform .2s', ...focusRing }}
+      onMouseEnter={e => { e.currentTarget.style.boxShadow = S.cardRaised; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+      onMouseLeave={e => { e.currentTarget.style.boxShadow = S.card; e.currentTarget.style.transform = 'translateY(0)'; }}>
+      <div style={{ width: 56, height: 56, borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center',
+        background: 'linear-gradient(135deg, #7c3aed, #6d28d9)', color: '#fff', flexShrink: 0 }}>
+        <Zap size={28} />
       </div>
+      <div style={{ flex: 1 }}>
+        <h3 style={{ fontFamily: serif, fontWeight: 600, color: C.textDeep, margin: 0, fontSize: 17 }}>{mod.title}</h3>
+        <p style={{ color: C.textMuted, margin: '4px 0 0', fontSize: 13 }}>{mod.subtitle}</p>
+      </div>
+      <ArrowRight size={20} color={C.textFaint} />
     </button>
   );
 
+  /* Empty / coming soon */
   if (!lessons.length) return (
-    <div className="rounded-3xl p-6 opacity-60 bg-white border border-[rgba(201,169,97,0.25)] shadow-[0_2px_12px_rgba(42,37,32,0.04)] mb-6">
-      <div className="flex items-center gap-5">
-        <div className="w-14 h-14 rounded-2xl flex items-center justify-center bg-[rgba(201,169,97,0.08)] flex-shrink-0">
-          <Lock className="w-6 h-6 text-[#9A9389]" /></div>
-        <div>
-          <h3 className="font-bold text-[#6B6356]" style={{ fontFamily: 'Georgia,serif' }}>{mod.title}</h3>
-          <p className="text-sm text-[#9A9389]">{mod.subtitle}</p>
-          <span className="text-xs px-2.5 py-0.5 rounded-full font-medium bg-[rgba(201,169,97,0.12)] text-[#8A6F2F] mt-1.5 inline-block">Coming Soon</span>
-        </div>
+    <div style={{ borderRadius: 16, padding: 24, background: C.surface, border: '1px solid rgba(15,76,92,0.12)',
+      boxShadow: '0 1px 4px rgba(26,35,50,.03)', marginBottom: 24, opacity: 0.6,
+      display: 'flex', alignItems: 'center', gap: 20 }}>
+      <div style={{ width: 56, height: 56, borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center',
+        background: 'rgba(15,76,92,0.05)', flexShrink: 0 }}>
+        <Lock size={24} color={C.textFaint} />
+      </div>
+      <div>
+        <h3 style={{ fontFamily: serif, fontWeight: 600, color: C.textMuted, margin: 0, fontSize: 17 }}>{mod.title}</h3>
+        <p style={{ color: C.textFaint, margin: '4px 0 0', fontSize: 13 }}>{mod.subtitle}</p>
+        <span style={{ display: 'inline-block', marginTop: 8, fontSize: 10, fontWeight: 600, letterSpacing: '0.08em',
+          textTransform: 'uppercase', padding: '3px 10px', borderRadius: 20,
+          background: C.goldSoft, color: C.goldText }}>Coming Soon</span>
       </div>
     </div>
   );
 
-  const nextLesson = curIdx >= 0 ? lessons[curIdx] : null;
   const data = getModuleData(mod.id);
+  const accent = PATH_ACCENTS['5-pillars']; // default teal for 5 Pillars
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1fr_1.1fr] lg:items-start">
-      {/* Left column */}
-      <div className="space-y-5">
-        {/* Hero card */}
-        <div className="relative rounded-3xl bg-white border border-[rgba(201,169,97,0.25)] shadow-[0_4px_20px_rgba(42,37,32,0.06)] p-7 overflow-hidden">
-          <HeroGlow />
-          <div className="relative">
-            {/* Emblem + badge */}
-            <div className="flex items-center gap-3 mb-5">
-              <div className="w-11 h-11 rounded-2xl flex items-center justify-center shadow-sm"
-                style={{ background: '#C9A961' }}>
-                <BookOpen className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#C9A961]">{data.badge}</span>
-            </div>
+    <div style={{ display: 'grid', gap: 32, marginBottom: 48 }} className="mo-grid">
 
-            <h2 className="text-2xl lg:text-3xl font-bold text-[#1B4332] leading-tight" style={{ fontFamily: 'Georgia,serif' }}>
+      {/* ── LEFT: Module summary panel ─────────────────────────── */}
+      <div style={{ background: C.surface, borderRadius: 16, padding: 28, boxShadow: S.card,
+        border: '1px solid rgba(15,76,92,0.08)' }}>
+
+        {/* 1. Header row */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16 }}>
+          <div style={{ width: 36, height: 36, borderRadius: 10, background: accent.soft,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <BookOpen size={18} color={accent.icon} />
+          </div>
+          <div>
+            <div style={{ fontSize: 9, fontWeight: 600, letterSpacing: '1.4px', textTransform: 'uppercase',
+              color: C.teal, lineHeight: 1 }}>
+              Module {mi + 1} · {mod.difficulty || 'Beginner'}
+            </div>
+            <h2 style={{ fontFamily: serif, fontSize: 21, fontWeight: 600, color: C.textDeep,
+              margin: '4px 0 0', lineHeight: 1.25 }}>
               {mod.title}
             </h2>
-            {mod.subtitle && <p className="text-[#6B6356] mt-1.5 text-sm">{mod.subtitle}</p>}
-
-            {data.desc && (
-              <p className="text-sm text-[#6B6356] mt-4 leading-relaxed">
-                {data.desc}
-              </p>
-            )}
-
-            {/* Progress */}
-            <div className="mt-6">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-semibold text-[#6B6356]">
-                  {pct}% complete
-                </span>
-                <span className="text-xs text-[#9A9389]">
-                  {lessons.length} lessons · {totalMin} min total
-                </span>
-              </div>
-              <div className="h-2 bg-[rgba(201,169,97,0.2)] rounded-full overflow-hidden">
-                <div className="h-full rounded-full transition-all duration-500 ease-out"
-                  style={{ width: `${pct}%`, background: '#C9A961' }} />
-              </div>
-            </div>
-
-            {/* CTA */}
-            {nextLesson && (
-              <button onClick={() => onSelectLesson(nextLesson, curIdx)}
-                className={`w-full mt-6 px-6 py-3.5 rounded-2xl font-semibold text-white
-                  flex items-center justify-center gap-2 min-h-[48px]
-                  shadow-[0_2px_8px_rgba(198,162,74,0.3)] hover:shadow-[0_4px_16px_rgba(198,162,74,0.4)]
-                  hover:brightness-105 active:brightness-95 transition-all duration-200 ${focusRing}`}
-                style={{ background: '#C9A961' }}>
-                <Play className="w-4 h-4" fill="white" />
-                {doneCount > 0 ? 'Continue Learning' : 'Start Learning'}
-              </button>
-            )}
           </div>
         </div>
 
-        {/* What you'll master */}
-        {data.mastery.length > 0 && (
-        <div className="rounded-3xl bg-white border border-[rgba(201,169,97,0.25)] shadow-[0_2px_12px_rgba(42,37,32,0.04)] p-6">
-          <h3 className="text-sm font-bold uppercase tracking-[0.12em] text-[#1B4332] mb-4">What you'll master</h3>
-          <div className="space-y-3">
-            {data.mastery.map((item) => (
-              <div key={item} className="flex items-start gap-3">
-                <div className="w-5 h-5 rounded-full bg-[rgba(107,142,127,0.12)] flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <Check className="w-3 h-3 text-[#6B8E7F]" strokeWidth={3} />
-                </div>
-                <p className="text-sm text-[#2A2520] leading-relaxed">{item}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+        {/* 2. Description */}
+        {data.desc && (
+          <p style={{ fontSize: 12.5, color: C.textMuted, lineHeight: 1.55, margin: '0 0 20px' }}>
+            {data.desc}
+          </p>
         )}
 
-        {/* Key concepts */}
-        {data.concepts.length > 0 && (
-        <div className="rounded-3xl bg-white border border-[rgba(201,169,97,0.25)] shadow-[0_2px_12px_rgba(42,37,32,0.04)] p-6">
-          <h3 className="text-sm font-bold uppercase tracking-[0.12em] text-[#1B4332] mb-4">Key concepts</h3>
-          <div className="flex flex-wrap gap-2">
-            {data.concepts.map((c) => (
-              <span key={c.label} className={`text-xs font-semibold px-3 py-1.5 rounded-full ${
-                c.color === 'emerald' ? 'bg-[rgba(107,142,127,0.12)] text-[#6B8E7F]' :
-                c.color === 'coral' ? 'bg-[rgba(184,105,77,0.1)] text-[#B8694D]' :
-                'bg-[rgba(201,169,97,0.12)] text-[#8A6F2F]'
-              }`}>{c.label}</span>
-            ))}
+        {/* 3. Progress row + bar */}
+        <div style={{ marginBottom: 24 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+            <span style={{ fontSize: 11, fontWeight: 600, color: C.textMuted }}>{pct}% complete</span>
+            <span style={{ fontSize: 10, color: C.textFaint }}>{lessons.length} lessons · {totalMin} min</span>
+          </div>
+          <div style={{ height: 6, borderRadius: 3, background: C.track, overflow: 'hidden' }}>
+            <div style={{ height: '100%', borderRadius: 3, background: C.teal, width: `${pct}%`,
+              transition: 'width .5s ease-out' }} />
           </div>
         </div>
+
+        {/* 4. What you'll master */}
+        {data.mastery.length > 0 && (
+          <div style={{ background: C.canvas, borderRadius: 12, padding: 18, marginBottom: 16 }}>
+            <div style={{ fontSize: 9, fontWeight: 600, letterSpacing: '1.4px', textTransform: 'uppercase',
+              color: C.teal, marginBottom: 12 }}>
+              What you'll master
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {data.mastery.map((item) => (
+                <div key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                  <span style={{ color: C.tealDk, fontWeight: 700, fontSize: 13, lineHeight: '18px', flexShrink: 0 }}>
+                    &#10003;
+                  </span>
+                  <span style={{ fontSize: 12.5, color: C.text, lineHeight: 1.45 }}>{item}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* 5. Key concepts — multicolor pills */}
+        {data.concepts.length > 0 && (
+          <div style={{ background: C.canvas, borderRadius: 12, padding: 18 }}>
+            <div style={{ fontSize: 9, fontWeight: 600, letterSpacing: '1.4px', textTransform: 'uppercase',
+              color: C.goldText, marginBottom: 12 }}>
+              Key concepts
+            </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+              {data.concepts.map((c, ci) => {
+                const pc = pillColor(ci);
+                return (
+                  <span key={c.label} style={{ fontSize: 11, fontWeight: 600, padding: '5px 14px', borderRadius: 20,
+                    background: pc.bg, color: pc.text }}>
+                    {c.label}
+                  </span>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* CTA */}
+        {curIdx >= 0 && (
+          <div style={{ marginTop: 20 }}>
+            <DeanyButton variant="primary" onClick={() => onSelectLesson(lessons[curIdx], curIdx)}
+              style={{ width: '100%', gap: 8 }}>
+              <Play size={15} fill={C.goldText} color={C.goldText} />
+              {doneCount > 0 ? 'Continue Learning' : 'Start Learning'}
+            </DeanyButton>
+          </div>
         )}
       </div>
 
-      {/* Right column: Lesson journey */}
+      {/* ── RIGHT: Lesson timeline ─────────────────────────────── */}
       <div>
-        <h3 className="text-sm font-bold uppercase tracking-[0.12em] text-[#6B6356] mb-5 lg:mt-1">Learning path</h3>
-        <div className="relative">
-          {/* Timeline line */}
-          <div className="absolute left-[23px] top-6 bottom-6 w-0.5" style={{ background: 'rgba(201,169,97,0.2)' }} aria-hidden="true" />
+        <div style={{ fontSize: 9, fontWeight: 600, letterSpacing: '1.4px', textTransform: 'uppercase',
+          color: C.teal, marginBottom: 20 }}>
+          Learning path
+        </div>
 
-          <div className="flex flex-col">
-            {lessons.map((lesson, i) => {
-              const st = getState(i);
-              const saved = !!loadProgress?.(lesson.id);
-              return (
-                <LessonRow key={lesson.id} lesson={lesson} i={i} st={st} saved={saved}
-                  onClick={() => handleLessonClick(lesson, i)} isCurrent={i === curIdx} meta={data.lessonMeta[lesson.id] || {}} />
-              );
-            })}
-          </div>
+        <div style={{ position: 'relative' }}>
+          {lessons.map((lesson, i) => {
+            const st = getState(i);
+            const saved = !!loadProgress?.(lesson.id);
+            const isLast = i === lessons.length - 1;
+            const meta = data.lessonMeta[lesson.id] || {};
+            return (
+              <LessonTimelineRow key={lesson.id} lesson={lesson} index={i} state={st}
+                saved={saved} isLast={isLast} meta={meta} isCurrent={i === curIdx}
+                onClick={() => handleLessonClick(lesson, i)} />
+            );
+          })}
         </div>
       </div>
     </div>
   );
 };
 
-const LessonRow = ({ lesson, i, st, saved, onClick, isCurrent, meta = {} }) => {
-  const isDone = st === 'done';
-  const isCur = st === 'current';
-  const isOpen = st === 'open';
+/* ================================================================ */
+/*  LessonTimelineRow — node + connector + card                     */
+/* ================================================================ */
+const LessonTimelineRow = ({ lesson, index, state, saved, isLast, meta, isCurrent, onClick }) => {
+  const isDone = state === 'done';
+  const isCur = state === 'current';
+  const isLocked = state === 'locked';
+
+  /* Connector color: solid teal above completed nodes, faint otherwise */
+  const connectorColor = isDone ? C.teal : C.track;
+  const nextConnectorColor = C.track; // below current/locked = faint
 
   return (
-    <div className="relative flex items-start py-3">
-      {/* Node */}
-      <div className="relative flex-shrink-0 w-12 h-12 flex items-center justify-center z-10" aria-hidden="true">
-        {isCur && (
-          <span className="absolute inset-0 rounded-full" style={{ animation: 'pulseGold 2s ease-in-out infinite' }} />
+    <div style={{ display: 'flex', alignItems: 'stretch', position: 'relative' }}>
+
+      {/* ── Spine column (36px wide) ─────────────────────────── */}
+      <div style={{ width: 36, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center',
+        position: 'relative' }}>
+
+        {/* Top connector segment */}
+        {index > 0 && (
+          <div style={{ width: 2, flexGrow: 0, height: 12, background: connectorColor }} />
         )}
-        <div className={`relative w-10 h-10 rounded-full flex items-center justify-center
-          ${isDone ? 'bg-[#6B8E7F] shadow-[0_2px_8px_rgba(107,142,127,0.3)]' :
-            isCur ? 'shadow-[0_2px_8px_rgba(198,162,74,0.35)]' :
-            'bg-[rgba(201,169,97,0.08)] shadow-sm'}`}
-          style={isCur ? { background: '#C9A961' } : undefined}>
+
+        {/* Node */}
+        <div style={{
+          width: 36, height: 36, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          flexShrink: 0, position: 'relative', zIndex: 2,
+          ...(isDone ? {
+            background: C.teal,
+            boxShadow: '0 2px 8px rgba(34,163,154,0.3)',
+          } : isCur ? {
+            background: C.gold,
+            boxShadow: `0 3px 0 ${C.goldDk}, 0 2px 10px rgba(240,180,41,0.3)`,
+            cursor: 'pointer',
+          } : {
+            background: C.surface,
+            border: `2px solid ${C.textFaint}`,
+          }),
+        }}>
           {isDone ? (
-            <Check className="w-5 h-5 text-white" strokeWidth={3} />
+            <Check size={16} color="#fff" strokeWidth={3} />
           ) : isCur ? (
-            <Play className="w-4 h-4 text-white" fill="white" />
+            <Play size={14} color="#fff" fill="#fff" />
           ) : (
-            <span className="text-sm font-bold text-[#9A9389]">{i + 1}</span>
+            <span style={{ fontSize: 13, fontWeight: 700, color: C.textFaint }}>{index + 1}</span>
           )}
         </div>
+
+        {/* Bottom connector segment */}
+        {!isLast && (
+          <div style={{ width: 2, flexGrow: 1, minHeight: 12,
+            background: isDone ? C.teal : C.track }} />
+        )}
       </div>
 
-      {/* Lesson card */}
-      <button onClick={onClick}
-        className={`flex-1 ml-4 rounded-2xl p-5 text-left transition-all duration-200 min-h-[48px] ${focusRing}
-          ${isCur
-            ? 'bg-white border-l-[3px] border-[#C9A961] border-t border-r border-b border-t-[#E5E7EB] border-r-[#E5E7EB] border-b-[#E5E7EB] shadow-[0_4px_20px_rgba(42,37,32,0.07)] hover:shadow-[0_8px_28px_rgba(42,37,32,0.1)]'
-            : isDone
-            ? 'bg-white border border-[rgba(201,169,97,0.25)] shadow-[0_1px_6px_rgba(42,37,32,0.03)] hover:shadow-[0_4px_16px_rgba(42,37,32,0.06)] hover:-translate-y-0.5'
-            : 'bg-white/80 border border-[rgba(201,169,97,0.25)]/70 shadow-[0_1px_4px_rgba(42,37,32,0.02)] opacity-70 hover:opacity-90 hover:shadow-[0_2px_10px_rgba(42,37,32,0.05)]'
-          }`}>
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#C9A961]">Lesson {i + 1}</p>
-              {meta.type && (
-                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[rgba(201,169,97,0.06)] text-[#6B6356] border border-[rgba(201,169,97,0.25)]">
+      {/* ── Lesson card ──────────────────────────────────────── */}
+      <button onClick={onClick} className="mo-focus"
+        style={{
+          flex: 1, marginLeft: 14, marginBottom: isLast ? 0 : 12,
+          borderRadius: 14, padding: '18px 20px', textAlign: 'left',
+          background: C.surface,
+          border: isCur ? 'none' : `1px solid rgba(15,76,92,0.10)`,
+          borderLeft: isCur ? `4px solid ${C.teal}` : undefined,
+          boxShadow: isCur
+            ? `0 4px 20px rgba(34,163,154,0.12), ${S.card}`
+            : isDone ? S.card : '0 1px 4px rgba(26,35,50,.03)',
+          opacity: isLocked ? 0.88 : 1,
+          cursor: isLocked ? 'default' : 'pointer',
+          transition: 'box-shadow .2s ease, transform .2s ease',
+          minHeight: 48,
+          ...focusRing,
+        }}
+        onMouseEnter={e => {
+          if (!isLocked) {
+            e.currentTarget.style.boxShadow = S.cardRaised;
+            e.currentTarget.style.transform = 'translateY(-2px)';
+          }
+        }}
+        onMouseLeave={e => {
+          e.currentTarget.style.boxShadow = isCur
+            ? `0 4px 20px rgba(34,163,154,0.12), ${S.card}`
+            : isDone ? S.card : '0 1px 4px rgba(26,35,50,.03)';
+          e.currentTarget.style.transform = 'translateY(0)';
+        }}>
+
+        {/* Top meta row */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 6 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+            <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '1.2px', textTransform: 'uppercase',
+              color: (isDone || isCur) ? C.teal : C.textFaint }}>
+              Lesson {index + 1}
+            </span>
+            {meta.type && (() => {
+              const tc = typeBadgeColor(meta.type);
+              return (
+                <span style={{ fontSize: 9.5, fontWeight: 600, padding: '2px 10px', borderRadius: 20,
+                  background: tc.bg, color: tc.text }}>
                   {meta.type}
                 </span>
-              )}
-            </div>
-            <h3 className="font-bold text-[#1B4332] mt-1 leading-snug" style={{ fontFamily: 'Georgia,serif' }}>
-              {lesson.title}
-            </h3>
-            {meta.desc && (
-              <p className={`text-xs leading-relaxed mt-1.5 ${isOpen ? 'text-[#9A9389]' : 'text-[#6B6356]'}`}>
-                {meta.desc}
-              </p>
-            )}
-            <div className="flex items-center gap-3 mt-2.5 flex-wrap">
-              <span className="text-xs flex items-center gap-1 text-[#9A9389]">
-                <Clock className="w-3.5 h-3.5" />{lesson.duration}
-              </span>
-              {isDone && (
-                <span className="text-xs font-semibold text-[#6B8E7F] flex items-center gap-1">
-                  <Check className="w-3 h-3" />Completed
-                </span>
-              )}
-              {saved && !isDone && (
-                <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-[rgba(201,169,97,0.12)] text-[#8A6F2F]">
-                  In Progress
-                </span>
-              )}
-            </div>
+              );
+            })()}
           </div>
 
+          {/* START / RESUME badge for active lesson */}
           {isCur && (
-            <div className="flex-shrink-0">
-              <span className="text-[10px] font-bold uppercase tracking-[0.12em] px-2.5 py-1 rounded-full bg-[rgba(201,169,97,0.12)] text-[#8A6F2F]">
-                Start
-              </span>
-            </div>
+            <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase',
+              padding: '3px 12px', borderRadius: 20, background: C.goldSoft, color: C.goldText }}>
+              {saved ? 'Resume' : 'Start'}
+            </span>
+          )}
+
+          {/* Completed check */}
+          {isDone && (
+            <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, fontWeight: 600, color: C.teal }}>
+              <Check size={12} strokeWidth={3} />Done
+            </span>
+          )}
+        </div>
+
+        {/* Title */}
+        <h3 style={{ fontFamily: serif, fontSize: 16, fontWeight: 600, margin: 0, lineHeight: 1.35,
+          color: isLocked ? C.textMuted : C.textDeep }}>
+          {lesson.title}
+        </h3>
+
+        {/* Description */}
+        {(meta.desc || lesson.description) && (
+          <p style={{ fontSize: 12, lineHeight: 1.5, margin: '6px 0 0',
+            color: isLocked ? C.textFaint : C.textMuted }}>
+            {meta.desc || lesson.description}
+          </p>
+        )}
+
+        {/* Duration row */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 10 }}>
+          {isLocked ? (
+            <Lock size={12} color={C.textFaint} />
+          ) : (
+            <Clock size={12} color={C.textFaint} />
+          )}
+          <span style={{ fontSize: 11, color: C.textFaint }}>{lesson.duration}</span>
+          {saved && !isDone && (
+            <span style={{ marginLeft: 8, fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 20,
+              background: C.goldSoft, color: C.goldText }}>
+              In Progress
+            </span>
           )}
         </div>
       </button>
