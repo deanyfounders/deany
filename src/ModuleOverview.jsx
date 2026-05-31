@@ -128,6 +128,30 @@ const MODULE_DATA = {
       'tafsir-fatiha': { type: 'Tafsir', desc: 'Verse-by-verse meaning and context.' },
     },
   },
+  'epoch-1': {
+    badge: 'History · Epoch 1',
+    desc: 'From the creation of the world to the eve of revelation: the story of humanity, pre-Islamic Arabia, and the man who would change everything.',
+    mastery: [
+      "Understand Islam's view of creation and human purpose",
+      'Describe pre-Islamic Arabian society and trade',
+      'Explain the Jahiliyyah period and its customs',
+      'Know who the Quraysh were and why they mattered',
+      "Trace the Prophet's life before revelation",
+    ],
+    concepts: [
+      { label: 'Creation', color: 'blue' },
+      { label: 'Jahiliyyah', color: 'coral' },
+      { label: 'Quraysh', color: 'gold' },
+      { label: 'Pre-Islamic Arabia', color: 'teal' },
+    ],
+    lessonMeta: {
+      'creation': { type: 'Concept', desc: 'Creation, purpose & the prophetic chain.' },
+      'arabia-before-islam': { type: 'Concept', desc: 'Geography, trade routes & tribal society.' },
+      'jahiliyyah': { type: 'Concept', desc: 'Pre-Islamic customs & beliefs.' },
+      'quraysh': { type: 'Concept', desc: "Makkah's guardians & power brokers." },
+      'muhammad-before-message': { type: 'Concept', desc: 'Character, trade & the path to revelation.' },
+    },
+  },
 };
 
 const getModuleData = (modId) => MODULE_DATA[modId] || {
