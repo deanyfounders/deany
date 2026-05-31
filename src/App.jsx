@@ -1056,25 +1056,59 @@ const App = () => {
 
     // Islamic History uses custom epoch/level navigation
     if (isHist) {
+      const hC = { accent: '#EF6F53', soft: '#FBE5DE', deep: '#0F4C5C', muted: '#5E7480', faint: '#94A3AA', canvas: '#FBFAF6', surface: '#FFFFFF', text: '#173A4A', goldSoft: '#FCEFCF', goldText: '#5A3E00', card: '0 1px 2px rgba(26,35,50,.05), 0 8px 24px rgba(26,35,50,.08)', cardRaised: '0 4px 8px rgba(26,35,50,.08), 0 18px 44px rgba(26,35,50,.14)' };
       return (
-        <div className="min-h-screen relative" style={pageBg}>
-          <IslamicPattern /><div className="relative z-10 max-w-5xl mx-auto px-4 py-8">
-            <NavHeader onBack={goHome} onHome={goHome} backLabel="Home" />
-            <div className={`${glass} rounded-2xl p-6 mb-6`}>
-              <div className="flex items-center gap-4"><div className="w-14 h-14 rounded-xl flex items-center justify-center text-3xl shadow-sm" style={{background:'rgba(201,169,97,0.12)'}}>{selectedMainTopic.icon}</div><div><h1 className="text-2xl font-bold" style={{fontFamily:"Georgia,serif",color:'#1B4332'}}>{selectedMainTopic.title}</h1><p className="text-xs" style={{color:'#6B6356'}}>{selectedMainTopic.subtitle} · {mods.length} epochs</p></div></div>
+        <div style={{ background: hC.canvas, minHeight: '100vh' }}>
+          <div style={{ maxWidth: 1120, margin: '0 auto', padding: '24px 20px 48px' }}>
+            {/* Nav */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
+              <button onClick={goHome} className="mo-focus" style={{ display:'flex', alignItems:'center', gap:6, background:'none', border:'none', cursor:'pointer', color: hC.muted, fontSize:13, fontWeight:500, minHeight:48, padding:'0 4px', transition:'color .15s', outline:'none' }}
+                onMouseEnter={e => e.currentTarget.style.color = hC.deep} onMouseLeave={e => e.currentTarget.style.color = hC.muted}>
+                <ChevronLeft size={16} /><span>Back</span>
+              </button>
+              <button onClick={goHome} className="mo-focus" style={{ display:'flex', alignItems:'center', gap:6, background:'none', border:'none', cursor:'pointer', color: hC.muted, fontSize:13, fontWeight:500, minHeight:48, padding:'0 4px', transition:'color .15s', outline:'none' }}
+                onMouseEnter={e => e.currentTarget.style.color = hC.deep} onMouseLeave={e => e.currentTarget.style.color = hC.muted}>
+                <Home size={16} /><span>Home</span>
+              </button>
             </div>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+
+            {/* Header card */}
+            <div style={{ background: hC.surface, borderRadius: 16, padding: 28, marginBottom: 28, boxShadow: hC.card, border: '1px solid rgba(15,76,92,0.08)' }}>
+              <div style={{ display:'flex', alignItems:'center', gap: 14 }}>
+                <div style={{ width: 44, height: 44, borderRadius: 12, background: hC.soft, display:'flex', alignItems:'center', justifyContent:'center', flexShrink: 0, fontSize: 22 }}>
+                  {selectedMainTopic.icon}
+                </div>
+                <div>
+                  <div style={{ fontSize: 9, fontWeight: 600, letterSpacing: '1.4px', textTransform: 'uppercase', color: hC.accent, marginBottom: 4 }}>
+                    Islamic History · {mods.length} epochs
+                  </div>
+                  <h1 style={{ fontFamily:'Georgia, serif', fontSize: 24, fontWeight: 600, color: hC.deep, margin: 0, lineHeight: 1.2 }}>
+                    {selectedMainTopic.title}
+                  </h1>
+                  <p style={{ fontSize: 12.5, color: hC.muted, margin: '4px 0 0' }}>{selectedMainTopic.subtitle}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Epoch grid */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 }}>
               {mods.map((e, i) => e.comingSoon ? (
-                <div key={e.id} className={`${glass} rounded-xl p-6 text-center opacity-50`}>
-                  <div className="w-8 h-8 mx-auto rounded-full flex items-center justify-center text-white text-xs font-bold mb-2" style={{background:'#9A9389'}}>{i+1}</div>
-                  <div className="text-3xl mb-2">{e.icon}</div><h3 className="font-bold text-xs mb-0.5" style={{color:'#6B6356'}}>{e.title}</h3><p className="text-[10px] mb-2" style={{color:'#6B6356'}}>{e.subtitle}</p>
-                  <span className="inline-flex items-center gap-1 text-[10px] px-2 py-1 rounded-full font-semibold" style={{color:'#8A6F2F',background:'rgba(201,169,97,0.12)'}}>Coming Soon</span>
+                <div key={e.id} style={{ background: hC.surface, borderRadius: 14, padding: 24, textAlign: 'center', opacity: 0.55, border: '1px solid rgba(15,76,92,0.08)', boxShadow: '0 1px 4px rgba(26,35,50,.03)' }}>
+                  <div style={{ width: 32, height: 32, borderRadius: '50%', background: hC.faint, color: '#fff', fontSize: 12, fontWeight: 700, display:'flex', alignItems:'center', justifyContent:'center', margin: '0 auto 10px' }}>{i+1}</div>
+                  <div style={{ fontSize: 28, marginBottom: 8 }}>{e.icon}</div>
+                  <h3 style={{ fontFamily:'Georgia, serif', fontSize: 14, fontWeight: 600, color: hC.muted, margin: '0 0 2px' }}>{e.title}</h3>
+                  <p style={{ fontSize: 11, color: hC.faint, margin: '0 0 10px' }}>{e.subtitle}</p>
+                  <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', padding: '3px 10px', borderRadius: 20, background: hC.goldSoft, color: hC.goldText }}>Coming Soon</span>
                 </div>
               ) : (
-                <button key={e.id} onClick={() => selectModule(e)} className={`group ${glassHover} rounded-xl p-6 text-center`}>
-                  <div className="w-8 h-8 mx-auto rounded-full flex items-center justify-center text-white text-xs font-bold mb-2 shadow-sm" style={{background:'#C9A961'}}>{i+1}</div>
-                  <div className="text-3xl mb-2">{e.icon}</div><h3 className="font-bold text-xs mb-0.5" style={{color:'#1B4332'}}>{e.title}</h3><p className="text-[10px] mb-2" style={{color:'#6B6356'}}>{e.subtitle}</p>
-                  <span className="inline-flex items-center gap-1 text-[10px] px-2 py-1 rounded-full font-semibold" style={{color:'#8A6F2F',background:'rgba(201,169,97,0.12)'}}>Explore <ArrowRight className="w-2.5 h-2.5" /></span>
+                <button key={e.id} onClick={() => selectModule(e)} className="mo-focus" style={{ background: hC.surface, borderRadius: 14, padding: 24, textAlign: 'center', border: '1px solid rgba(15,76,92,0.08)', boxShadow: hC.card, cursor: 'pointer', transition: 'box-shadow .2s, transform .2s', outline: 'none' }}
+                  onMouseEnter={ev => { ev.currentTarget.style.boxShadow = hC.cardRaised; ev.currentTarget.style.transform = 'translateY(-2px)'; }}
+                  onMouseLeave={ev => { ev.currentTarget.style.boxShadow = hC.card; ev.currentTarget.style.transform = 'translateY(0)'; }}>
+                  <div style={{ width: 32, height: 32, borderRadius: '50%', background: hC.accent, color: '#fff', fontSize: 12, fontWeight: 700, display:'flex', alignItems:'center', justifyContent:'center', margin: '0 auto 10px', boxShadow: '0 2px 8px rgba(239,111,83,0.3)' }}>{i+1}</div>
+                  <div style={{ fontSize: 28, marginBottom: 8 }}>{e.icon}</div>
+                  <h3 style={{ fontFamily:'Georgia, serif', fontSize: 14, fontWeight: 600, color: hC.deep, margin: '0 0 2px' }}>{e.title}</h3>
+                  <p style={{ fontSize: 11, color: hC.muted, margin: '0 0 10px' }}>{e.subtitle}</p>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 10, fontWeight: 600, padding: '4px 14px', borderRadius: 20, background: hC.soft, color: hC.accent }}>Explore <ArrowRight size={11} /></span>
                 </button>
               ))}
             </div>
@@ -1116,55 +1150,129 @@ const App = () => {
 
   // EPOCH LEVELS
   if (screen == 'epoch-levels' && selectedEpoch) {
+    const hC = { accent: '#EF6F53', soft: '#FBE5DE', deep: '#0F4C5C', muted: '#5E7480', faint: '#94A3AA', canvas: '#FBFAF6', surface: '#FFFFFF', text: '#173A4A', goldSoft: '#FCEFCF', goldText: '#5A3E00', card: '0 1px 2px rgba(26,35,50,.05), 0 8px 24px rgba(26,35,50,.08)', cardRaised: '0 4px 8px rgba(26,35,50,.08), 0 18px 44px rgba(26,35,50,.14)' };
+    const lvlIcons = ['🌱','📚','🎓'];
+    const lvlBg = ['#DCF3EF', '#FCEFCF', '#FBE5DE'];
     return (
-      <div className="min-h-screen relative" style={pageBg}><IslamicPattern /><div className="relative z-10 max-w-3xl mx-auto px-4 py-8">
-        <NavHeader onBack={() => setScreen('modules')} onHome={goHome} backLabel="Epochs" />
-        <div className={`${glass} rounded-2xl p-6 mb-6 text-center`}><div className="text-5xl mb-2">{selectedEpoch.icon}</div><h1 className="text-xl font-bold" style={{fontFamily:"Georgia,serif",color:'#1B4332'}}>{selectedEpoch.title}</h1><p className="text-xs" style={{color:'#6B6356'}}>{selectedEpoch.subtitle}</p></div>
-        <div className="space-y-2.5">{selectedEpoch.levels.map((l, i) => {
-          const hasContent = l.lessons?.length > 0;
-          return hasContent ? (
-            <button key={l.id} onClick={() => selectLvl(l)} className={`w-full ${glassHover} rounded-xl p-4 text-left group`}>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3"><div className="w-11 h-11 rounded-lg flex items-center justify-center text-xl shadow-sm" style={{background:i===0?'rgba(107,142,127,0.15)':i===1?'rgba(201,169,97,0.15)':'rgba(184,105,77,0.15)'}}>{['🌱','📚','🎓'][i]}</div><div><h3 className="font-bold text-sm" style={{color:'#1B4332'}}>{l.name}</h3><p className="text-[10px]" style={{color:'#6B6356'}}>{l.lessons.length} lessons</p></div></div>
-                <ArrowRight className="w-4 h-4 transition-all" style={{color:'#C9A961'}} />
-              </div>
+      <div style={{ background: hC.canvas, minHeight: '100vh' }}>
+        <div style={{ maxWidth: 640, margin: '0 auto', padding: '24px 20px 48px' }}>
+          {/* Nav */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
+            <button onClick={() => setScreen('modules')} className="mo-focus" style={{ display:'flex', alignItems:'center', gap:6, background:'none', border:'none', cursor:'pointer', color: hC.muted, fontSize:13, fontWeight:500, minHeight:48, padding:'0 4px', transition:'color .15s', outline:'none' }}
+              onMouseEnter={e => e.currentTarget.style.color = hC.deep} onMouseLeave={e => e.currentTarget.style.color = hC.muted}>
+              <ChevronLeft size={16} /><span>Epochs</span>
             </button>
-          ) : (
-            <div key={l.id} className={`${glass} rounded-xl p-4 opacity-50`}>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3"><div className="w-11 h-11 rounded-lg flex items-center justify-center text-xl" style={{background:i===1?'rgba(201,169,97,0.15)':'rgba(184,105,77,0.15)'}}>{['🌱','📚','🎓'][i]}</div><div><h3 className="font-bold text-sm" style={{color:'#6B6356'}}>{l.name}</h3><p className="text-[10px]" style={{color:'#9A9389'}}>Coming soon</p></div></div>
-                <span className="text-[10px] px-2.5 py-0.5 rounded-full font-medium" style={{color:'#8A6F2F',background:'rgba(201,169,97,0.12)'}}>Coming Soon</span>
-              </div>
-            </div>
-          );
-        })}</div>
-      </div></div>
+            <button onClick={goHome} className="mo-focus" style={{ display:'flex', alignItems:'center', gap:6, background:'none', border:'none', cursor:'pointer', color: hC.muted, fontSize:13, fontWeight:500, minHeight:48, padding:'0 4px', transition:'color .15s', outline:'none' }}
+              onMouseEnter={e => e.currentTarget.style.color = hC.deep} onMouseLeave={e => e.currentTarget.style.color = hC.muted}>
+              <Home size={16} /><span>Home</span>
+            </button>
+          </div>
+
+          {/* Header card */}
+          <div style={{ background: hC.surface, borderRadius: 16, padding: 28, marginBottom: 24, boxShadow: hC.card, border: '1px solid rgba(15,76,92,0.08)', textAlign: 'center' }}>
+            <div style={{ fontSize: 40, marginBottom: 8 }}>{selectedEpoch.icon}</div>
+            <h1 style={{ fontFamily:'Georgia, serif', fontSize: 21, fontWeight: 600, color: hC.deep, margin: '0 0 4px' }}>{selectedEpoch.title}</h1>
+            <p style={{ fontSize: 12, color: hC.muted, margin: 0 }}>{selectedEpoch.subtitle}</p>
+          </div>
+
+          {/* Levels */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {selectedEpoch.levels.map((l, i) => {
+              const hasContent = l.lessons?.length > 0;
+              return hasContent ? (
+                <button key={l.id} onClick={() => selectLvl(l)} className="mo-focus"
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 14, width: '100%', background: hC.surface, borderRadius: 14, padding: '16px 20px', border: '1px solid rgba(15,76,92,0.08)', boxShadow: hC.card, cursor: 'pointer', textAlign: 'left', transition: 'box-shadow .2s, transform .2s', outline: 'none' }}
+                  onMouseEnter={e => { e.currentTarget.style.boxShadow = hC.cardRaised; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.boxShadow = hC.card; e.currentTarget.style.transform = 'translateY(0)'; }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <div style={{ width: 44, height: 44, borderRadius: 12, background: lvlBg[i] || lvlBg[0], display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, flexShrink: 0 }}>{lvlIcons[i] || lvlIcons[0]}</div>
+                    <div>
+                      <h3 style={{ fontFamily:'Georgia, serif', fontSize: 15, fontWeight: 600, color: hC.deep, margin: 0 }}>{l.name}</h3>
+                      <p style={{ fontSize: 11, color: hC.muted, margin: '2px 0 0' }}>{l.lessons.length} lessons</p>
+                    </div>
+                  </div>
+                  <ArrowRight size={16} color={hC.accent} />
+                </button>
+              ) : (
+                <div key={l.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 14, background: hC.surface, borderRadius: 14, padding: '16px 20px', border: '1px solid rgba(15,76,92,0.08)', opacity: 0.55 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <div style={{ width: 44, height: 44, borderRadius: 12, background: lvlBg[i] || lvlBg[0], display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, flexShrink: 0 }}>{lvlIcons[i] || lvlIcons[0]}</div>
+                    <div>
+                      <h3 style={{ fontFamily:'Georgia, serif', fontSize: 15, fontWeight: 600, color: hC.muted, margin: 0 }}>{l.name}</h3>
+                      <p style={{ fontSize: 11, color: hC.faint, margin: '2px 0 0' }}>Coming soon</p>
+                    </div>
+                  </div>
+                  <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', padding: '3px 10px', borderRadius: 20, background: hC.goldSoft, color: hC.goldText }}>Coming Soon</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
     );
   }
 
   // HISTORY LESSONS
   if (screen == 'history-lessons' && selectedLevel && selectedEpoch) {
+    const hC = { accent: '#EF6F53', soft: '#FBE5DE', deep: '#0F4C5C', muted: '#5E7480', faint: '#94A3AA', canvas: '#FBFAF6', surface: '#FFFFFF', text: '#173A4A', goldSoft: '#FCEFCF', goldText: '#5A3E00', card: '0 1px 2px rgba(26,35,50,.05), 0 8px 24px rgba(26,35,50,.08)', cardRaised: '0 4px 8px rgba(26,35,50,.08), 0 18px 44px rgba(26,35,50,.14)' };
     return (
-      <div className="min-h-screen relative" style={pageBg}><IslamicPattern /><div className="relative z-10 max-w-4xl mx-auto px-4 py-8">
-        <NavHeader onBack={() => setScreen('epoch-levels')} onHome={goHome} backLabel="Levels" />
-        <div className={`${glass} rounded-2xl p-4 mb-6`}><div className="flex items-center gap-3"><div className="w-10 h-10 rounded-lg flex items-center justify-center text-xl shadow-sm" style={{background:'rgba(201,169,97,0.12)'}}>{selectedEpoch.icon}</div><div><h1 className="text-lg font-bold" style={{fontFamily:"Georgia,serif",color:'#1B4332'}}>{selectedEpoch.title}</h1><p className="text-[10px]" style={{color:'#6B6356'}}>{selectedLevel.name}</p></div></div></div>
-        <div className="grid sm:grid-cols-2 gap-3">{selectedLevel.lessons.map(l => {
-          const hasContent = l.questions?.length > 0 || l.conceptCards?.length > 0 || ['creation','arabia-before-islam'].includes(l.id);
-          return hasContent ? (
-            <button key={l.id} onClick={() => selectHistLesson(l)} className={`group ${glassHover} rounded-xl p-5 text-center`}>
-              <div className="text-3xl mb-2">{l.icon}</div><h3 className="font-bold text-xs mb-0.5" style={{color:'#1B4332'}}>{l.title}</h3><p className="text-[10px] mb-2" style={{color:'#6B6356'}}>{l.subtitle}</p>
-              <div className="flex items-center justify-center gap-2 text-[10px] mb-2" style={{color:'#6B6356'}}><Clock className="w-2.5 h-2.5" />{l.estimatedTime}</div>
-              <span className="inline-flex items-center gap-1 text-[10px] px-2.5 py-1 rounded-full font-semibold text-white shadow-sm" style={{background:'#C9A961'}}>Start <ArrowRight className="w-2.5 h-2.5" /></span>
+      <div style={{ background: hC.canvas, minHeight: '100vh' }}>
+        <div style={{ maxWidth: 900, margin: '0 auto', padding: '24px 20px 48px' }}>
+          {/* Nav */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
+            <button onClick={() => setScreen('epoch-levels')} className="mo-focus" style={{ display:'flex', alignItems:'center', gap:6, background:'none', border:'none', cursor:'pointer', color: hC.muted, fontSize:13, fontWeight:500, minHeight:48, padding:'0 4px', transition:'color .15s', outline:'none' }}
+              onMouseEnter={e => e.currentTarget.style.color = hC.deep} onMouseLeave={e => e.currentTarget.style.color = hC.muted}>
+              <ChevronLeft size={16} /><span>Levels</span>
             </button>
-          ) : (
-            <div key={l.id} className={`${glass} rounded-xl p-5 text-center opacity-50`}>
-              <div className="text-3xl mb-2">{l.icon}</div><h3 className="font-bold text-xs mb-0.5" style={{color:'#6B6356'}}>{l.title}</h3><p className="text-[10px] mb-2" style={{color:'#9A9389'}}>{l.subtitle}</p>
-              <div className="flex items-center justify-center gap-2 text-[10px] mb-2" style={{color:'#9A9389'}}><Clock className="w-2.5 h-2.5" />{l.estimatedTime}</div>
-              <span className="inline-flex items-center gap-1 text-[10px] px-2.5 py-1 rounded-full font-medium" style={{color:'#8A6F2F',background:'rgba(201,169,97,0.12)'}}>Coming Soon</span>
+            <button onClick={goHome} className="mo-focus" style={{ display:'flex', alignItems:'center', gap:6, background:'none', border:'none', cursor:'pointer', color: hC.muted, fontSize:13, fontWeight:500, minHeight:48, padding:'0 4px', transition:'color .15s', outline:'none' }}
+              onMouseEnter={e => e.currentTarget.style.color = hC.deep} onMouseLeave={e => e.currentTarget.style.color = hC.muted}>
+              <Home size={16} /><span>Home</span>
+            </button>
+          </div>
+
+          {/* Header card */}
+          <div style={{ background: hC.surface, borderRadius: 16, padding: '20px 24px', marginBottom: 24, boxShadow: hC.card, border: '1px solid rgba(15,76,92,0.08)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ width: 40, height: 40, borderRadius: 10, background: hC.soft, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, flexShrink: 0 }}>{selectedEpoch.icon}</div>
+              <div>
+                <h1 style={{ fontFamily:'Georgia, serif', fontSize: 18, fontWeight: 600, color: hC.deep, margin: 0 }}>{selectedEpoch.title}</h1>
+                <p style={{ fontSize: 11, color: hC.muted, margin: '2px 0 0' }}>{selectedLevel.name}</p>
+              </div>
             </div>
-          );
-        })}</div>
-      </div></div>
+          </div>
+
+          {/* Lesson cards grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 14 }}>
+            {selectedLevel.lessons.map(l => {
+              const hasContent = l.questions?.length > 0 || l.conceptCards?.length > 0 || ['creation','arabia-before-islam'].includes(l.id);
+              return hasContent ? (
+                <button key={l.id} onClick={() => selectHistLesson(l)} className="mo-focus"
+                  style={{ background: hC.surface, borderRadius: 14, padding: 22, textAlign: 'center', border: '1px solid rgba(15,76,92,0.08)', boxShadow: hC.card, cursor: 'pointer', transition: 'box-shadow .2s, transform .2s', outline: 'none' }}
+                  onMouseEnter={e => { e.currentTarget.style.boxShadow = hC.cardRaised; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.boxShadow = hC.card; e.currentTarget.style.transform = 'translateY(0)'; }}>
+                  <div style={{ fontSize: 28, marginBottom: 8 }}>{l.icon}</div>
+                  <h3 style={{ fontFamily:'Georgia, serif', fontSize: 13, fontWeight: 600, color: hC.deep, margin: '0 0 4px' }}>{l.title}</h3>
+                  <p style={{ fontSize: 11, color: hC.muted, margin: '0 0 8px', lineHeight: 1.4 }}>{l.subtitle}</p>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, fontSize: 11, color: hC.faint, marginBottom: 10 }}>
+                    <Clock size={11} />{l.estimatedTime}
+                  </div>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 10, fontWeight: 600, padding: '5px 16px', borderRadius: 20, background: hC.accent, color: '#fff', boxShadow: '0 2px 6px rgba(239,111,83,0.25)' }}>Start <ArrowRight size={11} /></span>
+                </button>
+              ) : (
+                <div key={l.id} style={{ background: hC.surface, borderRadius: 14, padding: 22, textAlign: 'center', border: '1px solid rgba(15,76,92,0.08)', opacity: 0.55 }}>
+                  <div style={{ fontSize: 28, marginBottom: 8 }}>{l.icon}</div>
+                  <h3 style={{ fontFamily:'Georgia, serif', fontSize: 13, fontWeight: 600, color: hC.muted, margin: '0 0 4px' }}>{l.title}</h3>
+                  <p style={{ fontSize: 11, color: hC.faint, margin: '0 0 8px', lineHeight: 1.4 }}>{l.subtitle}</p>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, fontSize: 11, color: hC.faint, marginBottom: 10 }}>
+                    <Clock size={11} />{l.estimatedTime}
+                  </div>
+                  <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', padding: '3px 10px', borderRadius: 20, background: hC.goldSoft, color: hC.goldText }}>Coming Soon</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
     );
   }
 
