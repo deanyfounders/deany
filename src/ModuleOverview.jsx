@@ -206,6 +206,15 @@ const ModuleOverview = ({
         .mo-focus:focus-visible { box-shadow: ${focusVisibleRing}; }
         .mo-grid { grid-template-columns: 1fr; }
         @media (min-width: 768px) { .mo-grid { grid-template-columns: 45fr 55fr; align-items: start; } }
+        @keyframes hizbPulse {
+          0%,100% { box-shadow: 0 0 18px rgba(29,158,117,.45), 0 0 36px rgba(29,158,117,.25), 0 2px 8px rgba(15,110,86,.2); }
+          50%     { box-shadow: 0 0 26px rgba(29,158,117,.70), 0 0 52px rgba(29,158,117,.40), 0 2px 8px rgba(15,110,86,.2); }
+        }
+        @media (prefers-reduced-motion: no-preference) {
+          .hizb-disc { animation: hizbPulse 3s ease-in-out infinite; }
+        }
+        .mo-milestone-wrap { flex-wrap: nowrap; }
+        @media (max-width: 600px) { .mo-milestone-wrap { flex-wrap: wrap; } }
       `}</style>
 
       <div style={{ maxWidth: 1120, margin: '0 auto', padding: '24px 20px 48px' }}>
@@ -229,10 +238,95 @@ const ModuleOverview = ({
           </button>
         </div>
 
-        {modules.map((mod, mi) => (
-          <ModuleBlock key={mod.id} mod={mod} mi={mi} topicId={topicId} completedLessons={completedLessons}
-            loadProgress={loadProgress} onSelectLesson={onSelectLesson} onSelectModule={onSelectModule} />
-        ))}
+        {modules.map((mod, mi) => {
+          const isLast = mi === modules.length - 1;
+          const nextMod = isLast ? null : modules[mi + 1];
+          return (
+            <React.Fragment key={mod.id}>
+              <ModuleBlock mod={mod} mi={mi} topicId={topicId} completedLessons={completedLessons}
+                loadProgress={loadProgress} onSelectLesson={onSelectLesson} onSelectModule={onSelectModule} />
+              {!isLast && nextMod && (
+                <ModuleMilestone
+                  prevMod={mod} prevIndex={mi} nextMod={nextMod} nextIndex={mi + 1}
+                  modules={modules} completedLessons={completedLessons} />
+              )}
+            </React.Fragment>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+/* ================================================================ */
+/*  ModuleMilestone — separator bar between modules                 */
+/* ================================================================ */
+const ModuleMilestone = ({ prevMod, prevIndex, nextMod, nextIndex, modules, completedLessons }) => {
+  const isModComplete = (mod) => {
+    const lessons = mod.lessons || [];
+    if (!lessons.length) return false;
+    return lessons.every((_, i) => !!completedLessons[`${mod.id}-lesson-${i}`]);
+  };
+
+  const prevComplete = isModComplete(prevMod);
+  const completedCount = modules.filter(m => isModComplete(m)).length;
+  const totalCount = modules.length;
+
+  const getModDotState = (mod, idx) => {
+    if (isModComplete(mod)) return 'done';
+    const lessons = mod.lessons || [];
+    if (lessons.length && lessons.some((_, i) => !!completedLessons[`${mod.id}-lesson-${i}`])) return 'current';
+    // first module with lessons that isn't complete
+    const firstIncomplete = modules.findIndex(m => (m.lessons?.length || 0) > 0 && !isModComplete(m));
+    if (idx === firstIncomplete) return 'current';
+    return 'upcoming';
+  };
+
+  const dotColors = { done: '#0F8A5F', current: '#22A39A', upcoming: '#a9d4cb' };
+  const data = getModuleData(nextMod.id);
+
+  return (
+    <div style={{
+      background: '#EAF7F5', border: '1px solid rgba(34,163,154,.2)', borderRadius: 16,
+      padding: '15px 18px', margin: '24px 0',
+      display: 'flex', alignItems: 'center', gap: 15,
+    }} className="mo-milestone-wrap">
+
+      {/* Left — glowing hizb disc */}
+      <div className="hizb-disc" aria-hidden="true" style={{
+        width: 54, height: 54, borderRadius: '50%', background: '#fff', flexShrink: 0,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        boxShadow: '0 0 22px rgba(29,158,117,.55), 0 0 44px rgba(29,158,117,.3), 0 2px 8px rgba(15,110,86,.2)',
+      }}>
+        <span style={{ fontSize: 28, color: '#0F8A5F', filter: 'drop-shadow(0 0 6px rgba(29,158,117,.6))', lineHeight: 1 }}>
+          &#1758;
+        </span>
+      </div>
+
+      {/* Center — text */}
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontSize: 9, fontWeight: 600, letterSpacing: '1.4px', textTransform: 'uppercase', color: '#1A8C82' }}>
+          {prevComplete ? `Module ${prevIndex + 1} complete \u00B7 next up` : 'Up next'}
+        </div>
+        <div style={{ fontFamily: serif, fontSize: 17, fontWeight: 600, color: '#0F4C5C', marginTop: 3, lineHeight: 1.3 }}>
+          Module {nextIndex + 1} — {nextMod.title}
+        </div>
+      </div>
+
+      {/* Right — journey progress */}
+      <div style={{ flexShrink: 0, textAlign: 'right' }}>
+        <div style={{ fontSize: 8.5, color: '#5fa595', marginBottom: 3 }}>your journey</div>
+        <div style={{ fontSize: 11, fontWeight: 600, color: '#0F6E56', marginBottom: 5 }}>
+          {completedCount} of {totalCount} modules
+        </div>
+        <div style={{ display: 'flex', gap: 4, justifyContent: 'flex-end' }}>
+          {modules.map((m, i) => (
+            <div key={m.id} style={{
+              width: 8, height: 8, borderRadius: '50%',
+              background: dotColors[getModDotState(m, i)],
+            }} />
+          ))}
+        </div>
       </div>
     </div>
   );
