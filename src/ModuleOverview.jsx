@@ -215,6 +215,20 @@ const ModuleOverview = ({
         }
         .mo-milestone-wrap { flex-wrap: nowrap; }
         @media (max-width: 600px) { .mo-milestone-wrap { flex-wrap: wrap; } }
+        @keyframes hizbGlow {
+          0%,100% { filter: drop-shadow(0 0 5px rgba(29,158,117,.5)); }
+          50%     { filter: drop-shadow(0 0 9px rgba(29,158,117,.8)); }
+        }
+        @media (prefers-reduced-motion: no-preference) {
+          .hizb-glow { animation: hizbGlow 3s ease-in-out infinite; }
+        }
+        .quran-sep-bands { display: flex; }
+        .quran-sep-label-mobile { display: none; }
+        @media (max-width: 520px) {
+          .quran-sep-bands { display: none !important; }
+          .quran-sep-label-mobile { display: flex !important; }
+          .quran-sep-label-desktop { display: none !important; }
+        }
       `}</style>
 
       <div style={{ maxWidth: 1120, margin: '0 auto', padding: '24px 20px 48px' }}>
@@ -241,12 +255,13 @@ const ModuleOverview = ({
         {modules.map((mod, mi) => {
           const isLast = mi === modules.length - 1;
           const nextMod = isLast ? null : modules[mi + 1];
+          const SepComponent = topicId === 'quran-arabic' ? QuranModuleSeparator : ModuleMilestone;
           return (
             <React.Fragment key={mod.id}>
               <ModuleBlock mod={mod} mi={mi} topicId={topicId} completedLessons={completedLessons}
                 loadProgress={loadProgress} onSelectLesson={onSelectLesson} onSelectModule={onSelectModule} />
               {!isLast && nextMod && (
-                <ModuleMilestone
+                <SepComponent
                   prevMod={mod} prevIndex={mi} nextMod={nextMod} nextIndex={mi + 1}
                   modules={modules} completedLessons={completedLessons} />
               )}
@@ -327,6 +342,77 @@ const ModuleMilestone = ({ prevMod, prevIndex, nextMod, nextIndex, modules, comp
             }} />
           ))}
         </div>
+      </div>
+    </div>
+  );
+};
+
+/* ================================================================ */
+/*  QuranModuleSeparator — manuscript-style divider for Quran track */
+/* ================================================================ */
+const QuatrefoilBand = ({ fadeDir }) => {
+  const maskImage = fadeDir === 'left'
+    ? 'linear-gradient(to right, transparent 0%, black 100%)'
+    : 'linear-gradient(to left, transparent 0%, black 100%)';
+  return (
+    <svg style={{ flex: 1, height: 22, WebkitMaskImage: maskImage, maskImage }}
+      preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id={`qf-${fadeDir}`} x="0" y="0" width="22" height="22" patternUnits="userSpaceOnUse">
+          <path d="M11 1 C7.5 4, 7.5 8, 11 11 C14.5 8, 14.5 4, 11 1" fill="none" stroke="#235C7A" strokeWidth="1" opacity="0.75" />
+          <path d="M11 21 C7.5 18, 7.5 14, 11 11 C14.5 14, 14.5 18, 11 21" fill="none" stroke="#235C7A" strokeWidth="1" opacity="0.75" />
+          <path d="M1 11 C4 7.5, 8 7.5, 11 11 C8 14.5, 4 14.5, 1 11" fill="none" stroke="#235C7A" strokeWidth="1" opacity="0.75" />
+          <path d="M21 11 C18 7.5, 14 7.5, 11 11 C14 14.5, 18 14.5, 21 11" fill="none" stroke="#235C7A" strokeWidth="1" opacity="0.75" />
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill={`url(#qf-${fadeDir})`} />
+    </svg>
+  );
+};
+
+const HizbGlyph = () => (
+  <span className="hizb-glow" aria-hidden="true" style={{
+    fontSize: 23, color: '#0F8A5F', lineHeight: 1, flexShrink: 0,
+    filter: 'drop-shadow(0 0 6px rgba(29,158,117,.6))',
+  }}>&#1758;</span>
+);
+
+const QuranModuleSeparator = ({ prevMod, prevIndex, nextMod, nextIndex, modules, completedLessons }) => {
+  const isModComplete = (mod) => {
+    const lessons = mod.lessons || [];
+    if (!lessons.length) return false;
+    return lessons.every((_, i) => !!completedLessons[`${mod.id}-lesson-${i}`]);
+  };
+  const prevComplete = isModComplete(prevMod);
+
+  const labelBlock = (
+    <div style={{ flexShrink: 0, textAlign: 'center', padding: '0 14px' }}>
+      <div style={{ fontSize: 8.5, fontWeight: 600, letterSpacing: '1.4px', textTransform: 'uppercase', color: '#235C7A' }}>
+        {prevComplete ? `Module ${prevIndex + 1} complete \u00B7 next` : 'Up next'}
+      </div>
+      <div style={{ fontFamily: serif, fontSize: 15.5, fontWeight: 600, color: '#0F4C5C', marginTop: 2, whiteSpace: 'nowrap', lineHeight: 1.3 }}>
+        Module {nextIndex + 1} — {nextMod.title}
+      </div>
+    </div>
+  );
+
+  return (
+    <div style={{ margin: '26px 0' }}>
+      {/* Desktop: full symmetric layout */}
+      <div className="quran-sep-bands" style={{ alignItems: 'center', gap: 10 }}>
+        <HizbGlyph />
+        <QuatrefoilBand fadeDir="left" />
+        {labelBlock}
+        <QuatrefoilBand fadeDir="right" />
+        <HizbGlyph />
+      </div>
+
+      {/* Mobile: stacked hizb + label */}
+      <div className="quran-sep-label-mobile" style={{
+        flexDirection: 'column', alignItems: 'center', gap: 8,
+      }}>
+        <HizbGlyph />
+        {labelBlock}
       </div>
     </div>
   );
