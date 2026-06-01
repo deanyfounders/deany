@@ -439,7 +439,7 @@ function Reflection({ onComplete }) {
   );
 }
 
-function Completion({ onRestart, onGoToHifz }) {
+function Completion({ onRestart, onGoToHifz, onBack }) {
   return (
     <div className="space-y-5">
       <Card className="bg-gradient-to-br from-white to-emerald-50">
@@ -457,6 +457,7 @@ function Completion({ onRestart, onGoToHifz }) {
           <button onClick={onGoToHifz} className="rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white shadow-sm transition hover:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-emerald-100">Return to memorisation</button>
           <button disabled className="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-black text-slate-400 shadow-sm cursor-not-allowed">Next tafsir lesson — coming soon</button>
           <Button variant="secondary" onClick={onRestart}>Restart</Button>
+          {onBack && <Button variant="secondary" onClick={onBack}>Back to lessons</Button>}
         </div>
       </Card>
       <SourceNote />
@@ -486,7 +487,7 @@ export default function DeanyFatihaTafsirBeginnerIbnKathir({ onBack, onHome, onG
   else if (step >= 6 && step <= 8) screen = <AyahPage item={ayahs[step - 2]} onNext={next} />;
   else if (step === 9) screen = <FlowOrdering onComplete={next} />;
   else if (step === 10) screen = <Reflection onComplete={next} />;
-  else screen = <Completion onRestart={restart} onGoToHifz={onGoToHifz} />;
+  else screen = <Completion onRestart={restart} onGoToHifz={onGoToHifz} onBack={onBack} />;
 
   return (
     <main className="min-h-screen bg-[#fbfbf8] p-6 text-slate-950">

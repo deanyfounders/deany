@@ -739,7 +739,7 @@ function SeamDrill({ index, firstAttempt, onFirstAttempt, onWeak, onContinue }) 
   );
 }
 
-function FinalGate({ progress, revealed, setRevealed, onBackToPassage, onMarkFinal, onComplete }) {
+function FinalGate({ progress, revealed, setRevealed, onBackToPassage, onMarkFinal, onComplete, onBack }) {
   const allMarked = passages.every((item) => typeof progress.finalChecks[item.key] === "boolean");
   const stuckItems = passages.filter((item) => progress.finalChecks[item.key] === false);
   const weakItems = passages.filter((item) => progress.weakQueue.includes(item.key));
@@ -747,6 +747,7 @@ function FinalGate({ progress, revealed, setRevealed, onBackToPassage, onMarkFin
   return (
     <main className="min-h-screen bg-[#fbfbf8] p-6 text-slate-950">
       <div className="mx-auto max-w-6xl space-y-5">
+        {onBack && <button onClick={onBack} className="mb-2 text-lg text-slate-950 hover:text-slate-600 transition" aria-label="Back">← Back</button>}
         <Card className="bg-gradient-to-br from-white to-emerald-50">
           <p className="text-xs font-black uppercase tracking-[0.25em] text-emerald-700">Final memory test</p>
           <h1 className="mt-3 text-5xl font-black tracking-tight">Can you recite the whole surah?</h1>
@@ -928,6 +929,7 @@ export default function DeanyFatihaMemorisationOnly({ onBack, onHome, onGoTafsir
             </div>
             <div className="mt-6 flex flex-wrap gap-3">
               <Button onClick={reset}>Restart lesson</Button>
+              {onBack && <Button variant="secondary" onClick={onBack}>Back to lessons</Button>}
             </div>
           </Card>
 
@@ -950,6 +952,7 @@ export default function DeanyFatihaMemorisationOnly({ onBack, onHome, onGoTafsir
         progress={progress}
         revealed={revealed}
         setRevealed={setRevealed}
+        onBack={onBack}
         onBackToPassage={backToPassage}
         onMarkFinal={markFinal}
         onComplete={() => update({ complete: true })}
