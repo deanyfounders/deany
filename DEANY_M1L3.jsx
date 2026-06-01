@@ -327,7 +327,7 @@ function FakeAdCard(){
 // ═══════════════════════════════════════════════════════════════
 // DATA
 // ═══════════════════════════════════════════════════════════════
-// REVIEW:FIQH — All three prohibitions simplified for beginner level. Scholarly review recommended.
+// REVIEW:FIQH - All three prohibitions simplified for beginner level. Scholarly review recommended.
 const SECTIONS=[
   {
     id:'A',title:'Ribā - The Guaranteed Increase',icon:'🔁',iconColor:C.coral,
@@ -338,18 +338,18 @@ const SECTIONS=[
       "This is why a conventional savings account that pays 'interest' involves ribā. The bank takes your money, invests it, keeps most of the profit, and gives you a guaranteed fixed return. That's not trade - it's ribā.",
     ],
     ribaDiagram:true,
-    // REVIEW:QURAN — Verify Arabic diacritics match official Uthmani mushaf
+    // REVIEW:QURAN - Verify Arabic diacritics match official Uthmani mushaf
     quran:{
       arabic:'ٱلَّذِينَ يَأْكُلُونَ ٱلرِّبَوٰا۟ لَا يَقُومُونَ إِلَّا كَمَا يَقُومُ ٱلَّذِى يَتَخَبَّطُهُ ٱلشَّيْطَٰنُ مِنَ ٱلْمَسِّ ۚ ذَٰلِكَ بِأَنَّهُمْ قَالُوٓا۟ إِنَّمَا ٱلْبَيْعُ مِثْلُ ٱلرِّبَوٰا۟ ۗ وَأَحَلَّ ٱللَّهُ ٱلْبَيْعَ وَحَرَّمَ ٱلرِّبَوٰا۟',
       text:'"Those who consume interest cannot stand [on the Day of Resurrection] except as one stands who is being beaten by Satan into insanity. That is because they say, \'Trade is [just] like interest.\' But Allah has permitted trade and has forbidden interest."',
       ref:'Al-Baqarah 2:275, Sahih International',
       note:"The key contrast: trade = permitted (real exchange, real risk, real value created). Ribā = forbidden (no exchange, no risk for the lender, money made from money alone).",
     },
-    // REVIEW:FIQH — Simplified to ribā al-nasī'ah only. Ribā al-fadl not covered in this beginner lesson.
+    // REVIEW:FIQH - Simplified to ribā al-nasī'ah only. Ribā al-fadl not covered in this beginner lesson.
     misconception:"'Profit and interest are the same thing.' They're not. A merchant who buys for AED 100 and sells for AED 120 earns **profit from real trade with real risk** - that's halal. Ribā is a **guaranteed increase on money lent** without trade or risk. The structure is what matters, not the amount.",
   },
   {
-    // REVIEW:FIQH — Gharar definition simplified. Scholars distinguish minor vs major gharar; only major gharar invalidates contracts.
+    // REVIEW:FIQH - Gharar definition simplified. Scholars distinguish minor vs major gharar; only major gharar invalidates contracts.
     id:'B',title:'Gharar - The Fog in the Deal',icon:'🌫️',iconColor:C.orange,
     content:[
       "The second prohibition is **gharar (غرر)**. It literally means 'uncertainty' or 'hazard' - but a better translation is **'excessive uncertainty in the deal.'**",
@@ -377,7 +377,7 @@ const SECTIONS=[
     threeWayCallout:true,
   },
   {
-    // REVIEW:FIQH — Conventional insurance analysis follows majority scholarly opinion. Some scholars differ on specifics.
+    // REVIEW:FIQH - Conventional insurance analysis follows majority scholarly opinion. Some scholars differ on specifics.
     id:'D',title:'All Three Together',icon:'⚖️',iconColor:C.teal,
     content:[
       "A single product can contain **more than one prohibition.** Conventional insurance, according to the majority of scholars, involves ribā (premiums invested in interest-bearing instruments), gharar (uncertainty over whether you'll receive anything back), and maysir (the payout structure resembles a gamble). You'll learn the alternative - takāful - in Module 4.",
@@ -423,7 +423,7 @@ const QUESTIONS=[
       {id:'d',text:'Because interest rates are too high.',correct:false},
     ],
     feedback:{
-      a:"That contradicts Lesson 1! The Prophet ﷺ was a trader who earned profit through commerce. Islam encourages fair profit from trade. Ribā is about RISK-FREE profit on money lent, not profit itself.",
+      a:"That contradicts Lesson 1! The Prophet (peace be upon him) was a trader who earned profit through commerce. Islam encourages fair profit from trade. Ribā is about RISK-FREE profit on money lent, not profit itself.",
       b:"Exactly. The issue isn't profit - Islam encourages fair profit from real trade. The issue is RISK-FREE profit from money lent. One side bears everything, the other bears nothing. That's the injustice.",
       c:"Lending is encouraged in Islam - it's called qard hasan (a good loan). What's forbidden is charging EXTRA. You can lend AED 1,000 and ask for AED 1,000 back. Not AED 1,200.",
       d:"Even 0.1% interest is ribā. It's not the rate - it's the structure. A guaranteed return on money lent with no trade or risk. The rate is irrelevant.",

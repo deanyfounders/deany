@@ -276,7 +276,7 @@ function TextPage({ next }) {
     <Card>
       <p className="text-xs font-black uppercase tracking-[0.2em] text-slate-500">Two testimonies, not one</p>
       <p className="mt-4 leading-8 text-slate-700">Notice that the word <span className="font-black text-amber-800">ashhadu</span>, "I testify," appears twice. This is not repetition for emphasis. The two ashhadus mark two distinct declarations.</p>
-      <p className="mt-3 leading-8 text-slate-700">The first testifies to what Allah is and is not. The second testifies to who Muhammad ﷺ is. They are joined by <span className="font-black">wa</span>, meaning "and." You are not making one testimony. You are making two.</p>
+      <p className="mt-3 leading-8 text-slate-700">The first testifies to what Allah is and is not. The second testifies to who Muhammad (peace be upon him) is. They are joined by <span className="font-black">wa</span>, meaning "and." You are not making one testimony. You are making two.</p>
     </Card>
     <Button onClick={next}>Continue</Button>
   </div>;
@@ -327,7 +327,7 @@ function WhyBothPage({ next }) {
     <Card className="border-amber-300 bg-[#FBF6EC]"><Arabic size="text-3xl" className="text-center">وَأَشْهَدُ أَنَّ مُحَمَّدًا رَسُولُ اللَّهِ</Arabic><p className="mt-3 text-center font-serif italic text-slate-600">Wa ashhadu anna Muhammadan rasulullah</p><p className="mt-2 text-center font-semibold text-slate-800">And I testify that Muhammad is the Messenger of Allah.</p></Card>
     <Card>
       <p className="leading-8 text-slate-700">The first testimony establishes Allah's exclusive right to worship. The second establishes how that worship is to be performed.</p>
-      <p className="mt-3 leading-8 text-slate-700">Many people throughout history have believed in one God. What makes the Muslim's testimony distinct is not just monotheism. It is the recognition that Allah sent Muhammad ﷺ as His final Messenger to teach humanity how to worship Him.</p>
+      <p className="mt-3 leading-8 text-slate-700">Many people throughout history have believed in one God. What makes the Muslim's testimony distinct is not just monotheism. It is the recognition that Allah sent Muhammad (peace be upon him) as His final Messenger to teach humanity how to worship Him.</p>
       <p className="mt-4 text-lg font-black leading-8 text-slate-950">To affirm one without the other is to know Allah exists but not to know how He has chosen to be known.</p>
     </Card>
     <Button onClick={next}>Continue</Button>
@@ -344,7 +344,7 @@ function FaithComponentsPage({ next }) {
     <div className="grid gap-4 md:grid-cols-3">{faithComponents.map((item, index) => <Card key={item.term} className="bg-gradient-to-br from-white to-amber-50"><div className="flex items-center justify-between"><Pill tone="gold">{index + 1}</Pill><Arabic size="text-3xl" className="text-amber-900">{item.ar}</Arabic></div><h3 className="mt-4 text-xl font-black text-slate-950">{item.term}</h3><p className="mt-1 text-sm font-black text-amber-800">{item.title}</p><p className="mt-3 text-sm leading-7 text-slate-700">{item.body}</p></Card>)}</div>
     <Card className="border-teal-200 bg-teal-50">
       <p className="text-xs font-black uppercase tracking-[0.2em] text-teal-800">Proof anchor</p>
-      <p className="mt-4 leading-8 text-slate-800">The Prophet ﷺ said that whoever professes la ilaha illa Allah and rejects what is worshipped besides Allah has their life and property protected, and their reckoning is with Allah.</p>
+      <p className="mt-4 leading-8 text-slate-800">The Prophet (peace be upon him) said that whoever professes la ilaha illa Allah and rejects what is worshipped besides Allah has their life and property protected, and their reckoning is with Allah.</p>
       <p className="mt-3 text-xs font-bold text-slate-500">Sahih Muslim 23a</p>
       <p className="mt-4 leading-8 text-slate-800">This is why we do not treat a struggling Muslim as if their Shahadah has simply disappeared. Missing obligations are serious and must be addressed, but the door into Islam is the testimony itself.</p>
     </Card>
@@ -412,7 +412,7 @@ function CheckpointPage({ scores, reset, onGoToNext }) {
     <button type="button" onClick={onGoToNext} disabled={!onGoToNext} className={cx("rounded-3xl border bg-slate-950 p-6 text-left text-white transition", onGoToNext ? "cursor-pointer hover:bg-slate-900" : "opacity-70 cursor-default")}>
       <Pill tone="gold">Next</Pill>
       <h3 className="mt-4 text-2xl font-black">Module B1.2 - The Second Testimony</h3>
-      <p className="mt-3 leading-7 text-white/70">Now that the first testimony is clear, the next lesson explains the second testimony: why Muslims testify that Muhammad ﷺ is the Messenger of Allah.</p>
+      <p className="mt-3 leading-7 text-white/70">Now that the first testimony is clear, the next lesson explains the second testimony: why Muslims testify that Muhammad (peace be upon him) is the Messenger of Allah.</p>
       {!onGoToNext && <p className="mt-2 text-xs font-bold text-amber-400">Coming soon</p>}
     </button>
     <Button variant="soft" onClick={reset}>Restart lesson</Button>

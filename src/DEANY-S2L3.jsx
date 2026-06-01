@@ -51,7 +51,7 @@ const SUNNAH_SALAH = [
   { name: "Saying 'Sami'Allahu liman hamidah'", desc: "When rising from rukuʿ, said by the imam and the one praying alone." },
   { name: "The takbirs of transition", desc: "Saying 'Allahu Akbar' when moving between positions (other than the opening takbir)." },
   { name: "The tashahhud and sitting for it", desc: "The seated declaration of faith at the middle and end of the prayer." },
-  { name: "Sending salutations on the Prophet ﷺ", desc: "Reciting the salawat after the final tashahhud." },
+  { name: "Sending salutations on the Prophet (peace be upon him)", desc: "Reciting the salawat after the final tashahhud." },
   { name: "Reciting silently or aloud as appropriate", desc: "Aloud in Fajr, Maghrib, and 'Isha' (first two rak'at). Silent in Dhuhr and 'Asr." },
 ];
 
@@ -586,7 +586,7 @@ function PQ1Sequence({ done, rm }) {
 function PTeachArkan({ nx, rm }) {
   return <div>
     <PT sub="Section B" title="Pillars vs Sunnah" />
-    <Pr>Not every action in prayer carries the same weight. Some are <strong style={{ color: T.teal }}>pillars (arkan)</strong>: miss one and your prayer is invalid. Others are <strong style={{ color: T.gold }}>sunnah acts</strong>: doing them earns reward and follows the Prophet's ﷺ example, but your prayer is still valid without them.</Pr>
+    <Pr>Not every action in prayer carries the same weight. Some are <strong style={{ color: T.teal }}>pillars (arkan)</strong>: miss one and your prayer is invalid. Others are <strong style={{ color: T.gold }}>sunnah acts</strong>: doing them earns reward and follows the Prophet's (peace be upon him) example, but your prayer is still valid without them.</Pr>
 
     {/* PILLARS section */}
     <div style={{ marginBottom: 28 }}>

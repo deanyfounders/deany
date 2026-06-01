@@ -41,7 +41,7 @@ const fajrSteps = [
   { title: "Sit", icon: "🧎", position: "Sitting", arabic: "جلوس", say: "Sit briefly between the two sujuds." },
   { title: "Second sujud", icon: "🕌", position: "Sujud", arabic: "سبحان ربي الأعلى", say: "Perform the second sujud. This completes one rak'ah." },
   { title: "Second rak'ah", icon: "🔁", position: "Repeat", arabic: "ركعة ثانية", say: "Stand and repeat the same structure for the second rak'ah." },
-  { title: "Final sitting", icon: "🧎", position: "Sitting", arabic: "التحيات", say: "After the second rak'ah, sit for the final tashahhud, including the Shahadah and salutations on the Prophet ﷺ." },
+  { title: "Final sitting", icon: "🧎", position: "Sitting", arabic: "التحيات", say: "After the second rak'ah, sit for the final tashahhud, including the Shahadah and salutations on the Prophet (peace be upon him)." },
   { title: "Salam", icon: "🌙", position: "Ending", arabic: "السلام عليكم", say: "End the prayer with salam." },
 ];
 

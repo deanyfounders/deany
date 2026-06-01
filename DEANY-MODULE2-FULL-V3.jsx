@@ -59,7 +59,7 @@ const glassHover = `${glass} transition-all duration-300 hover:shadow-xl hover:-
 
 // ---- Glossary (Islamic History) ----------------------------------
 const GLOSSARY_ENTRIES = [
-  { term: "Finality of Prophethood", def: "The belief that Muhammad ﷺ is the last prophet and messenger, and that no new revelation will come after him." },
+  { term: "Finality of Prophethood", def: "The belief that Muhammad (peace be upon him) is the last prophet and messenger, and that no new revelation will come after him." },
   { term: "Idol Worship", def: "Worshipping created objects or beings instead of Allah, often believing they bring protection or blessings." },
   { term: "idol worship", def: "Worshipping created objects or beings instead of Allah, often believing they bring protection or blessings." },
   { term: "Tribal Society", def: "A social system where protection, honour, and alliances are based on family and tribe rather than a central government." },
@@ -73,7 +73,7 @@ const GLOSSARY_ENTRIES = [
   { term: "tawhid", def: "Belief in and worship of Allah alone, rejecting all forms of false worship. This is the central belief of every prophet." },
   { term: "Kaʿbah", def: "The sacred House in Mecca, originally built by Ibrāhīm. A central gathering place for worship and pilgrimage." },
   { term: "Yathrib", def: "An oasis settlement later known as Medina, shaped by agriculture, land ownership, and local alliances." },
-  { term: "Sunnah", def: "The teachings, actions, and example of the Prophet Muhammad ﷺ, explaining how to live the Qur'an." },
+  { term: "Sunnah", def: "The teachings, actions, and example of the Prophet Muhammad (peace be upon him), explaining how to live the Qur'an." },
   { term: "Hijrah", def: "The migration from Mecca to Yathrib (Medina), marking a major shift in Islamic history." },
   { term: "Tawrah", def: "The scripture revealed to Prophet Mūsā (Moses)." },
   { term: "Hijaz", def: "The western region of Arabia that includes Mecca and Yathrib, where Islam first emerged." },
@@ -83,7 +83,7 @@ const GLOSSARY_ENTRIES = [
   { term: "ḥanīf", def: "A person who rejected idol worship and sought pure belief in one God, associated with the way of Ibrāhīm." },
   { term: "hanifs", def: "People who rejected idol worship and sought pure belief in one God, associated with the way of Ibrāhīm." },
   { term: "hanif", def: "A person who rejected idol worship and sought pure belief in one God, associated with the way of Ibrāhīm." },
-  { term: "Qur'an", def: "The final revelation from Allah, sent to Prophet Muhammad ﷺ. The primary source of guidance for Muslims." },
+  { term: "Qur'an", def: "The final revelation from Allah, sent to Prophet Muhammad (peace be upon him). The primary source of guidance for Muslims." },
   { term: "nabī", def: "A prophet -- someone chosen by Allah who receives revelation and teaches, but may not be sent with a new public mission." },
   { term: "nabi", def: "A prophet -- someone chosen by Allah who receives revelation and teaches, but may not be sent with a new public mission." },
   { term: "rasūl", def: "A messenger -- a prophet sent with a clear public mission to deliver Allah's message, often with a new scripture." },
@@ -296,8 +296,8 @@ const App = () => {
         { id: 'lesson-1-1', title: "Intro to Islamic Finance", description: "Core philosophy of halal transactions", duration: "12 min",
         questions: [
           { concept: "Islamic finance = every deal must be honest, based on real activity, and free from exploitation. Your niyyah matters, but it can't turn a haram deal into a halal one.\\n\\nTruthful dealing is mandatory -- hiding defects or faking scarcity corrupts consent and makes earnings haram.\\nEnabling a haram product at ANY stage is prohibited -- not just personal use. The hadith curses 10 roles in the wine trade.\\nNiyyah (intention) completes halal actions but cannot convert prohibited means into halal outcomes.\\n\\nThink of a reseller re-shrink-wrapping a used phone and listing it as 'brand new' -- the phone works fine, but the dishonesty poisons the sale.", question: "A valid sale requires mutual consent communicated as \"_______ and _______.'", type: "multiple-choice", options: ["Counter-offer and silence", "Offer and acceptance (ijab and qabul)", "Wish and estimate", "Silence and counter-offer"], correct: 1, explanation: "Mutual consent = offer + acceptance. This is the legal tie. The other pillars (known price, specified subject, deliverability) carry the sale from there. Without clear offer and acceptance, nothing else fixes the contract. Silence, wishes, and estimates don't create a binding agreement." , uiType: "fill"},
-          { concept: "Islamic finance = every deal must be honest, based on real activity, and free from exploitation. Your niyyah matters, but it can't turn a haram deal into a halal one.\\n\\nTruthful dealing is mandatory -- hiding defects or faking scarcity corrupts consent and makes earnings haram.\\nEnabling a haram product at ANY stage is prohibited -- not just personal use. The hadith curses 10 roles in the wine trade.\\nNiyyah (intention) completes halal actions but cannot convert prohibited means into halal outcomes.\\n\\nThink of a reseller re-shrink-wrapping a used phone and listing it as 'brand new' -- the phone works fine, but the dishonesty poisons the sale.", question: "A reseller lists a refurbished phone as \"brand new.\" They re-applied shrink wrap themselves and photographed it sealed. The phone works fine. Ruling?", type: "multiple-choice", options: ["Permissible -- the phone works, so no harm done", "Forbidden -- misrepresenting condition corrupts the buyer's consent", "Permissible if the return window is generous", "Makruh only -- a minor issue"], correct: 1, explanation: "The Prophet ﷺ condemned trade deception. Misrepresenting a refurbished phone as new corrupts informed consent (Q 4:29). The phone working doesn't cure the fraud. A return policy doesn't whitewash dishonesty. The defect is in the seller's lie, not the product's condition. Q 83:1–3 warns against giving less than what's due." , uiType: "mcq"},
-          { concept: "Islamic finance = every deal must be honest, based on real activity, and free from exploitation. Your niyyah matters, but it can't turn a haram deal into a halal one.\\n\\nTruthful dealing is mandatory -- hiding defects or faking scarcity corrupts consent and makes earnings haram.\\nEnabling a haram product at ANY stage is prohibited -- not just personal use. The hadith curses 10 roles in the wine trade.\\nNiyyah (intention) completes halal actions but cannot convert prohibited means into halal outcomes.\\n\\nThink of a reseller re-shrink-wrapping a used phone and listing it as 'brand new' -- the phone works fine, but the dishonesty poisons the sale.", question: "Why is earning from alcohol off-limits, even if you never drink it yourself?", type: "multi-select", options: ["Allowed if you donate some of the profit", "Allowed if you only handle logistics, not production", "Prohibited: all roles in the alcohol supply chain are cursed in hadith", "Prohibited: intoxicants are categorically commanded to be avoided (Q 5:90)"], correct: [2, 3], explanation: "The Prophet ﷺ cursed ten roles connected to wine (presser, buyer, seller, carrier…). The Qur'an commands avoidance entirely. This shuts the door at every stage -- personal consumption is not the test. Donating profits or limiting your role to \"just logistics\" doesn't change the source. The prohibition targets the supply chain itself." , uiType: "sel2"},
+          { concept: "Islamic finance = every deal must be honest, based on real activity, and free from exploitation. Your niyyah matters, but it can't turn a haram deal into a halal one.\\n\\nTruthful dealing is mandatory -- hiding defects or faking scarcity corrupts consent and makes earnings haram.\\nEnabling a haram product at ANY stage is prohibited -- not just personal use. The hadith curses 10 roles in the wine trade.\\nNiyyah (intention) completes halal actions but cannot convert prohibited means into halal outcomes.\\n\\nThink of a reseller re-shrink-wrapping a used phone and listing it as 'brand new' -- the phone works fine, but the dishonesty poisons the sale.", question: "A reseller lists a refurbished phone as \"brand new.\" They re-applied shrink wrap themselves and photographed it sealed. The phone works fine. Ruling?", type: "multiple-choice", options: ["Permissible -- the phone works, so no harm done", "Forbidden -- misrepresenting condition corrupts the buyer's consent", "Permissible if the return window is generous", "Makruh only -- a minor issue"], correct: 1, explanation: "The Prophet (peace be upon him) condemned trade deception. Misrepresenting a refurbished phone as new corrupts informed consent (Q 4:29). The phone working doesn't cure the fraud. A return policy doesn't whitewash dishonesty. The defect is in the seller's lie, not the product's condition. Q 83:1–3 warns against giving less than what's due." , uiType: "mcq"},
+          { concept: "Islamic finance = every deal must be honest, based on real activity, and free from exploitation. Your niyyah matters, but it can't turn a haram deal into a halal one.\\n\\nTruthful dealing is mandatory -- hiding defects or faking scarcity corrupts consent and makes earnings haram.\\nEnabling a haram product at ANY stage is prohibited -- not just personal use. The hadith curses 10 roles in the wine trade.\\nNiyyah (intention) completes halal actions but cannot convert prohibited means into halal outcomes.\\n\\nThink of a reseller re-shrink-wrapping a used phone and listing it as 'brand new' -- the phone works fine, but the dishonesty poisons the sale.", question: "Why is earning from alcohol off-limits, even if you never drink it yourself?", type: "multi-select", options: ["Allowed if you donate some of the profit", "Allowed if you only handle logistics, not production", "Prohibited: all roles in the alcohol supply chain are cursed in hadith", "Prohibited: intoxicants are categorically commanded to be avoided (Q 5:90)"], correct: [2, 3], explanation: "The Prophet (peace be upon him) cursed ten roles connected to wine (presser, buyer, seller, carrier…). The Qur'an commands avoidance entirely. This shuts the door at every stage -- personal consumption is not the test. Donating profits or limiting your role to \"just logistics\" doesn't change the source. The prohibition targets the supply chain itself." , uiType: "sel2"},
           { concept: "Islamic finance = every deal must be honest, based on real activity, and free from exploitation. Your niyyah matters, but it can't turn a haram deal into a halal one.\\n\\nTruthful dealing is mandatory -- hiding defects or faking scarcity corrupts consent and makes earnings haram.\\nEnabling a haram product at ANY stage is prohibited -- not just personal use. The hadith curses 10 roles in the wine trade.\\nNiyyah (intention) completes halal actions but cannot convert prohibited means into halal outcomes.\\n\\nThink of a reseller re-shrink-wrapping a used phone and listing it as 'brand new' -- the phone works fine, but the dishonesty poisons the sale.", question: "Your savings account auto-credited AED 52.00 in interest this quarter. Your halal salary deposited was AED 18,000. What is the purification amount, and does it affect your zakat calculation?", type: "multiple-choice", options: ["AED 52.00 purified; yes, it reduces your zakat base", "AED 52.00 purified; no -- zakat is calculated separately on halal wealth", "Nothing -- it's too small to matter", "AED 18,052 -- the entire balance is contaminated"], correct: 1, explanation: "Purify the exact interest amount by donating it without intending reward. Zakat is a separate obligation on lawful wealth -- purification doesn't reduce or replace it. Size doesn't excuse it. And zakat ≠ purification: one is worship on halal wealth, the other is removing money you shouldn't keep." , uiType: "calc", visual: {calcSteps: ["Purification amount = [___]", "Reduce zakat base? [Yes/No]"], factChips: ["Interest: AED 52.00", "Halal salary: AED 18,000", "Source: Bank auto-credit"]}},
           { concept: "Islamic finance = every deal must be honest, based on real activity, and free from exploitation. Your niyyah matters, but it can't turn a haram deal into a halal one.\\n\\nTruthful dealing is mandatory -- hiding defects or faking scarcity corrupts consent and makes earnings haram.\\nEnabling a haram product at ANY stage is prohibited -- not just personal use. The hadith curses 10 roles in the wine trade.\\nNiyyah (intention) completes halal actions but cannot convert prohibited means into halal outcomes.\\n\\nThink of a reseller re-shrink-wrapping a used phone and listing it as 'brand new' -- the phone works fine, but the dishonesty poisons the sale.", question: "A friend says: \"I'm investing in a cannabis dispensary, but my niyyah is to give ALL the profits to an orphanage.\" What's the correct response?", type: "multiple-choice", options: ["Valid -- good intention purifies the source", "Valid -- charity always overrides", "Invalid -- good intention cannot make a prohibited source halal; both means and ends must be sound", "Invalid -- but only because cannabis is medical, not recreational"], correct: 2, explanation: "\"Deeds are only by intentions\" means niyyah directs reward -- but it operates on LAWFUL actions. It cannot convert a haram source into halal. Both the means and the ends must be sound. Channelling prohibited income to charity is purification of contamination, not a licence to generate it deliberately." , uiType: "mcq"},
           { concept: "Islamic finance = every deal must be honest, based on real activity, and free from exploitation. Your niyyah matters, but it can't turn a haram deal into a halal one.\\n\\nTruthful dealing is mandatory -- hiding defects or faking scarcity corrupts consent and makes earnings haram.\\nEnabling a haram product at ANY stage is prohibited -- not just personal use. The hadith curses 10 roles in the wine trade.\\nNiyyah (intention) completes halal actions but cannot convert prohibited means into halal outcomes.\\n\\nThink of a reseller re-shrink-wrapping a used phone and listing it as 'brand new' -- the phone works fine, but the dishonesty poisons the sale.", question: "An online electronics store shows \"ONLY 2 LEFT!\" with a countdown timer on every product page, even when they have 500 units in stock. The prices are fair and delivery is reliable. What is the problematic element?", type: "multiple-choice", options: ["The price", "The delivery promise", "The warranty", "The fake scarcity claim -- \"ONLY 2 LEFT!\" manipulates consent"], correct: 3, explanation: "The store has 500 units but shows \"Only 2 left!\" to pressure buying decisions. This artificial urgency manipulates consent (Q 2:188; Q 4:29). The product being halal doesn't fix the method of selling it. The price is fair, delivery is real, and the warranty is genuine. The defect isn't in the product -- it's in the DISHONEST sales tactic." , uiType: "spot", visual: {mockup: {title: "Premium Wireless Earbuds", rating: "\u2605\u2605\u2605\u2605\u2606", price: "AED 299", features: ["\u2705 Free delivery", "\u2705 1-year warranty", "\u23f0 ONLY 2 LEFT! \u2014 countdown timer", "\u2705 Halal-certified electronics"], defectIndex: 2}, factChips: ["Actual stock: 500 units", "Price: Fair market rate", "Delivery: Reliable"]}},
@@ -398,14 +398,14 @@ const App = () => {
   mascotMessage: "Time to learn what makes a sale actually valid -- not just legal, but Islamically sound!",
   lessons: [
     // ═══════════════════════════════════════════════════════
-    // LESSON 1 — Valid Sale: Pillars & Conditions (12 Q, 170 XP)
+    // LESSON 1 - Valid Sale: Pillars & Conditions (12 Q, 170 XP)
     // ═══════════════════════════════════════════════════════
     { id: 'lesson-2-1', title: "Valid Sale: Pillars & Conditions", description: "The five pillars every sale needs", duration: "12 min",
       conceptCards: [
-        { title: "What makes a sale valid?", text: "In Islamic law, a sale (bayʿ) isn't valid just because money changed hands. Five structural pillars must ALL be present:\n\n1 → Offer & acceptance (ījāb wa qabūl)\n2 → Lawful & specified subject matter\n3 → Known price\n4 → Ability to deliver\n5 → Absence of ribā, gharar & maysir\n\nRemove any one pillar and the contract is structurally defective — not just poor practice, but invalid.",
-          proTip: "Think of the pillars like load-bearing walls. Remove one and the structure collapses — no matter how nice the paint looks." },
-        { title: "Why pillars matter", text: "Buying a car: you need the exact car (specified), exact price (known), it handed over (deliverable), both genuinely agree (consent).\n\nA 'free' app hiding AED 49.99 activation? Price unknown at agreement — gharar.\n\nA 'transferable' gym membership when gym says otherwise? Never deliverable.\n\nThese aren't edge cases. They're everyday failures on basic pillars.",
-          proTip: "Ask: 'Which pillar could break here?' — not 'Does this feel fair?'" },
+        { title: "What makes a sale valid?", text: "In Islamic law, a sale (bayʿ) isn't valid just because money changed hands. Five structural pillars must ALL be present:\n\n1 → Offer & acceptance (ījāb wa qabūl)\n2 → Lawful & specified subject matter\n3 → Known price\n4 → Ability to deliver\n5 → Absence of ribā, gharar & maysir\n\nRemove any one pillar and the contract is structurally defective - not just poor practice, but invalid.",
+          proTip: "Think of the pillars like load-bearing walls. Remove one and the structure collapses - no matter how nice the paint looks." },
+        { title: "Why pillars matter", text: "Buying a car: you need the exact car (specified), exact price (known), it handed over (deliverable), both genuinely agree (consent).\n\nA 'free' app hiding AED 49.99 activation? Price unknown at agreement - gharar.\n\nA 'transferable' gym membership when gym says otherwise? Never deliverable.\n\nThese aren't edge cases. They're everyday failures on basic pillars.",
+          proTip: "Ask: 'Which pillar could break here?' - not 'Does this feel fair?'" },
         { title: "The substance test", text: "Islamic commercial law cares about substance over labels. What something IS matters more than what it's CALLED.\n\nA 'sale' that functions like an interest-bearing loan fails on substance.\nA 'free trial' that auto-charges has a hidden price.\nOdometer reset = TWO pillars: misspecified subject AND compromised consent.\n\nYour job: spot which pillar is broken, regardless of what the seller calls the deal.",
           proTip: "Strip every label. Describe only what's happening mechanically. Then check the pillars." }
       ],
@@ -414,14 +414,14 @@ const App = () => {
         { question: "Sort: STRUCTURAL PILLARS vs GOOD PRACTICE (not pillars).", concept: "Your friend keeps mixing up 'must have' with 'nice to have.'", type: "column-sort", uiType: "drag-alloc", xp: 10, zone: 1,
           columns: [{id: "pillars", label: "Structural Pillars", color: "#059669", correct: ["Offer & acceptance", "Specified subject", "Known price", "Ability to deliver"]}, {id: "good-practice", label: "Good Practice (Not Pillars)", color: "#d97706", correct: ["Written contract", "Witnesses present", "Payment in local currency", "Seller provides warranty"]}],
           visual: { buckets: [{id: "pillars", label: "Structural Pillars", color: "#059669"}, {id: "good-practice", label: "Good Practice", color: "#d97706"}], chips: [{text: "Offer & acceptance", correct: "pillars"}, {text: "Written contract", correct: "good-practice"}, {text: "Specified subject", correct: "pillars"}, {text: "Known price", correct: "pillars"}, {text: "Witnesses present", correct: "good-practice"}, {text: "Ability to deliver", correct: "pillars"}, {text: "Payment in local currency", correct: "good-practice"}, {text: "Seller provides warranty", correct: "good-practice"}] },
-          explanation: "Five pillars form the skeleton. Written contracts, witnesses, currency, warranties are excellent practice — but a sale without them can still be valid. Without a pillar, it cannot.",
+          explanation: "Five pillars form the skeleton. Written contracts, witnesses, currency, warranties are excellent practice - but a sale without them can still be valid. Without a pillar, it cannot.",
           trapAnalysis: "'Written contract' is the strongest trap. Many assume writing = validity. A verbal agreement meeting all pillars IS valid. 'Witnesses' are recommended for debt (2:282) but not a structural sale pillar." },
 
         { question: "Quick fire: Pillar or not? 8 seconds per round.\n\nR1: 'Both buyer and seller clearly agree to the deal'\nR2: 'Payment made by bank transfer (not cash)'\nR3: 'The item being sold is clearly described and identified'\nR4: 'Seller includes 5 product photos'", type: "multiple-choice", uiType: "rapid-fire", xp: 15, zone: 1,
           options: ["R1: PILLAR | R2: PILLAR | R3: NOT | R4: NOT", "R1: PILLAR | R2: NOT | R3: PILLAR | R4: NOT", "R1: NOT | R2: NOT | R3: PILLAR | R4: PILLAR", "R1: PILLAR | R2: NOT | R3: NOT | R4: PILLAR"],
           correct: 1,
           explanation: "Agreement and specification are pillars. Payment METHOD and photos are about HOW you transact, not structural validity.",
-          trapAnalysis: "R2 is the trap — payment feels essential but the pillar is 'known price,' not 'payment method.'",
+          trapAnalysis: "R2 is the trap - payment feels essential but the pillar is 'known price,' not 'payment method.'",
           thinkDeeper: "Can you think of a payment method that WOULD create a pillar problem?" },
 
         { question: "Complete: (1) Offer & ______, (2) Lawful & specified subject, (3) Known price, (4) Ability to deliver, (5) Absence of riba, gharar & ______.", type: "multiple-choice", uiType: "fill", xp: 10, zone: 1,
@@ -429,7 +429,7 @@ const App = () => {
           options: ["(1) confirmation, (5) maysir", "(1) acceptance, (5) maysir", "(1) acceptance, (5) gharar", "(1) agreement, (5) maysir"],
           correct: 1,
           explanation: "ījāb wa qabūl = offer & acceptance. Riba and gharar already in the stem, so the blank is maysir.",
-          trapAnalysis: "Option A: 'Confirmation' implies checking; 'acceptance' implies forming the contract. Option C: Gharar is already in the stem — tests if you read the question. Option D: 'Agreement' is the concept, 'acceptance' is the precise term." },
+          trapAnalysis: "Option A: 'Confirmation' implies checking; 'acceptance' implies forming the contract. Option C: Gharar is already in the stem - tests if you read the question. Option D: 'Agreement' is the concept, 'acceptance' is the precise term." },
 
         { question: "Select TWO non-negotiable elements for this sale to be valid.", concept: "Reviewing a second-hand camera contract on Dubizzle.", type: "multi-select", uiType: "sel2", xp: 10, zone: 1,
           options: ["Camera's condition and model clearly specified", "Written contract signed by both parties", "Total price known and agreed before sale completes", "Seller includes a 14-day return policy"],
@@ -441,83 +441,83 @@ const App = () => {
         { question: "Walk through this deal step by step.\n\nSTEP 1: Is the listing an offer or invitation to treat?\nSTEP 2: What is the buyer's 'AED 13,000'?\nSTEP 3: What does 'Deal' constitute?\nSTEP 4: First pillar met?", concept: "Dubizzle: luxury watch 'AED 15,000 or best offer.' Buyer: 'AED 13,000.' Seller: 'Deal.'", type: "multiple-choice", uiType: "multi-step", xp: 20, zone: 2,
           options: ["Step 1: Offer → Step 2: Counter → Step 3: Rejection → Not valid", "Step 1: Invitation to treat → Step 2: Counter-offer (new offer) → Step 3: Acceptance → Yes, valid at AED 13,000", "Step 1: Offer → Step 2: Acceptance → Step 3: N/A → Valid at AED 15,000", "Step 1: Invitation → Step 2: Enquiry → Step 3: New offer → Not yet valid"],
           correct: 1,
-          explanation: "Listings aren't offers — they're invitations. The buyer's price IS the offer. 'Deal' = acceptance.",
+          explanation: "Listings aren't offers - they're invitations. The buyer's price IS the offer. 'Deal' = acceptance.",
           trapAnalysis: "Common: thinking original price must be honoured. It was never an offer. Common: thinking online messages can't be acceptance. Medium doesn't matter.",
           thinkDeeper: "What if the seller said 'Let me think about it'?" },
 
         { question: "Who's right?", concept: "AMIRA: 'Developer said apartment matches brochure. Good enough.' YOUSEF: 'Brochure isn't the apartment. Can't verify specs. Subject-matter problem.'", type: "multiple-choice", uiType: "peer-debate", xp: 15, zone: 2,
-          options: ["Amira — detailed brochure = sufficient specification", "Yousef — can't verify actual specs; 'trust us' ≠ specification", "Both partially right — valid if developer provides written guarantee", "Neither — this is a deliverability issue, not specification"],
+          options: ["Amira - detailed brochure = sufficient specification", "Yousef - can't verify actual specs; 'trust us' ≠ specification", "Both partially right - valid if developer provides written guarantee", "Neither - this is a deliverability issue, not specification"],
           correct: 1,
           explanation: "'Trust us' isn't specification. A brochure ≠ the actual apartment. Buyer can't verify what they're getting.",
           trapAnalysis: "Option A: brochures are marketing, not specification. Option C: guarantee shifts risk but doesn't specify the subject." },
 
         { question: "Structural analysis: who is right?", concept: "KHALID: 'Signed contract + fair price + witnesses = valid sale.' FATIMA: 'The seller was threatened. Signature under duress ≠ genuine consent.'", type: "multiple-choice", uiType: "peer-debate", xp: 15, zone: 2,
-          options: ["Khalid — stacking positives (contract + fair price + witnesses) makes it valid", "Fatima — genuine consent from BOTH parties is a pillar; coercion breaks it", "Depends — if fair price, coercion is irrelevant to structural validity", "Khalid — but sale is voidable if seller can prove coercion later"],
+          options: ["Khalid - stacking positives (contract + fair price + witnesses) makes it valid", "Fatima - genuine consent from BOTH parties is a pillar; coercion breaks it", "Depends - if fair price, coercion is irrelevant to structural validity", "Khalid - but sale is voidable if seller can prove coercion later"],
           correct: 1,
           explanation: "Genuine consent (ridha) is foundational. Stacking positives doesn't compensate for a missing pillar.",
           trapAnalysis: "Option A stacks genuine positives for 'weight of evidence.' Pillar math doesn't work that way. Option C imports civil-law 'voidable.' Islamic law: defective from inception. Option D: validity assessed at contract point, not retroactively." },
 
         { question: "Structural analysis: what went wrong?", concept: "You buy friend's gym membership AED 500. Two weeks later, gym blocks card: 'Non-transferable.'", type: "multiple-choice", uiType: "mcq", xp: 15, zone: 2,
-          options: ["Gym's terms are unfair — your friend paid and should be free to transfer", "Sale was valid but became invalid when gym enforced its terms", "Sale was defective from the start — seller sold what he couldn't deliver", "Sale is valid between you and friend; gym is a separate dispute"],
+          options: ["Gym's terms are unfair - your friend paid and should be free to transfer", "Sale was valid but became invalid when gym enforced its terms", "Sale was defective from the start - seller sold what he couldn't deliver", "Sale is valid between you and friend; gym is a separate dispute"],
           correct: 2,
           explanation: "Deliverability is a pillar. Gym prohibits transfer = seller couldn't deliver. Defect existed from day one.",
-          trapAnalysis: "Option A argues fairness. Doesn't override structural rules. Option B confuses timing — defect didn't arise when gym acted. Option D isolates sale from consequences. Deliverability assessed at point of sale.",
+          trapAnalysis: "Option A argues fairness. Doesn't override structural rules. Option B confuses timing - defect didn't arise when gym acted. Option D isolates sale from consequences. Deliverability assessed at point of sale.",
           thinkDeeper: "What if gym terms said 'transferable with AED 50 fee'?" },
 
         { question: "True or False: Valid sale even if seller was coerced? (Price fair, item described, buyer happy.)", type: "multiple-choice", uiType: "mcq", xp: 15, zone: 2,
-          options: ["True — buyer satisfaction and fair pricing sufficient", "True — coercion is criminal, separate from contract validity", "False — all pillars must be met by BOTH parties; coercion breaks the chain", "False — but only if seller can demonstrate coercion with evidence"],
+          options: ["True - buyer satisfaction and fair pricing sufficient", "True - coercion is criminal, separate from contract validity", "False - all pillars must be met by BOTH parties; coercion breaks the chain", "False - but only if seller can demonstrate coercion with evidence"],
           correct: 2,
           explanation: "ALL pillars must be present from BOTH sides.",
           trapAnalysis: "Option B: correctly identifies criminal aspect but wrongly implies it's not a contract issue. It's both. Option D: validity based on what happened, not what can be proven." },
 
         // --- ZONE 3: STRETCH (Q10-12) ---
-        { question: "Audit this listing. Identify ALL defects.", concept: "[APP STORE] ⭐⭐⭐⭐⭐ (2,340 reviews) • 'Best budgeting app!' FREE — Download now! [After install:] Activation: AED 49.99 required. [Screen 3:] Auto-renewal AED 49.99/month in terms you 'agreed to' by installing.", type: "multi-select", uiType: "case-audit", xp: 25, zone: 3,
-          options: ["Known price violated — real cost hidden at agreement", "Specified subject — features not described enough", "Genuine consent compromised — auto-renewal buried in terms", "Absence of gharar — gap between 'free' and AED 49.99", "Deliverability is fine — app was delivered to phone"],
+        { question: "Audit this listing. Identify ALL defects.", concept: "[APP STORE] ⭐⭐⭐⭐⭐ (2,340 reviews) • 'Best budgeting app!' FREE - Download now! [After install:] Activation: AED 49.99 required. [Screen 3:] Auto-renewal AED 49.99/month in terms you 'agreed to' by installing.", type: "multi-select", uiType: "case-audit", xp: 25, zone: 3,
+          options: ["Known price violated - real cost hidden at agreement", "Specified subject - features not described enough", "Genuine consent compromised - auto-renewal buried in terms", "Absence of gharar - gap between 'free' and AED 49.99", "Deliverability is fine - app was delivered to phone"],
           correct: [0, 2],
           explanation: "TWO clear defects: (1) Price hidden. (2) Auto-renewal without informed consent. D describes a symptom (gharar) but the PILLARS violated are known-price and consent.",
-          trapAnalysis: "Option D: most common error — confusing symptom (gharar) with pillar (known price). Option E tests if you can spot what's NOT broken.",
+          trapAnalysis: "Option D: most common error - confusing symptom (gharar) with pillar (known price). Option E tests if you can spot what's NOT broken.",
           thinkDeeper: "If listing said 'Free with AED 49.99/month premium,' which defect is cured?",
-          visual: {mockup: {title: "App Store Listing", price: "FREE", features: ["⭐⭐⭐⭐⭐ (2,340 reviews)", "'Best budgeting app!'", "📱 Download now — it's FREE!", "💳 Activation: AED 49.99 (shown AFTER install)", "🔄 Auto-renewal AED 49.99/month (buried in terms)"]}} },
+          visual: {mockup: {title: "App Store Listing", price: "FREE", features: ["⭐⭐⭐⭐⭐ (2,340 reviews)", "'Best budgeting app!'", "📱 Download now - it's FREE!", "💳 Activation: AED 49.99 (shown AFTER install)", "🔄 Auto-renewal AED 49.99/month (buried in terms)"]}} },
 
         { question: "How many pillars does the odometer fraud affect?", concept: "Dealer resets odometers. Prices 'fair' for fake mileage. Cars run fine.", type: "multiple-choice", uiType: "slider", xp: 20, zone: 3,
-          options: ["0 — cars work, prices reasonable", "1 — misspecified subject only", "2 — misspecified subject AND compromised consent", "3 — add absence of riba"],
+          options: ["0 - cars work, prices reasonable", "1 - misspecified subject only", "2 - misspecified subject AND compromised consent", "3 - add absence of riba"],
           correct: 2,
           explanation: "Two pillars hit. (1) Subject not truly specified (fake mileage). (2) Consent compromised (buyer agreed based on false info).",
-          trapAnalysis: "Option A: 'it works fine' ≠ 'it was honestly described.' Option D: riba isn't involved — this is deception, not interest.",
-          thinkDeeper: "What if dealer disclosed 'mileage unverified' — does that fix the defect?" },
+          trapAnalysis: "Option A: 'it works fine' ≠ 'it was honestly described.' Option D: riba isn't involved - this is deception, not interest.",
+          thinkDeeper: "What if dealer disclosed 'mileage unverified' - does that fix the defect?" },
 
         { question: "Help your cousin set up her business right. Build a compliant Instagram listing.", concept: "Cousin launching handmade jewellery on Instagram: 'What do I need to make each sale valid?'", type: "multiple-choice", uiType: "scenario-build", xp: 25, zone: 3,
-          options: ["Price items fairly and you'll be fine — Islam is flexible", "Five steps: (1) Describe honestly (materials, size), (2) State exact price, (3) Have item ready to ship, (4) Get clear 'Yes at AED X' before charging, (5) No misleading descriptions. That covers all five pillars.", "Get an Islamic finance certificate first", "Only sell to Muslims to ensure compliance"],
+          options: ["Price items fairly and you'll be fine - Islam is flexible", "Five steps: (1) Describe honestly (materials, size), (2) State exact price, (3) Have item ready to ship, (4) Get clear 'Yes at AED X' before charging, (5) No misleading descriptions. That covers all five pillars.", "Get an Islamic finance certificate first", "Only sell to Muslims to ensure compliance"],
           correct: 1,
-          explanation: "Five pillars in operational language. No certificate needed — just sound practice.",
+          explanation: "Five pillars in operational language. No certificate needed - just sound practice.",
           trapAnalysis: "Real-world trap: thinking compliance requires formal Islamic structures for small business.",
           thinkDeeper: "What if she makes jewellery on demand? Does she need salam structure?" }
       ]
     },
 
     // ═══════════════════════════════════════════════════════
-    // LESSON 2 — Ownership & Possession (10 Q, 140 XP)
+    // LESSON 2 - Ownership & Possession (10 Q, 140 XP)
     // ═══════════════════════════════════════════════════════
     { id: 'lesson-2-2', title: "Ownership & Possession", description: "Don't sell what you don't own", duration: "12 min",
       conceptCards: [
-        { title: "The ownership rule", text: "\"Don't sell what you don't own or possess\" — a structural rule, not a guideline.\n\nBefore selling, you must own or have constructive possession.\n\nThis protects buyers. Selling what you don't control = buyer's money at risk.",
+        { title: "The ownership rule", text: "\"Don't sell what you don't own or possess\" - a structural rule, not a guideline.\n\nBefore selling, you must own or have constructive possession.\n\nThis protects buyers. Selling what you don't control = buyer's money at risk.",
           proTip: "This isn't about paperwork. It's about who bears real risk RIGHT NOW." },
-        { title: "Constructive possession", text: "You don't need to physically hold every item. Constructive possession (qabd) means:\n\nLegal control + Payment completed + Risk of loss on you + Title in your name\n\nKey test: if destroyed right now, who takes the financial hit? If you — you have possession.",
-          proTip: "Like car insurance: the moment the policy is in YOUR name and YOU'd pay if it's totalled — you have possession." },
+        { title: "Constructive possession", text: "You don't need to physically hold every item. Constructive possession (qabd) means:\n\nLegal control + Payment completed + Risk of loss on you + Title in your name\n\nKey test: if destroyed right now, who takes the financial hit? If you - you have possession.",
+          proTip: "Like car insurance: the moment the policy is in YOUR name and YOU'd pay if it's totalled - you have possession." },
         { title: "Exceptions & modern applications", text: "Salam (prepaid forward sale) is the structured EXCEPTION. Safeguards: full prepayment, detailed specs, fixed delivery date.\n\nDropshippers listing products they've never touched = selling before owning.\n\nFix: hold inventory, act as agent (wakāla), or structure as proper salam.",
           proTip: "The fix matters as much as the diagnosis. Always offer a path forward." }
       ],
       questions: [
         // --- ZONE 1: WARM-UP (Q1-3) ---
-        { question: "Spot the defect in this Instagram store.", concept: "[TechDeals] AirPods Pro AED 899 — 'In stock' (not actually held) — Ships from supplier directly — Reseller never touches product — Customer pays BEFORE reseller buys", type: "multiple-choice", uiType: "spot", xp: 10, zone: 1,
-          options: ["Known price — AED 899 might change before supplier ships", "Selling before ownership — customer pays before reseller has acquired item", "Absence of gharar — customer doesn't know shipping origin", "Offer & acceptance — Instagram DMs aren't valid acceptance"],
+        { question: "Spot the defect in this Instagram store.", concept: "[TechDeals] AirPods Pro AED 899 - 'In stock' (not actually held) - Ships from supplier directly - Reseller never touches product - Customer pays BEFORE reseller buys", type: "multiple-choice", uiType: "spot", xp: 10, zone: 1,
+          options: ["Known price - AED 899 might change before supplier ships", "Selling before ownership - customer pays before reseller has acquired item", "Absence of gharar - customer doesn't know shipping origin", "Offer & acceptance - Instagram DMs aren't valid acceptance"],
           correct: 1,
           explanation: "Reseller finalises sale for items they neither own nor possess.",
           trapAnalysis: "Option A: price IS stated. Option C: shipping origin isn't gharar. Option D: medium doesn't determine validity.",
-          visual: {mockup: {title: "🎧 TechDeals Instagram Store", features: ["AirPods Pro — AED 899", "✅ 'In stock' (not actually held)", "📦 Ships from supplier directly", "🔄 Reseller never touches product", "💰 Customer pays BEFORE reseller buys"], defectIndex: 1}, factChips: ["Inventory held: ZERO", "Ownership at sale: NONE", "Risk borne by seller: NONE"]} },
+          visual: {mockup: {title: "🎧 TechDeals Instagram Store", features: ["AirPods Pro - AED 899", "✅ 'In stock' (not actually held)", "📦 Ships from supplier directly", "🔄 Reseller never touches product", "💰 Customer pays BEFORE reseller buys"], defectIndex: 1}, factChips: ["Inventory held: ZERO", "Ownership at sale: NONE", "Risk borne by seller: NONE"]} },
 
         { question: "Can she resell now?", concept: "Distributor buys 500 laptops. Paid in full, holds title, goods insured under her name in manufacturer's warehouse. Pickup next week.", type: "multiple-choice", uiType: "mcq", xp: 10, zone: 1,
-          options: ["No — must take physical delivery first", "Yes, but only with manufacturer's written consent", "Yes — constructive possession: legal control, payment, risk transferred", "No — without physical custody she can't verify goods exist"],
+          options: ["No - must take physical delivery first", "Yes, but only with manufacturer's written consent", "Yes - constructive possession: legal control, payment, risk transferred", "No - without physical custody she can't verify goods exist"],
           correct: 2,
           explanation: "Constructive possession doesn't require physical handling. Paid + title + risk = possession.",
           trapAnalysis: "Option A confuses physical with constructive possession. Option D: insurance + title = verified existence." },
@@ -526,7 +526,7 @@ const App = () => {
           options: ["'Does the seller have a receipt?'", "'Does the seller bear real risk of loss right now?'", "'Did the seller negotiate a good price?'", "'Is the buyer willing to wait?'"],
           correct: 1,
           explanation: "Core test: if destroyed right now, who takes the hit? Receipts are evidence, not the test.",
-          trapAnalysis: "Receipts document — they don't determine. Price negotiation is irrelevant to possession. Buyer patience doesn't create seller possession." },
+          trapAnalysis: "Receipts document - they don't determine. Price negotiation is irrelevant to possession. Buyer patience doesn't create seller possession." },
 
         // --- ZONE 2: BUILD (Q4-7) ---
         { question: "Put a murabaha smartphone purchase in the correct sequence:", type: "multiple-choice", uiType: "flow-tap", xp: 15, zone: 2,
@@ -542,13 +542,13 @@ const App = () => {
           trapAnalysis: "The labelling trap: if the bank's own documents call it interest, the substance test fails." },
 
         { question: "Who's right about the sneaker reseller?", concept: "SELLER: 'I call it pre-ordering. Customer pays, then I buy from Nike. Standard e-commerce.' SCHOLAR: 'You're selling before owning. The label doesn't change the structure.'", type: "multiple-choice", uiType: "peer-debate", xp: 15, zone: 2,
-          options: ["Seller — pre-ordering is an accepted modern practice", "Scholar — she completes sale before acquiring the goods", "Both — pre-ordering is fine if she discloses the arrangement", "Neither — the issue is delivery timing, not ownership"],
+          options: ["Seller - pre-ordering is an accepted modern practice", "Scholar - she completes sale before acquiring the goods", "Both - pre-ordering is fine if she discloses the arrangement", "Neither - the issue is delivery timing, not ownership"],
           correct: 1,
           explanation: "The 'pre-order' label doesn't create valid structure. She sells before owning.",
           trapAnalysis: "Option C: disclosure doesn't fix ownership defect. Option D: the issue IS ownership." },
 
         { question: "Who can resell?", concept: "Seller A: Paid, title held, insured, goods in manufacturer warehouse. Seller B: Paid, title held, insured, goods in bonded warehouse awaiting customs.", type: "multiple-choice", uiType: "compare", xp: 15, zone: 2,
-          options: ["Neither — both need physical delivery first", "Both — both have constructive possession", "Only Seller A — customs means Seller B doesn't have possession", "Only Seller A — bonded warehouse = government control, not seller control"],
+          options: ["Neither - both need physical delivery first", "Both - both have constructive possession", "Only Seller A - customs means Seller B doesn't have possession", "Only Seller A - bonded warehouse = government control, not seller control"],
           correct: 1,
           explanation: "Both have constructive possession. Customs clearance is administrative, not a possession issue.",
           trapAnalysis: "Option C/D: customs is a bureaucratic step. Who bears risk of loss? Both sellers do. That's the test.",
@@ -556,19 +556,19 @@ const App = () => {
 
         // --- ZONE 3: STRETCH (Q8-10) ---
         { question: "What separates prohibited 'sell before you own' from valid salam?", type: "multiple-choice", uiType: "compare", xp: 20, zone: 3,
-          options: ["No difference — both involve selling goods you don't have", "Salam has strict safeguards (full prepayment, detailed specs, fixed delivery) that remove gharar", "Salam is only for food commodities", "The difference is just the label"],
+          options: ["No difference - both involve selling goods you don't have", "Salam has strict safeguards (full prepayment, detailed specs, fixed delivery) that remove gharar", "Salam is only for food commodities", "The difference is just the label"],
           correct: 1,
-          explanation: "Salam exists for future delivery — but with strict guardrails. Without these, selling before owning is prohibited.",
+          explanation: "Salam exists for future delivery - but with strict guardrails. Without these, selling before owning is prohibited.",
           visual: {cards: [{title: "PROHIBITED: Sell Before Own", neutralLines: ["No formal structure", "Payment may be partial", "Specs may be vague", "Delivery date open", "Buyer bears unmanaged risk"]}, {title: "VALID: Salam Contract", neutralLines: ["Strict structural safeguards", "Full prepayment required", "Detailed specs (type, grade, qty)", "Fixed delivery date & place", "Gharar removed by structure"]}]} },
 
         { question: "Give your friend a fix, not just a diagnosis.", concept: "Friend runs dropshipping business. Never touches products. 'Is there an Islamic issue?'", type: "multiple-choice", uiType: "advise", xp: 20, zone: 3,
-          options: ["No issue — dropshipping is modern commerce", "Yes: selling before owning. Fix: (1) hold inventory, (2) act as agent (wakala), or (3) structure as salam", "Just relabel it as 'procurement service'", "Only a problem if customers complain"],
+          options: ["No issue - dropshipping is modern commerce", "Yes: selling before owning. Fix: (1) hold inventory, (2) act as agent (wakala), or (3) structure as salam", "Just relabel it as 'procurement service'", "Only a problem if customers complain"],
           correct: 1,
           explanation: "Diagnose AND fix. Hold inventory, use wakala, or structure as salam.",
           trapAnalysis: "Option C: relabelling is exactly what substance-over-labels prohibits." },
 
         { question: "Audit: What's the ownership issue?", concept: "Gold platform: 'Deposit AED 10,000. We buy gold on your behalf. Sell anytime for profit.' You ask: 'Do I actually own the gold?' They say: 'Held in our master account.'", type: "multi-select", uiType: "case-audit", xp: 25, zone: 3,
-          options: ["No issue — they buy on your behalf as stated", "Ownership never transfers — gold in THEIR master account", "If platform fails, you're unsecured creditor, not gold owner", "Only a custody issue, not ownership", "Regulated platforms are automatically compliant"],
+          options: ["No issue - they buy on your behalf as stated", "Ownership never transfers - gold in THEIR master account", "If platform fails, you're unsecured creditor, not gold owner", "Only a custody issue, not ownership", "Regulated platforms are automatically compliant"],
           correct: [1, 2],
           explanation: "'On your behalf' means nothing if ownership never transfers. Real ownership requires: segregated holding, your name on title, your risk.",
           trapAnalysis: "Option A: 'on your behalf' is a label, not a structure. Option D: custody without title IS an ownership problem." }
@@ -576,7 +576,7 @@ const App = () => {
     },
 
     // ═══════════════════════════════════════════════════════
-    // LESSON 3 — Risk Before Profit (10 Q, 140 XP)
+    // LESSON 3 - Risk Before Profit (10 Q, 140 XP)
     // ═══════════════════════════════════════════════════════
     { id: 'lesson-2-3', title: "Risk Before Profit", description: "No risk = no legitimate return", duration: "12 min",
       conceptCards: [
@@ -585,7 +585,7 @@ const App = () => {
         { title: "Who pays for what?", text: "In ijārah (lease):\n\nOwner bears: ownership risks, major maintenance, insurance, structural defects\n\nLessee bears: operating costs, usage fees, misuse liability, consumables\n\nLeasing a car: transmission fails from wear = lessor pays. You crash it = you pay.",
           proTip: "Structural risk follows ownership. Usage risk follows the user. Always." },
         { title: "Spotting fake risk-sharing", text: "Test: if the investment fails, who actually loses money?\n\n'Guaranteed 4% monthly' = no real risk = ribā territory.\n\n'Principal protected + profit share' = investor never bears loss = deposit with interest.\n\nReal risk-sharing: both parties can genuinely lose.",
-          proTip: "Remove every label. If it's 'give money, get guaranteed more back' — that's a loan." }
+          proTip: "Remove every label. If it's 'give money, get guaranteed more back' - that's a loan." }
       ],
       questions: [
         // --- ZONE 1: WARM-UP (Q1-3) ---
@@ -596,7 +596,7 @@ const App = () => {
           trapAnalysis: "Option A: related but not the principle. You could own and shift risk. Option B: payment is a step, not the principle." },
 
         { question: "In ijarah, who pays for engine failure from normal wear?", type: "multiple-choice", uiType: "mcq", xp: 10, zone: 1,
-          options: ["Lessee — they were driving when it failed", "Lessor — structural risks stay with the owner", "Shared equally — normal wear is shared in Islamic leasing", "Depends on the lease contract — freely allocable"],
+          options: ["Lessee - they were driving when it failed", "Lessor - structural risks stay with the owner", "Shared equally - normal wear is shared in Islamic leasing", "Depends on the lease contract - freely allocable"],
           correct: 1,
           explanation: "Engine failure from normal use = ownership risk = lessor pays.",
           trapAnalysis: "Option A confuses usage with causation. Option D: structural risks can't be entirely shifted to lessee." },
@@ -605,48 +605,48 @@ const App = () => {
           columns: [{id: "lessor", label: "Lessor (Owner) Pays", color: "#0284c7", correct: ["Engine failure from normal wear", "Annual manufacturer servicing", "Insurance premium"]}, {id: "lessee", label: "Lessee (You) Pay", color: "#d97706", correct: ["Scratched bumper from your parking", "Fuel and oil changes", "Toner and paper (consumables)"]}],
           visual: { buckets: [{id: "lessor", label: "Lessor Pays", color: "#0284c7"}, {id: "lessee", label: "Lessee Pays", color: "#d97706"}], chips: [{text: "Engine failure from normal wear", correct: "lessor"}, {text: "Scratched bumper from your parking", correct: "lessee"}, {text: "Annual manufacturer servicing", correct: "lessor"}, {text: "Fuel and oil changes", correct: "lessee"}, {text: "Insurance premium", correct: "lessor"}, {text: "Toner and paper (consumables)", correct: "lessee"}] },
           explanation: "Structural risks → owner. Usage costs → user.",
-          trapAnalysis: "Insurance often confuses people — it protects the ASSET (ownership risk), so it's the owner's cost." },
+          trapAnalysis: "Insurance often confuses people - it protects the ASSET (ownership risk), so it's the owner's cost." },
 
         // --- ZONE 2: BUILD (Q4-7) ---
         { question: "How many structural issues does this product have?", concept: "Islamic bank 'Profit-Sharing Account': minimum 3% return guaranteed, principal 100% protected, profit share 70:30, 'returns may vary' in fine print.", type: "multiple-choice", uiType: "slider", xp: 15, zone: 2,
-          options: ["0 — profit share is standard Islamic banking", "1 — just the guaranteed minimum", "2 — guaranteed minimum AND protected principal", "3 — add the misleading fine print"],
+          options: ["0 - profit share is standard Islamic banking", "1 - just the guaranteed minimum", "2 - guaranteed minimum AND protected principal", "3 - add the misleading fine print"],
           correct: 2,
           explanation: "A guaranteed floor + protected principal = depositor never loses. That's a fixed-return deposit, not profit-sharing.",
           trapAnalysis: "The fine print 'returns may vary' is misleading BECAUSE minimum is guaranteed. It creates false impression of risk." },
 
         { question: "Is this compliant mudarabah?", concept: "Startup pitch: 'Invest AED 50K. Guaranteed 12% annual return. We bear all losses.'", type: "multiple-choice", uiType: "mcq", xp: 15, zone: 2,
-          options: ["Yes — good return with capital protection", "No — guaranteed return with 'we bear all losses' = riba", "Depends — if manager has track record of 12%+ returns", "Valid mudarabah with enhanced terms"],
+          options: ["Yes - good return with capital protection", "No - guaranteed return with 'we bear all losses' = riba", "Depends - if manager has track record of 12%+ returns", "Valid mudarabah with enhanced terms"],
           correct: 1,
           explanation: "In mudarabah, capital provider risks their capital. If losses are guaranteed by the manager, it's a loan with interest.",
           trapAnalysis: "Option C: track record doesn't change structure. Option D: 'enhanced terms' is marketing over substance." },
 
         { question: "Which fund has genuine risk-sharing?", concept: "Fund A: Target 8%, actual returns vary, losses shared pro-rata, quarterly reports. Fund B: Guaranteed 8%, principal protected, 'profit share' label, losses absorbed by manager.", type: "multiple-choice", uiType: "compare", xp: 15, zone: 2,
-          options: ["Both — both use profit-sharing language", "Fund A only — genuine risk-sharing; Fund B is structurally a guaranteed deposit", "Fund B only — guaranteed returns are safer for investors", "Neither — both have structural issues"],
+          options: ["Both - both use profit-sharing language", "Fund A only - genuine risk-sharing; Fund B is structurally a guaranteed deposit", "Fund B only - guaranteed returns are safer for investors", "Neither - both have structural issues"],
           correct: 1,
           explanation: "Label 'profit share' doesn't create real risk-sharing. Fund B guarantees outcome and protects principal = fixed deposit.",
           visual: {cards: [{title: "FUND A", neutralLines: ["Target 8%, actual returns vary", "Losses shared pro-rata", "Quarterly performance reports", "Capital at risk"]}, {title: "FUND B", neutralLines: ["Guaranteed 8% return", "Principal 100% protected", "'Profit share' label", "Manager absorbs all losses"]}]} },
 
         { question: "Is this lease clause compliant?", concept: "Lease says: 'Tenant pays for ALL repairs including roof, plumbing, and structural damage.'", type: "multiple-choice", uiType: "mcq", xp: 15, zone: 2,
-          options: ["Yes — tenant agreed to the terms", "No — structural/ownership risks must stay with the owner", "Only non-compliant if repairs exceed AED 10,000", "Depends on whether tenant caused the damage"],
+          options: ["Yes - tenant agreed to the terms", "No - structural/ownership risks must stay with the owner", "Only non-compliant if repairs exceed AED 10,000", "Depends on whether tenant caused the damage"],
           correct: 1,
           explanation: "Lessor earns rent because they own the asset and bear ownership risks. Shifting structural risks breaks the risk-return link.",
           trapAnalysis: "Option A: agreement to wrong terms doesn't make them right. Option D: the clause covers ALL repairs, not just damage-caused." },
 
         // --- ZONE 3: STRETCH (Q8-10) ---
         { question: "How many defects in this 'Shariah-compliant' real estate fund?", concept: "Investors get fixed 10% annually. Developer guarantees buyback at original price. Developer absorbs all losses.", type: "multiple-choice", uiType: "slider", xp: 20, zone: 3,
-          options: ["0 — Shariah board approved it", "1 — just the fixed return", "2 — fixed return + capital protection", "3 — fixed return + guaranteed buyback + developer absorbs all losses"],
+          options: ["0 - Shariah board approved it", "1 - just the fixed return", "2 - fixed return + capital protection", "3 - fixed return + guaranteed buyback + developer absorbs all losses"],
           correct: 3,
           explanation: "Remove the labels: give money, get guaranteed surplus, never lose principal = loan with interest.",
           trapAnalysis: "Option A: Shariah board approval doesn't override substance. If the structure is functionally interest, the label doesn't fix it." },
 
         { question: "What distinguishes a valid wakala fee from a prohibited guaranteed return?", type: "multiple-choice", uiType: "mcq", xp: 20, zone: 3,
-          options: ["Wakala fee is lower than guaranteed return", "Wakala fee = payment for work; guaranteed return = risk-free gain on capital", "Wakala must be approved by Shariah board", "No real difference — both are returns on investment"],
+          options: ["Wakala fee is lower than guaranteed return", "Wakala fee = payment for work; guaranteed return = risk-free gain on capital", "Wakala must be approved by Shariah board", "No real difference - both are returns on investment"],
           correct: 1,
           explanation: "Wakala fee = service compensation. Guaranteed return = risk-free gain on capital. Agent earns for work, not for providing money.",
           trapAnalysis: "Option A: size doesn't determine type. Option D: confuses payment for services with return on money." },
 
-        { question: "What's your advice?", concept: "Uncle asks: 'I found an investment — 15% guaranteed, Shariah-certified, capital protected.'", type: "multiple-choice", uiType: "advise", xp: 20, zone: 3,
-          options: ["Sounds good — Shariah certification means it's fine", "Three red flags: guaranteed return + capital protection + no risk-sharing = structurally riba regardless of label", "Ask for the Shariah board certificate first", "Invest small amount to test it"],
+        { question: "What's your advice?", concept: "Uncle asks: 'I found an investment - 15% guaranteed, Shariah-certified, capital protected.'", type: "multiple-choice", uiType: "advise", xp: 20, zone: 3,
+          options: ["Sounds good - Shariah certification means it's fine", "Three red flags: guaranteed return + capital protection + no risk-sharing = structurally riba regardless of label", "Ask for the Shariah board certificate first", "Invest small amount to test it"],
           correct: 1,
           explanation: "Equip him with the diagnostic: guaranteed + protected + no risk = structurally riba regardless of label.",
           thinkDeeper: "How would you restructure this to be genuinely compliant?" }
@@ -654,7 +654,7 @@ const App = () => {
     },
 
     // ═══════════════════════════════════════════════════════
-    // LESSON 4 — Ribawi vs Non-Ribawi Exchanges (10 Q, 140 XP)
+    // LESSON 4 - Ribawi vs Non-Ribawi Exchanges (10 Q, 140 XP)
     // ═══════════════════════════════════════════════════════
     { id: 'lesson-2-4', title: "Ribawi vs Non-Ribawi Exchanges", description: "Know the matrix", duration: "12 min",
       conceptCards: [
@@ -673,7 +673,7 @@ const App = () => {
           explanation: "Currencies and precious metals = ribawi. Consumer goods = non-ribawi. Value doesn't determine category." },
 
         { question: "AED 500 for USD at bureau de change, both handed over immediately. Valid?", type: "multiple-choice", uiType: "mcq", xp: 10, zone: 1,
-          options: ["Yes — different currencies, spot delivery = valid sarf", "No — different amounts exchanged", "Only if government-licensed bureau", "Depends on the exchange rate used"],
+          options: ["Yes - different currencies, spot delivery = valid sarf", "No - different amounts exchanged", "Only if government-licensed bureau", "Depends on the exchange rate used"],
           correct: 0,
           explanation: "Different currencies can be exchanged at any rate, as long as both are delivered on the spot." },
 
@@ -684,41 +684,41 @@ const App = () => {
 
         // --- ZONE 2: BUILD (Q4-7) ---
         { question: "Is this valid?", concept: "Friend swaps 25g of 24k gold for 22g of 24k gold. Both spot delivery.", type: "multiple-choice", uiType: "mcq", xp: 15, zone: 2,
-          options: ["Yes — both parties agreed", "No — same-kind ribawi must be equal weight; 25g for 22g = riba al-fadl", "Yes — spot delivery is all that matters", "Depends on current gold price"],
+          options: ["Yes - both parties agreed", "No - same-kind ribawi must be equal weight; 25g for 22g = riba al-fadl", "Yes - spot delivery is all that matters", "Depends on current gold price"],
           correct: 1,
           explanation: "Same kind (gold for gold, same karat) must be equal. The 3g surplus = riba al-fadl.",
           trapAnalysis: "Option A: agreement doesn't override ribawi rules. Option C: spot is necessary but not sufficient for same-kind." },
 
         { question: "Is the timing an issue?", concept: "Currency app: send AED 1,000 now, recipient gets USD in 3 business days. Rate locked today.", type: "multiple-choice", uiType: "mcq", xp: 15, zone: 2,
-          options: ["No — rate locked = done", "Yes — sarf requires spot delivery; 3-day delay = potential riba al-nasi'ah", "Only an issue if rate changes", "Fine as long as app is regulated"],
+          options: ["No - rate locked = done", "Yes - sarf requires spot delivery; 3-day delay = potential riba al-nasi'ah", "Only an issue if rate changes", "Fine as long as app is regulated"],
           correct: 1,
           explanation: "Sarf requires both currencies delivered on the spot. Locking the rate doesn't fix delivery timing.",
           trapAnalysis: "Option A: locking rate ≠ delivering currency. Option C: rate change is economic risk, not the Islamic concern." },
 
         { question: "Is selling an iPhone for AED 3,500 cash a ribawi exchange?", type: "multiple-choice", uiType: "mcq", xp: 15, zone: 2,
-          options: ["Yes — cash makes it ribawi", "No — iPhone is non-ribawi, normal sale rules apply", "Only if price exceeds market value", "Depends on payment timing"],
+          options: ["Yes - cash makes it ribawi", "No - iPhone is non-ribawi, normal sale rules apply", "Only if price exceeds market value", "Depends on payment timing"],
           correct: 1,
           explanation: "Only exchanges BETWEEN ribawi items trigger the matrix. iPhone-for-cash is a regular sale." },
 
-        { question: "Complete: 'A valid exchange of different currencies must be ______ — both currencies delivered now.'", type: "multiple-choice", uiType: "fill", xp: 15, zone: 2,
+        { question: "Complete: 'A valid exchange of different currencies must be ______ - both currencies delivered now.'", type: "multiple-choice", uiType: "fill", xp: 15, zone: 2,
           options: ["Collateralised with guarantee", "Spot / immediate", "Notarised by Shariah board", "Equal in nominal value"],
           correct: 1,
           explanation: "Both currencies must be delivered on the spot. Any deferral = riba al-nasi'ah." },
 
         // --- ZONE 3: STRETCH (Q8-10) ---
-        { question: "Compare these remittance options.", concept: "Option A: InstaPay — rate locked, AED debited now, GBP credited in 2 hours. Option B: SlowTransfer — rate locked, AED debited now, GBP credited in 3 business days.", type: "multiple-choice", uiType: "compare", xp: 20, zone: 3,
-          options: ["Both fine — rate locked in both", "Option A better — near-immediate settlement has stronger scholarly support", "Option B better — locking rate matters more than speed", "Neither — only physical cash at counter counts"],
+        { question: "Compare these remittance options.", concept: "Option A: InstaPay - rate locked, AED debited now, GBP credited in 2 hours. Option B: SlowTransfer - rate locked, AED debited now, GBP credited in 3 business days.", type: "multiple-choice", uiType: "compare", xp: 20, zone: 3,
+          options: ["Both fine - rate locked in both", "Option A better - near-immediate settlement has stronger scholarly support", "Option B better - locking rate matters more than speed", "Neither - only physical cash at counter counts"],
           correct: 1,
           explanation: "Classical sarf = same sitting. 2 hours has stronger support than 3 days.",
           visual: {cards: [{title: "OPTION A: InstaPay", neutralLines: ["Rate locked now", "AED debited immediately", "GBP credited in 2 hours", "Same business day settlement"]}, {title: "OPTION B: SlowTransfer", neutralLines: ["Rate locked now", "AED debited immediately", "GBP credited in 3 business days", "Multi-day settlement"]}]} },
 
         { question: "How many defects?", concept: "App: 'Deposit AED 5,000. We invest in gold. Guaranteed 4% monthly. Withdraw anytime.'", type: "multi-select", uiType: "case-audit", xp: 25, zone: 3,
-          options: ["Guaranteed return = riba", "No spot gold delivery to investor = potential nasi'ah", "'We invest on your behalf' with guaranteed outcome ≠ valid mudarabah", "Compliant — gold is an Islamic asset", "Withdraw anytime = valid liquidity feature"],
+          options: ["Guaranteed return = riba", "No spot gold delivery to investor = potential nasi'ah", "'We invest on your behalf' with guaranteed outcome ≠ valid mudarabah", "Compliant - gold is an Islamic asset", "Withdraw anytime = valid liquidity feature"],
           correct: [0, 1, 2],
           explanation: "Layer cake: guaranteed return (riba), no spot gold delivery (nasi'ah risk), guaranteed outcome isn't mudarabah. Gold being halal doesn't cure structural defects." },
 
         { question: "Give safest practical advice.", concept: "Friend opens gold shop. 'Can I swap old gold pieces from customers for new ones?'", type: "multiple-choice", uiType: "advise", xp: 20, zone: 3,
-          options: ["Swap freely — gold is halal", "Same-karat: equal weight + spot. Safest: two transactions — sell old for cash, buy new with cash. Avoids ribawi exchange.", "Only swap if customer pays extra cash for weight difference", "Gold-for-gold swaps always prohibited"],
+          options: ["Swap freely - gold is halal", "Same-karat: equal weight + spot. Safest: two transactions - sell old for cash, buy new with cash. Avoids ribawi exchange.", "Only swap if customer pays extra cash for weight difference", "Gold-for-gold swaps always prohibited"],
           correct: 1,
           explanation: "Two-transaction route is cleanest. Sell old for cash, buy new with cash. Avoids ribawi exchange entirely.",
           thinkDeeper: "What if the old gold is 18k and the new is 24k? Does 'different kind' apply?" }
@@ -726,34 +726,34 @@ const App = () => {
     },
 
     // ═══════════════════════════════════════════════════════
-    // LESSON 5 — Price, Time & Credit Sales (10 Q, 140 XP)
+    // LESSON 5 - Price, Time & Credit Sales (10 Q, 140 XP)
     // ═══════════════════════════════════════════════════════
     { id: 'lesson-2-5', title: "Price, Time & Credit Sales", description: "Deferred payment ≠ interest", duration: "12 min",
       conceptCards: [
         { title: "Credit sales are permissible", text: "Permissible to sell today at a higher fixed price payable later, if total is fixed at contract.\n\nHigher credit price = compensation for deferred payment in a SALE, not interest on a loan.\n\nRibā attaches to MONEY (loans). Credit markup attaches to an ASSET (sale).",
           proTip: "The asset is what makes the difference. Remove the asset and the markup becomes interest." },
-        { title: "Rules that keep it clean", text: "1. ONE fixed price at contract — not 'cash OR credit, decide later'\n2. No increasing the amount after default\n3. Price must be fixed, not floating or indexed\n\nA store saying 'Choose price AFTER delivery' = gharar defect.",
+        { title: "Rules that keep it clean", text: "1. ONE fixed price at contract - not 'cash OR credit, decide later'\n2. No increasing the amount after default\n3. Price must be fixed, not floating or indexed\n\nA store saying 'Choose price AFTER delivery' = gharar defect.",
           proTip: "One price. Fixed. Before delivery. Three words that separate a sale from a loan." },
-        { title: "Credit markup vs interest", text: "Remove the asset. If what's left is 'give money now, give more back later' — that's ribā.\n\nWhen a real asset changes hands at an agreed price payable over time — that's a sale.\n\nCredit sale: asset + fixed price + time.\nRibā: money + surplus + time.",
+        { title: "Credit markup vs interest", text: "Remove the asset. If what's left is 'give money now, give more back later' - that's ribā.\n\nWhen a real asset changes hands at an agreed price payable over time - that's a sale.\n\nCredit sale: asset + fixed price + time.\nRibā: money + surplus + time.",
           proTip: "The 'remove the asset' test is the single most useful tool for distinguishing sale from loan." }
       ],
       questions: [
         // --- ZONE 1: WARM-UP (Q1-3) ---
         { question: "True or False: Higher price for deferred payment = same as interest on a loan.", type: "multiple-choice", uiType: "mcq", xp: 10, zone: 1,
-          options: ["True — both cases buyer pays more over time, economically identical", "True — any price increase linked to time = ribā by definition", "False — credit sale price fixed at contract is compensation within a sale; interest = surplus on money lent", "False — but only when the seller is not a bank"],
+          options: ["True - both cases buyer pays more over time, economically identical", "True - any price increase linked to time = ribā by definition", "False - credit sale price fixed at contract is compensation within a sale; interest = surplus on money lent", "False - but only when the seller is not a bank"],
           correct: 2,
           explanation: "Credit sale price (fixed upfront) is NOT interest. Seller owns asset, sells at agreed price, buyer pays over time.",
           trapAnalysis: "Option A: 'economically identical' is economic description, not Islamic classification. Structure differs." },
 
-        { question: "Spot the defect.", concept: "[FurniturePlus] Cash AED 5,000 / Credit AED 5,800 — 'Choose your price AFTER delivery' — Contract signed before price selected.", type: "multiple-choice", uiType: "spot", xp: 10, zone: 1,
-          options: ["Known price — must fix ONE price at contract; two open after delivery = gharar", "Deliverability — furniture might not arrive", "Offer & acceptance — contract signed before terms finalised", "Absence of ribā — AED 800 difference is disguised interest"],
+        { question: "Spot the defect.", concept: "[FurniturePlus] Cash AED 5,000 / Credit AED 5,800 - 'Choose your price AFTER delivery' - Contract signed before price selected.", type: "multiple-choice", uiType: "spot", xp: 10, zone: 1,
+          options: ["Known price - must fix ONE price at contract; two open after delivery = gharar", "Deliverability - furniture might not arrive", "Offer & acceptance - contract signed before terms finalised", "Absence of ribā - AED 800 difference is disguised interest"],
           correct: 0,
           explanation: "Must fix ONE price at contract. Two open after delivery = gharar.",
           trapAnalysis: "Option D: the AED 800 would be fine IF a single price were fixed upfront.",
           visual: {mockup: {title: "FurniturePlus Store Policy", features: ["🛋️ Premium Sofa Set", "Cash: AED 5,000", "Credit: AED 5,800 (12 months)", "⚠️ 'Choose your price AFTER delivery'", "📋 Contract signed before price selected"], defectIndex: 3}, factChips: ["Price fixed at contract: NO", "Both options left open", "Decision point: After delivery"]} },
 
         { question: "Compliant?", concept: "Fridge AED 3,200 on 8 monthly instalments of AED 400. Cash price AED 2,900. No loan.", type: "multiple-choice", uiType: "mcq", xp: 10, zone: 1,
-          options: ["No — AED 300 difference is effectively interest", "No — instalments only permissible if total = cash price", "Yes — sale at fixed deferred price; AED 300 is sale markup, not money charge", "Yes — but only because store isn't a financial institution"],
+          options: ["No - AED 300 difference is effectively interest", "No - instalments only permissible if total = cash price", "Yes - sale at fixed deferred price; AED 300 is sale markup, not money charge", "Yes - but only because store isn't a financial institution"],
           correct: 2,
           explanation: "AED 3,200 is the agreed sale price. AED 300 is sale negotiation, not interest.",
           trapAnalysis: "Option A: common misconception equating any difference with interest." },
@@ -772,7 +772,7 @@ const App = () => {
           explanation: "Monetising time on unpaid debt = riba. Restructuring (same total) and genuine at-cost fees = acceptable." },
 
         { question: "Car: AED 45,000 on 24 months (cash AED 42,000). Fixed at contract. Loan or sale? Monthly?", type: "multiple-choice", uiType: "calc", xp: 15, zone: 2,
-          options: ["Loan — AED 3,000 surplus = ~3.5% annual interest equivalent", "Sale — AED 45,000 fixed price. Monthly AED 1,875. AED 3,000 is markup.", "Depends — direct financing = sale; through bank = loan", "Sale — but AED 3,000 needs Shariah board approval"],
+          options: ["Loan - AED 3,000 surplus = ~3.5% annual interest equivalent", "Sale - AED 45,000 fixed price. Monthly AED 1,875. AED 3,000 is markup.", "Depends - direct financing = sale; through bank = loan", "Sale - but AED 3,000 needs Shariah board approval"],
           correct: 1,
           explanation: "45,000÷24=1,875. Asset changes hands at agreed fixed price. AED 3,000 = sale markup.",
           trapAnalysis: "Option A calculates interest equivalent but that's economic description, not Islamic classification.",
@@ -782,25 +782,25 @@ const App = () => {
           options: ["Estimated and subject to adjustment", "Fixed, known, and agreed by both parties", "Approved by a third-party auditor", "Lower than or equal to market cash price"],
           correct: 1,
           explanation: "Fixing the price at contract separates a deferred sale from a loan.",
-          trapAnalysis: "Option D invents a pricing rule. Credit price CAN exceed cash price — that's the whole point of a credit sale." },
+          trapAnalysis: "Option D invents a pricing rule. Credit price CAN exceed cash price - that's the whole point of a credit sale." },
 
         // --- ZONE 3: STRETCH (Q8-10) ---
-        { question: "Spot the defect.", concept: "[ElectroMart] Cash AED 4,500 / Credit AED 5,100 — 'We'll confirm your price after you take it home' — Laptop leaves store before price locked.", type: "multiple-choice", uiType: "spot", xp: 20, zone: 3,
-          options: ["Non-compliant: price not fixed at contract; two open after delivery = gharar", "Deliverability — already delivered, so no issue", "AED 600 markup is ribā because it exceeds 10%", "Verbal acceptance after delivery validates the price retroactively"],
+        { question: "Spot the defect.", concept: "[ElectroMart] Cash AED 4,500 / Credit AED 5,100 - 'We'll confirm your price after you take it home' - Laptop leaves store before price locked.", type: "multiple-choice", uiType: "spot", xp: 20, zone: 3,
+          options: ["Non-compliant: price not fixed at contract; two open after delivery = gharar", "Deliverability - already delivered, so no issue", "AED 600 markup is ribā because it exceeds 10%", "Verbal acceptance after delivery validates the price retroactively"],
           correct: 0,
           explanation: "Price must be fixed at point of sale. Two open until after delivery = gharar.",
           trapAnalysis: "Option D: root cause is unfixed price, not acceptance mechanism. Option C: markup becomes problematic because unfixed, not because inherently ribā.",
           visual: {mockup: {title: "ElectroMart Checkout", features: ["💻 Gaming Laptop Pro X", "Cash: AED 4,500", "Credit: AED 5,100 (12 months)", "⚠️ 'We'll confirm your price after you take it home'", "📦 Laptop leaves store before price locked"], defectIndex: 3}, factChips: ["Options disclosed: YES", "Price fixed at contract: NO", "Laptop delivered: Before price decided"]} },
 
         { question: "FUNDAMENTAL structural difference between credit markup and ribā?", type: "multiple-choice", uiType: "compare", xp: 20, zone: 3,
-          options: ["Credit markup capped at reasonable %; ribā = excessive charge", "Credit markup = profit on REAL ASSET at fixed price; ribā = surplus on MONEY without asset/risk", "Credit markup permitted for merchants; ribā prohibited for financiers", "No structural difference — Islamic law permits one by convention"],
+          options: ["Credit markup capped at reasonable %; ribā = excessive charge", "Credit markup = profit on REAL ASSET at fixed price; ribā = surplus on MONEY without asset/risk", "Credit markup permitted for merchants; ribā prohibited for financiers", "No structural difference - Islamic law permits one by convention"],
           correct: 1,
           explanation: "Structural, not cosmetic. Remove the asset and markup becomes interest.",
           trapAnalysis: "Option A invents thresholds. Option C focuses on WHO charges, not WHAT the transaction IS.",
-          visual: {cards: [{title: "CREDIT SALE MARKUP", neutralLines: ["Real asset changes hands", "Total price fixed at contract", "Markup is part of sale negotiation", "Buyer owns an asset", "Risk transfers with delivery"]}, {title: "RIBĀ (INTEREST)", neutralLines: ["No asset — money for money", "Surplus guaranteed on loan", "Interest is a charge on time", "Borrower owes money only", "Lender bears no risk"]}]} },
+          visual: {cards: [{title: "CREDIT SALE MARKUP", neutralLines: ["Real asset changes hands", "Total price fixed at contract", "Markup is part of sale negotiation", "Buyer owns an asset", "Risk transfers with delivery"]}, {title: "RIBĀ (INTEREST)", neutralLines: ["No asset - money for money", "Surplus guaranteed on loan", "Interest is a charge on time", "Borrower owes money only", "Lender bears no risk"]}]} },
 
         { question: "Best response to your sister?", concept: "Sister buying bedroom set. Cash AED 12,000, instalments AED 13,800 over 18 months. 'Isn't the extra AED 1,800 just interest?'", type: "multiple-choice", uiType: "advise", xp: 20, zone: 3,
-          options: ["Yes effectively interest — buy cash only", "Depends on store's intention — if they intend profit it's fine", "No — store owns furniture, sells at AED 13,800 as agreed price. Key: one fixed price before delivery.", "No — AED 1,800 is a service charge for instalment convenience"],
+          options: ["Yes effectively interest - buy cash only", "Depends on store's intention - if they intend profit it's fine", "No - store owns furniture, sells at AED 13,800 as agreed price. Key: one fixed price before delivery.", "No - AED 1,800 is a service charge for instalment convenience"],
           correct: 2,
           explanation: "Explains WHY different (asset sale vs loan), WHAT makes it compliant (fixed price), WHAT's problematic (unfixed pricing).",
           trapAnalysis: "Option B: intention doesn't determine structure. Option D relabels without explaining.",
@@ -892,7 +892,7 @@ const App = () => {
         {
           id: 'prophets', title: "Line of Prophets", subtitle: "One message across time", icon: "👥", color: "#0284c7", difficulty: "Beginner", estimatedTime: "10 min",
           conceptCards: [
-            { title: "One line, one core message", text: "Prophets are a connected line sent to different peoples across history -- not isolated \"random\" figures.\n\nWhat stays the same across all of them is the core creed: worship Allah alone (tawḥīd) and reject false worship. What can change is the law (sharīʿah details): specific rules may differ by time, place, and community needs -- while the foundation remains consistent.\n\nSo when you hear different prophets had different \"rules,\" that doesn't mean different religions -- it means one religion with context-specific laws.\n\nTimeline: Adam → Nūḥ → Ibrāhīm → Mūsā → ʿĪsā → Muḥammad ﷺ" },
+            { title: "One line, one core message", text: "Prophets are a connected line sent to different peoples across history -- not isolated \"random\" figures.\n\nWhat stays the same across all of them is the core creed: worship Allah alone (tawḥīd) and reject false worship. What can change is the law (sharīʿah details): specific rules may differ by time, place, and community needs -- while the foundation remains consistent.\n\nSo when you hear different prophets had different \"rules,\" that doesn't mean different religions -- it means one religion with context-specific laws.\n\nTimeline: Adam → Nūḥ → Ibrāhīm → Mūsā → ʿĪsā → Muḥammad (peace be upon him)" },
             { title: "How prophetic stories teach history", text: "Prophetic stories aren't meant to be trivia. They train you to read history through repeating human patterns:\n\n• Truth vs. comfort: people resist guidance when it threatens habits, power, or profits\n• Patience vs. pressure: prophets and believers stay steady even when mocked or outnumbered\n• Justice vs. corruption: societies rise and fall with arrogance, oppression, and denial of accountability\n\nThese stories help you see why events unfold -- not just what happened." },
             { title: "A framework, not a list", text: "If you treat prophets as disconnected names, history becomes a blur. But if you treat them as a framework, you start to see a meaningful storyline:\n\nAllah sends guidance → people respond (accept/reject) → outcomes follow (reform/consequence).\n\nThis makes later topics (like Qur'an themes, ethics, and leadership) easier because you already understand the pattern behind events." }
           ],
@@ -936,10 +936,10 @@ const App = () => {
             {
               question: "Fill in the blanks to complete the prophetic timeline:",
               type: "drag-drop",
-              sentence: "Islam is the same call to worship Allah alone that began with ___, continued through ___, ___, ___, and ___, and was completed with Muhammad ﷺ.",
+              sentence: "Islam is the same call to worship Allah alone that began with ___, continued through ___, ___, ___, and ___, and was completed with Muhammad (peace be upon him).",
               wordBank: ["Adam", "Nūḥ (Noah)", "Ibrāhīm (Abraham)", "Mūsā (Moses)", "ʿĪsā (Jesus)", "Dāwūd (David)", "Yūnus (Jonah)"],
               correct: ["Adam", "Nūḥ (Noah)", "Ibrāhīm (Abraham)", "Mūsā (Moses)", "ʿĪsā (Jesus)"],
-              explanation: "In Islam, the call to worship Allah alone began with **Adam**, continued through **Nūḥ, Ibrāhīm, Mūsā, and ʿĪsā**, and was completed with **Muhammad ﷺ**. Islam presents itself as **continuous guidance**, not a religion that suddenly appeared in the 7th century.\n\n**Islam does not begin with a people or a place -- it begins with humanity itself.**"
+              explanation: "In Islam, the call to worship Allah alone began with **Adam**, continued through **Nūḥ, Ibrāhīm, Mūsā, and ʿĪsā**, and was completed with **Muhammad (peace be upon him)**. Islam presents itself as **continuous guidance**, not a religion that suddenly appeared in the 7th century.\n\n**Islam does not begin with a people or a place -- it begins with humanity itself.**"
             }
           ]
         },
@@ -951,8 +951,8 @@ const App = () => {
           id: 'prophet-messenger', title: "Prophet vs Messenger", subtitle: "Understanding their roles", icon: "📯", color: "#0284c7", difficulty: "Beginner", estimatedTime: "9 min",
           conceptCards: [
             { title: "Prophets and messengers", text: "In Islam, Allah guides humanity through special individuals chosen from among people -- not angels, kings, or supernatural beings. These individuals are called prophets (anbiyā') and messengers (rusul). Understanding the difference helps us understand how guidance reached different nations across history." },
-            { title: "The key distinction", text: "A prophet (nabī) is someone Allah chooses, teaches, and inspires with revelation. Prophets guide their communities and call them back to worshipping Allah. Not every prophet brings a new scripture. Examples include Adam, Hārūn (Aaron), and Yaḥyā (John).\n\nA messenger (rasūl) is a prophet who is specifically sent with a mission to deliver Allah's message openly, often with a new scripture. Every messenger is a prophet, but not every prophet is a messenger.\n\nExamples of messengers include Nūḥ, Mūsā (who delivered the Tawrāh), ʿĪsā (who delivered the Injīl), and Muhammad ﷺ, the final messenger who brought the Qur'an." },
-            { title: "Why this matters", text: "Messengers often faced stronger resistance because they were commanded to confront their societies' false beliefs and practices. This helps us understand why their stories in the Qur'an emphasise courage, clarity, and public responsibility.\n\nThe final point is essential: Muhammad ﷺ is the last prophet and messenger, meaning no new revelation or messenger will ever come after him. Guidance is preserved now through the Qur'an and his Sunnah, protecting the religion from confusion or false claims." }
+            { title: "The key distinction", text: "A prophet (nabī) is someone Allah chooses, teaches, and inspires with revelation. Prophets guide their communities and call them back to worshipping Allah. Not every prophet brings a new scripture. Examples include Adam, Hārūn (Aaron), and Yaḥyā (John).\n\nA messenger (rasūl) is a prophet who is specifically sent with a mission to deliver Allah's message openly, often with a new scripture. Every messenger is a prophet, but not every prophet is a messenger.\n\nExamples of messengers include Nūḥ, Mūsā (who delivered the Tawrāh), ʿĪsā (who delivered the Injīl), and Muhammad (peace be upon him), the final messenger who brought the Qur'an." },
+            { title: "Why this matters", text: "Messengers often faced stronger resistance because they were commanded to confront their societies' false beliefs and practices. This helps us understand why their stories in the Qur'an emphasise courage, clarity, and public responsibility.\n\nThe final point is essential: Muhammad (peace be upon him) is the last prophet and messenger, meaning no new revelation or messenger will ever come after him. Guidance is preserved now through the Qur'an and his Sunnah, protecting the religion from confusion or false claims." }
           ],
           questions: [
             {
@@ -980,7 +980,7 @@ const App = () => {
               explanation: "**Prophets are chosen by Allah**, **they receive revelation (waḥy)**, and **their authority comes from Allah, not from popularity, culture, or intellect**. This is essential because belief in Islam begins with trusting that guidance comes from Allah, not from human opinion.\n\n**Prophets were not elected, trained, or self-made.** Following them is an act of faith, not just respect."
             },
             {
-              question: "Believing that Muhammad ﷺ is the final messenger has clear implications. Select exactly two statements that correctly follow from this belief.",
+              question: "Believing that Muhammad (peace be upon him) is the final messenger has clear implications. Select exactly two statements that correctly follow from this belief.",
               type: "multi-select",
               options: [
                 "No prophet or messenger will come after him",
@@ -989,7 +989,7 @@ const App = () => {
                 "Future communities may be given new revealed texts to address new circumstances"
               ],
               correct: [0, 1],
-              explanation: "**Prophethood has ended** -- no prophet or messenger will come after him, and **guidance is complete and preserved** through the Qur'an and the Sunnah. This protects the religion from confusion, constant change, and false claims to revelation.\n\n**Revelation ended with Muhammad ﷺ.** Scholars explain and apply guidance, but they do not receive new revelation. **Finality preserves clarity, unity, and trust.**"
+              explanation: "**Prophethood has ended** -- no prophet or messenger will come after him, and **guidance is complete and preserved** through the Qur'an and the Sunnah. This protects the religion from confusion, constant change, and false claims to revelation.\n\n**Revelation ended with Muhammad (peace be upon him).** Scholars explain and apply guidance, but they do not receive new revelation. **Finality preserves clarity, unity, and trust.**"
             },
             {
               question: "Fill in the blanks using the word bank:",
@@ -997,7 +997,7 @@ const App = () => {
               sentence: "After prophethood ended, the two primary sources of guidance for the community are the ___ and the ___.",
               wordBank: ["Qur'an", "Sunnah", "Tribal customs", "Dreams", "Poetry", "Court rulings"],
               correct: ["Qur'an", "Sunnah"],
-              explanation: "**The Qur'an is Allah's final revelation**, and **the Sunnah is the lived example and teaching of the Prophet ﷺ**. Together they form the foundation for how Muslims learn, worship, and live.\n\nCustoms, dreams, or poetry may influence culture, but they are not sources of revelation and cannot replace the Qur'an and Sunnah."
+              explanation: "**The Qur'an is Allah's final revelation**, and **the Sunnah is the lived example and teaching of the Prophet (peace be upon him)**. Together they form the foundation for how Muslims learn, worship, and live.\n\nCustoms, dreams, or poetry may influence culture, but they are not sources of revelation and cannot replace the Qur'an and Sunnah."
             }
           ]
         },

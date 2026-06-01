@@ -1,4 +1,4 @@
-// REVIEW:QURAN — Verify all translations and tafseer paraphrases against original sources
+// REVIEW:QURAN - Verify all translations and tafseer paraphrases against original sources
 const quranicQuotes = [
   {
     id: 1,
@@ -6,7 +6,7 @@ const quranicQuotes = [
     transliteration: "'Asa an takrahu shay'an wa huwa khayrun lakum",
     translation: 'It may be that you dislike a thing which is good for you, and that you like a thing which is bad for you. Allah knows but you do not know.',
     reference: 'Al-Baqarah 2:216',
-    tafseer: 'Al-Qurtubi in Al-Jami\' li-Ahkam al-Quran establishes this as a foundational principle: the human intellect cannot perceive the full wisdom behind divine decrees. He explains that "wa huwa khayrun lakum" is Allah\'s direct assurance that what He ordains is invariably better than what His servant desires. The context — the prescription of fighting — makes the lesson universal: every obligation or trial that the self resists may carry within it a benefit inaccessible to human perception. Al-Qurtubi states the scholars unanimously held that this principle is not restricted to jihad but applies to all of Allah\'s decrees.',
+    tafseer: 'Al-Qurtubi in Al-Jami\' li-Ahkam al-Quran establishes this as a foundational principle: the human intellect cannot perceive the full wisdom behind divine decrees. He explains that "wa huwa khayrun lakum" is Allah\'s direct assurance that what He ordains is invariably better than what His servant desires. The context - the prescription of fighting - makes the lesson universal: every obligation or trial that the self resists may carry within it a benefit inaccessible to human perception. Al-Qurtubi states the scholars unanimously held that this principle is not restricted to jihad but applies to all of Allah\'s decrees.',
   },
   {
     id: 2,
@@ -14,7 +14,7 @@ const quranicQuotes = [
     transliteration: 'La yukalliful-Lahu nafsan illa wus\'aha',
     translation: 'Allah does not burden a soul beyond that it can bear.',
     reference: 'Al-Baqarah 2:286',
-    tafseer: 'Al-Qurtubi writes in Al-Jami\' that this ayah is among the most mercy-laden in the entire Quran. He records the circumstances of revelation: the companions feared being held accountable for thoughts arising in their hearts, and this verse came as divine relief. Ibn Atiyyah in Al-Muharrar al-Wajiz adds the crucial distinction: "wus\'aha" (its capacity) refers to what the soul can genuinely carry, not merely what it prefers — meaning Allah calibrated every burden with exact precision to the one who bears it.',
+    tafseer: 'Al-Qurtubi writes in Al-Jami\' that this ayah is among the most mercy-laden in the entire Quran. He records the circumstances of revelation: the companions feared being held accountable for thoughts arising in their hearts, and this verse came as divine relief. Ibn Atiyyah in Al-Muharrar al-Wajiz adds the crucial distinction: "wus\'aha" (its capacity) refers to what the soul can genuinely carry, not merely what it prefers - meaning Allah calibrated every burden with exact precision to the one who bears it.',
   },
   {
     id: 3,
@@ -22,7 +22,7 @@ const quranicQuotes = [
     transliteration: "Fa-inna ma'al-'usri yusra. Inna ma'al-'usri yusra.",
     translation: 'For indeed, with hardship will be ease. Indeed, with hardship will be ease.',
     reference: 'Ash-Sharh 94:5-6',
-    tafseer: 'Al-Qurtubi explains the grammatical subtlety with precision in Al-Jami\': "al-\'usr" carries the definite article and is singular, while "yusr" is indefinite and repeated twice. He records the scholars\' principle: a definite noun used twice in Arabic refers to the same entity; an indefinite noun used twice refers to two separate instances — hence one hardship, two eases. Ibn Atiyyah in Al-Muharrar al-Wajiz adds that the repetition is not mere emphasis but a divine reinforcement of certainty: the ease is structurally inseparable from the hardship, not sequential to it — they arrive together.',
+    tafseer: 'Al-Qurtubi explains the grammatical subtlety with precision in Al-Jami\': "al-\'usr" carries the definite article and is singular, while "yusr" is indefinite and repeated twice. He records the scholars\' principle: a definite noun used twice in Arabic refers to the same entity; an indefinite noun used twice refers to two separate instances - hence one hardship, two eases. Ibn Atiyyah in Al-Muharrar al-Wajiz adds that the repetition is not mere emphasis but a divine reinforcement of certainty: the ease is structurally inseparable from the hardship, not sequential to it - they arrive together.',
   },
   {
     id: 4,
@@ -30,15 +30,15 @@ const quranicQuotes = [
     transliteration: 'Hasbunallahu wa ni\'mal-wakil',
     translation: 'Allah is sufficient for us, and He is the Best Disposer of affairs.',
     reference: 'Aal Imran 3:173',
-    tafseer: 'Al-Qurtubi records in Al-Jami\' that these words were uttered by the companions at Hamra\' al-Asad, immediately after the grief of Uhud, when Abu Sufyan threatened to return. He explains "Hasbunallah" as a comprehensive declaration: Allah is fully sufficient in all matters, leaving no need unaddressed by any other. Ibn Atiyyah states in Al-Muharrar al-Wajiz that this four-word phrase condenses three spiritual stations simultaneously: tawakkul (reliance on Allah), tafwid (delegation of all affairs to Him), and ridwan (contentment with whatever He decrees) — making it among the most concentrated expressions of faith in the Quran.',
+    tafseer: 'Al-Qurtubi records in Al-Jami\' that these words were uttered by the companions at Hamra\' al-Asad, immediately after the grief of Uhud, when Abu Sufyan threatened to return. He explains "Hasbunallah" as a comprehensive declaration: Allah is fully sufficient in all matters, leaving no need unaddressed by any other. Ibn Atiyyah states in Al-Muharrar al-Wajiz that this four-word phrase condenses three spiritual stations simultaneously: tawakkul (reliance on Allah), tafwid (delegation of all affairs to Him), and ridwan (contentment with whatever He decrees) - making it among the most concentrated expressions of faith in the Quran.',
   },
   {
     id: 5,
     arabic: 'وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ',
     transliteration: "Wa man yatawakkal 'alal-Lahi fa-huwa hasbuh",
-    translation: 'And whoever relies upon Allah — then He is sufficient for him.',
+    translation: 'And whoever relies upon Allah - then He is sufficient for him.',
     reference: 'At-Talaq 65:3',
-    tafseer: 'Al-Qurtubi writes in Al-Jami\' that this is the Quran\'s supreme statement on tawakkul: an unconditional Divine pledge with no restriction on who qualifies. He notes the subject "man" (whoever) uses the general relative pronoun, extending this promise to every believing soul without exception. He explains that tawakkul in the scholars\' definition is not passivity or abandonment of means, but the anchoring of the heart entirely in Allah while the limbs continue to act. Ibn Atiyyah adds that "fa-huwa hasbuh" — the response clause — is immediate and absolute: sufficiency from Allah follows reliance upon Allah as a direct consequence, not a delayed reward.',
+    tafseer: 'Al-Qurtubi writes in Al-Jami\' that this is the Quran\'s supreme statement on tawakkul: an unconditional Divine pledge with no restriction on who qualifies. He notes the subject "man" (whoever) uses the general relative pronoun, extending this promise to every believing soul without exception. He explains that tawakkul in the scholars\' definition is not passivity or abandonment of means, but the anchoring of the heart entirely in Allah while the limbs continue to act. Ibn Atiyyah adds that "fa-huwa hasbuh" - the response clause - is immediate and absolute: sufficiency from Allah follows reliance upon Allah as a direct consequence, not a delayed reward.',
   },
   {
     id: 6,
@@ -46,7 +46,7 @@ const quranicQuotes = [
     transliteration: "Ala bi-dhikrillahi tatma'innul-qulub",
     translation: 'Unquestionably, by the remembrance of Allah do hearts find rest.',
     reference: "Ar-Ra'd 13:28",
-    tafseer: 'Al-Qurtubi comments extensively in Al-Jami\' on the word "tatma\'inn": from tama\'ninah, meaning the deepest form of stillness and settledness, beyond mere comfort or happiness. He states that this is a profound spiritual tranquillity that no worldly cause can produce: neither wealth, nor security, nor companionship generates what dhikr alone provides. Ibn Atiyyah writes in Al-Muharrar al-Wajiz that the affirmative particle "ala" opening the ayah is used in classical Arabic specifically to draw urgent attention to something of supreme importance — making this one of the most emphatically declared truths in the entire Quran.',
+    tafseer: 'Al-Qurtubi comments extensively in Al-Jami\' on the word "tatma\'inn": from tama\'ninah, meaning the deepest form of stillness and settledness, beyond mere comfort or happiness. He states that this is a profound spiritual tranquillity that no worldly cause can produce: neither wealth, nor security, nor companionship generates what dhikr alone provides. Ibn Atiyyah writes in Al-Muharrar al-Wajiz that the affirmative particle "ala" opening the ayah is used in classical Arabic specifically to draw urgent attention to something of supreme importance - making this one of the most emphatically declared truths in the entire Quran.',
   },
   {
     id: 7,
@@ -54,7 +54,7 @@ const quranicQuotes = [
     transliteration: "La taqnatu min rahmatil-Lah. Innal-Laha yaghfirudh-dhunuba jami'a.",
     translation: 'Do not despair of the mercy of Allah. Indeed, Allah forgives all sins.',
     reference: 'Az-Zumar 39:53',
-    tafseer: "Al-Qurtubi identifies this in Al-Jami' as the ayah of greatest hope (raja') in the Quran. The address is directed to those who have \"transgressed against themselves\" — sinners called directly by Allah to turn back — which he considers a sign of profound mercy. He records that the scholars unanimously held \"yaghfiru al-dhunuba jami'an\" applies to all sins for those who repent and return to Islam. Ibn Atiyyah in Al-Muharrar al-Wajiz explains that \"jami'an\" (all) is a totality word in Arabic that linguistically permits no exception: the scope of divine mercy, as stated, exceeds any sin a human could commit.",
+    tafseer: "Al-Qurtubi identifies this in Al-Jami' as the ayah of greatest hope (raja') in the Quran. The address is directed to those who have \"transgressed against themselves\" - sinners called directly by Allah to turn back - which he considers a sign of profound mercy. He records that the scholars unanimously held \"yaghfiru al-dhunuba jami'an\" applies to all sins for those who repent and return to Islam. Ibn Atiyyah in Al-Muharrar al-Wajiz explains that \"jami'an\" (all) is a totality word in Arabic that linguistically permits no exception: the scope of divine mercy, as stated, exceeds any sin a human could commit.",
   },
   {
     id: 8,
@@ -62,7 +62,7 @@ const quranicQuotes = [
     transliteration: 'Fadhkuruni adhkurkum wash-kuru li wa la takfurun',
     translation: 'So remember Me; I will remember you. And be grateful to Me and do not deny Me.',
     reference: 'Al-Baqarah 2:152',
-    tafseer: "Al-Qurtubi writes in Al-Jami' that this ayah establishes the most intimate reciprocal pledge in the Quran: the Creator of the heavens promises to remember the servant who remembers Him. He records the scholarly discussion on what \"adhkurkum\" (I will remember you) encompasses: some scholars said it means forgiveness; others, divine reward; others, praise of the servant among the angels — and Al-Qurtubi holds all these meanings are included together. Ibn Atiyyah states in Al-Muharrar al-Wajiz that the pairing with gratitude (shukr) and the prohibition of kufr reveals the inseparable triad: dhikr of the tongue, shukr of the heart, and rejection of ingratitude — together constituting the complete response of the believing soul.",
+    tafseer: "Al-Qurtubi writes in Al-Jami' that this ayah establishes the most intimate reciprocal pledge in the Quran: the Creator of the heavens promises to remember the servant who remembers Him. He records the scholarly discussion on what \"adhkurkum\" (I will remember you) encompasses: some scholars said it means forgiveness; others, divine reward; others, praise of the servant among the angels - and Al-Qurtubi holds all these meanings are included together. Ibn Atiyyah states in Al-Muharrar al-Wajiz that the pairing with gratitude (shukr) and the prohibition of kufr reveals the inseparable triad: dhikr of the tongue, shukr of the heart, and rejection of ingratitude - together constituting the complete response of the believing soul.",
   },
   {
     id: 9,
@@ -70,7 +70,7 @@ const quranicQuotes = [
     transliteration: "La'in shakartum la-azidannakum. Wa la'in kafartum inna 'adhabi la-shadid.",
     translation: 'If you are grateful, I will surely increase you in favour; but if you deny, indeed My punishment is severe.',
     reference: 'Ibrahim 14:7',
-    tafseer: "Al-Qurtubi explains in Al-Jami' that the \"increase\" (ziyada) is linguistically unrestricted: the grammar contains no qualifier limiting it to any single type. He records that scholars said it encompasses increase in provision, faith, knowledge, wellbeing, and station in the Hereafter. Ibn Atiyyah notes in Al-Muharrar al-Wajiz that the construction \"la-in shakartum la-azidannakum\" deploys a conditional oath structure — making this among the most formally binding divine promises in the Quran. He adds that shukr (gratitude) in the scholars' definition is not speech alone: it is the heart acknowledging the gift, the tongue expressing it, and the limbs acting accordingly.",
+    tafseer: "Al-Qurtubi explains in Al-Jami' that the \"increase\" (ziyada) is linguistically unrestricted: the grammar contains no qualifier limiting it to any single type. He records that scholars said it encompasses increase in provision, faith, knowledge, wellbeing, and station in the Hereafter. Ibn Atiyyah notes in Al-Muharrar al-Wajiz that the construction \"la-in shakartum la-azidannakum\" deploys a conditional oath structure - making this among the most formally binding divine promises in the Quran. He adds that shukr (gratitude) in the scholars' definition is not speech alone: it is the heart acknowledging the gift, the tongue expressing it, and the limbs acting accordingly.",
   },
   {
     id: 10,
@@ -78,7 +78,7 @@ const quranicQuotes = [
     transliteration: "Alam nashrah laka sadrak. Wa wada'na 'anka wizrak.",
     translation: 'Did We not expand for you your chest? And We removed from you your burden.',
     reference: 'Al-Inshirah 94:1-3',
-    tafseer: "Al-Qurtubi explains in Al-Jami' that the rhetorical question \"alam nashrah\" is a form of divine tenderness: reminding the Prophet (peace be upon him) of gifts he may have overlooked in moments of distress. He records the scholars' interpretation of \"sharh al-sadr\" (expansion of the chest) as: the heart's readiness to receive truth, bear hardship with patience, and engage others with generosity. Ibn Atiyyah writes in Al-Muharrar al-Wajiz that the grammatical form \"nashrah laka\" (expanded for you specifically) signals a personalised gift — and, by extension, that Allah customises His preparation of each believer for the role they are given.",
+    tafseer: "Al-Qurtubi explains in Al-Jami' that the rhetorical question \"alam nashrah\" is a form of divine tenderness: reminding the Prophet (peace be upon him) of gifts he may have overlooked in moments of distress. He records the scholars' interpretation of \"sharh al-sadr\" (expansion of the chest) as: the heart's readiness to receive truth, bear hardship with patience, and engage others with generosity. Ibn Atiyyah writes in Al-Muharrar al-Wajiz that the grammatical form \"nashrah laka\" (expanded for you specifically) signals a personalised gift - and, by extension, that Allah customises His preparation of each believer for the role they are given.",
   },
   {
     id: 11,
@@ -86,7 +86,7 @@ const quranicQuotes = [
     transliteration: "Wasta'inu bis-sabri was-salah. Wa innaha la-kabiratun illa 'alal-khashi'in.",
     translation: 'And seek help through patience and prayer; and indeed, it is difficult except for the humbly submissive.',
     reference: 'Al-Baqarah 2:45',
-    tafseer: "Al-Qurtubi writes in Al-Jami' that the pairing of sabr and salah is deliberate and precise: sabr restrains the soul from what harms it, while salah connects it to the source that nourishes it. He notes that \"kabiratun\" (great, weighty) applied to prayer does not mean it is inherently burdensome, but that its heaviness is felt only by those whose hearts remain heedless of Allah. Ibn Atiyyah explains in Al-Muharrar al-Wajiz that \"al-khashi'in\" — the humbly submissive — are those whose hearts are in a state of awe before Allah at all times: for them, prayer is not a weight but a return to rest.",
+    tafseer: "Al-Qurtubi writes in Al-Jami' that the pairing of sabr and salah is deliberate and precise: sabr restrains the soul from what harms it, while salah connects it to the source that nourishes it. He notes that \"kabiratun\" (great, weighty) applied to prayer does not mean it is inherently burdensome, but that its heaviness is felt only by those whose hearts remain heedless of Allah. Ibn Atiyyah explains in Al-Muharrar al-Wajiz that \"al-khashi'in\" - the humbly submissive - are those whose hearts are in a state of awe before Allah at all times: for them, prayer is not a weight but a return to rest.",
   },
   {
     id: 12,
@@ -94,7 +94,7 @@ const quranicQuotes = [
     transliteration: "La ikraha fi'd-din. Qad tabayyana'r-rushdu min'al-ghayy.",
     translation: 'There is no compulsion in religion. The right course has become clear from the wrong.',
     reference: 'Al-Baqarah 2:256',
-    tafseer: "Al-Qurtubi devotes considerable commentary to this ayah in Al-Jami'. He explains that \"la ikraha fi al-din\" establishes a foundational principle: iman, by its very nature, requires willing conviction and cannot be produced by force. He records and evaluates the scholarly discussion on scope — whether this addressed the Ansar of Madinah specifically or constitutes a permanent universal principle — and favours the position of universality. Ibn Atiyyah writes in Al-Muharrar al-Wajiz that \"qad tabayyana al-rushdu min al-ghayy\" provides the theological reason: revelation has illuminated the distinction between truth and falsehood so completely that compulsion becomes superfluous.",
+    tafseer: "Al-Qurtubi devotes considerable commentary to this ayah in Al-Jami'. He explains that \"la ikraha fi al-din\" establishes a foundational principle: iman, by its very nature, requires willing conviction and cannot be produced by force. He records and evaluates the scholarly discussion on scope - whether this addressed the Ansar of Madinah specifically or constitutes a permanent universal principle - and favours the position of universality. Ibn Atiyyah writes in Al-Muharrar al-Wajiz that \"qad tabayyana al-rushdu min al-ghayy\" provides the theological reason: revelation has illuminated the distinction between truth and falsehood so completely that compulsion becomes superfluous.",
   },
   {
     id: 13,
@@ -102,7 +102,7 @@ const quranicQuotes = [
     transliteration: "Man 'amila salihan… falanu-hiyannahu hayatan tayyiba.",
     translation: 'Whoever does righteous deeds… We will surely cause him to live a good life.',
     reference: 'An-Nahl 16:97',
-    tafseer: "Al-Qurtubi records multiple scholarly opinions on \"hayah tayyibah\" (a good life) in Al-Jami': some said it is rizq halal (lawful sustenance), others said the life of barzakh for believers, and others said qana'ah — contentment with what Allah has given. He considers qana'ah the most comprehensive interpretation: a life made good not by its material circumstances but by the heart's satisfaction with Allah's decree. Ibn Atiyyah notes in Al-Muharrar al-Wajiz that the gender-neutral form \"man 'amila\" (whoever does) explicitly includes both men and women as equal recipients of this promise.",
+    tafseer: "Al-Qurtubi records multiple scholarly opinions on \"hayah tayyibah\" (a good life) in Al-Jami': some said it is rizq halal (lawful sustenance), others said the life of barzakh for believers, and others said qana'ah - contentment with what Allah has given. He considers qana'ah the most comprehensive interpretation: a life made good not by its material circumstances but by the heart's satisfaction with Allah's decree. Ibn Atiyyah notes in Al-Muharrar al-Wajiz that the gender-neutral form \"man 'amila\" (whoever does) explicitly includes both men and women as equal recipients of this promise.",
   },
   {
     id: 14,
@@ -118,7 +118,7 @@ const quranicQuotes = [
     transliteration: 'Lakum dinukum wa liya din.',
     translation: 'For you is your religion, and for me is my religion.',
     reference: 'Al-Kafirun 109:6',
-    tafseer: "Al-Qurtubi explains in Al-Jami' that this concluding verse is not a concession of religious equivalence but a declaration of complete non-entanglement: each party's accountability rests with their own chosen path. He records the historical context: the Quraysh offered the Prophet (peace be upon him) a compromise of mutual worship, and this surah descended as a direct, dignified refusal. Ibn Atiyyah writes in Al-Muharrar al-Wajiz that the six-fold repetition of forms of 'ibadah throughout the surah is a rhetorical device of absolute finality in Arabic — leaving no ambiguity about the separation between tawhid and shirk.",
+    tafseer: "Al-Qurtubi explains in Al-Jami' that this concluding verse is not a concession of religious equivalence but a declaration of complete non-entanglement: each party's accountability rests with their own chosen path. He records the historical context: the Quraysh offered the Prophet (peace be upon him) a compromise of mutual worship, and this surah descended as a direct, dignified refusal. Ibn Atiyyah writes in Al-Muharrar al-Wajiz that the six-fold repetition of forms of 'ibadah throughout the surah is a rhetorical device of absolute finality in Arabic - leaving no ambiguity about the separation between tawhid and shirk.",
   },
   {
     id: 16,
@@ -134,15 +134,15 @@ const quranicQuotes = [
     transliteration: "Wa tawakkal 'alal-Lahi wa kafa bil-Lahi wakila.",
     translation: 'And put your trust in Allah; and sufficient is Allah as Disposer of affairs.',
     reference: 'Al-Ahzab 33:3',
-    tafseer: "Al-Qurtubi writes in Al-Jami' that this verse comes directly after the command to maintain taqwa and resist the disbelievers, placing tawakkul as the spiritual armour for holding firm. He explains \"wakila\" (Trustee, Disposer of affairs) as one who manages everything on behalf of another — meaning Allah takes complete charge of the affairs of the one who entrusts themselves to Him, leaving nothing unattended. Ibn Atiyyah notes in Al-Muharrar al-Wajiz that \"kafa\" (sufficient, enough) here is a verb of absolute completeness in Arabic: it carries the sense that nothing outstanding remains once Allah is relied upon.",
+    tafseer: "Al-Qurtubi writes in Al-Jami' that this verse comes directly after the command to maintain taqwa and resist the disbelievers, placing tawakkul as the spiritual armour for holding firm. He explains \"wakila\" (Trustee, Disposer of affairs) as one who manages everything on behalf of another - meaning Allah takes complete charge of the affairs of the one who entrusts themselves to Him, leaving nothing unattended. Ibn Atiyyah notes in Al-Muharrar al-Wajiz that \"kafa\" (sufficient, enough) here is a verb of absolute completeness in Arabic: it carries the sense that nothing outstanding remains once Allah is relied upon.",
   },
   {
     id: 18,
     arabic: 'وَإِذَا سَأَلَكَ عِبَادِي عَنِّي • فَإِنِّي قَرِيبٌ • أَجِيبُ دَعْوَةَ الدَّاعِ إِذَا دَعَانِ',
     transliteration: "Wa idha sa'alaka 'ibadi 'anni: fa-inni qarib. Ujibu da'wata'd-da'i idha da'an.",
-    translation: 'And when My servants ask you about Me — indeed I am near. I respond to the call of the caller when he calls.',
+    translation: 'And when My servants ask you about Me - indeed I am near. I respond to the call of the caller when he calls.',
     reference: 'Al-Baqarah 2:186',
-    tafseer: "Al-Qurtubi calls this one of the most intimate ayahs in the entire Quran in Al-Jami'. He highlights a profound structural feature: it is placed within the verses of Ramadan, answering an unspoken question from the companions about where Allah is — and the response comes without intermediary, in the first person, directly from Allah. Al-Qurtubi notes that scholars found it significant that Allah said \"I respond\" (ujib) rather than \"I accept\" — indicating that every sincere du'a is heard even if the divine response takes a form the servant does not immediately recognise. Ibn Atiyyah writes in Al-Muharrar al-Wajiz that Allah's nearness is unconditional; it is the believer's part that follows, not precedes, the divine guarantee.",
+    tafseer: "Al-Qurtubi calls this one of the most intimate ayahs in the entire Quran in Al-Jami'. He highlights a profound structural feature: it is placed within the verses of Ramadan, answering an unspoken question from the companions about where Allah is - and the response comes without intermediary, in the first person, directly from Allah. Al-Qurtubi notes that scholars found it significant that Allah said \"I respond\" (ujib) rather than \"I accept\" - indicating that every sincere du'a is heard even if the divine response takes a form the servant does not immediately recognise. Ibn Atiyyah writes in Al-Muharrar al-Wajiz that Allah's nearness is unconditional; it is the believer's part that follows, not precedes, the divine guarantee.",
   },
   {
     id: 19,
@@ -150,7 +150,7 @@ const quranicQuotes = [
     transliteration: "Wa lasawfa yu'tika rabbuka fa-tarda.",
     translation: 'And your Lord is going to give you, and you will be satisfied.',
     reference: 'Ad-Duha 93:5',
-    tafseer: "Al-Qurtubi writes in Al-Jami' that this was the Prophet's (peace be upon him) consolation during the cessation of revelation (fatrat al-wahy), when the mushrikeen mocked him with \"his Lord has abandoned him.\" The verse is an open-ended divine promise: Allah will give until the recipient is fully satisfied. Al-Qurtubi records scholars' understanding that this encompasses all honours in the Hereafter, including the great intercession (shafa'ah al-kubra). Ibn Atiyyah analyses the grammar in Al-Muharrar al-Wajiz: \"la-sawfa\" combines the emphatic lam with the future particle sawfa — together constituting the most linguistically emphatic form of future promise available in classical Arabic.",
+    tafseer: "Al-Qurtubi writes in Al-Jami' that this was the Prophet's (peace be upon him) consolation during the cessation of revelation (fatrat al-wahy), when the mushrikeen mocked him with \"his Lord has abandoned him.\" The verse is an open-ended divine promise: Allah will give until the recipient is fully satisfied. Al-Qurtubi records scholars' understanding that this encompasses all honours in the Hereafter, including the great intercession (shafa'ah al-kubra). Ibn Atiyyah analyses the grammar in Al-Muharrar al-Wajiz: \"la-sawfa\" combines the emphatic lam with the future particle sawfa - together constituting the most linguistically emphatic form of future promise available in classical Arabic.",
   },
   {
     id: 20,
@@ -158,7 +158,7 @@ const quranicQuotes = [
     transliteration: "Huwal-ladhi anzala's-sakinata fi qulubil-mu'minin.",
     translation: 'It is He who sent down tranquility into the hearts of the believers.',
     reference: 'Al-Fath 48:4',
-    tafseer: "Al-Qurtubi explains in Al-Jami' that \"sakina\" is a divine quality of peace and settledness that Allah sends directly into the heart: it is not a product of circumstance or self-discipline, but an act of Allah upon the believer. He records the scholars' descriptions of sakina: certainty in moments of fear, steadiness during crisis, and composure before overwhelming odds — all of these being gifts from above, not achievements from within. Ibn Atiyyah writes in Al-Muharrar al-Wajiz that the sequel — \"li-yazdadu imanan ma'a imanihim\" (so they would increase in faith upon their faith) — reveals a profound principle: tranquillity deepens iman, and deepened iman opens the heart to further tranquillity — a divine spiral of grace.",
+    tafseer: "Al-Qurtubi explains in Al-Jami' that \"sakina\" is a divine quality of peace and settledness that Allah sends directly into the heart: it is not a product of circumstance or self-discipline, but an act of Allah upon the believer. He records the scholars' descriptions of sakina: certainty in moments of fear, steadiness during crisis, and composure before overwhelming odds - all of these being gifts from above, not achievements from within. Ibn Atiyyah writes in Al-Muharrar al-Wajiz that the sequel - \"li-yazdadu imanan ma'a imanihim\" (so they would increase in faith upon their faith) - reveals a profound principle: tranquillity deepens iman, and deepened iman opens the heart to further tranquillity - a divine spiral of grace.",
   },
 ];
 

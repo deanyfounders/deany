@@ -158,7 +158,7 @@ const SECTIONS = [
     id: 'section-b',
     title: 'The Accountability Hadith',
     content: [
-      'This isn\'t just a nice idea. It comes with accountability. The Prophet ﷺ said that every person will be asked about their wealth on the Day of Judgement - two questions specifically.',
+      'This isn\'t just a nice idea. It comes with accountability. The Prophet (peace be upon him) said that every person will be asked about their wealth on the Day of Judgement - two questions specifically.',
       'Two of those five questions are about money: how you **earned** it and how you **spent** it. Not one. Two. That\'s 40% of the Day of Judgement accountability focused on your financial behaviour.',
       'This is why amānah isn\'t just philosophy. It has consequences. A custodian who manages well is rewarded. A custodian who wastes, hoards, or earns through forbidden means will be asked why.',
     ],
@@ -187,7 +187,7 @@ const SECTIONS = [
     title: 'Amānah Is Not Restriction',
     content: [
       "Here's what amānah does NOT mean: that you can't enjoy your wealth. Being a custodian doesn't mean living in anxiety about every purchase. It means being thoughtful, not reckless.",
-      'The Prophet ﷺ enjoyed good food, wore clean clothes, and appreciated beauty. He didn\'t live in self-imposed poverty. He lived **responsibly.** There\'s a difference.',
+      'The Prophet (peace be upon him) enjoyed good food, wore clean clothes, and appreciated beauty. He didn\'t live in self-imposed poverty. He lived **responsibly.** There\'s a difference.',
       "Think of it like this: if a friend asked you to manage their savings while they were away, you'd be careful. You wouldn't gamble it. You wouldn't waste it. But you also wouldn't refuse to use it for its intended purpose. You'd manage it well.",
       "That's amānah. Your wealth is that friend's savings. Except the friend is your Creator. And the 'intended purpose' includes taking care of yourself, your family, your community, and your future.",
     ],
@@ -431,7 +431,7 @@ export default function DEANY_M1L2({ onBack, onHome, onGoToNext, savedProgress }
                 📎 Continuing from Lesson 1.1
               </div>
               <p className="text-xs leading-relaxed" style={{ color: T.grayDark }}>
-                The Prophet ﷺ was a merchant and Khadija رضي الله عنها was a businesswoman. We previewed a word: <strong>amānah</strong>. Now let's explore what it actually means - because this single idea changes everything.
+                The Prophet (peace be upon him) was a merchant and Khadija رضي الله عنها was a businesswoman. We previewed a word: <strong>amānah</strong>. Now let's explore what it actually means - because this single idea changes everything.
               </p>
             </div>
 

@@ -19,7 +19,7 @@ export const Lantern = ({ size = 40 }) => (
     <path d="M14,10 L26,10 L24,15 L16,15Z" fill="#d97706" />
     <path d="M21,10 L26,10 L24,15" fill="#451a03" opacity="0.2" filter={F} />
     <path d="M14,10 L20,10 L18,14" fill="#fef3c7" opacity="0.35" filter={F} />
-    {/* Body — onion-dome shape */}
+    {/* Body - onion-dome shape */}
     <path d="M16,15 Q11,25 13,38 Q14,44 20,46 Q26,44 27,38 Q29,25 24,15Z" fill="#d97706" />
     <path d="M22,16 Q28,26 27,38 Q26,44 20,46" fill="#451a03" opacity="0.25" filter={F} />
     <path d="M18,17 Q13,26 14,34" fill="#fef3c7" opacity="0.4" filter={F} />
@@ -54,7 +54,7 @@ export const GeometricStar = ({ size = 40 }) => (
       <rect x="-10" y="-2" width="20" height="16" rx="2" fill="#451a03" opacity="0.22" filter={F} transform="rotate(22)" />
       {/* Light overlay */}
       <rect x="-12" y="-14" width="16" height="16" rx="2" fill="#fef3c7" opacity="0.4" filter={F} />
-      {/* Inner geometric detail — smaller star cutout illusion */}
+      {/* Inner geometric detail - smaller star cutout illusion */}
       <circle cx="0" cy="0" r="6" fill="#92400e" opacity="0.15" />
       <circle cx="0" cy="0" r="4" fill="#d97706" />
       <circle cx="-1" cy="-1" r="3" fill="#fef3c7" opacity="0.3" filter={F} />
@@ -74,7 +74,7 @@ export const Qalam = ({ size = 40 }) => (
     <ellipse cx="19" cy="37" rx="2" ry="0.8" fill="#a08470" opacity="0.4" />
     {/* Ink surface */}
     <ellipse cx="22" cy="39" rx="5" ry="1.5" fill="#1a1a2e" opacity="0.4" />
-    {/* Pen shaft — angled */}
+    {/* Pen shaft - angled */}
     <g transform="rotate(-35, 22, 30)">
       <rect x="8" y="8" width="6" height="34" rx="3" fill="#d97706" />
       <rect x="11" y="9" width="3.5" height="32" rx="1.5" fill="#451a03" opacity="0.25" filter={F} />
@@ -109,7 +109,7 @@ export const OpenBook = ({ size = 40 }) => (
     <path d="M26,24 L36,27" stroke="#d4c5a9" strokeWidth="0.5" opacity="0.5" />
     {/* Spine shadow */}
     <line x1="24" y1="10" x2="24" y2="42" stroke="#92400e" strokeWidth="1.5" opacity="0.2" />
-    {/* Page edges — thickness */}
+    {/* Page edges - thickness */}
     <path d="M4,44 L4,46 L24,44 L44,46 L44,44" fill="#e8dcc6" />
     <path d="M4,44 L4,45.5 L24,43.5" fill="#d4c5a9" opacity="0.5" />
     {/* Binding */}

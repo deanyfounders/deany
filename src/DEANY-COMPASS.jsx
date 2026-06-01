@@ -18,8 +18,8 @@ const LEVELS = [
 const TIER_LABEL = { 0: "New", 1: "Beginner", 2: "Intermediate", 3: "Advanced" };
 const TIER_EMOJI = { 0: "\u{1F331}", 1: "\u{1F331}", 2: "\u{1F333}", 3: "\u{1F3D4}" };
 
-// ── Question bank — sourced verbatim from DEANY Calibration Question Bank v1 ──
-// REVIEW:FIQH — Maliki madhab standard. Hadith: Bukhari + Muslim only.
+// ── Question bank - sourced verbatim from DEANY Calibration Question Bank v1 ──
+// REVIEW:FIQH - Maliki madhab standard. Hadith: Bukhari + Muslim only.
 // Format: [id, prompt, [opt0,opt1,opt2,opt3], correctIndex, source/explanation]
 const QBANK = {
   "5_pillars": {

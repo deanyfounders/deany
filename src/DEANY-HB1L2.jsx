@@ -627,7 +627,7 @@ function RapidFireTF({q,onFinish}){
   if(done){
     return(
       <div className="su">
-        <p className="text-xs font-semibold mb-3" style={{color:C.mid}}>Results — all {q.statements.length} statements:</p>
+        <p className="text-xs font-semibold mb-3" style={{color:C.mid}}>Results - all {q.statements.length} statements:</p>
         <div className="space-y-2">
           {answers.map((a,i)=>(
             <div key={i} className="flex items-start gap-3 p-3 rounded-xl border"
@@ -667,7 +667,7 @@ function RapidFireTF({q,onFinish}){
         <p className="text-sm font-medium leading-relaxed text-center" style={{color:C.dark,fontFamily:'Georgia,serif',fontSize:15}}>{stmt.text}</p>
       </div>
 
-      {/* Feedback — shown after answering */}
+      {/* Feedback - shown after answering */}
       {answered&&(
         <div className="rounded-xl p-4 mb-4 border-2 fi"
           style={{background:answered.correct?C.greenLight:C.coralLight,borderColor:answered.correct?C.green:C.coral}}>
@@ -688,7 +688,7 @@ function RapidFireTF({q,onFinish}){
         </div>
       )}
 
-      {/* True / False buttons — hidden after answering */}
+      {/* True / False buttons - hidden after answering */}
       {!answered&&(
         <div style={{display:'flex',gap:12}}>
           <button onClick={()=>choose('true')} style={{flex:1,padding:'16px 0',borderRadius:12,fontSize:14,fontWeight:700,border:'2px solid',borderColor:C.green,background:rgba(C.green,0.07),color:C.green,cursor:'pointer',transition:'all 0.15s'}}>
@@ -700,7 +700,7 @@ function RapidFireTF({q,onFinish}){
         </div>
       )}
 
-      {/* Next button — shown after answering */}
+      {/* Next button - shown after answering */}
       {answered&&(
         <button onClick={next} className="w-full py-3 rounded-xl font-bold text-sm su"
           style={{background:`linear-gradient(135deg,${C.gold},${C.orange})`,color:C.navy,border:'none',cursor:'pointer'}}>

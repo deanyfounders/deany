@@ -7,7 +7,7 @@ import React from 'react';
 
 const base = { strokeWidth: 1.5, strokeLinecap: 'round', strokeLinejoin: 'round', fill: 'none' };
 
-// 5 Pillars — Mosque dome with minarets
+// 5 Pillars - Mosque dome with minarets
 export const PillarsIcon = ({ size = 24, color = 'currentColor' }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" {...base} stroke={color}>
     <path d="M12 3c-3 3-6 4-6 8v7h12v-7c0-4-3-5-6-8z" />
@@ -20,7 +20,7 @@ export const PillarsIcon = ({ size = 24, color = 'currentColor' }) => (
   </svg>
 );
 
-// Islamic Finance — Balance scale with geometric diamond
+// Islamic Finance - Balance scale with geometric diamond
 export const FinanceIcon = ({ size = 24, color = 'currentColor' }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" {...base} stroke={color}>
     <line x1="12" y1="3" x2="12" y2="19" />
@@ -32,7 +32,7 @@ export const FinanceIcon = ({ size = 24, color = 'currentColor' }) => (
   </svg>
 );
 
-// Quran & Arabic — Open book with decorative calligraphy lines
+// Quran & Arabic - Open book with decorative calligraphy lines
 export const QuranIcon = ({ size = 24, color = 'currentColor' }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" {...base} stroke={color}>
     <path d="M2 4c2-1 5-1 10 1v15c-5-2-8-2-10-1V4z" />
@@ -45,7 +45,7 @@ export const QuranIcon = ({ size = 24, color = 'currentColor' }) => (
   </svg>
 );
 
-// Islamic History — Astrolabe / compass rose
+// Islamic History - Astrolabe / compass rose
 export const HistoryIcon = ({ size = 24, color = 'currentColor' }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" {...base} stroke={color}>
     <circle cx="12" cy="12" r="9" />

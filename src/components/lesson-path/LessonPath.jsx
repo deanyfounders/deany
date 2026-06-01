@@ -7,7 +7,7 @@ import ScaleAsset from './assets/ScaleAsset';
 import StarAsset from './assets/StarAsset';
 
 /* ────────────────────────────────────────────────────────────
-   Layout constants — tuned for 375px mobile, max 360px scene
+   Layout constants - tuned for 375px mobile, max 360px scene
    ──────────────────────────────────────────────────────────── */
 const SCENE_W  = 360;
 const CENTER   = SCENE_W / 2;
@@ -29,7 +29,7 @@ function layout(count) {
     });
   }
 
-  // Art-directed decorative placement — 3 objects for 5 lessons
+  // Art-directed decorative placement - 3 objects for 5 lessons
   const decos = [];
   if (count > 0) {
     decos.push({ x: CENTER - 25, y: 30, asset: 0 });                               // Lantern before first node

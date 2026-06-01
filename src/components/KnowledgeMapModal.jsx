@@ -138,7 +138,7 @@ const KnowledgeMapModal = ({ onClose, completedLessons = {} }) => {
               </div>
               <div style={{ fontSize: 11, color: '#6A9A9A', marginTop: 5, lineHeight: 1.4 }}>
                 {s === 'unlocked' && 'You\'ve completed this concept.'}
-                {s === 'available' && 'Ready to start — all prerequisites met.'}
+                {s === 'available' && 'Ready to start - all prerequisites met.'}
                 {s === 'locked' && (missing.length ? `Complete ${missing.join(', ')} first.` : 'Prerequisites not yet met.')}
               </div>
             </div>

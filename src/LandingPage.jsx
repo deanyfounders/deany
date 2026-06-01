@@ -25,10 +25,10 @@ const S = {
 const serif = 'Georgia, serif';
 const arabic = "'Amiri', 'Noto Naskh Arabic', serif";
 
-// ── Hero visual — floating lesson cards ─────────────────────────────────
+// ── Hero visual - floating lesson cards ─────────────────────────────────
 const HeroVisual = () => (
   <div style={{ position: 'relative', width: '100%', maxWidth: 280, height: 300 }}>
-    {/* Card 1 — back, tilted left */}
+    {/* Card 1 - back, tilted left */}
     <div style={{
       position: 'absolute', top: 10, left: 0, width: 200, padding: '18px 16px',
       background: C.surface, borderRadius: 16, border: `1px solid ${C.border}`,
@@ -47,7 +47,7 @@ const HeroVisual = () => (
       </div>
     </div>
 
-    {/* Card 2 — middle, prominent */}
+    {/* Card 2 - middle, prominent */}
     <div style={{
       position: 'absolute', top: 60, left: 36, width: 220, padding: '20px 18px',
       background: C.surface, borderRadius: 18, border: `1.5px solid ${C.border}`,
@@ -72,7 +72,7 @@ const HeroVisual = () => (
       </div>
     </div>
 
-    {/* Card 3 — front bottom, tilted right */}
+    {/* Card 3 - front bottom, tilted right */}
     <div style={{
       position: 'absolute', top: 180, left: 14, width: 195, padding: '16px 14px',
       background: C.surface, borderRadius: 14, border: `1px solid ${C.border}`,
@@ -93,7 +93,7 @@ const HeroVisual = () => (
       </div>
     </div>
 
-    {/* Floating badge — streak */}
+    {/* Floating badge - streak */}
     <div style={{
       position: 'absolute', top: 35, right: 0, zIndex: 4,
       background: C.surface, borderRadius: 20, padding: '6px 12px',
@@ -104,7 +104,7 @@ const HeroVisual = () => (
       <span style={{ fontSize: 11, fontWeight: 700, color: C.tealDeep }}>5 day streak</span>
     </div>
 
-    {/* Floating badge — correct */}
+    {/* Floating badge - correct */}
     <div style={{
       position: 'absolute', bottom: 20, right: 4, zIndex: 4,
       background: C.tealSoft, borderRadius: 20, padding: '5px 11px',
@@ -296,7 +296,7 @@ const LandingPage = ({ onGetStarted, onPreviewLesson, onCalibration, onSelectPat
             </div>
             <TrustDots />
           </div>
-          {/* Right column — geometric pattern */}
+          {/* Right column - geometric pattern */}
           <div style={{ flex: '0 1 280px', display: 'flex', justifyContent: 'center' }}>
             <HeroVisual />
           </div>

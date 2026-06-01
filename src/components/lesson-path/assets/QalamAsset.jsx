@@ -18,7 +18,7 @@ const QalamAsset = ({ size = 56 }) => (
     <ellipse cx="25" cy="42.5" rx="5" ry="1.8" fill="#5E4E3E" opacity="0.6" />
     <ellipse cx="27" cy="44" rx="6" ry="1.8" fill="#1B1520" opacity="0.35" />
 
-    {/* Pen shaft — angled */}
+    {/* Pen shaft - angled */}
     <g transform="rotate(-32, 28, 34)">
       <rect x="10" y="8" width="7" height="38" rx="3.5" fill="url(#qa-shaft)" />
 

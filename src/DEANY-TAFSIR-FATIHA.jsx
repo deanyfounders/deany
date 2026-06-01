@@ -455,7 +455,7 @@ function Completion({ onRestart, onGoToHifz, onBack }) {
         </div>
         <div className="mt-6 flex flex-wrap gap-3">
           <button onClick={onGoToHifz} className="rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white shadow-sm transition hover:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-emerald-100">Return to memorisation</button>
-          <button disabled className="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-black text-slate-400 shadow-sm cursor-not-allowed">Next tafsir lesson — coming soon</button>
+          <button disabled className="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-black text-slate-400 shadow-sm cursor-not-allowed">Next tafsir lesson - coming soon</button>
           <Button variant="secondary" onClick={onRestart}>Restart</Button>
           {onBack && <Button variant="secondary" onClick={onBack}>Back to lessons</Button>}
         </div>

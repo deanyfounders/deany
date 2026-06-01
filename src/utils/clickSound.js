@@ -1,6 +1,6 @@
 /**
  * Premium "creamy thock" mechanical keyboard sound.
- * Dampened tactile press — no harsh click, no rattle, no echo.
+ * Dampened tactile press - no harsh click, no rattle, no echo.
  * Three layers: soft tactile top, muted thock body, warm sub rumble.
  */
 
@@ -17,7 +17,7 @@ export function playClick() {
     if (ac.state === 'suspended') ac.resume();
     const now = ac.currentTime;
 
-    // Master compressor — glues layers, prevents harshness
+    // Master compressor - glues layers, prevents harshness
     const comp = ac.createDynamicsCompressor();
     comp.threshold.value = -18;
     comp.knee.value = 12;
@@ -27,9 +27,9 @@ export function playClick() {
     comp.connect(ac.destination);
 
     // ── Layer 1: Soft tactile top ──────────────────────────
-    // Very short filtered noise — the initial "tac" of the keypress
+    // Very short filtered noise - the initial "tac" of the keypress
     // Low-passed to remove harshness, shaped with fast exponential decay
-    const tacLen = Math.floor(ac.sampleRate * 0.006); // 6ms — ultra short
+    const tacLen = Math.floor(ac.sampleRate * 0.006); // 6ms - ultra short
     const tacBuf = ac.createBuffer(1, tacLen, ac.sampleRate);
     const tacData = tacBuf.getChannelData(0);
     for (let i = 0; i < tacLen; i++) {
@@ -41,7 +41,7 @@ export function playClick() {
     const tacSrc = ac.createBufferSource();
     tacSrc.buffer = tacBuf;
 
-    // Lowpass removes harsh high-end — creamy, not clicky
+    // Lowpass removes harsh high-end - creamy, not clicky
     const tacLP = ac.createBiquadFilter();
     tacLP.type = 'lowpass';
     tacLP.frequency.value = 2200;
@@ -56,7 +56,7 @@ export function playClick() {
     tacSrc.stop(now + 0.02);
 
     // ── Layer 2: Muted thock body ──────────────────────────
-    // Bandpassed noise — the dampened "thock" resonance of the switch housing
+    // Bandpassed noise - the dampened "thock" resonance of the switch housing
     // Sits in the mid-low range, decays quickly
     const thockLen = Math.floor(ac.sampleRate * 0.025); // 25ms
     const thockBuf = ac.createBuffer(1, thockLen, ac.sampleRate);
@@ -83,7 +83,7 @@ export function playClick() {
     thockSrc.stop(now + 0.05);
 
     // ── Layer 3: Warm sub rumble ───────────────────────────
-    // Sine wave sweep — the deep "bottom out" feel of the keystroke
+    // Sine wave sweep - the deep "bottom out" feel of the keystroke
     // Very low, very short, felt more than heard
     const sub = ac.createOscillator();
     sub.type = 'sine';

@@ -1,5 +1,5 @@
-// REVIEW:QURAN — Verify all translations and tafseer paraphrases against original sources
-// REVIEW:HADITH — Verify all hadith gradings, narrations, and translations
+// REVIEW:QURAN - Verify all translations and tafseer paraphrases against original sources
+// REVIEW:HADITH - Verify all hadith gradings, narrations, and translations
 
 const Q = "Al-Jami' li-Ahkam al-Quran";
 const I = 'Al-Muharrar al-Wajiz';
@@ -33,7 +33,7 @@ export const DAILY_CONTENT = [
         { type: 'highlight', label: 'Occasion of revelation', text: 'The companions feared being held accountable for thoughts arising in their hearts, and this verse came as divine relief.' },
       ]},
       { name: 'Ibn Atiyyah', source: I, segments: [
-        { type: 'gem', text: '"Wus\'aha" (its capacity) refers to what the soul can genuinely carry, not merely what it prefers — meaning Allah calibrated every burden with exact precision to the one who bears it.' },
+        { type: 'gem', text: '"Wus\'aha" (its capacity) refers to what the soul can genuinely carry, not merely what it prefers - meaning Allah calibrated every burden with exact precision to the one who bears it.' },
       ]},
     ]},
   },
@@ -47,10 +47,10 @@ export const DAILY_CONTENT = [
     tafseer: { scholars: [
       { name: 'Al-Qurtubi', source: Q, segments: [
         { type: 'body', text: 'Explains the grammatical subtlety: "al-\'usr" carries the definite article and is singular, while "yusr" is indefinite and repeated twice.' },
-        { type: 'highlight', label: "The scholars' principle", text: 'A definite noun used twice in Arabic refers to the same entity; an indefinite noun used twice refers to two separate instances — hence one hardship, two eases.' },
+        { type: 'highlight', label: "The scholars' principle", text: 'A definite noun used twice in Arabic refers to the same entity; an indefinite noun used twice refers to two separate instances - hence one hardship, two eases.' },
       ]},
       { name: 'Ibn Atiyyah', source: I, segments: [
-        { type: 'gem', text: 'The ease is structurally inseparable from the hardship, not sequential to it — they arrive together.' },
+        { type: 'gem', text: 'The ease is structurally inseparable from the hardship, not sequential to it - they arrive together.' },
       ]},
     ]},
   },
@@ -77,7 +77,7 @@ export const DAILY_CONTENT = [
     id: 'talaq-65-3', type: 'ayah', ref: 'At-Talaq 65:3',
     arabic: 'وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ',
     transliteration: "Wa man yatawakkal 'alal-Lahi fa-huwa hasbuh",
-    translation: 'And whoever relies upon Allah — then He is sufficient for him.',
+    translation: 'And whoever relies upon Allah - then He is sufficient for him.',
     tafseer: { scholars: [
       { name: 'Al-Qurtubi', source: Q, segments: [
         { type: 'body', text: "This is the Quran's supreme statement on tawakkul: an unconditional Divine pledge with no restriction on who qualifies." },
@@ -97,7 +97,7 @@ export const DAILY_CONTENT = [
     translation: 'Unquestionably, by the remembrance of Allah do hearts find rest.',
     tafseer: { scholars: [
       { name: 'Al-Qurtubi', source: Q, segments: [
-        { type: 'highlight', label: 'What tama\'ninah means', text: "Tama'ninah is the deepest form of stillness and settledness, beyond mere comfort or happiness — a profound spiritual tranquillity that no worldly cause can produce: neither wealth, nor security, nor companionship generates what dhikr alone provides." },
+        { type: 'highlight', label: 'What tama\'ninah means', text: "Tama'ninah is the deepest form of stillness and settledness, beyond mere comfort or happiness - a profound spiritual tranquillity that no worldly cause can produce: neither wealth, nor security, nor companionship generates what dhikr alone provides." },
       ]},
       { name: 'Ibn Atiyyah', source: I, segments: [
         { type: 'body', text: 'The affirmative particle "ala" opening the ayah is used in classical Arabic specifically to draw urgent attention to something of supreme importance.' },
@@ -114,7 +114,7 @@ export const DAILY_CONTENT = [
     translation: 'Do not despair of the mercy of Allah. Indeed, Allah forgives all sins.',
     tafseer: { scholars: [
       { name: 'Al-Qurtubi', source: Q, segments: [
-        { type: 'body', text: "Identifies this as the ayah of greatest hope (raja') in the Quran. The address is directed to those who have \"transgressed against themselves\" — sinners called directly by Allah to turn back." },
+        { type: 'body', text: "Identifies this as the ayah of greatest hope (raja') in the Quran. The address is directed to those who have \"transgressed against themselves\" - sinners called directly by Allah to turn back." },
         { type: 'highlight', label: 'Scope of mercy', text: "The scholars unanimously held that \"yaghfiru al-dhunuba jami'an\" applies to all sins for those who repent and return to Islam." },
       ]},
       { name: 'Ibn Atiyyah', source: I, segments: [
@@ -132,10 +132,10 @@ export const DAILY_CONTENT = [
     tafseer: { scholars: [
       { name: 'Al-Qurtubi', source: Q, segments: [
         { type: 'body', text: 'This ayah establishes the most intimate reciprocal pledge in the Quran: the Creator of the heavens promises to remember the servant who remembers Him.' },
-        { type: 'highlight', label: 'What "I will remember you" means', text: 'Some scholars said it means forgiveness; others, divine reward; others, praise of the servant among the angels — and Al-Qurtubi holds all these meanings are included together.' },
+        { type: 'highlight', label: 'What "I will remember you" means', text: 'Some scholars said it means forgiveness; others, divine reward; others, praise of the servant among the angels - and Al-Qurtubi holds all these meanings are included together.' },
       ]},
       { name: 'Ibn Atiyyah', source: I, segments: [
-        { type: 'gem', text: 'The inseparable triad: dhikr of the tongue, shukr of the heart, and rejection of ingratitude — together constituting the complete response of the believing soul.' },
+        { type: 'gem', text: 'The inseparable triad: dhikr of the tongue, shukr of the heart, and rejection of ingratitude - together constituting the complete response of the believing soul.' },
       ]},
     ]},
   },
@@ -152,7 +152,7 @@ export const DAILY_CONTENT = [
         { type: 'highlight', label: 'Scope of increase', text: 'Scholars said it encompasses increase in provision, faith, knowledge, wellbeing, and station in the Hereafter.' },
       ]},
       { name: 'Ibn Atiyyah', source: I, segments: [
-        { type: 'body', text: 'The construction deploys a conditional oath structure — making this among the most formally binding divine promises in the Quran.' },
+        { type: 'body', text: 'The construction deploys a conditional oath structure - making this among the most formally binding divine promises in the Quran.' },
         { type: 'gem', text: 'Shukr (gratitude) in the scholars\' definition is not speech alone: it is the heart acknowledging the gift, the tongue expressing it, and the limbs acting accordingly.' },
       ]},
     ]},
@@ -187,7 +187,7 @@ export const DAILY_CONTENT = [
         { type: 'body', text: '"Kabiratun" (great, weighty) applied to prayer does not mean it is inherently burdensome, but that its heaviness is felt only by those whose hearts remain heedless of Allah.' },
       ]},
       { name: 'Ibn Atiyyah', source: I, segments: [
-        { type: 'gem', text: 'Al-khashi\'in — the humbly submissive — are those whose hearts are in a state of awe before Allah at all times: for them, prayer is not a weight but a return to rest.' },
+        { type: 'gem', text: 'Al-khashi\'in - the humbly submissive - are those whose hearts are in a state of awe before Allah at all times: for them, prayer is not a weight but a return to rest.' },
       ]},
     ]},
   },
@@ -201,10 +201,10 @@ export const DAILY_CONTENT = [
     tafseer: { scholars: [
       { name: 'Al-Qurtubi', source: Q, segments: [
         { type: 'body', text: '"La ikraha fi al-din" establishes a foundational principle: iman, by its very nature, requires willing conviction and cannot be produced by force.' },
-        { type: 'highlight', label: 'Universal scope', text: 'Al-Qurtubi records the scholarly discussion on scope and favours the position of universality — this is a permanent principle, not limited to one context.' },
+        { type: 'highlight', label: 'Universal scope', text: 'Al-Qurtubi records the scholarly discussion on scope and favours the position of universality - this is a permanent principle, not limited to one context.' },
       ]},
       { name: 'Ibn Atiyyah', source: I, segments: [
-        { type: 'gem', text: 'Revelation has illuminated the distinction between truth and falsehood so completely that compulsion becomes superfluous — the evidence stands on its own.' },
+        { type: 'gem', text: 'Revelation has illuminated the distinction between truth and falsehood so completely that compulsion becomes superfluous - the evidence stands on its own.' },
       ]},
     ]},
   },
@@ -217,7 +217,7 @@ export const DAILY_CONTENT = [
     translation: 'Whoever does righteous deeds… We will surely cause him to live a good life.',
     tafseer: { scholars: [
       { name: 'Al-Qurtubi', source: Q, segments: [
-        { type: 'body', text: "Scholars differed on \"hayah tayyibah\" (a good life): some said it is rizq halal (lawful sustenance), others said the life of barzakh for believers, and others said qana'ah — contentment." },
+        { type: 'body', text: "Scholars differed on \"hayah tayyibah\" (a good life): some said it is rizq halal (lawful sustenance), others said the life of barzakh for believers, and others said qana'ah - contentment." },
         { type: 'gem', text: "A life made good not by its material circumstances but by the heart's satisfaction with Allah's decree." },
       ]},
       { name: 'Ibn Atiyyah', source: I, segments: [
@@ -238,27 +238,27 @@ export const DAILY_CONTENT = [
         { type: 'body', text: "These two verses alone are sufficient to refute every theological error about Allah's nature." },
       ]},
       { name: 'Ibn Atiyyah', source: I, segments: [
-        { type: 'gem', text: "The absolute incomparability of Allah is affirmed with the most expansive language Arabic possesses — \"ahad\" used in its most absolute sense, admitting no likeness in any category of existence." },
+        { type: 'gem', text: "The absolute incomparability of Allah is affirmed with the most expansive language Arabic possesses - \"ahad\" used in its most absolute sense, admitting no likeness in any category of existence." },
       ]},
     ]},
   },
 
-  // ── AYAH 15 — Ayat al-Kursi ────────────────────────────────
-  // REVIEW:QURAN — Verify full Uthmani script and Sahih International translation
+  // ── AYAH 15 - Ayat al-Kursi ────────────────────────────────
+  // REVIEW:QURAN - Verify full Uthmani script and Sahih International translation
   {
-    id: 'baqarah-2-255', type: 'ayah', ref: 'Al-Baqarah 2:255 — Ayat al-Kursi',
+    id: 'baqarah-2-255', type: 'ayah', ref: 'Al-Baqarah 2:255 - Ayat al-Kursi',
     arabic: 'اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَّهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَن ذَا الَّذِي يَشْفَعُ عِندَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَيْءٍ مِّنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ',
     transliteration: "Allahu la ilaha illa huwal-Hayyul-Qayyum. La ta'khudhuhu sinatun wa la nawm. Lahu ma fis-samawati wa ma fil-ard. Man dhal-ladhi yashfa'u 'indahu illa bi-idhnih. Ya'lamu ma bayna aydihim wa ma khalfahum. Wa la yuhituna bi-shay'in min 'ilmihi illa bima sha'. Wasi'a kursiyyuhus-samawati wal-ard. Wa la ya'uduhu hifdhuhuma. Wa huwal-'Aliyyul-'Adhim.",
-    translation: 'Allah — there is no deity except Him, the Ever-Living, the Sustainer of all existence. Neither drowsiness overtakes Him nor sleep. To Him belongs whatever is in the heavens and whatever is on the earth. Who is it that can intercede with Him except by His permission? He knows what is before them and what will be after them, and they encompass not a thing of His knowledge except for what He wills. His Kursi extends over the heavens and the earth, and their preservation tires Him not. And He is the Most High, the Most Great.',
+    translation: 'Allah - there is no deity except Him, the Ever-Living, the Sustainer of all existence. Neither drowsiness overtakes Him nor sleep. To Him belongs whatever is in the heavens and whatever is on the earth. Who is it that can intercede with Him except by His permission? He knows what is before them and what will be after them, and they encompass not a thing of His knowledge except for what He wills. His Kursi extends over the heavens and the earth, and their preservation tires Him not. And He is the Most High, the Most Great.',
     tafseer: { scholars: [
       { name: 'Al-Qurtubi', source: Q, segments: [
         { type: 'body', text: 'The Prophet (peace be upon him) asked Ubayy ibn Ka\'b: "Which ayah in the Book of Allah is the greatest?" He replied: "Allah and His Messenger know best." The Prophet repeated it until Ubayy said: "Ayat al-Kursi." The Prophet struck his chest and said: "Rejoice in this knowledge, O Abu al-Mundhir!" (Muslim 810).' },
-        { type: 'highlight', label: 'Why it is the greatest', text: 'It contains ten independent statements about Allah — His oneness, His eternal life, His sustaining of all creation, His freedom from any weakness, His absolute ownership, His exclusive authority over intercession, His all-encompassing knowledge, His sovereign will, the vastness of His dominion, and His effortless preservation of everything.' },
-        { type: 'gem', text: 'No other single ayah in the Quran gathers this many divine attributes in one place — it is as if the entire theology of tawhid were compressed into a single verse.' },
+        { type: 'highlight', label: 'Why it is the greatest', text: 'It contains ten independent statements about Allah - His oneness, His eternal life, His sustaining of all creation, His freedom from any weakness, His absolute ownership, His exclusive authority over intercession, His all-encompassing knowledge, His sovereign will, the vastness of His dominion, and His effortless preservation of everything.' },
+        { type: 'gem', text: 'No other single ayah in the Quran gathers this many divine attributes in one place - it is as if the entire theology of tawhid were compressed into a single verse.' },
       ]},
       { name: 'Ibn Atiyyah', source: I, segments: [
-        { type: 'highlight', label: 'Al-Hayy al-Qayyum', text: 'These two names — the Ever-Living and the Self-Sustaining — are considered by many scholars to be the Ism al-A\'dham (the Greatest Name of Allah), because all other attributes depend on them: life is the precondition for every perfection, and qayyumiyyah is the source of all creation\'s sustenance.' },
-        { type: 'gem', text: '"Wa la ya\'uduhu hifdhuhuma" — preserving the entirety of the heavens and the earth does not tire Him, does not burden Him, does not even inconvenience Him. The limitlessness of divine power expressed in a single clause.' },
+        { type: 'highlight', label: 'Al-Hayy al-Qayyum', text: 'These two names - the Ever-Living and the Self-Sustaining - are considered by many scholars to be the Ism al-A\'dham (the Greatest Name of Allah), because all other attributes depend on them: life is the precondition for every perfection, and qayyumiyyah is the source of all creation\'s sustenance.' },
+        { type: 'gem', text: '"Wa la ya\'uduhu hifdhuhuma" - preserving the entirety of the heavens and the earth does not tire Him, does not burden Him, does not even inconvenience Him. The limitlessness of divine power expressed in a single clause.' },
       ]},
     ]},
   },
@@ -275,7 +275,7 @@ export const DAILY_CONTENT = [
         { type: 'highlight', label: 'Historical context', text: 'The Quraysh offered the Prophet (peace be upon him) a compromise of mutual worship, and this surah descended as a direct, dignified refusal.' },
       ]},
       { name: 'Ibn Atiyyah', source: I, segments: [
-        { type: 'gem', text: "The six-fold repetition of forms of 'ibadah throughout the surah is a rhetorical device of absolute finality in Arabic — leaving no ambiguity about the separation between tawhid and shirk." },
+        { type: 'gem', text: "The six-fold repetition of forms of 'ibadah throughout the surah is a rhetorical device of absolute finality in Arabic - leaving no ambiguity about the separation between tawhid and shirk." },
       ]},
     ]},
   },
@@ -306,7 +306,7 @@ export const DAILY_CONTENT = [
     tafseer: { scholars: [
       { name: 'Al-Qurtubi', source: Q, segments: [
         { type: 'body', text: 'This verse comes directly after the command to maintain taqwa, placing tawakkul as the spiritual armour for holding firm.' },
-        { type: 'highlight', label: 'Al-Wakil', text: '"Wakila" (Trustee) means one who manages everything on behalf of another — Allah takes complete charge of the affairs of the one who entrusts themselves to Him.' },
+        { type: 'highlight', label: 'Al-Wakil', text: '"Wakila" (Trustee) means one who manages everything on behalf of another - Allah takes complete charge of the affairs of the one who entrusts themselves to Him.' },
       ]},
       { name: 'Ibn Atiyyah', source: I, segments: [
         { type: 'gem', text: '"Kafa" (sufficient) carries the sense that nothing outstanding remains once Allah is relied upon. The believer\'s part is to turn, and Allah\'s part is to carry.' },
@@ -319,11 +319,11 @@ export const DAILY_CONTENT = [
     id: 'baqarah-2-186', type: 'ayah', ref: 'Al-Baqarah 2:186',
     arabic: 'وَإِذَا سَأَلَكَ عِبَادِي عَنِّي • فَإِنِّي قَرِيبٌ • أَجِيبُ دَعْوَةَ الدَّاعِ إِذَا دَعَانِ',
     transliteration: "Wa idha sa'alaka 'ibadi 'anni: fa-inni qarib. Ujibu da'wata'd-da'i idha da'an.",
-    translation: 'And when My servants ask you about Me — indeed I am near. I respond to the call of the caller when he calls.',
+    translation: 'And when My servants ask you about Me - indeed I am near. I respond to the call of the caller when he calls.',
     tafseer: { scholars: [
       { name: 'Al-Qurtubi', source: Q, segments: [
         { type: 'body', text: 'One of the most intimate ayahs in the entire Quran. It is placed within the verses of Ramadan, and the response comes without intermediary, in the first person, directly from Allah.' },
-        { type: 'gem', text: 'Allah said "I respond" (ujib) rather than "I accept" — indicating that every sincere du\'a is heard even if the divine response takes a form the servant does not immediately recognise.' },
+        { type: 'gem', text: 'Allah said "I respond" (ujib) rather than "I accept" - indicating that every sincere du\'a is heard even if the divine response takes a form the servant does not immediately recognise.' },
       ]},
       { name: 'Ibn Atiyyah', source: I, segments: [
         { type: 'highlight', label: 'Unconditional nearness', text: "Allah's nearness is unconditional; it is the believer's part that follows, not precedes, the divine guarantee." },
@@ -340,10 +340,10 @@ export const DAILY_CONTENT = [
     tafseer: { scholars: [
       { name: 'Al-Qurtubi', source: Q, segments: [
         { type: 'body', text: "This was the Prophet's (peace be upon him) consolation during the cessation of revelation, when the mushrikeen mocked him." },
-        { type: 'highlight', label: 'Scope of the promise', text: 'The verse is an open-ended divine promise: Allah will give until the recipient is fully satisfied — encompassing all honours in the Hereafter, including the great intercession.' },
+        { type: 'highlight', label: 'Scope of the promise', text: 'The verse is an open-ended divine promise: Allah will give until the recipient is fully satisfied - encompassing all honours in the Hereafter, including the great intercession.' },
       ]},
       { name: 'Ibn Atiyyah', source: I, segments: [
-        { type: 'gem', text: '"La-sawfa" combines the emphatic lam with the future particle sawfa — together constituting the most linguistically emphatic form of future promise available in classical Arabic, leaving no room for doubt.' },
+        { type: 'gem', text: '"La-sawfa" combines the emphatic lam with the future particle sawfa - together constituting the most linguistically emphatic form of future promise available in classical Arabic, leaving no room for doubt.' },
       ]},
     ]},
   },
@@ -357,16 +357,16 @@ export const DAILY_CONTENT = [
     tafseer: { scholars: [
       { name: 'Al-Qurtubi', source: Q, segments: [
         { type: 'highlight', label: 'What sakina is', text: 'Sakina is a divine quality of peace and settledness that Allah sends directly into the heart: it is not a product of circumstance or self-discipline, but an act of Allah upon the believer.' },
-        { type: 'body', text: 'Certainty in moments of fear, steadiness during crisis, and composure before overwhelming odds — all of these being gifts from above, not achievements from within.' },
+        { type: 'body', text: 'Certainty in moments of fear, steadiness during crisis, and composure before overwhelming odds - all of these being gifts from above, not achievements from within.' },
       ]},
       { name: 'Ibn Atiyyah', source: I, segments: [
-        { type: 'gem', text: 'Tranquillity deepens iman, and deepened iman opens the heart to further tranquillity — a divine spiral of grace.' },
+        { type: 'gem', text: 'Tranquillity deepens iman, and deepened iman opens the heart to further tranquillity - a divine spiral of grace.' },
       ]},
     ]},
   },
 
   // ── HADITH 1 ───────────────────────────────────────────────
-  // REVIEW:HADITH — Verify exact wording and book/hadith number
+  // REVIEW:HADITH - Verify exact wording and book/hadith number
   {
     id: 'bukhari-1', type: 'hadith', ref: 'Sahih al-Bukhari 1',
     arabic: 'إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ وَإِنَّمَا لِكُلِّ امْرِئٍ مَا نَوَى',
@@ -375,35 +375,35 @@ export const DAILY_CONTENT = [
     context: 'The first hadith in Sahih al-Bukhari and the foundation of Islamic jurisprudence. Imam al-Bukhari opened his entire collection with this narration because intention (niyyah) is the prerequisite that gives meaning to every act of worship, every transaction, and every deed. Without the correct intention, even an outwardly good action loses its spiritual weight.',
   },
 
-  // REVIEW:HADITH — Verify exact wording and book/hadith number
+  // REVIEW:HADITH - Verify exact wording and book/hadith number
   {
     id: 'bukhari-5027', type: 'hadith', ref: 'Sahih al-Bukhari 5027',
     arabic: 'خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ',
     narrator: 'Uthman ibn Affan رضي الله عنه',
     translation: 'The best of you are those who learn the Quran and teach it.',
-    context: 'A hadith that places Quranic education at the summit of virtuous action. The Prophet (peace be upon him) did not say "the best of you are the wealthiest" or "the most powerful" — he said the best are those engaged in the cycle of learning and passing on the Book of Allah. This applies to every level of learning: the beginner who studies a single surah and shares it is included in this promise.',
+    context: 'A hadith that places Quranic education at the summit of virtuous action. The Prophet (peace be upon him) did not say "the best of you are the wealthiest" or "the most powerful" - he said the best are those engaged in the cycle of learning and passing on the Book of Allah. This applies to every level of learning: the beginner who studies a single surah and shares it is included in this promise.',
   },
 
-  // REVIEW:HADITH — Verify exact wording, grading, and hadith number
+  // REVIEW:HADITH - Verify exact wording, grading, and hadith number
   {
-    id: 'bukhari-3', type: 'hadith', ref: 'Sahih al-Bukhari — Book of Revelation, Hadith 3',
+    id: 'bukhari-3', type: 'hadith', ref: 'Sahih al-Bukhari - Book of Revelation, Hadith 3',
     arabic: null,
     narrator: 'Aisha رضي الله عنها',
     translation: 'He returned home while his heart was trembling and said: "Wrap me! Wrap me!"',
-    context: "Narrated by Aisha رضي الله عنها — the first account of the first revelation. After the angel Jibril appeared to the Prophet Muhammad ﷺ in the cave of Hira and commanded him to read, the Prophet returned to Khadijah in a state of awe and fear. This hadith captures the profoundly human moment at the beginning of prophethood: even the greatest of creation was shaken by the encounter with divine revelation.",
+    context: "Narrated by Aisha رضي الله عنها - the first account of the first revelation. After the angel Jibril appeared to the Prophet Muhammad (peace be upon him) in the cave of Hira and commanded him to read, the Prophet returned to Khadijah in a state of awe and fear. This hadith captures the profoundly human moment at the beginning of prophethood: even the greatest of creation was shaken by the encounter with divine revelation.",
   },
 
-  // REVIEW:HADITH — Verify exact wording, grading by al-Albani, and hadith number
+  // REVIEW:HADITH - Verify exact wording, grading by al-Albani, and hadith number
   {
     id: 'dawud-3462', type: 'hadith', ref: 'Abu Dawud 3462, graded sahih by al-Albani',
     arabic: null,
     narrator: null,
-    translation: "The Prophet ﷺ prohibited bay' al-inah — a transaction where a person sells an item to another on credit then buys it back for less in cash.",
+    translation: "The Prophet (peace be upon him) prohibited bay' al-inah - a transaction where a person sells an item to another on credit then buys it back for less in cash.",
     context: "The earliest prohibition of a legal trick (hilah) in Islamic finance. Bay' al-inah looks like two separate sales, but in substance it is a loan with interest disguised through a sale contract. This hadith establishes a core principle that runs through all of Islamic finance: substance matters more than the label. A transaction that achieves the same result as riba does not become permissible merely because it is structured differently.",
   },
 ];
 
-// Helper — pick today's item deterministically (cycles by day of year)
+// Helper - pick today's item deterministically (cycles by day of year)
 const AYAHS_ONLY = DAILY_CONTENT.filter(item => item.type === 'ayah');
 
 export function getTodayContent() {

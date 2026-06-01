@@ -1,16 +1,16 @@
 import React from 'react';
 
 /*
- * 3D diamond-shaped lesson node — Chess.com style.
+ * 3D diamond-shaped lesson node - Chess.com style.
  *
  * Structure: rotated 45° square with rounded corners.
  * Depth: a darker offset layer behind the main face.
  * Content: counter-rotated so text/icons stay upright.
  *
  * States:
- *   active    — gold, pulsing ring, lesson number
- *   completed — teal, checkmark
- *   locked    — gray, muted, lock icon
+ *   active    - gold, pulsing ring, lesson number
+ *   completed - teal, checkmark
+ *   locked    - gray, muted, lock icon
  */
 
 const DIAMOND = 58;
@@ -54,7 +54,7 @@ const PathNode = ({ index, state, title, duration, onClick }) => {
       {/* Diamond container */}
       <div style={{ position: 'relative', width: 90, height: 90 }}>
 
-        {/* Pulse ring — active only */}
+        {/* Pulse ring - active only */}
         {isActive && (
           <div className="lp-pulse" style={{
             position: 'absolute',

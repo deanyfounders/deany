@@ -5,11 +5,11 @@
  */
 
 export const concepts = [
-  // 5 Pillars — Shahada
+  // 5 Pillars - Shahada
   { id: 'shahada-testimony', label: 'The Shahada', track: '5-pillars', lessonIds: ['shahada-lesson-0'] },
   { id: 'shahada-second', label: 'Second Testimony', track: '5-pillars', lessonIds: ['shahada-lesson-1'] },
   { id: 'shahada-living', label: 'Living the Shahada', track: '5-pillars', lessonIds: ['shahada-lesson-2'] },
-  // 5 Pillars — Salah
+  // 5 Pillars - Salah
   { id: 'salah-appointments', label: 'Daily Appointments', track: '5-pillars', lessonIds: ['salah-lesson-0'] },
   { id: 'salah-wudu', label: 'Wudu', track: '5-pillars', lessonIds: ['salah-lesson-1'] },
   { id: 'salah-rakah', label: "The Rak'ah", track: '5-pillars', lessonIds: ['salah-lesson-2'] },

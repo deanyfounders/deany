@@ -140,8 +140,8 @@ const SECTIONS = [
     title: "Islam Isn't Anti-Money",
     content: [
       "Many people begin their Islamic finance journey carrying guilt. They've absorbed the idea that money is somehow spiritually dirty - that the more pious path is to care less about wealth. This is one of the most common and most damaging misconceptions in Islamic finance.",
-      "The truth is the opposite. Islam has always been pro-commerce, pro-trade, and pro-wealth - provided that wealth is earned, managed, and spent within boundaries. The Prophet Muhammad ﷺ was himself a trader. He managed goods, negotiated deals, and built a reputation for honesty so strong that the people of Makkah called him **al-Amīn - the Trustworthy**.",
-      "Khadija bint Khuwaylid رضي الله عنها, the Prophet's first wife, was one of the most successful merchants in Makkah. She hired the Prophet ﷺ specifically because of his integrity. Their partnership was commercial before it was marital.",
+      "The truth is the opposite. Islam has always been pro-commerce, pro-trade, and pro-wealth - provided that wealth is earned, managed, and spent within boundaries. The Prophet Muhammad (peace be upon him) was himself a trader. He managed goods, negotiated deals, and built a reputation for honesty so strong that the people of Makkah called him **al-Amīn - the Trustworthy**.",
+      "Khadija bint Khuwaylid رضي الله عنها, the Prophet's first wife, was one of the most successful merchants in Makkah. She hired the Prophet (peace be upon him) specifically because of his integrity. Their partnership was commercial before it was marital.",
       "This isn't trivia. It's the foundation. If you believe Islam is anti-money, you will resist every lesson that follows. So let's make sure that's cleared up right now.",
     ],
     quran: {
@@ -152,14 +152,14 @@ const SECTIONS = [
   },
   {
     id: 'section-b',
-    title: "A Commercial Prophet ﷺ",
+    title: "A Commercial Prophet (peace be upon him)",
     content: [
-      "Let's put some detail on this. The Prophet's ﷺ career wasn't a footnote - it was a major part of his life before revelation.",
+      "Let's put some detail on this. The Prophet's (peace be upon him) career wasn't a footnote - it was a major part of his life before revelation.",
       "As a young man, he managed trade caravans between Makkah and Shām (Greater Syria). These were serious commercial expeditions - weeks of travel, significant capital at risk, negotiations with foreign merchants. He was trusted with other people's goods and money.",
       "Khadija رضي الله عنها was so impressed by his honesty and results that she proposed a business arrangement, then marriage. She was already one of the wealthiest traders in Makkah. This was a commercially literate household.",
-      "After prophethood, the Prophet ﷺ didn't abandon commerce. He regulated it. He set rules for fair dealing, prohibited exploitation, and created a market in Madinah with specific ethical standards. The message was never 'stop trading.' It was **'trade honestly.'**"
+      "After prophethood, the Prophet (peace be upon him) didn't abandon commerce. He regulated it. He set rules for fair dealing, prohibited exploitation, and created a market in Madinah with specific ethical standards. The message was never 'stop trading.' It was **'trade honestly.'**"
     ],
-    didYouKnow: "The Prophet ﷺ established a dedicated marketplace in Madinah and refused to let anyone charge rent for stall space. Commerce was a public good, not a private monopoly. (Bukhari 2118)"
+    didYouKnow: "The Prophet (peace be upon him) established a dedicated marketplace in Madinah and refused to let anyone charge rent for stall space. Commerce was a public good, not a private monopoly. (Bukhari 2118)"
   },
   {
     id: 'section-c',
@@ -175,7 +175,7 @@ const SECTIONS = [
     title: "Why This Matters For You",
     content: [
       "Here's why this lesson isn't just history. The reason many Muslims struggle with financial decisions - savings, mortgages, investments, insurance - is that they don't have a framework. They feel vaguely guilty about money but can't articulate why or what to do about it.",
-      "This course gives you that framework. And it starts here: Islam is pro-wealth. The Prophet ﷺ was a merchant. Khadija رضي الله عنها was a businesswoman. Wealth managed responsibly is an act of worship, not a source of shame.",
+      "This course gives you that framework. And it starts here: Islam is pro-wealth. The Prophet (peace be upon him) was a merchant. Khadija رضي الله عنها was a businesswoman. Wealth managed responsibly is an act of worship, not a source of shame.",
       "Everything in the next 6 modules builds on this. If you take one thing from today: **your money is not the problem. How it's handled might be.** And you're about to learn how to handle it."
     ]
   }
@@ -186,7 +186,7 @@ const QUESTIONS = [
   {
     id: 'q1', type: 'mcq', mode: 'THINK', level: '1/5', typeLabel: 'Multiple Choice',
     afterSection: 0,
-    question: "According to the passage you just read, what was the Prophet Muhammad ﷺ known as in Makkah?",
+    question: "According to the passage you just read, what was the Prophet Muhammad (peace be upon him) known as in Makkah?",
     options: [
       { id: 'a', text: "Al-Amīn (The Trustworthy)", correct: true },
       { id: 'b', text: "Al-Ḥakīm (The Wise)", correct: false },
@@ -196,7 +196,7 @@ const QUESTIONS = [
     feedback: {
       a: "Exactly right! Al-Amīn - the Trustworthy. This wasn't just a nickname. It was his commercial reputation. People trusted him with their goods and their money. That's the foundation Islamic finance is built on.",
       b: "Not quite. Al-Ḥakīm means 'The Wise' - that's one of Allah's names, not the Prophet's commercial title. He was known as al-Amīn because traders trusted him with their goods.",
-      c: "Close instinct - the Prophet ﷺ was generous, but his business reputation was specifically al-Amīn (The Trustworthy). In commerce, trustworthiness is the foundation.",
+      c: "Close instinct - the Prophet (peace be upon him) was generous, but his business reputation was specifically al-Amīn (The Trustworthy). In commerce, trustworthiness is the foundation.",
       d: "He did become a leader, but his commercial reputation in Makkah was al-Amīn - The Trustworthy. This title came from his trading days, before prophethood."
     }
   },
@@ -206,13 +206,13 @@ const QUESTIONS = [
     afterSection: 1,
     question: "Swipe each statement: TRUE (right) or FALSE (left).",
     cards: [
-      { text: "The Prophet ﷺ was a merchant before prophethood.", answer: true,
+      { text: "The Prophet (peace be upon him) was a merchant before prophethood.", answer: true,
         right: "✅ Yes! Trading was his profession.", wrong: "❌ Actually, he managed caravans for years before revelation." },
       { text: "Islam teaches that wealth is spiritually dirty.", answer: false,
         right: "✅ Correct - that's the misconception we're clearing up.", wrong: "❌ This is exactly the myth. Islam is pro-wealth, not anti-money." },
       { text: "Khadija رضي الله عنها was one of Makkah's most successful merchants.", answer: true,
-        right: "✅ One of Makkah's leading entrepreneurs.", wrong: "❌ She was! She hired the Prophet ﷺ because of his honesty." },
-      { text: "The Prophet ﷺ stopped all trading after receiving revelation.", answer: false,
+        right: "✅ One of Makkah's leading entrepreneurs.", wrong: "❌ She was! She hired the Prophet (peace be upon him) because of his honesty." },
+      { text: "The Prophet (peace be upon him) stopped all trading after receiving revelation.", answer: false,
         right: "✅ He regulated trade, he didn't stop it.", wrong: "❌ He created an ethical marketplace in Madinah - more trade, not less." },
       { text: "The Quran says 'Allah has made trade permissible.'", answer: true,
         right: "✅ Quran 2:275 - trade is explicitly permitted.", wrong: "❌ It's directly in the Quran (2:275). Trade is halal." },
@@ -220,7 +220,7 @@ const QUESTIONS = [
         right: "✅ Wealth managed as a trust (amānah) IS piety.", wrong: "❌ Piety = managing wealth responsibly, not rejecting it." },
     ],
     summaryFeedback: {
-      perfect: "Perfect! You've got the core message: Islam is pro-commerce, pro-wealth, and always has been. The Prophet ﷺ lived it.",
+      perfect: "Perfect! You've got the core message: Islam is pro-commerce, pro-wealth, and always has been. The Prophet (peace be upon him) lived it.",
       good: "Almost there! The key idea: Islam doesn't reject wealth - it sets rules for how wealth is earned and used.",
       low: "That's okay! Many people carry these misconceptions. The point is: Islam has always been pro-trade. Wealth managed well is worship."
     }
@@ -270,13 +270,13 @@ const QUESTIONS = [
     question: "Based on what you've learned, which response best reflects the Islamic view?",
     options: [
       { id: 'a', text: "'You're right - money is a worldly distraction. Focus on worship.'", correct: false },
-      { id: 'b', text: "'Actually, the Prophet ﷺ was a merchant. Islam encourages earning and managing wealth responsibly - that's part of worship too.'", correct: true },
+      { id: 'b', text: "'Actually, the Prophet (peace be upon him) was a merchant. Islam encourages earning and managing wealth responsibly - that's part of worship too.'", correct: true },
       { id: 'c', text: "'Making money is the most important thing. Islam wants you to be wealthy.'", correct: false },
       { id: 'd', text: "'I'm not sure. It's complicated.'", correct: false },
     ],
     feedback: {
-      a: "That's the misconception we just debunked! The Prophet ﷺ didn't ignore money - he traded, he regulated markets, and he taught us how to handle wealth. Dismissing finances isn't piety. It's neglecting a responsibility.",
-      b: "Exactly. The Prophet ﷺ was a trader. Khadija رضي الله عنها was a businesswoman. Managing wealth responsibly IS worship. You're not choosing between faith and finances - they're connected.",
+      a: "That's the misconception we just debunked! The Prophet (peace be upon him) didn't ignore money - he traded, he regulated markets, and he taught us how to handle wealth. Dismissing finances isn't piety. It's neglecting a responsibility.",
+      b: "Exactly. The Prophet (peace be upon him) was a trader. Khadija رضي الله عنها was a businesswoman. Managing wealth responsibly IS worship. You're not choosing between faith and finances - they're connected.",
       c: "Close, but too far the other way. Islam doesn't say wealth is the MOST important thing. It says wealth is a trust (amānah) - a tool to be managed responsibly. The goal isn't maximum money. It's honest, ethical stewardship.",
       d: "We understand the hesitation, but it's actually not that complicated at this level. Islam's view is clear: wealth is permitted, trade is encouraged, and managing money well is part of responsible living. Trust yourself!"
     },
@@ -379,7 +379,7 @@ export default function DEANY_M1L1({ onBack, onHome, onGoToNext, savedProgress }
               Islam and Wealth
             </h1>
             <p className="text-sm max-w-md mx-auto" style={{color:T.grayMed}}>
-              Islam is pro-wealth, pro-commerce - and the Prophet ﷺ lived it.
+              Islam is pro-wealth, pro-commerce - and the Prophet (peace be upon him) lived it.
             </p>
           </div>
 
@@ -410,7 +410,7 @@ export default function DEANY_M1L1({ onBack, onHome, onGoToNext, savedProgress }
             <div className="p-3 rounded-lg mb-5" style={{background:T.goldLight, border:`1px solid ${T.gold}30`}}>
               <div className="text-xs font-bold mb-1" style={{color:T.gold}}>🎯 Learning Objective</div>
               <div className="text-xs leading-relaxed" style={{color:T.grayDark}}>
-                Explain that Islam is pro-wealth and pro-commerce, using the Prophet ﷺ's merchant career and Khadija رضي الله عنها's business as evidence.
+                Explain that Islam is pro-wealth and pro-commerce, using the Prophet (peace be upon him)'s merchant career and Khadija رضي الله عنها's business as evidence.
               </div>
             </div>
 
@@ -473,7 +473,7 @@ export default function DEANY_M1L1({ onBack, onHome, onGoToNext, savedProgress }
             {/* Concepts Mastered */}
             <div className="text-left p-4 rounded-xl mb-6" style={{background:`${T.greenLight}60`, border:`1px solid ${T.green}20`}}>
               <div className="text-xs font-bold mb-2" style={{color:T.green}}>✅ Concepts Mastered</div>
-              {['Islam is pro-wealth and pro-commerce','The Prophet ﷺ was a merchant','Khadija رضي الله عنها was a businesswoman','Amānah concept introduced'].map((c,i) => (
+              {['Islam is pro-wealth and pro-commerce','The Prophet (peace be upon him) was a merchant','Khadija رضي الله عنها was a businesswoman','Amānah concept introduced'].map((c,i) => (
                 <div key={i} className="flex items-center gap-2 py-1">
                   <CheckCircle className="w-3.5 h-3.5 flex-shrink-0" style={{color:T.green}}/>
                   <span className="text-xs" style={{color:T.grayDark}}>{c}</span>

@@ -1,4 +1,4 @@
-// REVIEW:FIQH — All prayer positions, Arabic terms, recitations, and descriptions need scholarly verification.
+// REVIEW:FIQH - All prayer positions, Arabic terms, recitations, and descriptions need scholarly verification.
 // This visualization follows the general Hanafi/mainstream sequence of one rakat.
 
 import React, { useState, useCallback, useEffect } from 'react';

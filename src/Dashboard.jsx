@@ -81,8 +81,8 @@ const Dashboard = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [searchFocused, setSearchFocused] = useState(false);
   const [notes, setNotes] = useState([
-    { id: 1, text: 'Shahada is not just words — it reshapes how you see everything.', source: 'Lesson 1', time: '2h ago', accent: C.teal },
-    { id: 2, text: 'Riba literally means "increase" — any guaranteed surplus on a loan.', source: 'Finance L3', time: '1d ago', accent: C.gold },
+    { id: 1, text: 'Shahada is not just words - it reshapes how you see everything.', source: 'Lesson 1', time: '2h ago', accent: C.teal },
+    { id: 2, text: 'Riba literally means "increase" - any guaranteed surplus on a loan.', source: 'Finance L3', time: '1d ago', accent: C.gold },
   ]);
   const [newNoteText, setNewNoteText] = useState('');
   const [showNoteInput, setShowNoteInput] = useState(false);
@@ -239,7 +239,7 @@ const Dashboard = ({
 
       {/* ── FULL-WIDTH HEADER ──────────────────────────────── */}
       <header style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
-        {/* Logo zone — same width as left rail so they align */}
+        {/* Logo zone - same width as left rail so they align */}
         <div style={{ width: leftRailOpen ? 225 : 'auto', flexShrink: 0, padding: '14px 17px', display: 'flex', alignItems: 'center', gap: 10, background: leftRailOpen ? C.surface : 'transparent', borderRight: leftRailOpen ? `1px solid ${C.border}` : '1px solid transparent', transition: 'all .35s cubic-bezier(.4,0,.2,1)' }}>
           <div style={{ width: 31, height: 31, borderRadius: 7, background: 'linear-gradient(145deg,#22A39A,#0F6E56)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontFamily: serif, fontSize: 15, flexShrink: 0 }}>{'\u062F'}</div>
           <div style={{ flex: 1 }}>
@@ -253,7 +253,7 @@ const Dashboard = ({
             <ChevronUp size={15} />
           </button>
         </div>
-        {/* Stats — pushed to the right */}
+        {/* Stats - pushed to the right */}
         <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 14, padding: '14px 22px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '5px 10px', background: 'rgba(239,111,83,0.10)', borderRadius: 20 }}>
             <span style={{ display: 'inline-flex', animation: 'flameFlicker 2s ease-in-out infinite' }}><Flame size={14} color={C.coral} /></span>
@@ -272,7 +272,7 @@ const Dashboard = ({
 
       {/* ── THREE-COLUMN LAYOUT (below header) ───────────── */}
       <div style={{ display: 'flex', flex: 1, position: 'relative' }}>
-        {/* Right rail toggle — fixed to right edge */}
+        {/* Right rail toggle - fixed to right edge */}
         <button onClick={() => setRailOpen(r => !r)} aria-label={railOpen ? 'Collapse sidebar' : 'Expand sidebar'}
           style={{ position: 'fixed', right: railOpen ? 232 : 10, top: 80, width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', background: C.surface, border: `1px solid ${C.border}`, borderRadius: '50%', cursor: 'pointer', color: C.textFaint, zIndex: 10, boxShadow: '0 1px 4px rgba(20,43,54,0.08)', transition: 'color .15s, right .35s cubic-bezier(.4,0,.2,1)' }}
           onMouseEnter={e => { e.currentTarget.style.color = C.tealDeep; }}
@@ -280,7 +280,7 @@ const Dashboard = ({
           {railOpen ? <PanelRightClose size={14} /> : <PanelRightOpen size={14} />}
         </button>
 
-      {/* ════ LEFT RAIL — 184px, white, flush left, full height ═══ */}
+      {/* ════ LEFT RAIL - 184px, white, flush left, full height ═══ */}
       <div className="el-left-nav" style={{
         width: leftRailOpen ? 225 : 0, flexShrink: 0,
         position: 'sticky', top: 0, height: 'calc(100vh - 68px)',
@@ -359,10 +359,10 @@ const Dashboard = ({
           </div>
         ))}
 
-        {/* Spacer — pushes Plus to the floor */}
+        {/* Spacer - pushes Plus to the floor */}
         <div style={{ flex: 1 }} />
 
-        {/* Deany Plus — pinned to bottom */}
+        {/* Deany Plus - pinned to bottom */}
         <div style={{ margin: '0 11px 14px', padding: '14px 13px', borderRadius: 12, background: 'linear-gradient(155deg,#0F4C5C,#1A8C82)', color: '#fff' }}>
           <div style={{ fontSize: 9.5, letterSpacing: '1px', textTransform: 'uppercase', opacity: 0.7, marginBottom: 3 }}>Deany Plus</div>
           <div style={{ fontSize: 11.5, opacity: 0.85, lineHeight: 1.4, marginBottom: 10 }}>Unlock advanced lessons &amp; features</div>
@@ -375,7 +375,7 @@ const Dashboard = ({
       </nav>
       </div>{/* end left rail wrapper */}
 
-      {/* ════ CENTER COLUMN — the original dashboard ═════════════ */}
+      {/* ════ CENTER COLUMN - the original dashboard ═════════════ */}
       <div style={{ flex: 1, minWidth: 0, display: 'flex', justifyContent: 'center', paddingLeft: 30 }}>
       <main className="el-center-col" style={{ width: '100%', maxWidth: 760, padding: '0 28px 28px' }}>
 
@@ -624,7 +624,7 @@ const Dashboard = ({
       </main>
       </div>{/* end center wrapper */}
 
-      {/* ════ RIGHT RAIL — collapsible ══════════ */}
+      {/* ════ RIGHT RAIL - collapsible ══════════ */}
       <div className="el-right-rail-wrap" style={{ width: railOpen ? 230 : 0, flexShrink: 0, position: 'sticky', top: 0, height: 'calc(100vh - 68px)', overflow: 'hidden', transition: 'width .35s cubic-bezier(.4,0,.2,1)' }}>
         <aside className="el-rail-inner" style={{
           width: 196,
@@ -639,7 +639,7 @@ const Dashboard = ({
           pointerEvents: railOpen ? 'auto' : 'none',
         }}>
 
-        {/* Today's Objectives — light card */}
+        {/* Today's Objectives - light card */}
         <div style={{ background: '#F1F6F4', borderRadius: 12, padding: 12, border: `1px solid ${C.border}`, boxShadow: '0 1px 3px rgba(20,43,54,0.04)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
             <Eyebrow>TODAY'S OBJECTIVES</Eyebrow>
@@ -663,7 +663,7 @@ const Dashboard = ({
           </div>
         </div>
 
-        {/* Notes — light card */}
+        {/* Notes - light card */}
         <div style={{ background: '#F1F6F4', borderRadius: 12, padding: 12, border: `1px solid ${C.border}`, boxShadow: '0 1px 3px rgba(20,43,54,0.04)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
             <Eyebrow color={C.goldDk}>NOTES</Eyebrow>
@@ -711,7 +711,7 @@ const Dashboard = ({
           )}
         </div>
 
-        {/* Knowledge Map — dark card, flex:1 to fill remaining height */}
+        {/* Knowledge Map - dark card, flex:1 to fill remaining height */}
         <div onClick={() => setShowMap(true)} style={{
           flex: 1, minHeight: 140,
           background: C.tealDeep, borderRadius: 12, padding: 0, overflow: 'hidden', cursor: 'pointer',

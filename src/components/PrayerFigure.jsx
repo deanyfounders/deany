@@ -1,7 +1,7 @@
 import React from 'react';
 
 /**
- * PrayerFigure — SVG silhouette figure that morphs between salah positions.
+ * PrayerFigure - SVG silhouette figure that morphs between salah positions.
  * Uses currentColor for all fills (inherits text-deany-navy from parent).
  * Each pose is a group of SVG shapes within a 200x240 viewBox.
  */

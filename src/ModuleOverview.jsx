@@ -189,7 +189,7 @@ const PATH_ACCENTS = {
 };
 
 /* ================================================================ */
-/*  ModuleOverview — root                                           */
+/*  ModuleOverview - root                                           */
 /* ================================================================ */
 const ModuleOverview = ({
   modules, topicId, completedLessons, loadProgress, onSelectLesson, onSelectModule, onBack, onHome,
@@ -274,7 +274,7 @@ const ModuleOverview = ({
 };
 
 /* ================================================================ */
-/*  ModuleMilestone — separator bar between modules                 */
+/*  ModuleMilestone - separator bar between modules                 */
 /* ================================================================ */
 const ModuleMilestone = ({ prevMod, prevIndex, nextMod, nextIndex, modules, completedLessons }) => {
   const isModComplete = (mod) => {
@@ -307,7 +307,7 @@ const ModuleMilestone = ({ prevMod, prevIndex, nextMod, nextIndex, modules, comp
       display: 'flex', alignItems: 'center', gap: 15,
     }} className="mo-milestone-wrap">
 
-      {/* Left — glowing hizb disc */}
+      {/* Left - glowing hizb disc */}
       <div className="hizb-disc" aria-hidden="true" style={{
         width: 54, height: 54, borderRadius: '50%', background: '#fff', flexShrink: 0,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -318,17 +318,17 @@ const ModuleMilestone = ({ prevMod, prevIndex, nextMod, nextIndex, modules, comp
         </span>
       </div>
 
-      {/* Center — text */}
+      {/* Center - text */}
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ fontSize: 9, fontWeight: 600, letterSpacing: '1.4px', textTransform: 'uppercase', color: '#1A8C82' }}>
           {prevComplete ? `Module ${prevIndex + 1} complete \u00B7 next up` : 'Up next'}
         </div>
         <div style={{ fontFamily: serif, fontSize: 17, fontWeight: 600, color: '#0F4C5C', marginTop: 3, lineHeight: 1.3 }}>
-          Module {nextIndex + 1} — {nextMod.title}
+          Module {nextIndex + 1} - {nextMod.title}
         </div>
       </div>
 
-      {/* Right — journey progress */}
+      {/* Right - journey progress */}
       <div style={{ flexShrink: 0, textAlign: 'right' }}>
         <div style={{ fontSize: 8.5, color: '#5fa595', marginBottom: 3 }}>your journey</div>
         <div style={{ fontSize: 11, fontWeight: 600, color: '#0F6E56', marginBottom: 5 }}>
@@ -348,7 +348,7 @@ const ModuleMilestone = ({ prevMod, prevIndex, nextMod, nextIndex, modules, comp
 };
 
 /* ================================================================ */
-/*  QuranModuleSeparator — manuscript-style divider for Quran track */
+/*  QuranModuleSeparator - manuscript-style divider for Quran track */
 /* ================================================================ */
 const QuatrefoilBand = ({ fadeDir }) => {
   const maskImage = fadeDir === 'left'
@@ -419,7 +419,7 @@ const QuranModuleSeparator = ({ prevMod, prevIndex, nextMod, nextIndex, modules,
 };
 
 /* ================================================================ */
-/*  ModuleBlock — the two-column layout per module                  */
+/*  ModuleBlock - the two-column layout per module                  */
 /* ================================================================ */
 const ModuleBlock = ({ mod, mi, topicId, completedLessons, loadProgress, onSelectLesson, onSelectModule }) => {
   const lessons = mod.lessons || [];
@@ -438,7 +438,7 @@ const ModuleBlock = ({ mod, mi, topicId, completedLessons, loadProgress, onSelec
     onSelectLesson(lesson, i);
   }, [onSelectLesson]);
 
-  /* Speed round — keep existing card */
+  /* Speed round - keep existing card */
   if (mod.isSpeedRound) return (
     <button onClick={() => onSelectModule(mod, mi)} className="mo-focus"
       style={{ width: '100%', borderRadius: 16, padding: 24, textAlign: 'left', background: C.surface,
@@ -545,7 +545,7 @@ const ModuleBlock = ({ mod, mi, topicId, completedLessons, loadProgress, onSelec
           </div>
         )}
 
-        {/* 5. Key concepts — multicolor pills */}
+        {/* 5. Key concepts - multicolor pills */}
         {data.concepts.length > 0 && (
           <div style={{ background: C.canvas, borderRadius: 12, padding: 18 }}>
             <div style={{ fontSize: 9, fontWeight: 600, letterSpacing: '1.4px', textTransform: 'uppercase',
@@ -604,7 +604,7 @@ const ModuleBlock = ({ mod, mi, topicId, completedLessons, loadProgress, onSelec
 };
 
 /* ================================================================ */
-/*  LessonTimelineRow — node + connector + card                     */
+/*  LessonTimelineRow - node + connector + card                     */
 /* ================================================================ */
 const LessonTimelineRow = ({ lesson, index, state, saved, isLast, meta, isCurrent, accent, onClick }) => {
   const isDone = state === 'done';

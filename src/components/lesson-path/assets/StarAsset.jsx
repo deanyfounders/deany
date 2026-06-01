@@ -16,13 +16,13 @@ const StarAsset = ({ size = 56 }) => (
     {/* Contact shadow */}
     <ellipse cx="28" cy="60" rx="16" ry="3" fill="rgba(0,0,0,0.1)" />
 
-    {/* Pedestal — side */}
+    {/* Pedestal - side */}
     <rect x="17" y="49" width="22" height="6" rx="3" fill="#7A5F28" />
-    {/* Pedestal — top */}
+    {/* Pedestal - top */}
     <rect x="17" y="47" width="22" height="5" rx="2.5" fill="#9E7E3A" />
     <rect x="18" y="47" width="10" height="3" rx="1.5" fill="rgba(255,255,255,0.1)" />
 
-    {/* 8-pointed star — two overlapping rotated squares */}
+    {/* 8-pointed star - two overlapping rotated squares */}
     <g transform="translate(28,26)">
       <rect x="-15" y="-15" width="30" height="30" rx="3" fill="url(#st-g)" transform="rotate(45)" />
       <rect x="-15" y="-15" width="30" height="30" rx="3" fill="url(#st-l)" />
