@@ -388,10 +388,10 @@ const QuranModuleSeparator = ({ prevMod, prevIndex, nextMod, nextIndex, modules,
   const labelBlock = (
     <div style={{ flexShrink: 0, textAlign: 'center', padding: '0 14px' }}>
       <div style={{ fontSize: 8.5, fontWeight: 600, letterSpacing: '1.4px', textTransform: 'uppercase', color: '#235C7A' }}>
-        {prevComplete ? `Module ${prevIndex + 1} complete \u00B7 next` : 'Up next'}
+        {prevComplete ? `${prevMod.title} complete \u00B7 next` : 'Up next'}
       </div>
       <div style={{ fontFamily: serif, fontSize: 15.5, fontWeight: 600, color: '#0F4C5C', marginTop: 2, whiteSpace: 'nowrap', lineHeight: 1.3 }}>
-        Module {nextIndex + 1} — {nextMod.title}
+        {nextMod.title}
       </div>
     </div>
   );
@@ -497,7 +497,7 @@ const ModuleBlock = ({ mod, mi, topicId, completedLessons, loadProgress, onSelec
           <div>
             <div style={{ fontSize: 9, fontWeight: 600, letterSpacing: '1.4px', textTransform: 'uppercase',
               color: accent.accent, lineHeight: 1 }}>
-              Module {mi + 1} · {mod.difficulty || 'Beginner'}
+              {data.badge || `Module ${mi + 1}`} · {mod.difficulty || 'Beginner'}
             </div>
             <h2 style={{ fontFamily: serif, fontSize: 21, fontWeight: 600, color: C.textDeep,
               margin: '4px 0 0', lineHeight: 1.25 }}>
