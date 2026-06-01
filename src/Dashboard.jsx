@@ -99,6 +99,14 @@ const Dashboard = ({
   const greeting = hour >= 5 && hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
 
   const findContinueLesson = () => {
+    // Default to Finance Lesson 3 (Riba, Gharar, Maysir)
+    const financeTopic = mainTopics.find(t => t.id === 'islamic-finance');
+    const financeMods = modules['islamic-finance'] || [];
+    const mod1 = financeMods.find(m => m.id === 'module-1');
+    if (financeTopic && mod1 && mod1.lessons?.length >= 3) {
+      return { topic: financeTopic, mod: mod1, lesson: mod1.lessons[2], index: 2, total: mod1.lessons.length };
+    }
+    // Fallback: find first incomplete lesson
     for (const topic of mainTopics) {
       const mods = modules[topic.id] || [];
       for (const mod of mods) {
