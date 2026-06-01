@@ -243,7 +243,27 @@ export const DAILY_CONTENT = [
     ]},
   },
 
-  // ── AYAH 15 ────────────────────────────────────────────────
+  // ── AYAH 15 — Ayat al-Kursi ────────────────────────────────
+  // REVIEW:QURAN — Verify full Uthmani script and Sahih International translation
+  {
+    id: 'baqarah-2-255', type: 'ayah', ref: 'Al-Baqarah 2:255 — Ayat al-Kursi',
+    arabic: 'اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَّهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَن ذَا الَّذِي يَشْفَعُ عِندَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَيْءٍ مِّنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ',
+    transliteration: "Allahu la ilaha illa huwal-Hayyul-Qayyum. La ta'khudhuhu sinatun wa la nawm. Lahu ma fis-samawati wa ma fil-ard. Man dhal-ladhi yashfa'u 'indahu illa bi-idhnih. Ya'lamu ma bayna aydihim wa ma khalfahum. Wa la yuhituna bi-shay'in min 'ilmihi illa bima sha'. Wasi'a kursiyyuhus-samawati wal-ard. Wa la ya'uduhu hifdhuhuma. Wa huwal-'Aliyyul-'Adhim.",
+    translation: 'Allah — there is no deity except Him, the Ever-Living, the Sustainer of all existence. Neither drowsiness overtakes Him nor sleep. To Him belongs whatever is in the heavens and whatever is on the earth. Who is it that can intercede with Him except by His permission? He knows what is before them and what will be after them, and they encompass not a thing of His knowledge except for what He wills. His Kursi extends over the heavens and the earth, and their preservation tires Him not. And He is the Most High, the Most Great.',
+    tafseer: { scholars: [
+      { name: 'Al-Qurtubi', source: Q, segments: [
+        { type: 'body', text: 'The Prophet (peace be upon him) asked Ubayy ibn Ka\'b: "Which ayah in the Book of Allah is the greatest?" He replied: "Allah and His Messenger know best." The Prophet repeated it until Ubayy said: "Ayat al-Kursi." The Prophet struck his chest and said: "Rejoice in this knowledge, O Abu al-Mundhir!" (Muslim 810).' },
+        { type: 'highlight', label: 'Why it is the greatest', text: 'It contains ten independent statements about Allah — His oneness, His eternal life, His sustaining of all creation, His freedom from any weakness, His absolute ownership, His exclusive authority over intercession, His all-encompassing knowledge, His sovereign will, the vastness of His dominion, and His effortless preservation of everything.' },
+        { type: 'gem', text: 'No other single ayah in the Quran gathers this many divine attributes in one place — it is as if the entire theology of tawhid were compressed into a single verse.' },
+      ]},
+      { name: 'Ibn Atiyyah', source: I, segments: [
+        { type: 'highlight', label: 'Al-Hayy al-Qayyum', text: 'These two names — the Ever-Living and the Self-Sustaining — are considered by many scholars to be the Ism al-A\'dham (the Greatest Name of Allah), because all other attributes depend on them: life is the precondition for every perfection, and qayyumiyyah is the source of all creation\'s sustenance.' },
+        { type: 'gem', text: '"Wa la ya\'uduhu hifdhuhuma" — preserving the entirety of the heavens and the earth does not tire Him, does not burden Him, does not even inconvenience Him. The limitlessness of divine power expressed in a single clause.' },
+      ]},
+    ]},
+  },
+
+  // ── AYAH 16 ────────────────────────────────────────────────
   {
     id: 'kafirun-109-6', type: 'ayah', ref: 'Al-Kafirun 109:6',
     arabic: 'لَكُمْ دِينُكُمْ وَلِيَ دِينِ',
@@ -387,6 +407,6 @@ export const DAILY_CONTENT = [
 const AYAHS_ONLY = DAILY_CONTENT.filter(item => item.type === 'ayah');
 
 export function getTodayContent() {
-  // Pinned: Al-Kafirun 109:6
-  return AYAHS_ONLY.find(a => a.id === 'kafirun-109-6') || AYAHS_ONLY[0];
+  // Pinned: Ayat al-Kursi — the greatest ayah in the Quran (Muslim 810)
+  return AYAHS_ONLY.find(a => a.id === 'baqarah-2-255') || AYAHS_ONLY[0];
 }
