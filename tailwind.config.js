@@ -57,7 +57,7 @@ export default {
         },
       },
       fontFamily: {
-        sans: ['"Source Sans 3"', 'system-ui', '-apple-system', 'sans-serif'],
+        sans: ['"Source Sans 3"', '"Noto Naskh Arabic"', 'system-ui', '-apple-system', 'sans-serif'],
         arabic: ['"Noto Naskh Arabic"', '"Traditional Arabic"', 'serif'],
       },
       boxShadow: {

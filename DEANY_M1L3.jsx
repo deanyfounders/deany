@@ -423,7 +423,7 @@ const QUESTIONS=[
       {id:'d',text:'Because interest rates are too high.',correct:false},
     ],
     feedback:{
-      a:"That contradicts Lesson 1! The Prophet (peace be upon him) was a trader who earned profit through commerce. Islam encourages fair profit from trade. Ribā is about RISK-FREE profit on money lent, not profit itself.",
+      a:"That contradicts Lesson 1! The Prophet ﷺ was a trader who earned profit through commerce. Islam encourages fair profit from trade. Ribā is about RISK-FREE profit on money lent, not profit itself.",
       b:"Exactly. The issue isn't profit - Islam encourages fair profit from real trade. The issue is RISK-FREE profit from money lent. One side bears everything, the other bears nothing. That's the injustice.",
       c:"Lending is encouraged in Islam - it's called qard hasan (a good loan). What's forbidden is charging EXTRA. You can lend AED 1,000 and ask for AED 1,000 back. Not AED 1,200.",
       d:"Even 0.1% interest is ribā. It's not the rate - it's the structure. A guaranteed return on money lent with no trade or risk. The rate is irrelevant.",

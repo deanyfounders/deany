@@ -1,7 +1,7 @@
 // Glossary entries for Islamic History lessons
 export // ---- Glossary (Islamic History) ----------------------------------
 const GLOSSARY_ENTRIES = [
-  { term: "Finality of Prophethood", def: "The belief that Muhammad (peace be upon him) is the last prophet and messenger, and that no new revelation will come after him." },
+  { term: "Finality of Prophethood", def: "The belief that Muhammad ﷺ is the last prophet and messenger, and that no new revelation will come after him." },
   { term: "Idol Worship", def: "Worshipping created objects or beings instead of Allah, often believing they bring protection or blessings." },
   { term: "idol worship", def: "Worshipping created objects or beings instead of Allah, often believing they bring protection or blessings." },
   { term: "Tribal Society", def: "A social system where protection, honour, and alliances are based on family and tribe rather than a central government." },
@@ -15,7 +15,7 @@ const GLOSSARY_ENTRIES = [
   { term: "tawhid", def: "Belief in and worship of Allah alone, rejecting all forms of false worship. This is the central belief of every prophet." },
   { term: "Kaʿbah", def: "The sacred House in Mecca, originally built by Ibrāhīm. A central gathering place for worship and pilgrimage." },
   { term: "Yathrib", def: "An oasis settlement later known as Medina, shaped by agriculture, land ownership, and local alliances." },
-  { term: "Sunnah", def: "The teachings, actions, and example of the Prophet Muhammad (peace be upon him), explaining how to live the Qur'an." },
+  { term: "Sunnah", def: "The teachings, actions, and example of the Prophet Muhammad ﷺ, explaining how to live the Qur'an." },
   { term: "Hijrah", def: "The migration from Mecca to Yathrib (Medina), marking a major shift in Islamic history." },
   { term: "Tawrah", def: "The scripture revealed to Prophet Mūsā (Moses)." },
   { term: "Hijaz", def: "The western region of Arabia that includes Mecca and Yathrib, where Islam first emerged." },
@@ -25,7 +25,7 @@ const GLOSSARY_ENTRIES = [
   { term: "ḥanīf", def: "A person who rejected idol worship and sought pure belief in one God, associated with the way of Ibrāhīm." },
   { term: "hanifs", def: "People who rejected idol worship and sought pure belief in one God, associated with the way of Ibrāhīm." },
   { term: "hanif", def: "A person who rejected idol worship and sought pure belief in one God, associated with the way of Ibrāhīm." },
-  { term: "Qur'an", def: "The final revelation from Allah, sent to Prophet Muhammad (peace be upon him). The primary source of guidance for Muslims." },
+  { term: "Qur'an", def: "The final revelation from Allah, sent to Prophet Muhammad ﷺ. The primary source of guidance for Muslims." },
   { term: "nabī", def: "A prophet -- someone chosen by Allah who receives revelation and teaches, but may not be sent with a new public mission." },
   { term: "nabi", def: "A prophet -- someone chosen by Allah who receives revelation and teaches, but may not be sent with a new public mission." },
   { term: "rasūl", def: "A messenger -- a prophet sent with a clear public mission to deliver Allah's message, often with a new scripture." },

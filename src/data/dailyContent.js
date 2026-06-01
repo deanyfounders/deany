@@ -390,7 +390,7 @@ export const DAILY_CONTENT = [
     arabic: null,
     narrator: 'Aisha رضي الله عنها',
     translation: 'He returned home while his heart was trembling and said: "Wrap me! Wrap me!"',
-    context: "Narrated by Aisha رضي الله عنها - the first account of the first revelation. After the angel Jibril appeared to the Prophet Muhammad (peace be upon him) in the cave of Hira and commanded him to read, the Prophet returned to Khadijah in a state of awe and fear. This hadith captures the profoundly human moment at the beginning of prophethood: even the greatest of creation was shaken by the encounter with divine revelation.",
+    context: "Narrated by Aisha رضي الله عنها - the first account of the first revelation. After the angel Jibril appeared to the Prophet Muhammad ﷺ in the cave of Hira and commanded him to read, the Prophet returned to Khadijah in a state of awe and fear. This hadith captures the profoundly human moment at the beginning of prophethood: even the greatest of creation was shaken by the encounter with divine revelation.",
   },
 
   // REVIEW:HADITH - Verify exact wording, grading by al-Albani, and hadith number
@@ -398,7 +398,7 @@ export const DAILY_CONTENT = [
     id: 'dawud-3462', type: 'hadith', ref: 'Abu Dawud 3462, graded sahih by al-Albani',
     arabic: null,
     narrator: null,
-    translation: "The Prophet (peace be upon him) prohibited bay' al-inah - a transaction where a person sells an item to another on credit then buys it back for less in cash.",
+    translation: "The Prophet ﷺ prohibited bay' al-inah - a transaction where a person sells an item to another on credit then buys it back for less in cash.",
     context: "The earliest prohibition of a legal trick (hilah) in Islamic finance. Bay' al-inah looks like two separate sales, but in substance it is a loan with interest disguised through a sale contract. This hadith establishes a core principle that runs through all of Islamic finance: substance matters more than the label. A transaction that achieves the same result as riba does not become permissible merely because it is structured differently.",
   },
 ];

@@ -1338,12 +1338,12 @@ function PageSectionC({ onNext }) {
       <AccentBox color={T.green} bg={T.greenLight}>
         <SectionLabel icon="💡" text="Did You Know?" color={T.green} />
         <p style={{ fontFamily: FONT.body, fontSize: 14.5, fontStyle: "italic", margin: "0 0 6px", lineHeight: 1.8 }}>
-          "The Prophet (peace be upon him) said: 'If there was a river by your door and you bathed five times daily, would any dirt remain?' They said: 'No.' He said: 'That is the likeness of the five daily prayers.'"
+          "The Prophet ﷺ said: 'If there was a river by your door and you bathed five times daily, would any dirt remain?' They said: 'No.' He said: 'That is the likeness of the five daily prayers.'"
         </p>
         <p style={{ margin: 0, fontFamily: FONT.ui, fontSize: 11, color: T.grayMed }}>(Bukhari 528, Muslim 667)</p>
       </AccentBox>
 
-      <Prose>That river image is how the Prophet (peace be upon him) described salah. It does not just structure your day. It <em>purifies</em> it.</Prose>
+      <Prose>That river image is how the Prophet ﷺ described salah. It does not just structure your day. It <em>purifies</em> it.</Prose>
 
       <div style={{ textAlign: "center", marginTop: 20 }}>
         <PrimaryButton onClick={onNext}>Quick: Test My Memory</PrimaryButton>
@@ -1535,7 +1535,7 @@ function PageQ4MC({ onDone, rm }) {
         <Tag color="#fff" bg={T.purple}>THINK</Tag>
       </div>
 
-      <Prose>"The Prophet (peace be upon him) compared salah to bathing in a river five times a day. What was his point?"</Prose>
+      <Prose>"The Prophet ﷺ compared salah to bathing in a river five times a day. What was his point?"</Prose>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
         {options.map((opt, i) => {

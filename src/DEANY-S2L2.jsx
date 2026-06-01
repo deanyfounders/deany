@@ -373,7 +373,7 @@ function PWuduDiscovery({ nx, rm }) {
 function PWuduTeach({ nx, rm }) {
   return <div>
     <PT sub="Section B" title="The Wudu Sequence" />
-    <Pr>Not all parts of wudu carry the same weight. Some are <strong style={{ color: T.navy }}>obligatory (fard)</strong>: skip them and your wudu is invalid. Others are <strong style={{ color: T.gold }}>recommended (sunnah)</strong>: doing them earns reward and follows the Prophet's (peace be upon him) example, but your wudu is still valid without them.</Pr>
+    <Pr>Not all parts of wudu carry the same weight. Some are <strong style={{ color: T.navy }}>obligatory (fard)</strong>: skip them and your wudu is invalid. Others are <strong style={{ color: T.gold }}>recommended (sunnah)</strong>: doing them earns reward and follows the Prophet's ﷺ example, but your wudu is still valid without them.</Pr>
 
     {/* FARD section */}
     <div style={{ marginBottom: 24 }}>
