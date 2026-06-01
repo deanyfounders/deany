@@ -394,7 +394,7 @@ const QUESTIONS=[
       {id:'gamble', label:'Feels Like Gambling', icon:'🎲',color:C.coral, bg:C.coralLight, desc:'This is basically a bet'},
     ],
     items:[
-      {text:'You lend AED 1,000 and they MUST repay AED 1,200 regardless of what happens.',correct:'fair',trap:true,trapMsg:"Most people think a guaranteed loan repayment is fair. It SEEMS fair. But this is the most severely prohibited transaction in Islam. It's called ribā - and you're about to learn why."},
+      {text:'You lend AED 1,000 and they MUST repay AED 1,200 regardless of what happens.',correct:'unclear'},
       {text:'You buy a car, inspect it, and sell it for a profit.',correct:'fair'},
       {text:'You pay AED 500 for a mystery box - could be worth AED 50 or AED 5,000.',correct:'unclear'},
       {text:'You invest AED 10,000 but nobody tells you where the money goes.',correct:'unclear'},
@@ -608,6 +608,19 @@ export default function DEANY_M1L3({ onBack, onHome, onGoToNext, savedProgress }
     else{setScreen('complete');setConfetti(true);setTimeout(()=>setConfetti(false),4500);try{localStorage.removeItem('deany-progress-lesson-1-3');}catch(e){}}
   },[flowIdx]);
 
+  const goBackFlow=()=>{
+    if(flowIdx<=0) return;
+    window.scrollTo({top:0,behavior:'smooth'});
+    // If going back over a scored question, undo the last result
+    const prev=FLOW[flowIdx-1];
+    if(prev?.type==='question' && prev.data.scored!==false && results.length>0){
+      const last=results[results.length-1];
+      setResults(r=>r.slice(0,-1));
+      if(last.correct) setScore(s=>Math.max(0,s-10));
+    }
+    setFlowIdx(flowIdx-1);
+  };
+
   const LessonNav = () => (
     <div className="flex justify-between items-center mb-6">
       <button onClick={onBack} className="flex items-center gap-1.5 text-gray-600 hover:text-emerald-700 transition-colors text-sm font-medium">
@@ -786,6 +799,14 @@ export default function DEANY_M1L3({ onBack, onHome, onGoToNext, savedProgress }
         <LessonNav />
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
+            {flowIdx>0 && (
+              <button onClick={goBackFlow} className="w-8 h-8 rounded-xl flex items-center justify-center border" style={{background:'white',borderColor:C.light,color:C.mid,cursor:'pointer',transition:'color .15s,border-color .15s'}}
+                onMouseEnter={e=>{e.currentTarget.style.color=C.navy;e.currentTarget.style.borderColor=C.navy;}}
+                onMouseLeave={e=>{e.currentTarget.style.color=C.mid;e.currentTarget.style.borderColor=C.light;}}
+                title="Previous">
+                <ChevronLeft className="w-4 h-4"/>
+              </button>
+            )}
             <div className="w-8 h-8 rounded-xl flex items-center justify-center text-base" style={{background:rgba(C.coral,0.12),color:C.coral}}>⚖️</div>
             <div>
               <div className="text-xs font-bold" style={{color:C.navy}}>Lesson 1.3</div>

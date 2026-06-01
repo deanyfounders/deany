@@ -361,6 +361,7 @@ const App = () => {
   const [selectedEpoch, setSelectedEpoch] = useState(null);
   const [selectedLevel, setSelectedLevel] = useState(null);
   const [selectedLesson, setSelectedLesson] = useState(null);
+  const [launchedFromDashboard, setLaunchedFromDashboard] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [showExplanation, setShowExplanation] = useState(false);
@@ -694,7 +695,7 @@ const App = () => {
   const markModComplete = (id) => { if (!completedModules.includes(id)) setCompletedModules([...completedModules, id]); };
   const markLesComplete = (mid, i) => setCompletedLessons({ ...completedLessons, [`${mid}-lesson-${i}`]: true });
 
-  const selectMainTopic = (id) => { setSelectedMainTopic(mainTopics.find(t => t.id == id)); setLastSelectedTopicId(id); setScreen('modules'); };
+  const selectMainTopic = (id) => { setSelectedMainTopic(mainTopics.find(t => t.id == id)); setLastSelectedTopicId(id); setLaunchedFromDashboard(false); setScreen('modules'); };
 
   const selectModule = (mod, idx) => {
     if (mod.isSpeedRound) {
@@ -758,9 +759,9 @@ const App = () => {
     setConceptIndex(0); setQuizScore(0); setStreak(0); setQuizResults([]);
     if (questions) buildShuffleMaps(questions);
   };
-  const goHome = () => { setScreen('home'); setSelectedMainTopic(null); setSelectedModule(null); setSelectedLesson(null); };
-  const goModules = () => { if (!selectedMainTopic) { goHome(); return; } setScreen('modules'); setSelectedModule(null); setSelectedLesson(null); };
-  const goLessons = () => { if (!selectedMainTopic) { goHome(); return; } setScreen(selectedEpoch && selectedLevel ? 'history-lessons' : selectedModule ? 'lessons' : 'modules'); setSelectedLesson(null); };
+  const goHome = () => { setScreen('home'); setSelectedMainTopic(null); setSelectedModule(null); setSelectedLesson(null); setLaunchedFromDashboard(false); };
+  const goModules = () => { if (launchedFromDashboard || !selectedMainTopic) { goHome(); return; } setScreen('modules'); setSelectedModule(null); setSelectedLesson(null); };
+  const goLessons = () => { if (launchedFromDashboard || !selectedMainTopic) { goHome(); return; } setScreen(selectedEpoch && selectedLevel ? 'history-lessons' : selectedModule ? 'lessons' : 'modules'); setSelectedLesson(null); };
 
   // Exit confirmation for quizzes/speed rounds with progress
   const tryExit = (action) => {
@@ -1038,6 +1039,7 @@ const App = () => {
             if (topic) { setSelectedMainTopic(topic); setLastSelectedTopicId(topic.id); }
           }
           setSelectedModule(mod);
+          setLaunchedFromDashboard(true);
           selectLes(lesson, idx);
         }}
         onCalibration={() => setScreen('compass')}
