@@ -224,7 +224,7 @@ function RibaDiagram(){
               {icon:'💰',label:'No trade',desc:'No goods or service exchanged',bad:true},
               {icon:'⏱️',label:'Time = money',desc:'Profit just from time passing',bad:true},
               {icon:'⚖️',label:'One-sided',desc:'Lender profits regardless',bad:true},
-              {icon:'🚫',label:'No trade',desc:'Allowed: profit from real work',bad:false},
+              {icon:'✅',label:'Real trade',desc:'Halal: profit from real exchange',bad:false},
             ].map((item,i)=>(
               <div key={i} className="flex items-start gap-1.5">
                 <span className="text-sm flex-shrink-0">{item.icon}</span>
@@ -262,9 +262,9 @@ function RibaDiagram(){
 // ─── THREE-WAY TABLE ──────────────────────────────────────────
 function ThreeWayTable(){
   const cols=[
-    {title:'Ribā',arabic:'ربا',icon:'🔁',color:C.coral,bg:C.coralLight,meaning:'Exploitative increase',problem:'Zero risk for lender',test:'Guaranteed return on money lent?',example:'Savings account interest',hurt:'Borrower (all risk)',quran:'2:275'},
+    {title:'Ribā',arabic:'ربا',icon:'🔁',color:C.coral,bg:C.coralLight,meaning:'Increase / excess',problem:'Risk-free return on money lent',test:'Guaranteed return on money lent?',example:'Savings account interest',hurt:'Borrower (all risk)',quran:'2:275'},
     {title:'Gharar',arabic:'غرر',icon:'🌫️',color:C.orange,bg:C.orangeLight,meaning:'Excessive uncertainty',problem:'Deal structure hidden',test:'Can both sides see clearly?',example:'Mystery box purchase',hurt:'Uninformed party',quran:'4:29'},
-    {title:'Maysir',arabic:'ميسر',icon:'🎲',color:C.gold,bg:C.goldLight,meaning:'Gambling',problem:'No real exchange',test:'Is outcome pure chance?',example:'Lottery ticket',hurt:'Loser (and society)',quran:'5:90'},
+    {title:'Maysir',arabic:'ميسر',icon:'🎲',color:C.gold,bg:C.goldLight,meaning:'Gambling / games of chance',problem:'No real exchange',test:'Is outcome pure chance?',example:'Lottery ticket',hurt:'Loser (and society)',quran:'5:90'},
   ];
   const rows=[{l:'Meaning',k:'meaning'},{l:'Core Problem',k:'problem'},{l:'Simple Test',k:'test'},{l:'Real Example',k:'example'},{l:'Who Gets Hurt',k:'hurt'},{l:'Quran',k:'quran'}];
   return(
@@ -327,6 +327,7 @@ function FakeAdCard(){
 // ═══════════════════════════════════════════════════════════════
 // DATA
 // ═══════════════════════════════════════════════════════════════
+// REVIEW:FIQH — All three prohibitions simplified for beginner level. Scholarly review recommended.
 const SECTIONS=[
   {
     id:'A',title:'Ribā - The Guaranteed Increase',icon:'🔁',iconColor:C.coral,
@@ -337,20 +338,23 @@ const SECTIONS=[
       "This is why a conventional savings account that pays 'interest' involves ribā. The bank takes your money, invests it, keeps most of the profit, and gives you a guaranteed fixed return. That's not trade - it's ribā.",
     ],
     ribaDiagram:true,
+    // REVIEW:QURAN — Verify Arabic diacritics match official Uthmani mushaf
     quran:{
-      arabic:'ٱلَّذِينَ يَأْكُلُونَ ٱلرِّبَوٰا۟ لَا يَقُومُونَ إِلَّا كَمَا يَقُومُ ٱلَّذِى يَتَخَبَّطُهُ ٱلشَّيْطَٰنُ مِنَ ٱلْمَسِّ ۚ ... وَأَحَلَّ ٱللَّهُ ٱلْبَيْعَ وَحَرَّمَ ٱلرِّبَوٰا۟',
-      text:'"Those who consume ribā cannot stand [on the Day of Judgement] except as one beaten by Satan into madness. That is because they say, \'Trade is just like ribā.\' But Allah has permitted trade and has forbidden ribā."',
-      ref:'Quran 2:275',
+      arabic:'ٱلَّذِينَ يَأْكُلُونَ ٱلرِّبَوٰا۟ لَا يَقُومُونَ إِلَّا كَمَا يَقُومُ ٱلَّذِى يَتَخَبَّطُهُ ٱلشَّيْطَٰنُ مِنَ ٱلْمَسِّ ۚ ذَٰلِكَ بِأَنَّهُمْ قَالُوٓا۟ إِنَّمَا ٱلْبَيْعُ مِثْلُ ٱلرِّبَوٰا۟ ۗ وَأَحَلَّ ٱللَّهُ ٱلْبَيْعَ وَحَرَّمَ ٱلرِّبَوٰا۟',
+      text:'"Those who consume interest cannot stand [on the Day of Resurrection] except as one stands who is being beaten by Satan into insanity. That is because they say, \'Trade is [just] like interest.\' But Allah has permitted trade and has forbidden interest."',
+      ref:'Al-Baqarah 2:275, Sahih International',
       note:"The key contrast: trade = permitted (real exchange, real risk, real value created). Ribā = forbidden (no exchange, no risk for the lender, money made from money alone).",
     },
-    misconception:"'All interest is the same.' Not quite. Ribā is about a **guaranteed increase on money lent** without trade or risk. A merchant who buys for AED 100 and sells for AED 120 is NOT ribā - that's profit from real trade with real risk.",
+    // REVIEW:FIQH — Simplified to ribā al-nasī'ah only. Ribā al-fadl not covered in this beginner lesson.
+    misconception:"'Profit and interest are the same thing.' They're not. A merchant who buys for AED 100 and sells for AED 120 earns **profit from real trade with real risk** - that's halal. Ribā is a **guaranteed increase on money lent** without trade or risk. The structure is what matters, not the amount.",
   },
   {
+    // REVIEW:FIQH — Gharar definition simplified. Scholars distinguish minor vs major gharar; only major gharar invalidates contracts.
     id:'B',title:'Gharar - The Fog in the Deal',icon:'🌫️',iconColor:C.orange,
     content:[
-      "The second prohibition is **gharar (غرر)**. It literally means 'uncertainty' or 'hazard' - but a better translation is **'fog in the deal.'**",
-      "Gharar happens when one side doesn't know what they're getting, terms are unclear, or the outcome depends on something hidden. It's not the normal uncertainty of life ('will my business succeed?'). It's **uncertainty built into the deal itself.**",
-      "The key: gharar is about **hidden information in the deal structure.** Not about whether business is risky - all business is risky. Gharar is when the deal itself is a fog machine.",
+      "The second prohibition is **gharar (غرر)**. It literally means 'uncertainty' or 'hazard' - but a better translation is **'excessive uncertainty in the deal.'**",
+      "Gharar happens when one side doesn't know what they're getting, terms are unclear, or the outcome depends on something hidden. It's not the normal uncertainty of life ('will my business succeed?'). It's **excessive uncertainty built into the deal itself.**",
+      "The key: gharar is about **hidden information in the deal structure.** Not about whether business is risky - all business is risky. Gharar is when the deal itself is a fog machine. Minor uncertainties in everyday transactions are tolerated - it's **major gharar** that invalidates a contract.",
     ],
     ghararTable:[
       {left:'Paying for a "mystery box" - you don\'t know what\'s inside.',right:'Buying a phone - you know exactly what you\'re getting.'},
@@ -361,8 +365,8 @@ const SECTIONS=[
   {
     id:'C',title:'Maysir - The Gamble',icon:'🎲',iconColor:C.gold,
     content:[
-      "The third prohibition is **maysir (ميسر)** - gambling. The most intuitive of the three. Any transaction where the outcome is based purely on chance, not skill, knowledge, or trade.",
-      "Why prohibited? Because it creates wealth from nothing. No product made, no service provided, no trade occurs. One wins, the other loses - purely random. **A zero-sum game dressed as opportunity.**",
+      "The third prohibition is **maysir (ميسر)** - gambling. The most intuitive of the three. Any transaction where one party's gain comes entirely from another's loss, based on chance rather than productive exchange.",
+      "Why prohibited? Because it creates wealth from nothing. No product made, no service provided, no trade occurs. One wins, the other loses. **A zero-sum game dressed as opportunity.** It also breeds hostility and distraction from the remembrance of Allah.",
       "The simple test: is the outcome based on pure chance with no real exchange of value? If yes - maysir.",
     ],
     maysirTable:[
@@ -373,9 +377,10 @@ const SECTIONS=[
     threeWayCallout:true,
   },
   {
+    // REVIEW:FIQH — Conventional insurance analysis follows majority scholarly opinion. Some scholars differ on specifics.
     id:'D',title:'All Three Together',icon:'⚖️',iconColor:C.teal,
     content:[
-      "A single product can contain **more than one poison.** Conventional insurance involves ribā (premiums invested in interest), gharar (you don't know if you'll get anything back), and maysir (outcome feels like a gamble). You'll learn the alternative - takāful - in Module 4.",
+      "A single product can contain **more than one prohibition.** Conventional insurance, according to the majority of scholars, involves ribā (premiums invested in interest-bearing instruments), gharar (uncertainty over whether you'll receive anything back), and maysir (the payout structure resembles a gamble). You'll learn the alternative - takāful - in Module 4.",
       "If a deal contains ANY of these three, it fails the custodian test. Some deals contain all three.",
     ],
     threeWayTable:true,
@@ -418,7 +423,7 @@ const QUESTIONS=[
       {id:'d',text:'Because interest rates are too high.',correct:false},
     ],
     feedback:{
-      a:"That contradicts Lesson 1! The Prophet ﷺ was a merchant who made profit. Islam encourages fair profit from trade. Ribā is about RISK-FREE profit, not profit itself.",
+      a:"That contradicts Lesson 1! The Prophet ﷺ was a trader who earned profit through commerce. Islam encourages fair profit from trade. Ribā is about RISK-FREE profit on money lent, not profit itself.",
       b:"Exactly. The issue isn't profit - Islam encourages fair profit from real trade. The issue is RISK-FREE profit from money lent. One side bears everything, the other bears nothing. That's the injustice.",
       c:"Lending is encouraged in Islam - it's called qard hasan (a good loan). What's forbidden is charging EXTRA. You can lend AED 1,000 and ask for AED 1,000 back. Not AED 1,200.",
       d:"Even 0.1% interest is ribā. It's not the rate - it's the structure. A guaranteed return on money lent with no trade or risk. The rate is irrelevant.",
