@@ -407,6 +407,6 @@ export const DAILY_CONTENT = [
 const AYAHS_ONLY = DAILY_CONTENT.filter(item => item.type === 'ayah');
 
 export function getTodayContent() {
-  // Pinned: Ayat al-Kursi — the greatest ayah in the Quran (Muslim 810)
-  return AYAHS_ONLY.find(a => a.id === 'baqarah-2-255') || AYAHS_ONLY[0];
+  // Pinned: Ar-Ra'd 13:28
+  return AYAHS_ONLY.find(a => a.id === 'raad-13-28') || AYAHS_ONLY[0];
 }
