@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 // ── Topics (the 5 subjects available on Deany) ──────────────────────────
 const TOPICS = [
@@ -10,12 +10,13 @@ const TOPICS = [
 ];
 
 const LEVELS = [
-  { id: "beginner", tier: 1, label: "Beginner", desc: "I\u2019m just getting started" },
-  { id: "intermediate", tier: 2, label: "Intermediate", desc: "I know the basics well" },
-  { id: "advanced", tier: 3, label: "Advanced", desc: "I\u2019ve studied this seriously" },
+  { id: "beginner", tier: 1, label: "Beginner", desc: "I\u2019m just getting started", icon: "\u{1F331}" },
+  { id: "intermediate", tier: 2, label: "Intermediate", desc: "I know the basics well", icon: "\u{1F333}" },
+  { id: "advanced", tier: 3, label: "Advanced", desc: "I\u2019ve studied this seriously", icon: "\u{1F3D4}" },
 ];
 
 const TIER_LABEL = { 0: "New", 1: "Beginner", 2: "Intermediate", 3: "Advanced" };
+const TIER_EMOJI = { 0: "\u{1F331}", 1: "\u{1F331}", 2: "\u{1F333}", 3: "\u{1F3D4}" };
 
 // ── Question bank — sourced verbatim from DEANY Calibration Question Bank v1 ──
 // REVIEW:FIQH — Maliki madhab standard. Hadith: Bukhari + Muslim only.
@@ -159,52 +160,34 @@ function pickQuestions(cat, tier, count, excludeIds) {
 
 function getNextQuestion(selectedTopics, selfRatings, answers) {
   const askedIds = new Set(answers.map(a => a.id));
-
-  // Build per-topic state
   const topicState = {};
   for (const t of selectedTopics) {
     const startTier = selfRatings[t] || 1;
     const myAnswers = answers.filter(a => a.cat === t);
     const initialAnswers = myAnswers.filter(a => a.tier === startTier);
     const initialCorrect = initialAnswers.filter(a => a.correct).length;
-
     let phase = "initial";
     let probeTier = null;
-
     if (initialAnswers.length >= 3) {
-      if (initialCorrect >= 2 && startTier < 3) {
-        phase = "probe";
-        probeTier = startTier + 1;
-      } else if (initialCorrect <= 1 && startTier > 1) {
-        phase = "probe";
-        probeTier = startTier - 1;
-      } else {
-        phase = "done";
-      }
-
+      if (initialCorrect >= 2 && startTier < 3) { phase = "probe"; probeTier = startTier + 1; }
+      else if (initialCorrect <= 1 && startTier > 1) { phase = "probe"; probeTier = startTier - 1; }
+      else { phase = "done"; }
       if (phase === "probe") {
         const probeAnswers = myAnswers.filter(a => a.tier === probeTier);
         if (probeAnswers.length >= 2) phase = "done";
       }
     }
-
     topicState[t] = { startTier, phase, probeTier, total: myAnswers.length };
   }
-
-  // Round-robin: pick topic with fewest questions asked that isn't done
   const active = selectedTopics
     .filter(t => topicState[t].phase !== "done")
     .sort((a, b) => topicState[a].total - topicState[b].total);
-
   if (!active.length) return null;
-
   const topic = active[0];
   const st = topicState[topic];
   const tier = st.phase === "probe" ? st.probeTier : st.startTier;
   const candidates = pickQuestions(topic, tier, 1, askedIds);
-
   if (!candidates.length) return null;
-
   const raw = candidates[0];
   return { id: raw[0], cat: topic, tier, prompt: raw[1], opts: raw[2], correct: raw[3], why: raw[4] };
 }
@@ -216,20 +199,14 @@ function computePlacements(selectedTopics, selfRatings, answers) {
     const myAnswers = answers.filter(a => a.cat === t);
     const initialAnswers = myAnswers.filter(a => a.tier === startTier);
     const initialCorrect = initialAnswers.filter(a => a.correct).length;
-
     let probeTier = null;
     if (initialCorrect >= 2 && startTier < 3) probeTier = startTier + 1;
     else if (initialCorrect <= 1 && startTier > 1) probeTier = startTier - 1;
-
     if (probeTier !== null) {
       const probeAnswers = myAnswers.filter(a => a.tier === probeTier);
       const probeCorrect = probeAnswers.filter(a => a.correct).length;
-
-      if (probeTier > startTier) {
-        placements[t] = probeCorrect >= 1 ? probeTier : startTier;
-      } else {
-        placements[t] = probeCorrect >= 1 ? probeTier : Math.max(0, probeTier - 1);
-      }
+      if (probeTier > startTier) placements[t] = probeCorrect >= 1 ? probeTier : startTier;
+      else placements[t] = probeCorrect >= 1 ? probeTier : Math.max(0, probeTier - 1);
     } else {
       placements[t] = initialCorrect >= 2 ? startTier : Math.max(0, startTier - 1);
     }
@@ -237,152 +214,202 @@ function computePlacements(selectedTopics, selfRatings, answers) {
   return placements;
 }
 
-function getTotalQuestions(selectedTopics, selfRatings) {
-  // 3 initial + potentially 2 probe per topic
-  return selectedTopics.length * 4; // rough estimate for progress bar
+function getTotalQuestions(selectedTopics) {
+  return selectedTopics.length * 4;
 }
 
-// ── UI Helpers ───────────────────────────────────────────────────────────
+// ── Styles ───────────────────────────────────────────────────────────────
+const STYLES = `
+  @keyframes compassFadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes compassScale { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: scale(1); } }
+  @keyframes compassPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.04); } }
+  @keyframes compassSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  @keyframes compassShake { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-6px); } 60% { transform: translateX(6px); } }
+  @keyframes compassSlideIn { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: translateX(0); } }
+  @keyframes compassGlow { 0%, 100% { box-shadow: 0 0 0 0 rgba(201,168,76,0); } 50% { box-shadow: 0 0 24px 4px rgba(201,168,76,0.18); } }
+  @keyframes compassCountUp { from { opacity: 0; transform: scale(0.5) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+  @keyframes compassRingFill { from { stroke-dashoffset: 283; } }
+  @keyframes compassStreakPop { 0% { transform: scale(0); opacity: 0; } 60% { transform: scale(1.3); } 100% { transform: scale(1); opacity: 1; } }
+  @keyframes compassConfetti { 0% { transform: translateY(-10px) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+  .cmp-fade-up { animation: compassFadeUp 0.4s ease-out both; }
+  .cmp-scale { animation: compassScale 0.35s ease-out both; }
+  .cmp-pulse { animation: compassPulse 2.5s ease-in-out infinite; }
+  .cmp-shake { animation: compassShake 0.3s ease both; }
+  .cmp-slide-in { animation: compassSlideIn 0.3s ease-out both; }
+  .cmp-glow { animation: compassGlow 2s ease-in-out infinite; }
+  .cmp-count-up { animation: compassCountUp 0.5s cubic-bezier(.17,.67,.35,1.3) both; }
+  .cmp-ring-fill { animation: compassRingFill 1.2s ease-out both; }
+  .cmp-streak { animation: compassStreakPop 0.4s cubic-bezier(.17,.67,.35,1.3) both; }
+`;
 
-function cx(...classes) { return classes.filter(Boolean).join(" "); }
+// ── Colours ──────────────────────────────────────────────────────────────
+const C = {
+  gold: '#C9A84C', goldLight: '#F5EDD4', navy: '#1A2332', steel: '#4A5568',
+  muted: '#94a0b0', sage: '#7C9A82', sageLight: '#EEF3EF', cream: '#FAF8F5',
+  ivory: '#F5F1EC', border: '#E8E4DF', error: '#C53030', errorLight: '#FEF2F2',
+  white: '#FFFFFF',
+};
 
-function Button({ children, onClick, variant = "primary", disabled = false, className = "" }) {
-  const base = "rounded-xl px-6 py-3.5 text-base font-medium shadow-sm transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-deany-gold focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-40";
-  const variants = {
-    primary: "bg-deany-gold text-white hover:brightness-105 active:brightness-95",
-    secondary: "border border-deany-border bg-white text-deany-navy hover:bg-deany-cream",
-    ghost: "text-deany-steel hover:text-deany-navy",
-  };
+const LETTERS = ['A', 'B', 'C', 'D'];
+
+// ── Welcome ──────────────────────────────────────────────────────────────
+function WelcomeStep({ onNext }) {
   return (
-    <button type="button" disabled={disabled} onClick={onClick}
-      className={cx(base, variants[variant], className)}>
-      {children}
-    </button>
-  );
-}
+    <div className="cmp-fade-up" style={{ textAlign: 'center', maxWidth: 480, margin: '0 auto' }}>
+      {/* Compass visual */}
+      <div style={{ margin: '0 auto 28px', width: 96, height: 96, borderRadius: '50%', background: `linear-gradient(135deg, ${C.goldLight}, ${C.cream})`, border: `2px solid ${C.gold}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 44 }} className="cmp-pulse">
+        <span role="img" aria-label="compass">&#x1F9ED;</span>
+      </div>
 
-function Card({ children, className = "" }) {
-  return <div className={cx("bg-deany-cream rounded-2xl p-6 border border-deany-border shadow-sm", className)}>{children}</div>;
-}
+      <p style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.18em', color: C.sage, marginBottom: 10 }}>Deany Compass</p>
+      <h1 style={{ fontSize: 28, fontWeight: 700, color: C.navy, lineHeight: 1.25, marginBottom: 14 }}>Find your starting point</h1>
+      <p style={{ fontSize: 15, color: C.steel, lineHeight: 1.7, marginBottom: 8, maxWidth: 400, margin: '0 auto 28px' }}>
+        Pick the subjects you care about, tell us where you think you are, then answer a short adaptive quiz.
+        Deany will map your knowledge and build a path made for you.
+      </p>
 
-function ProgressBar({ value, max }) {
-  const pct = max ? Math.min(100, Math.max(3, (value / max) * 100)) : 0;
-  return (
-    <div className="w-full h-1.5 bg-deany-border rounded-full">
-      <div className="h-full bg-deany-gold rounded-full transition-all duration-300 ease-out" style={{ width: `${pct}%` }} />
+      {/* Steps preview */}
+      <div style={{ display: 'flex', justifyContent: 'center', gap: 24, marginBottom: 36 }}>
+        {[{ n: '1', l: 'Choose subjects' }, { n: '2', l: 'Rate yourself' }, { n: '3', l: 'Quick quiz' }].map((s, i) => (
+          <div key={i} className="cmp-fade-up" style={{ animationDelay: `${0.15 + i * 0.1}s`, textAlign: 'center' }}>
+            <div style={{ width: 36, height: 36, borderRadius: '50%', background: C.goldLight, border: `1.5px solid ${C.gold}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 800, color: C.gold, margin: '0 auto 6px' }}>{s.n}</div>
+            <div style={{ fontSize: 11, color: C.muted, fontWeight: 600 }}>{s.l}</div>
+          </div>
+        ))}
+      </div>
+
+      <button onClick={onNext} className="cmp-glow" style={{
+        background: C.gold, color: C.white, border: 'none', borderRadius: 14, padding: '15px 48px',
+        fontSize: 16, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s',
+      }}>
+        Begin Calibration
+      </button>
+      <p style={{ fontSize: 12, color: C.muted, marginTop: 14 }}>Takes 3\u20135 minutes</p>
     </div>
   );
 }
 
-// ── Step: Welcome ─────────���──────────────────────────────────────────────
-
-function WelcomeStep({ onNext }) {
-  return (
-    <Card className="mx-auto max-w-2xl text-center p-8 space-y-5">
-      <p className="text-xs font-medium uppercase tracking-wide text-deany-muted">Calibration Quiz</p>
-      <h1 className="text-2xl md:text-3xl font-semibold text-deany-navy">Find your starting point</h1>
-      <p className="text-base leading-relaxed text-deany-steel max-w-lg mx-auto">
-        Choose the subjects you care about, tell us where you think you are, then answer a short diagnostic.
-        Deany will use your results to build a personalised learning path.
-      </p>
-      <div className="pt-2">
-        <Button onClick={onNext}>Begin</Button>
-      </div>
-    </Card>
-  );
-}
-
-// ── Step: Topic Selection ────────────────────────────────────────────────
-
+// ── Topic Selection ──────────────────────────────────────────────────────
 function TopicStep({ selected, setSelected, onNext }) {
   function toggle(id) {
     setSelected(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
   }
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
-      <div className="text-center space-y-2">
-        <p className="text-xs font-medium uppercase tracking-wide text-deany-muted">Step 1 of 3</p>
-        <h2 className="text-xl font-semibold text-deany-navy">What do you want to learn?</h2>
-        <p className="text-sm text-deany-steel">Select one or more subjects. Your quiz will focus on these.</p>
+    <div style={{ maxWidth: 540, margin: '0 auto' }}>
+      <div className="cmp-fade-up" style={{ textAlign: 'center', marginBottom: 28 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.16em', color: C.sage, marginBottom: 6 }}>Step 1 of 3</div>
+        <h2 style={{ fontSize: 22, fontWeight: 700, color: C.navy, marginBottom: 6 }}>What do you want to learn?</h2>
+        <p style={{ fontSize: 14, color: C.steel }}>Select one or more. Your quiz adapts to these.</p>
       </div>
-      <div className="grid gap-3 sm:grid-cols-2">
-        {TOPICS.map(t => {
+
+      <div style={{ display: 'grid', gap: 12 }}>
+        {TOPICS.map((t, i) => {
           const active = selected.includes(t.id);
           return (
-            <button key={t.id} type="button" onClick={() => toggle(t.id)}
-              className={cx(
-                "rounded-2xl border p-5 text-left transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-deany-gold",
-                active ? "border-deany-gold bg-deany-gold-light" : "border-deany-border bg-white"
-              )}>
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">{t.icon}</span>
-                <div>
-                  <span className="text-base font-medium text-deany-navy block">{t.title}</span>
-                  <span className="text-xs text-deany-muted">{t.desc}</span>
-                </div>
+            <button key={t.id} onClick={() => toggle(t.id)} className="cmp-fade-up" style={{
+              animationDelay: `${0.05 + i * 0.06}s`,
+              display: 'flex', alignItems: 'center', gap: 14, padding: '16px 18px',
+              borderRadius: 16, border: `2px solid ${active ? C.gold : C.border}`,
+              background: active ? C.goldLight : C.white, cursor: 'pointer',
+              transition: 'all 0.2s', textAlign: 'left', width: '100%',
+              transform: active ? 'scale(1.01)' : 'scale(1)',
+              boxShadow: active ? `0 4px 20px rgba(201,168,76,0.15)` : '0 2px 8px rgba(0,0,0,0.04)',
+            }}>
+              <span style={{ fontSize: 28, flexShrink: 0 }}>{t.icon}</span>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 15, fontWeight: 600, color: C.navy }}>{t.title}</div>
+                <div style={{ fontSize: 12, color: C.muted, marginTop: 2 }}>{t.desc}</div>
+              </div>
+              <div style={{
+                width: 26, height: 26, borderRadius: '50%', flexShrink: 0,
+                border: `2px solid ${active ? C.gold : C.border}`,
+                background: active ? C.gold : 'transparent',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                transition: 'all 0.2s',
+              }}>
+                {active && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>}
               </div>
             </button>
           );
         })}
       </div>
-      <div className="flex justify-end">
-        <Button disabled={!selected.length} onClick={onNext}>Continue</Button>
-      </div>
+
+      {selected.length > 0 && (
+        <div className="cmp-fade-up" style={{ marginTop: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: 13, color: C.steel, fontWeight: 500 }}>{selected.length} subject{selected.length > 1 ? 's' : ''} selected</span>
+          <button onClick={onNext} style={{
+            background: C.gold, color: C.white, border: 'none', borderRadius: 12, padding: '13px 36px',
+            fontSize: 15, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s',
+          }}>
+            Continue
+          </button>
+        </div>
+      )}
     </div>
   );
 }
 
-// ── Step: Self-Assessment ────��───────────────────────────────────────────
-
+// ── Self-Assessment ──────────────────────────────────────────────────────
 function AssessStep({ selectedTopics, ratings, setRatings, onNext }) {
-  function setRating(topicId, tier) {
-    setRatings(prev => ({ ...prev, [topicId]: tier }));
-  }
-
   const topicData = TOPICS.filter(t => selectedTopics.includes(t.id));
+  const allRated = topicData.every(t => ratings[t.id]);
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
-      <div className="text-center space-y-2">
-        <p className="text-xs font-medium uppercase tracking-wide text-deany-muted">Step 2 of 3</p>
-        <h2 className="text-xl font-semibold text-deany-navy">Where do you think you are?</h2>
-        <p className="text-sm text-deany-steel">Be honest \u2014 this helps us start you at the right level.</p>
+    <div style={{ maxWidth: 540, margin: '0 auto' }}>
+      <div className="cmp-fade-up" style={{ textAlign: 'center', marginBottom: 28 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.16em', color: C.sage, marginBottom: 6 }}>Step 2 of 3</div>
+        <h2 style={{ fontSize: 22, fontWeight: 700, color: C.navy, marginBottom: 6 }}>Where do you think you are?</h2>
+        <p style={{ fontSize: 14, color: C.steel }}>Be honest \u2014 this helps us start you at the right level.</p>
       </div>
-      <div className="space-y-4">
-        {topicData.map(t => (
-          <Card key={t.id} className="p-5">
-            <div className="flex items-center gap-2 mb-4">
-              <span className="text-lg">{t.icon}</span>
-              <h3 className="text-lg font-medium text-deany-navy">{t.title}</h3>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        {topicData.map((t, ti) => (
+          <div key={t.id} className="cmp-fade-up" style={{
+            animationDelay: `${0.05 + ti * 0.08}s`,
+            background: C.white, borderRadius: 18, padding: 20,
+            border: `1.5px solid ${C.border}`, boxShadow: '0 2px 12px rgba(0,0,0,0.04)',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+              <span style={{ fontSize: 22 }}>{t.icon}</span>
+              <span style={{ fontSize: 16, fontWeight: 600, color: C.navy }}>{t.title}</span>
             </div>
-            <div className="grid grid-cols-3 gap-2">
-              {LEVELS.map(lv => (
-                <button key={lv.id} type="button" onClick={() => setRating(t.id, lv.tier)}
-                  className={cx(
-                    "rounded-xl border px-3 py-3 text-center transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-deany-gold",
-                    ratings[t.id] === lv.tier
-                      ? "border-deany-gold bg-deany-gold-light text-deany-navy font-medium"
-                      : "border-deany-border bg-white text-deany-steel hover:bg-deany-cream"
-                  )}>
-                  <span className="block text-sm font-medium">{lv.label}</span>
-                  <span className="block text-xs text-deany-muted mt-0.5">{lv.desc}</span>
-                </button>
-              ))}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
+              {LEVELS.map(lv => {
+                const active = ratings[t.id] === lv.tier;
+                return (
+                  <button key={lv.id} onClick={() => setRatings(prev => ({ ...prev, [t.id]: lv.tier }))} style={{
+                    padding: '12px 8px', borderRadius: 12, border: `2px solid ${active ? C.gold : C.border}`,
+                    background: active ? C.goldLight : C.cream, cursor: 'pointer', textAlign: 'center',
+                    transition: 'all 0.2s', transform: active ? 'scale(1.03)' : 'scale(1)',
+                  }}>
+                    <div style={{ fontSize: 20, marginBottom: 3 }}>{lv.icon}</div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: active ? C.gold : C.navy }}>{lv.label}</div>
+                    <div style={{ fontSize: 10, color: C.muted, marginTop: 2 }}>{lv.desc}</div>
+                  </button>
+                );
+              })}
             </div>
-          </Card>
+          </div>
         ))}
       </div>
-      <div className="flex justify-end">
-        <Button onClick={onNext}>Start Quiz</Button>
-      </div>
+
+      {allRated && (
+        <div className="cmp-fade-up" style={{ marginTop: 24, textAlign: 'center' }}>
+          <button onClick={onNext} className="cmp-glow" style={{
+            background: C.gold, color: C.white, border: 'none', borderRadius: 14, padding: '15px 48px',
+            fontSize: 16, fontWeight: 600, cursor: 'pointer',
+          }}>
+            Start Quiz
+          </button>
+        </div>
+      )}
     </div>
   );
 }
 
-// ── Step: Quiz Question ────────────��─────────────────────────────────────
-
-function QuizStep({ question, questionNumber, totalEstimate, onAnswer }) {
+// ── Quiz Question ────────────────────────────────────────────────────────
+function QuizStep({ question, questionNumber, totalEstimate, streak, correctCount, onAnswer }) {
   const [selected, setSelected] = useState(null);
   const [submitted, setSubmitted] = useState(false);
 
@@ -392,6 +419,10 @@ function QuizStep({ question, questionNumber, totalEstimate, onAnswer }) {
   }, [question.id, question.opts]);
 
   const isCorrect = selected !== null && shuffled[selected]?.idx === question.correct;
+  const topicLabel = TOPICS.find(t => t.id === question.cat)?.title || question.cat;
+  const topicIcon = TOPICS.find(t => t.id === question.cat)?.icon || '';
+  const tierName = TIER_LABEL[question.tier] || '';
+  const pct = totalEstimate ? Math.min(100, Math.max(5, (questionNumber / totalEstimate) * 100)) : 30;
 
   function choose(i) {
     if (submitted) return;
@@ -402,178 +433,292 @@ function QuizStep({ question, questionNumber, totalEstimate, onAnswer }) {
   function next() {
     if (selected === null) return;
     onAnswer({
-      id: question.id,
-      cat: question.cat,
-      tier: question.tier,
+      id: question.id, cat: question.cat, tier: question.tier,
       correct: shuffled[selected].idx === question.correct,
     });
   }
 
-  const topicLabel = TOPICS.find(t => t.id === question.cat)?.title || question.cat;
-
   return (
-    <div className="mx-auto max-w-2xl space-y-5">
-      <div className="flex items-center justify-between">
-        <p className="text-xs font-medium uppercase tracking-wide text-deany-muted">
-          Question {questionNumber} {totalEstimate ? `of ~${totalEstimate}` : ""}
-        </p>
-        <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-deany-cream border border-deany-border text-deany-steel">{topicLabel}</span>
+    <div style={{ maxWidth: 540, margin: '0 auto' }}>
+      {/* Top bar: topic + streak + progress */}
+      <div className="cmp-fade-up" style={{ marginBottom: 20 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.14em', color: C.muted }}>
+              Q{questionNumber}
+            </span>
+            <span style={{
+              fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 20,
+              background: C.cream, border: `1px solid ${C.border}`, color: C.steel,
+            }}>
+              {topicIcon} {topicLabel}
+            </span>
+            <span style={{
+              fontSize: 10, fontWeight: 700, padding: '3px 8px', borderRadius: 20,
+              background: C.goldLight, color: C.gold,
+            }}>
+              {tierName}
+            </span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            {streak >= 2 && (
+              <span className="cmp-streak" style={{
+                fontSize: 12, fontWeight: 800, color: '#E8590C',
+                display: 'flex', alignItems: 'center', gap: 3,
+              }}>
+                &#x1F525; {streak}
+              </span>
+            )}
+            <span style={{ fontSize: 12, fontWeight: 700, color: C.sage }}>{correctCount} correct</span>
+          </div>
+        </div>
+        {/* Progress bar */}
+        <div style={{ height: 5, borderRadius: 3, background: C.border, overflow: 'hidden' }}>
+          <div style={{ height: '100%', borderRadius: 3, background: `linear-gradient(90deg, ${C.sage}, ${C.gold})`, width: `${pct}%`, transition: 'width 0.6s ease-out' }} />
+        </div>
       </div>
 
-      <Card className="p-6 bg-white">
-        <p className="text-lg font-semibold text-deany-navy leading-relaxed">{question.prompt}</p>
-      </Card>
+      {/* Question card */}
+      <div className="cmp-scale" style={{
+        background: C.white, borderRadius: 20, padding: '28px 24px',
+        border: `1.5px solid ${C.border}`, boxShadow: '0 8px 32px rgba(0,0,0,0.06)',
+        marginBottom: 16,
+      }}>
+        <p style={{ fontSize: 18, fontWeight: 600, color: C.navy, lineHeight: 1.55, margin: 0 }}>{question.prompt}</p>
+      </div>
 
-      <div className="grid gap-3">
+      {/* Options */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         {shuffled.map((opt, i) => {
-          let style = "border-deany-border bg-white text-deany-steel hover:bg-deany-cream";
-          if (submitted && i === selected) {
-            style = isCorrect
-              ? "border-deany-sage bg-deany-sage-light text-deany-navy"
-              : "border-deany-error bg-deany-error-light text-deany-navy";
-          } else if (submitted && shuffled[i].idx === question.correct) {
-            style = "border-deany-sage bg-deany-sage-light text-deany-navy";
+          const isThis = i === selected;
+          const isCorrectOpt = shuffled[i].idx === question.correct;
+          let bg = C.white, borderCol = C.border, textCol = C.navy, letterBg = C.cream, letterCol = C.steel;
+
+          if (submitted && isThis && isCorrect) {
+            bg = C.sageLight; borderCol = C.sage; letterBg = C.sage; letterCol = C.white;
+          } else if (submitted && isThis && !isCorrect) {
+            bg = C.errorLight; borderCol = C.error; letterBg = C.error; letterCol = C.white;
+          } else if (submitted && isCorrectOpt) {
+            bg = C.sageLight; borderCol = C.sage; letterBg = C.sage; letterCol = C.white;
           } else if (submitted) {
-            style = "border-deany-border bg-white text-deany-muted";
+            textCol = C.muted;
           }
 
           return (
-            <button key={i} type="button" disabled={submitted} onClick={() => choose(i)}
-              className={cx(
-                "rounded-xl border p-4 text-left text-sm leading-relaxed transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-deany-gold disabled:cursor-default",
-                style
-              )}>
-              {opt.text}
+            <button key={i} onClick={() => choose(i)} disabled={submitted}
+              className={submitted && isThis && !isCorrect ? 'cmp-shake' : 'cmp-slide-in'}
+              style={{
+                animationDelay: submitted ? '0s' : `${i * 0.05}s`,
+                display: 'flex', alignItems: 'center', gap: 12, padding: '14px 16px',
+                borderRadius: 14, border: `2px solid ${borderCol}`, background: bg,
+                cursor: submitted ? 'default' : 'pointer', textAlign: 'left', width: '100%',
+                transition: 'all 0.2s',
+              }}>
+              <div style={{
+                width: 30, height: 30, borderRadius: 8, flexShrink: 0,
+                background: letterBg, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 13, fontWeight: 800, color: letterCol, transition: 'all 0.2s',
+              }}>
+                {submitted && isCorrectOpt ? '\u2713' : submitted && isThis && !isCorrect ? '\u2717' : LETTERS[i]}
+              </div>
+              <span style={{ fontSize: 14, color: textCol, lineHeight: 1.5, fontWeight: 500 }}>{opt.text}</span>
             </button>
           );
         })}
       </div>
 
+      {/* Feedback */}
       {submitted && (
-        <div className={cx(
-          "rounded-xl p-4 border",
-          isCorrect ? "bg-deany-sage-light border-deany-sage/20" : "bg-deany-error-light border-deany-error/20"
-        )}>
-          <p className="text-deany-navy font-medium text-sm">{isCorrect ? "Correct." : "Not quite."}</p>
-          <p className="text-deany-steel text-sm mt-1">{question.why}</p>
-          <div className="mt-3 flex justify-end">
-            <Button onClick={next}>Continue</Button>
+        <div className="cmp-fade-up" style={{
+          marginTop: 16, borderRadius: 16, padding: '18px 20px',
+          background: isCorrect ? C.sageLight : C.errorLight,
+          border: `1.5px solid ${isCorrect ? C.sage + '33' : C.error + '33'}`,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+            <span style={{ fontSize: 18 }}>{isCorrect ? '\u2705' : '\u274C'}</span>
+            <span style={{ fontSize: 14, fontWeight: 700, color: isCorrect ? '#065F46' : '#991B1B' }}>
+              {isCorrect ? 'Correct' : 'Not quite'}
+            </span>
           </div>
+          <p style={{ fontSize: 13, color: isCorrect ? '#065F46' : '#991B1B', lineHeight: 1.6, margin: '0 0 14px 0' }}>
+            {question.why}
+          </p>
+          <button onClick={next} style={{
+            background: isCorrect ? C.sage : C.navy, color: C.white, border: 'none',
+            borderRadius: 12, padding: '12px 32px', fontSize: 14, fontWeight: 600,
+            cursor: 'pointer', transition: 'all 0.2s', width: '100%',
+          }}>
+            Next Question
+          </button>
         </div>
       )}
     </div>
   );
 }
 
-// ── Step: Results ───────────────���─────────────────────────���──────────────
-
-function ResultsStep({ selectedTopics, selfRatings, answers, onHome, onComplete, onRestart }) {
-  const placements = useMemo(
-    () => computePlacements(selectedTopics, selfRatings, answers),
-    [selectedTopics, selfRatings, answers]
+// ── Score Ring ────────────────────────────────────────────────────────────
+function ScoreRing({ pct }) {
+  const r = 45, circ = 2 * Math.PI * r;
+  const offset = circ - (pct / 100) * circ;
+  const col = pct >= 80 ? C.gold : pct >= 50 ? C.sage : C.steel;
+  return (
+    <div style={{ position: 'relative', width: 140, height: 140, margin: '0 auto' }}>
+      <svg width="140" height="140" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r={r} fill="none" stroke={C.border} strokeWidth="8" />
+        <circle cx="50" cy="50" r={r} fill="none" stroke={col} strokeWidth="8"
+          strokeLinecap="round" strokeDasharray={circ} strokeDashoffset={offset}
+          transform="rotate(-90 50 50)" className="cmp-ring-fill"
+        />
+      </svg>
+      <div className="cmp-count-up" style={{
+        position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'center',
+      }}>
+        <span style={{ fontSize: 36, fontWeight: 800, color: C.navy, lineHeight: 1 }}>{pct}%</span>
+        <span style={{ fontSize: 11, fontWeight: 600, color: C.muted, marginTop: 4 }}>accuracy</span>
+      </div>
+    </div>
   );
+}
 
+// ── Confetti ─────────────────────────────────────────────────────────────
+function Confetti() {
+  const items = useRef(Array.from({ length: 30 }, (_, i) => ({
+    id: i, left: `${Math.random() * 100}%`, size: 10 + Math.random() * 10,
+    dur: 2 + Math.random() * 2.5, delay: Math.random() * 0.8,
+    char: ['\u2726', '\u2727', '\u2606', '\u{1F31F}', '\u2728', '\u2B50'][i % 6],
+  })));
+  return (
+    <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 200 }}>
+      {items.current.map(p => (
+        <div key={p.id} style={{
+          position: 'absolute', left: p.left, top: -20, fontSize: p.size,
+          animation: `compassConfetti ${p.dur}s ease-out ${p.delay}s both`,
+        }}>{p.char}</div>
+      ))}
+    </div>
+  );
+}
+
+// ── Results ──────────────────────────────────────────────────────────────
+function ResultsStep({ selectedTopics, selfRatings, answers, onHome, onComplete, onRestart }) {
+  const [showConfetti, setShowConfetti] = useState(false);
+  const placements = useMemo(() => computePlacements(selectedTopics, selfRatings, answers), [selectedTopics, selfRatings, answers]);
   const totalCorrect = answers.filter(a => a.correct).length;
   const accuracy = answers.length ? Math.round((totalCorrect / answers.length) * 100) : 0;
-
   const topicData = TOPICS.filter(t => selectedTopics.includes(t.id));
 
-  const strengths = [];
-  const needsWork = [];
+  useEffect(() => {
+    if (accuracy >= 70) { setShowConfetti(true); const t = setTimeout(() => setShowConfetti(false), 4000); return () => clearTimeout(t); }
+  }, [accuracy]);
 
-  for (const t of topicData) {
-    const p = placements[t.id];
-    const label = TIER_LABEL[p] || "New";
-    if (p >= 2) strengths.push(`${t.title}: ${label}`);
-    else needsWork.push(`${t.title}: ${label}`);
-  }
+  const grade = accuracy >= 90 ? 'Outstanding' : accuracy >= 75 ? 'Strong' : accuracy >= 55 ? 'Solid foundation' : 'Room to grow';
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
-      <Card className="p-8 text-center bg-white">
-        <p className="text-xs font-medium uppercase tracking-wide text-deany-muted">Your Results</p>
-        <p className="text-4xl font-semibold text-deany-navy mt-3">{accuracy}%</p>
-        <p className="text-sm text-deany-steel mt-1">{totalCorrect} of {answers.length} correct</p>
-      </Card>
+    <div style={{ maxWidth: 540, margin: '0 auto' }}>
+      {showConfetti && <Confetti />}
 
-      <Card className="p-6">
-        <h3 className="text-lg font-semibold text-deany-navy mb-4">Your placement</h3>
-        <div className="space-y-3">
-          {topicData.map(t => {
+      {/* Score hero */}
+      <div className="cmp-fade-up" style={{
+        background: C.white, borderRadius: 24, padding: '36px 24px 28px',
+        border: `1.5px solid ${C.border}`, boxShadow: '0 8px 36px rgba(0,0,0,0.06)',
+        textAlign: 'center', marginBottom: 20,
+      }}>
+        <ScoreRing pct={accuracy} />
+        <div className="cmp-count-up" style={{ animationDelay: '0.4s' }}>
+          <p style={{ fontSize: 20, fontWeight: 700, color: C.navy, margin: '18px 0 4px' }}>{grade}</p>
+          <p style={{ fontSize: 13, color: C.steel }}>{totalCorrect} of {answers.length} correct across {selectedTopics.length} subject{selectedTopics.length > 1 ? 's' : ''}</p>
+        </div>
+      </div>
+
+      {/* Per-topic placements */}
+      <div className="cmp-fade-up" style={{
+        animationDelay: '0.2s', background: C.white, borderRadius: 20, padding: 24,
+        border: `1.5px solid ${C.border}`, boxShadow: '0 4px 16px rgba(0,0,0,0.04)',
+        marginBottom: 20,
+      }}>
+        <h3 style={{ fontSize: 15, fontWeight: 700, color: C.navy, margin: '0 0 18px 0' }}>Your placement by subject</h3>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {topicData.map((t, i) => {
             const p = placements[t.id];
             const label = TIER_LABEL[p] || "New";
-            const barWidth = Math.max(8, (p / 3) * 100);
+            const emoji = TIER_EMOJI[p] || "\u{1F331}";
+            const barPct = Math.max(10, (p / 3) * 100);
+            const barCol = p >= 3 ? C.gold : p >= 2 ? C.sage : C.steel;
+            const topicAnswers = answers.filter(a => a.cat === t.id);
+            const topicCorrect = topicAnswers.filter(a => a.correct).length;
+
             return (
-              <div key={t.id}>
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm font-medium text-deany-navy">{t.icon} {t.title}</span>
-                  <span className="text-xs font-medium text-deany-steel">{label}</span>
+              <div key={t.id} className="cmp-slide-in" style={{ animationDelay: `${0.3 + i * 0.1}s` }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{ fontSize: 18 }}>{t.icon}</span>
+                    <span style={{ fontSize: 14, fontWeight: 600, color: C.navy }}>{t.title}</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span style={{ fontSize: 14 }}>{emoji}</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: barCol }}>{label}</span>
+                  </div>
                 </div>
-                <div className="w-full h-2 bg-deany-border rounded-full">
-                  <div className={cx(
-                    "h-full rounded-full transition-all duration-500 ease-out",
-                    p >= 3 ? "bg-deany-gold" : p >= 2 ? "bg-deany-sage" : "bg-deany-steel"
-                  )} style={{ width: `${barWidth}%` }} />
+                <div style={{ height: 8, borderRadius: 4, background: C.border, overflow: 'hidden', marginBottom: 4 }}>
+                  <div style={{ height: '100%', borderRadius: 4, background: barCol, width: `${barPct}%`, transition: 'width 0.8s ease-out' }} />
                 </div>
+                <div style={{ fontSize: 11, color: C.muted }}>{topicCorrect}/{topicAnswers.length} correct</div>
               </div>
             );
           })}
         </div>
-      </Card>
+      </div>
 
-      {strengths.length > 0 && (
-        <Card className="p-6">
-          <h3 className="text-sm font-medium text-deany-sage mb-3">Strengths</h3>
-          <div className="space-y-2">
-            {strengths.map(s => (
-              <div key={s} className="bg-deany-sage-light rounded-xl p-3 text-sm text-deany-navy">{s}</div>
-            ))}
-          </div>
-        </Card>
-      )}
-
-      {needsWork.length > 0 && (
-        <Card className="p-6">
-          <h3 className="text-sm font-medium text-deany-error mb-3">Areas to build</h3>
-          <div className="space-y-2">
-            {needsWork.map(s => (
-              <div key={s} className="bg-deany-error-light rounded-xl p-3 text-sm text-deany-navy">{s}</div>
-            ))}
-          </div>
-        </Card>
-      )}
-
-      <Card className="p-6 bg-white text-center space-y-4">
-        <p className="text-sm text-deany-steel">
-          Deany will use these results to personalise your learning path.
+      {/* Insight */}
+      <div className="cmp-fade-up" style={{
+        animationDelay: '0.4s', background: C.goldLight, borderRadius: 16, padding: '18px 20px',
+        border: `1.5px solid ${C.gold}22`, marginBottom: 20,
+      }}>
+        <p style={{ fontSize: 13, color: C.navy, lineHeight: 1.6, margin: 0, fontWeight: 500 }}>
+          {accuracy >= 75
+            ? "You clearly have strong foundations. Deany will start you at a level that challenges you and fills any gaps."
+            : accuracy >= 50
+            ? "A solid start. Deany will reinforce the basics you know and build up the areas that need attention."
+            : "Everyone starts somewhere. Deany will build your knowledge from the ground up \u2014 no shortcuts, no judgement."}
         </p>
-        <div className="flex flex-wrap justify-center gap-3">
-          <Button onClick={() => {
-            try {
-              localStorage.setItem("deany-compass-result", JSON.stringify({ placements, accuracy, ts: Date.now() }));
-            } catch {}
-            if (onComplete) onComplete();
-            else if (onHome) onHome();
-          }}>
-            Start Learning
-          </Button>
-          <Button variant="secondary" onClick={onRestart}>Retake Quiz</Button>
-        </div>
-      </Card>
+      </div>
+
+      {/* Actions */}
+      <div className="cmp-fade-up" style={{
+        animationDelay: '0.5s', display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'center',
+      }}>
+        <button onClick={() => {
+          try { localStorage.setItem("deany-compass-result", JSON.stringify({ placements, accuracy, ts: Date.now() })); } catch {}
+          if (onComplete) onComplete();
+          else if (onHome) onHome();
+        }} className="cmp-glow" style={{
+          background: C.gold, color: C.white, border: 'none', borderRadius: 14,
+          padding: '15px 48px', fontSize: 16, fontWeight: 600, cursor: 'pointer',
+          width: '100%', maxWidth: 320,
+        }}>
+          Start Your Path
+        </button>
+        <button onClick={onRestart} style={{
+          background: 'none', border: 'none', color: C.muted, fontSize: 13,
+          fontWeight: 500, cursor: 'pointer', padding: '8px 16px',
+        }}>
+          Retake Quiz
+        </button>
+      </div>
     </div>
   );
 }
 
-// ── Main Component ─────────────��─────────────────────────────────────────
-
+// ── Main Component ───────────────────────────────────────────────────────
 export default function DeanyCompass({ onBack, onHome, onComplete }) {
-  const [step, setStep] = useState("welcome"); // welcome | topics | assess | quiz | results
+  const [step, setStep] = useState("welcome");
   const [selectedTopics, setSelectedTopics] = useState([]);
   const [selfRatings, setSelfRatings] = useState({});
   const [answers, setAnswers] = useState([]);
   const [questionCount, setQuestionCount] = useState(0);
+  const [streak, setStreak] = useState(0);
 
-  // Default all selected topics to beginner if not rated
   const effectiveRatings = useMemo(() => {
     const r = { ...selfRatings };
     for (const t of selectedTopics) { if (!r[t]) r[t] = 1; }
@@ -590,12 +735,14 @@ export default function DeanyCompass({ onBack, onHome, onComplete }) {
     [selectedTopics, effectiveRatings]
   );
 
+  const correctCount = answers.filter(a => a.correct).length;
+
   const handleAnswer = useCallback((answer) => {
     setAnswers(prev => [...prev, answer]);
     setQuestionCount(c => c + 1);
+    setStreak(s => answer.correct ? s + 1 : 0);
   }, []);
 
-  // Auto-advance to results when quiz is done
   const quizDone = step === "quiz" && !currentQuestion && answers.length > 0;
 
   function reset() {
@@ -604,44 +751,66 @@ export default function DeanyCompass({ onBack, onHome, onComplete }) {
     setSelfRatings({});
     setAnswers([]);
     setQuestionCount(0);
+    setStreak(0);
   }
 
-  // Determine current progress for bar
-  let progressValue = 0;
-  let progressMax = 3 + totalEstimate;
-  if (step === "topics") progressValue = 1;
-  else if (step === "assess") progressValue = 2;
-  else if (step === "quiz") progressValue = 3 + questionCount;
-  else if (step === "results" || quizDone) progressValue = progressMax;
+  // Step labels for header
+  const stepLabel = { welcome: '', topics: 'Choose Subjects', assess: 'Self-Assessment', quiz: 'Quiz', results: 'Results' };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div style={{ minHeight: '100vh', background: C.cream }}>
+      <style>{STYLES}</style>
+
       {/* Header */}
-      <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-deany-border">
-        <div className="max-w-2xl mx-auto px-5 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            {onBack && (
-              <button onClick={onBack} className="text-sm text-deany-steel hover:text-deany-navy transition-colors duration-200 flex items-center gap-1">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-                Back
-              </button>
-            )}
-            <div>
-              <p className="text-xs font-medium uppercase tracking-wide text-deany-sage">Deany Compass</p>
-              <p className="text-sm font-semibold text-deany-navy">Calibration Quiz</p>
+      <div style={{
+        position: 'sticky', top: 0, zIndex: 40,
+        background: 'rgba(250,248,245,0.85)', backdropFilter: 'blur(16px)',
+        borderBottom: `1px solid ${C.border}`,
+      }}>
+        <div style={{ maxWidth: 580, margin: '0 auto', padding: '12px 20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: step !== 'welcome' && !quizDone && step !== 'results' ? 10 : 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              {onBack && (
+                <button onClick={onBack} style={{
+                  background: 'none', border: 'none', color: C.steel, cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, fontWeight: 500,
+                  padding: 0,
+                }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                  Back
+                </button>
+              )}
+              <div>
+                <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.16em', color: C.sage }}>Deany Compass</div>
+                {stepLabel[quizDone ? 'results' : step] && (
+                  <div style={{ fontSize: 14, fontWeight: 600, color: C.navy }}>{stepLabel[quizDone ? 'results' : step]}</div>
+                )}
+              </div>
             </div>
+            {step !== "welcome" && step !== "results" && !quizDone && (
+              <button onClick={reset} style={{
+                background: 'none', border: 'none', color: C.muted, fontSize: 12,
+                cursor: 'pointer', fontWeight: 500,
+              }}>Restart</button>
+            )}
           </div>
-          {step !== "welcome" && step !== "results" && !quizDone && (
-            <button onClick={reset} className="text-xs text-deany-muted hover:text-deany-navy transition-colors">Restart</button>
+
+          {/* Progress bar (only during setup + quiz) */}
+          {step !== 'welcome' && step !== 'results' && !quizDone && (
+            <div style={{ height: 4, borderRadius: 2, background: C.border, overflow: 'hidden' }}>
+              <div style={{
+                height: '100%', borderRadius: 2,
+                background: `linear-gradient(90deg, ${C.sage}, ${C.gold})`,
+                width: `${step === 'topics' ? 15 : step === 'assess' ? 30 : Math.min(100, 30 + (questionCount / Math.max(1, totalEstimate)) * 70)}%`,
+                transition: 'width 0.5s ease-out',
+              }} />
+            </div>
           )}
-        </div>
-        <div className="max-w-2xl mx-auto px-5 pb-3">
-          <ProgressBar value={progressValue} max={progressMax} />
         </div>
       </div>
 
       {/* Content */}
-      <div className="max-w-2xl mx-auto px-5 py-8">
+      <div style={{ maxWidth: 580, margin: '0 auto', padding: '32px 20px 60px' }}>
         {step === "welcome" && (
           <WelcomeStep onNext={() => setStep("topics")} />
         )}
@@ -653,12 +822,14 @@ export default function DeanyCompass({ onBack, onHome, onComplete }) {
 
         {step === "assess" && (
           <AssessStep selectedTopics={selectedTopics} ratings={selfRatings}
-            setRatings={setSelfRatings} onNext={() => { setAnswers([]); setQuestionCount(0); setStep("quiz"); }} />
+            setRatings={setSelfRatings}
+            onNext={() => { setAnswers([]); setQuestionCount(0); setStreak(0); setStep("quiz"); }} />
         )}
 
         {step === "quiz" && !quizDone && currentQuestion && (
           <QuizStep key={currentQuestion.id} question={currentQuestion}
             questionNumber={questionCount + 1} totalEstimate={totalEstimate}
+            streak={streak} correctCount={correctCount}
             onAnswer={handleAnswer} />
         )}
 
