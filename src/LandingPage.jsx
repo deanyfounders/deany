@@ -25,37 +25,96 @@ const S = {
 const serif = 'Georgia, serif';
 const arabic = "'Amiri', 'Noto Naskh Arabic', serif";
 
-// ── Mosque hero illustration (inline SVG) ────────────────────────
-const MosqueHero = () => (
-  <svg width="240" height="190" viewBox="0 0 240 190" fill="none" aria-hidden="true"
-    style={{ width: '100%', maxWidth: 280, height: 'auto' }}>
-    {/* stars + sparkle (gold) */}
-    <circle cx="40" cy="30" r="2.4" fill={C.gold} />
-    <circle cx="205" cy="42" r="2" fill={C.gold} />
-    <circle cx="178" cy="20" r="1.5" fill={C.gold} />
-    <circle cx="58" cy="54" r="1.5" fill={C.gold} />
-    <path d="M30 48 l1.5 4 l4 1.5 l-4 1.5 l-1.5 4 l-1.5 -4 l-4 -1.5 l4 -1.5Z" fill={C.gold} />
-    {/* crescent (gold) */}
-    <path d="M196 28 a14 14 0 1 0 7 25 a11 11 0 1 1 -7 -25Z" fill={C.gold} />
-    {/* minarets (teal-dark) with gold caps */}
-    <rect x="40" y="78" width="14" height="86" rx="3" fill={C.tealDk} />
-    <rect x="186" y="78" width="14" height="86" rx="3" fill={C.tealDk} />
-    <path d="M40 78 a7 7 0 0 1 14 0Z" fill={C.gold} />
-    <path d="M186 78 a7 7 0 0 1 14 0Z" fill={C.gold} />
-    {/* main building (teal-deep) */}
-    <rect x="62" y="96" width="116" height="68" rx="4" fill={C.tealDeep} />
-    {/* dome (teal) + finial */}
-    <path d="M120 38 C 152 38, 172 70, 172 100 L68 100 C68 70, 88 38, 120 38Z" fill={C.teal} />
-    <path d="M120 38 a4 4 0 0 1 8 0 l-4 4Z" fill={C.gold} />
-    <rect x="116" y="38" width="8" height="4" fill={C.gold} />
-    {/* arched door (gold) + side arches (teal-pale) */}
-    <path d="M104 164 L104 130 C104 119, 136 119, 136 130 L136 164Z" fill={C.gold} />
-    <path d="M80 164 L80 140 C80 132, 96 132, 96 140 L96 164Z" fill={C.tealPale} />
-    <path d="M144 164 L144 140 C144 132, 160 132, 160 140 L160 164Z" fill={C.tealPale} />
-    <circle cx="120" cy="118" r="5" fill={C.tealPale} />
-    {/* ground line */}
-    <rect x="36" y="164" width="168" height="6" rx="3" fill={C.tealDeep} />
-  </svg>
+// ── Hero visual — floating lesson cards ─────────────────────────────────
+const HeroVisual = () => (
+  <div style={{ position: 'relative', width: '100%', maxWidth: 280, height: 300 }}>
+    {/* Card 1 — back, tilted left */}
+    <div style={{
+      position: 'absolute', top: 10, left: 0, width: 200, padding: '18px 16px',
+      background: C.surface, borderRadius: 16, border: `1px solid ${C.border}`,
+      boxShadow: '0 8px 30px rgba(15,76,92,0.08)',
+      transform: 'rotate(-6deg)', zIndex: 1,
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+        <div style={{ width: 28, height: 28, borderRadius: 8, background: C.tealSoft, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>{'\u{1F54C}'}</div>
+        <div>
+          <div style={{ fontSize: 11, fontWeight: 700, color: C.tealDeep }}>Five Pillars</div>
+          <div style={{ fontSize: 9, color: C.textFaint }}>Lesson 1 of 7</div>
+        </div>
+      </div>
+      <div style={{ height: 5, borderRadius: 3, background: C.tealSoft, overflow: 'hidden' }}>
+        <div style={{ width: '35%', height: '100%', borderRadius: 3, background: C.teal }} />
+      </div>
+    </div>
+
+    {/* Card 2 — middle, prominent */}
+    <div style={{
+      position: 'absolute', top: 60, left: 36, width: 220, padding: '20px 18px',
+      background: C.surface, borderRadius: 18, border: `1.5px solid ${C.border}`,
+      boxShadow: '0 12px 40px rgba(15,76,92,0.12)',
+      transform: 'rotate(2deg)', zIndex: 3,
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+        <div style={{ width: 32, height: 32, borderRadius: 9, background: C.goldSoft, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>{'\u{1F4B0}'}</div>
+        <div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: C.tealDeep }}>Islamic Finance</div>
+          <div style={{ fontSize: 10, color: C.textMuted }}>Riba, Gharar, Maysir</div>
+        </div>
+      </div>
+      <div style={{ fontSize: 12, color: C.text, lineHeight: 1.55, marginBottom: 14 }}>
+        {'\u201C'}Allah has permitted trade and forbidden riba.{'\u201D'}
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div style={{ flex: 1, height: 5, borderRadius: 3, background: C.goldSoft, overflow: 'hidden' }}>
+          <div style={{ width: '62%', height: '100%', borderRadius: 3, background: C.gold }} />
+        </div>
+        <span style={{ fontSize: 10, fontWeight: 700, color: C.gold }}>62%</span>
+      </div>
+    </div>
+
+    {/* Card 3 — front bottom, tilted right */}
+    <div style={{
+      position: 'absolute', top: 180, left: 14, width: 195, padding: '16px 14px',
+      background: C.surface, borderRadius: 14, border: `1px solid ${C.border}`,
+      boxShadow: '0 6px 24px rgba(15,76,92,0.07)',
+      transform: 'rotate(-3deg)', zIndex: 2,
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+        <div style={{ width: 26, height: 26, borderRadius: 7, background: '#E0EDF7', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13 }}>{'\u{1F4D6}'}</div>
+        <div>
+          <div style={{ fontSize: 11, fontWeight: 700, color: C.tealDeep }}>Quran Memorisation</div>
+          <div style={{ fontSize: 9, color: C.textFaint }}>Surah Al-Fatiha</div>
+        </div>
+      </div>
+      <div style={{ display: 'flex', gap: 3 }}>
+        {[1,1,1,1,0,0,0].map((done, i) => (
+          <div key={i} style={{ flex: 1, height: 4, borderRadius: 2, background: done ? C.teal : C.tealSoft }} />
+        ))}
+      </div>
+    </div>
+
+    {/* Floating badge — streak */}
+    <div style={{
+      position: 'absolute', top: 35, right: 0, zIndex: 4,
+      background: C.surface, borderRadius: 20, padding: '6px 12px',
+      boxShadow: '0 4px 16px rgba(15,76,92,0.1)', border: `1px solid ${C.border}`,
+      display: 'flex', alignItems: 'center', gap: 5,
+    }}>
+      <span style={{ fontSize: 14 }}>{'\u{1F525}'}</span>
+      <span style={{ fontSize: 11, fontWeight: 700, color: C.tealDeep }}>5 day streak</span>
+    </div>
+
+    {/* Floating badge — correct */}
+    <div style={{
+      position: 'absolute', bottom: 20, right: 4, zIndex: 4,
+      background: C.tealSoft, borderRadius: 20, padding: '5px 11px',
+      border: `1px solid rgba(34,163,154,0.2)`,
+      display: 'flex', alignItems: 'center', gap: 4,
+    }}>
+      <span style={{ fontSize: 12 }}>{'\u2705'}</span>
+      <span style={{ fontSize: 10, fontWeight: 700, color: C.tealDk }}>Correct!</span>
+    </div>
+  </div>
 );
 
 // ── Trust dots ──────────────────────────────────────────────────
@@ -237,9 +296,9 @@ const LandingPage = ({ onGetStarted, onPreviewLesson, onCalibration, onSelectPat
             </div>
             <TrustDots />
           </div>
-          {/* Right column — mosque illustration */}
+          {/* Right column — geometric pattern */}
           <div style={{ flex: '0 1 280px', display: 'flex', justifyContent: 'center' }}>
-            <MosqueHero />
+            <HeroVisual />
           </div>
         </div>
       </section>
