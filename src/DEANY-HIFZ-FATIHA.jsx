@@ -534,11 +534,12 @@ function ArabicBlock({ text, hidden, onReveal }) {
   );
 }
 
-function ModeSelect({ onChoose }) {
+function ModeSelect({ onChoose, onBack }) {
   return (
     <main className="min-h-screen bg-[#fbfbf8] p-6 text-slate-950">
       <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-[1fr_0.9fr]">
         <Card className="bg-gradient-to-br from-white to-emerald-50">
+          {onBack && <button onClick={onBack} className="mb-2 text-lg text-slate-950 hover:text-slate-600 transition" aria-label="Back">← Back</button>}
           <p className="text-xs font-black uppercase tracking-[0.25em] text-emerald-700">Deany Quran</p>
           <h1 className="mt-4 text-5xl font-black tracking-tight">Memorise Al-Fatiha</h1>
           <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-600">Listen, echo, recall, and stitch the surah together one passage at a time.</p>
@@ -912,7 +913,7 @@ export default function DeanyFatihaMemorisationOnly({ onBack, onHome, onGoTafsir
     return [`Today: repeat ${names} before the full surah.`, "Tomorrow: start with the passage that needs work, then recite the full surah blind.", "Move on after one clean full recitation."];
   }, [progress.weakQueue]);
 
-  if (!progress.started) return <ModeSelect onChoose={start} />;
+  if (!progress.started) return <ModeSelect onChoose={start} onBack={onBack} />;
 
   if (progress.complete) {
     const cleanCount = Object.values(progress.finalChecks).filter(Boolean).length;
