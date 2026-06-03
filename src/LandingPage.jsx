@@ -288,11 +288,11 @@ const LandingPage = ({ onGetStarted, onPreviewLesson, onCalibration, onSelectPat
               Ten-minute lessons on the Pillars, the Quran, Islamic finance, and history. Reviewed by scholars. No prerequisites.
             </p>
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 20 }}>
-              <DeanyButton variant="primary" onClick={() => scrollTo('how-it-works')}>
-                See how it works
-              </DeanyButton>
-              <DeanyButton variant="secondary" onClick={onCalibration || onGetStarted}>
+              <DeanyButton variant="primary" onClick={onCalibration || onGetStarted}>
                 Calibration Quiz
+              </DeanyButton>
+              <DeanyButton variant="secondary" onClick={() => scrollTo('how-it-works')}>
+                See how it works
               </DeanyButton>
             </div>
             <TrustDots />
