@@ -440,7 +440,7 @@ const QuizSection = () => {
           {/* Clean chevron with gentle bob */}
           <svg width="20" height="12" viewBox="0 0 20 12" fill="none" stroke={C.gold} strokeWidth="2.5"
             strokeLinecap="round" strokeLinejoin="round"
-            style={{ marginTop: 12, opacity: 0.7, animation: 'quizBob 2.5s ease-in-out infinite' }}>
+            style={{ display: 'block', margin: '12px auto 0', opacity: 0.7, animation: 'quizBob 2.5s ease-in-out infinite' }}>
             <path d="M2 2l8 8 8-8" />
           </svg>
         </div>
