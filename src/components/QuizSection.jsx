@@ -1,0 +1,432 @@
+import React, { useState, useRef } from 'react';
+import { playClick } from '../utils/clickSound.js';
+
+const C = {
+  canvas: '#FBFAF6', surface: '#FFFFFF',
+  teal: '#22A39A', tealDk: '#1A8C82', tealDeep: '#0F4C5C',
+  tealSoft: '#DCF3EF', tealPale: '#7FD8CE',
+  gold: '#F0B429', goldDk: '#C8901A',
+  coral: '#E8523A', coralSoft: '#FCDDD5',
+  text: '#173A4A', textDeep: '#0F4C5C', textMuted: '#5E7480', textFaint: '#94A3AA',
+  border: 'rgba(15,76,92,0.15)',
+};
+const serif = 'Georgia, serif';
+
+// ── Audio helpers ───────────────────────────────────
+let audioCtx;
+const ensureAudio = () => { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); };
+const playTone = (freqs, gap = 0.1, dur = 0.15, vol = 0.06) => {
+  try { ensureAudio(); freqs.forEach((f, i) => {
+    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+    o.connect(g); g.connect(audioCtx.destination);
+    o.frequency.setValueAtTime(f, audioCtx.currentTime + i * gap);
+    g.gain.setValueAtTime(vol, audioCtx.currentTime + i * gap);
+    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + i * gap + dur);
+    o.start(audioCtx.currentTime + i * gap); o.stop(audioCtx.currentTime + i * gap + dur);
+  }); } catch (_) {}
+};
+const playCorrect = () => playTone([660, 880]);
+const playWrong = () => { try { ensureAudio(); const o = audioCtx.createOscillator(), g = audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); o.frequency.setValueAtTime(300, audioCtx.currentTime); o.frequency.linearRampToValueAtTime(200, audioCtx.currentTime + 0.15); g.gain.setValueAtTime(0.05, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15); o.start(); o.stop(audioCtx.currentTime + 0.15); } catch (_) {} };
+const playSuccess = () => playTone([523, 659, 784], 0.12, 0.2);
+
+// ── Confetti ────────────────────────────────────────
+const launchConfetti = () => {
+  const c = document.createElement('div');
+  Object.assign(c.style, { position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 9999, overflow: 'hidden' });
+  document.body.appendChild(c);
+  const cols = ['#22A39A', '#F0B429', '#E8523A', '#4968A6', '#7FD8CE', '#C8901A'];
+  for (let i = 0; i < 80; i++) {
+    const p = document.createElement('div');
+    const s = 6 + Math.random() * 8, strip = Math.random() > 0.6;
+    Object.assign(p.style, { position: 'absolute', top: '-20px', left: Math.random() * 100 + '%',
+      width: (strip ? s * 0.35 : s) + 'px', height: (strip ? s * 1.6 : s) + 'px',
+      background: cols[Math.floor(Math.random() * cols.length)],
+      borderRadius: strip ? '2px' : (Math.random() > 0.5 ? '50%' : '2px'),
+      animation: `confettiFall ${2.2 + Math.random() * 2}s linear ${Math.random() * 0.6}s forwards`, opacity: 0 });
+    c.appendChild(p);
+  }
+  setTimeout(() => c.remove(), 5500);
+};
+
+// ── Data ────────────────────────────────────────────
+const LABELS = [
+  { bold: 'STARTER', sub: 'TAP TO ANSWER' },
+  { bold: 'MAIN COURSE', sub: 'BUILD A LESSON' },
+  { bold: 'DESSERT', sub: 'FILL THE BLANK' },
+];
+const Q1_OPTS = [
+  { letter: 'A', text: '2 hours', correct: false },
+  { letter: 'B', text: 'About 10 minutes', correct: true },
+  { letter: 'C', text: '45 minutes', correct: false },
+];
+const Q2_TILES = [
+  { icon: '\u{1F4D6}', label: 'short read', correct: true },
+  { icon: '\u2728', label: 'interactive Qs', correct: true },
+  { icon: '\u26A1', label: 'instant feedback', correct: true },
+  { icon: '\u{1F3A5}', label: 'video lecture', correct: false },
+  { icon: '\u{1F4DD}', label: 'final exam', correct: false },
+];
+const Q3_PILLS = [
+  { emoji: '\u{1F53D}', text: 'Only Muslims', correct: false },
+  { emoji: '\u{1F393}', text: 'Scholars', correct: false },
+  { emoji: '\u{1F30D}', text: 'Everyone', correct: true },
+  { emoji: '\u{1F914}', text: 'Just curious (non-Muslim)', correct: false },
+  { emoji: '\u{1F331}', text: 'New Muslims only', correct: false },
+];
+
+// ── Shared sub-components ───────────────────────────
+const Feedback = ({ text }) => text ? (
+  <div style={{ marginTop: 14, padding: '11px 14px', borderRadius: 12, fontSize: 12.5, lineHeight: 1.5,
+    background: C.tealSoft, border: '1px solid rgba(34,163,154,0.15)', color: C.tealDeep,
+    display: 'flex', alignItems: 'flex-start', gap: 7, animation: 'quizPopIn 0.25s cubic-bezier(.2,.7,.3,1) both' }}>
+    <svg style={{ width: 18, height: 18, flexShrink: 0, marginTop: 1 }} viewBox="0 0 24 24" fill="none"
+      stroke={C.teal} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="20 6 9 17 4 12" style={{ strokeDasharray: 20, animation: 'quizCheckDraw 0.35s ease forwards' }} />
+    </svg>
+    <span>{text}</span>
+  </div>
+) : null;
+
+// ═════════════════════════════════════════════════════
+const QuizSection = () => {
+  const [view, setView] = useState('teaser');
+  const [step, setStep] = useState(0);
+  const [answered, setAnswered] = useState(false);
+  const [showBtn, setShowBtn] = useState(false);
+  const [fading, setFading] = useState(false);
+  const [animKey, setAnimKey] = useState(0);
+
+  const [q1Chosen, setQ1Chosen] = useState(-1);
+  const [q1Reveal, setQ1Reveal] = useState(false);
+  const [q1Fb, setQ1Fb] = useState(null);
+
+  const [q2Placed, setQ2Placed] = useState([]);
+  const [q2Rej, setQ2Rej] = useState(-1);
+  const [q2Fb, setQ2Fb] = useState(null);
+
+  const [q3Blank, setQ3Blank] = useState('?');
+  const [q3Filled, setQ3Filled] = useState(false);
+  const [q3Wrong, setQ3Wrong] = useState(false);
+  const [q3Used, setQ3Used] = useState(-1);
+  const [q3Dimmed, setQ3Dimmed] = useState(false);
+  const [q3Fb, setQ3Fb] = useState(null);
+
+  const cardRef = useRef(null);
+
+  const resetAll = () => {
+    setStep(0); setAnswered(false); setShowBtn(false); setFading(false);
+    setQ1Chosen(-1); setQ1Reveal(false); setQ1Fb(null);
+    setQ2Placed([]); setQ2Rej(-1); setQ2Fb(null);
+    setQ3Blank('?'); setQ3Filled(false); setQ3Wrong(false); setQ3Used(-1); setQ3Dimmed(false); setQ3Fb(null);
+    setAnimKey(k => k + 1);
+  };
+
+  const startQuiz = () => { playClick(); setView('quiz'); };
+  const showRead = () => { playClick(); setView('read'); };
+  const backToTeaser = () => { playClick(); resetAll(); setView('teaser'); };
+
+  const advance = () => {
+    playClick(); setShowBtn(false); setFading(true);
+    setTimeout(() => {
+      setAnswered(false);
+      const next = step + 1;
+      if (next >= 3) {
+        const card = cardRef.current;
+        if (card) { card.style.height = card.offsetHeight + 'px'; card.style.overflow = 'hidden'; }
+        setView('result'); setFading(false);
+        setTimeout(() => {
+          playSuccess(); launchConfetti();
+          if (card) {
+            card.style.transition = 'height 0.35s ease';
+            card.style.height = card.scrollHeight + 'px';
+            setTimeout(() => { if (card) { card.style.height = ''; card.style.overflow = ''; card.style.transition = ''; } }, 380);
+          }
+        }, 100);
+      } else {
+        setStep(next); setFading(false); setAnimKey(k => k + 1);
+      }
+    }, 220);
+  };
+
+  const doQ1 = (idx, correct) => {
+    if (answered) return; setAnswered(true); playClick();
+    setQ1Chosen(idx);
+    if (correct) { playCorrect(); setQ1Fb('Bite-sized by design. Short enough for a commute, deep enough to stick.'); }
+    else { playWrong(); setQ1Fb('Bite-sized by design. Most lessons take about ten minutes. Short enough for a commute, deep enough to stick.'); setTimeout(() => setQ1Reveal(true), 300); }
+    setTimeout(() => setShowBtn(true), 400);
+  };
+
+  const doQ2 = (idx, correct) => {
+    if (q2Placed.includes(idx)) return; playClick();
+    if (correct) {
+      const np = [...q2Placed, idx]; setQ2Placed(np); playCorrect();
+      if (np.length === 3) { setQ2Fb("Instead of passively watching or reading, every Deany lesson has you do things: read a little, answer, get feedback, move on. That's how it sticks. You just did it to answer this."); setTimeout(() => setShowBtn(true), 400); }
+    } else { playWrong(); setQ2Rej(idx); setTimeout(() => setQ2Rej(-1), 400); }
+  };
+
+  const doQ3 = (idx, correct) => {
+    if (answered) return; playClick();
+    const label = Q3_PILLS[idx].text;
+    if (correct) {
+      setAnswered(true); setQ3Blank(label); setQ3Filled(true); setQ3Used(idx); setQ3Dimmed(true); playCorrect();
+      setQ3Fb('Practising Muslims, curious non-Muslims, new converts, born Muslims who never studied. Deany is built for every starting point.');
+      setTimeout(() => setShowBtn(true), 400);
+    } else { playWrong(); setQ3Blank(label); setQ3Wrong(true); setTimeout(() => { setQ3Blank('?'); setQ3Wrong(false); }, 500); }
+  };
+
+  // ── Continue button ───────────────────────────
+  const NextBtn = () => showBtn ? (
+    <button onClick={advance} style={{ width: '100%', marginTop: 16, padding: 12, border: 'none', borderRadius: 12,
+      background: C.teal, color: '#fff', fontSize: 13.5, fontWeight: 600, cursor: 'pointer',
+      boxShadow: `0 2px 0 ${C.tealDk}`, transition: 'transform 0.15s', animation: 'quizPopIn 0.25s cubic-bezier(.2,.7,.3,1) both' }}
+      onMouseDown={e => { e.currentTarget.style.transform = 'translateY(1px)'; e.currentTarget.style.boxShadow = 'none'; }}
+      onMouseUp={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = `0 2px 0 ${C.tealDk}`; }}
+      onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = `0 2px 0 ${C.tealDk}`; }}>
+      Continue
+    </button>
+  ) : null;
+
+  // ── Dots ──────────────────────────────────────
+  const Dots = () => (
+    <div style={{ display: 'flex', gap: 5 }}>
+      {[0, 1, 2].map(i => (
+        <div key={i} style={{ width: 8, height: 8, borderRadius: '50%', transition: 'all 0.35s ease',
+          background: view === 'result' || i < step ? C.teal : i === step ? C.tealPale : C.border }} />
+      ))}
+    </div>
+  );
+
+  const stepStyle = { animation: 'quizStepIn 0.3s ease both', opacity: fading ? 0 : 1, transition: 'opacity 0.2s ease' };
+
+  // ── Q1 ────────────────────────────────────────
+  const renderQ1 = () => (
+    <div key={`q1-${animKey}`} style={stepStyle}>
+      <div style={{ fontFamily: serif, fontSize: 19, fontWeight: 500, color: C.tealDeep, lineHeight: 1.35, marginBottom: 18 }}>How long is a typical Deany lesson?</div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+        {Q1_OPTS.map((o, i) => {
+          const chosen = q1Chosen === i;
+          const green = (chosen && o.correct) || (q1Reveal && o.correct);
+          const red = chosen && !o.correct;
+          const dim = q1Chosen >= 0 && !chosen && !(q1Reveal && o.correct);
+          const bg = green ? C.tealSoft : red ? C.coralSoft : C.canvas;
+          const bc = green ? C.teal : red ? C.coral : C.border;
+          const lBg = green ? C.teal : red ? C.coral : C.surface;
+          const lC = green || red ? '#fff' : C.textMuted;
+          return (
+            <button key={i} onClick={() => doQ1(i, o.correct)} style={{ background: bg, border: `1.5px solid ${bc}`, borderRadius: 12,
+              padding: '12px 14px', fontSize: 13.5, color: C.text, cursor: q1Chosen >= 0 ? 'default' : 'pointer',
+              transition: 'all 0.18s ease', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 10,
+              minHeight: 46, opacity: dim ? 0.35 : 1, pointerEvents: q1Chosen >= 0 ? 'none' : 'auto' }}>
+              <span style={{ width: 24, height: 24, borderRadius: 7, background: lBg, color: lC, fontSize: 11,
+                fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                border: `1px solid ${bc}`, transition: 'all 0.18s ease' }}>{o.letter}</span>
+              <span>{o.text}</span>
+            </button>
+          );
+        })}
+      </div>
+      <Feedback text={q1Fb} />
+      <NextBtn />
+    </div>
+  );
+
+  // ── Q2 ────────────────────────────────────────
+  const renderQ2 = () => {
+    const done = q2Placed.length === 3;
+    return (
+      <div key={`q2-${animKey}`} style={stepStyle}>
+        <div style={{ fontFamily: serif, fontSize: 19, fontWeight: 500, color: C.tealDeep, lineHeight: 1.35, marginBottom: 18 }}>How do you actually learn on Deany?</div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
+          {Q2_TILES.map((t, i) => {
+            const placed = q2Placed.includes(i);
+            const rej = q2Rej === i;
+            const gone = placed || (done && !t.correct);
+            return (
+              <button key={i} onClick={() => doQ2(i, t.correct)} style={{
+                background: rej ? C.coralSoft : C.canvas, border: `1.5px solid ${rej ? C.coral : C.border}`,
+                borderRadius: 20, padding: '8px 14px', fontSize: 12.5, fontWeight: 500, color: C.text,
+                cursor: gone ? 'default' : 'pointer', transition: 'all 0.18s ease',
+                display: 'inline-flex', alignItems: 'center', gap: 5,
+                opacity: gone ? 0 : 1, position: gone ? 'absolute' : 'relative', pointerEvents: gone ? 'none' : 'auto',
+                animation: rej ? 'quizShake 0.35s ease' : 'none' }}>
+                <span style={{ fontSize: 13 }}>{t.icon}</span>{t.label}
+              </button>
+            );
+          })}
+        </div>
+        <div style={{ background: q2Placed.length > 0 ? C.tealSoft : C.canvas,
+          border: `1.5px ${done ? 'solid' : 'dashed'} ${done ? C.teal : q2Placed.length > 0 ? C.tealPale : 'rgba(15,76,92,0.15)'}`,
+          borderRadius: 14, padding: 14, minHeight: 48, display: 'flex', flexWrap: 'wrap', gap: 6,
+          alignItems: 'center', justifyContent: q2Placed.length > 0 ? 'flex-start' : 'center', transition: 'all 0.3s ease' }}>
+          {q2Placed.length === 0 && <span style={{ fontSize: 11.5, color: C.textFaint }}>drop the pieces of a lesson here</span>}
+          {q2Placed.map((idx, i) => (
+            <div key={i} style={{ background: C.surface, border: `1px solid ${C.teal}`, borderRadius: 16, padding: '6px 12px',
+              fontSize: 11.5, fontWeight: 500, color: C.tealDeep, display: 'inline-flex', alignItems: 'center', gap: 4,
+              animation: 'quizDropIn 0.25s cubic-bezier(.2,.7,.3,1) both' }}>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.teal} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+              {Q2_TILES[idx].label}
+            </div>
+          ))}
+        </div>
+        <Feedback text={q2Fb} />
+        <NextBtn />
+      </div>
+    );
+  };
+
+  // ── Q3 ────────────────────────────────────────
+  const renderQ3 = () => (
+    <div key={`q3-${animKey}`} style={stepStyle}>
+      <div style={{ fontFamily: serif, fontSize: 19, fontWeight: 500, color: C.tealDeep, lineHeight: 1.35, marginBottom: 18 }}>Complete the sentence</div>
+      <div style={{ background: C.canvas, borderRadius: 16, padding: '22px 20px', textAlign: 'center', marginBottom: 18 }}>
+        <div style={{ fontFamily: serif, fontSize: 18, color: C.text, lineHeight: 1.7 }}>
+          Deany is built for{' '}
+          <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            minWidth: 110, height: 34, borderRadius: 10, padding: '0 14px',
+            border: `2px ${q3Filled ? 'solid' : 'dashed'} ${q3Wrong ? C.coral : q3Filled ? C.teal : C.tealPale}`,
+            background: q3Wrong ? C.coralSoft : q3Filled ? C.tealSoft : 'rgba(220,243,239,0.35)',
+            fontWeight: 600, fontSize: 14, color: q3Wrong ? C.coral : q3Filled ? C.tealDeep : C.textFaint,
+            transition: 'all 0.3s ease', verticalAlign: 'middle', margin: '0 2px',
+            animation: q3Wrong ? 'quizShake 0.35s ease' : q3Filled ? 'quizPopIn 0.25s cubic-bezier(.2,.7,.3,1) both' : 'none' }}>
+            {q3Blank}
+          </span>.
+        </div>
+        {!q3Filled && <div style={{ fontSize: 11, color: C.textFaint, marginTop: 10, opacity: q3Wrong ? 0 : 1, transition: 'opacity 0.3s' }}>tap a pill below</div>}
+      </div>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 9, justifyContent: 'center' }}>
+        {Q3_PILLS.map((p, i) => {
+          const used = q3Used === i;
+          return (
+            <button key={i} onClick={() => doQ3(i, p.correct)} style={{
+              background: C.surface, border: `1.5px solid ${C.border}`, borderRadius: 22, padding: '10px 18px',
+              fontSize: 13, fontWeight: 500, color: C.text, minHeight: 44,
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              boxShadow: '0 1px 3px rgba(15,76,92,0.05)', cursor: used || q3Dimmed ? 'default' : 'pointer',
+              transition: 'all 0.2s cubic-bezier(.2,.7,.3,1)',
+              opacity: used ? 0 : q3Dimmed ? 0.25 : 1,
+              position: used ? 'absolute' : 'relative', pointerEvents: used || q3Dimmed ? 'none' : 'auto' }}>
+              <span style={{ fontSize: 15 }}>{p.emoji}</span> {p.text}
+            </button>
+          );
+        })}
+      </div>
+      <Feedback text={q3Fb} />
+      <NextBtn />
+    </div>
+  );
+
+  const steps = [renderQ1, renderQ2, renderQ3];
+
+  // ── Back arrow ────────────────────────────────
+  const BackArrow = ({ onClick, label }) => (
+    <button onClick={onClick} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'none',
+      border: 'none', cursor: 'pointer', fontSize: 12, color: C.textMuted, padding: 0, transition: 'color 0.15s' }}
+      onMouseEnter={e => e.currentTarget.style.color = C.tealDeep}
+      onMouseLeave={e => e.currentTarget.style.color = C.textMuted}>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5" /><path d="M12 19l-7-7 7-7" /></svg>
+      {label}
+    </button>
+  );
+
+  return (
+    <section id="how-it-works" style={{ padding: '56px 22px 48px', background: C.canvas }}>
+      <style>{`
+        @keyframes quizStepIn { 0% { opacity:0; transform:translateY(8px); } 100% { opacity:1; transform:translateY(0); } }
+        @keyframes quizPopIn { 0% { opacity:0; transform:scale(0.85) translateY(6px); } 100% { opacity:1; transform:scale(1) translateY(0); } }
+        @keyframes quizShake { 0%,100% { transform:translateX(0); } 20% { transform:translateX(-5px); } 40% { transform:translateX(5px); } 60% { transform:translateX(-3px); } 80% { transform:translateX(3px); } }
+        @keyframes quizDropIn { 0% { opacity:0; transform:translateY(-10px) scale(0.9); } 100% { opacity:1; transform:translateY(0) scale(1); } }
+        @keyframes quizCheckDraw { 0% { stroke-dashoffset:20; } 100% { stroke-dashoffset:0; } }
+        @keyframes confettiFall { 0% { transform:translateY(0) rotate(0); opacity:1; } 100% { transform:translateY(calc(100vh + 40px)) rotate(720deg); opacity:0; } }
+        @media (prefers-reduced-motion:reduce) { *, *::before, *::after { animation-duration:0.01ms !important; transition-duration:0.01ms !important; } }
+      `}</style>
+
+      <div style={{ maxWidth: 500, margin: '0 auto' }}>
+        <div style={{ textAlign: 'center', marginBottom: 24 }}>
+          <div style={{ fontSize: 10, letterSpacing: '1.5px', color: C.teal, fontWeight: 500, marginBottom: 6, textTransform: 'uppercase' }}>HOW IT WORKS</div>
+          <div style={{ fontFamily: serif, fontSize: 24, fontWeight: 500, color: C.tealDeep, lineHeight: 1.3 }}>The Deany method</div>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.gold} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginTop: 10 }}><path d="M12 5v14" /><path d="M19 12l-7 7-7-7" /></svg>
+        </div>
+
+        <div ref={cardRef} style={{ background: C.surface, borderRadius: 22, position: 'relative',
+          boxShadow: '0 1px 3px rgba(15,76,92,0.06), 0 16px 48px rgba(15,76,92,0.10)',
+          border: '1px solid rgba(15,76,92,0.07)', overflow: 'hidden', cursor: 'default' }}>
+
+          {view === 'teaser' && (
+            <div style={{ padding: '28px 24px', animation: 'quizPopIn 0.3s cubic-bezier(.2,.7,.3,1) both' }}>
+              <div style={{ display: 'flex', gap: 10 }}>
+                {[
+                  { onClick: showRead, border: C.border, bg: C.canvas, iconBg: C.canvas, icon: '\u{1F4C4}', label: 'Just tell me', sub: 'Read a quick summary', labelColor: C.text },
+                  { onClick: startQuiz, border: C.teal, bg: C.tealSoft, iconBg: 'rgba(34,163,154,0.15)', icon: '\u26A1', label: 'Show me', sub: 'Try it the Deany way', labelColor: C.tealDeep },
+                ].map((c, i) => (
+                  <button key={i} onClick={c.onClick} style={{ flex: 1, borderRadius: 14, padding: '22px 16px', textAlign: 'center',
+                    cursor: 'pointer', transition: 'all 0.2s ease', border: `1.5px solid ${c.border}`, background: c.bg,
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}
+                    onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(15,76,92,0.1)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = ''; }}>
+                    <div style={{ width: 38, height: 38, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 17, background: c.iconBg }}>{c.icon}</div>
+                    <div style={{ fontSize: 13.5, fontWeight: 600, color: c.labelColor }}>{c.label}</div>
+                    <div style={{ fontSize: 11, color: C.textFaint, lineHeight: 1.4 }}>{c.sub}</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {view === 'read' && (
+            <div style={{ padding: 24, animation: 'quizPopIn 0.3s cubic-bezier(.2,.7,.3,1) both' }}>
+              {[
+                { n: '1', text: 'Bite-sized lessons. Each one takes about 10 minutes. A short read, then hands-on questions with instant feedback.' },
+                { n: '2', text: 'Four paths to choose from. The Pillars, Islamic Finance, Quran & Arabic, and History. Pick one or mix them.' },
+                { n: '3', text: "Built for everyone. Whether you're Muslim, curious, or just getting started. No prerequisites, no judgement." },
+              ].map(s => (
+                <div key={s.n} style={{ display: 'flex', gap: 12, alignItems: 'flex-start', marginBottom: 14 }}>
+                  <div style={{ width: 24, height: 24, borderRadius: '50%', background: C.tealSoft, color: C.tealDeep,
+                    fontFamily: serif, fontSize: 12, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{s.n}</div>
+                  <div style={{ fontSize: 14, color: C.text, lineHeight: 1.55 }}>
+                    <strong style={{ color: C.tealDeep }}>{s.text.split('.')[0]}.</strong>{s.text.substring(s.text.indexOf('.') + 1)}
+                  </div>
+                </div>
+              ))}
+              <BackArrow onClick={backToTeaser} label="Or try it instead" />
+            </div>
+          )}
+
+          {view === 'quiz' && (
+            <>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 24px 0',
+                opacity: fading && step === 2 ? 0 : 1, transition: 'opacity 0.2s ease' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <BackArrow onClick={backToTeaser} />
+                  <div style={{ fontSize: 9, letterSpacing: '1px', fontWeight: 700, textTransform: 'uppercase', color: C.textFaint }}>
+                    <b style={{ color: C.textMuted, fontWeight: 700 }}>{LABELS[step].bold}</b> &middot; {LABELS[step].sub}
+                  </div>
+                </div>
+                <Dots />
+              </div>
+              <div style={{ padding: '18px 24px 24px' }}>{steps[step]()}</div>
+            </>
+          )}
+
+          {view === 'result' && (
+            <div style={{ textAlign: 'center', padding: '40px 24px 28px', animation: 'quizPopIn 0.4s cubic-bezier(.2,.7,.3,1) both' }}>
+              <div style={{ fontSize: 32, marginBottom: 14 }}>{'\u{1F389}'}</div>
+              <div style={{ fontFamily: serif, fontSize: 21, fontWeight: 500, color: C.tealDeep, lineHeight: 1.3, marginBottom: 8 }}>That's how Deany teaches</div>
+              <div style={{ fontSize: 13, color: C.textMuted, lineHeight: 1.55, marginBottom: 20 }}>Short reads, real questions, instant feedback. Have a look at what we cover and see what catches your eye.</div>
+              <button onClick={() => document.getElementById('paths')?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
+                style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 42, height: 42,
+                  borderRadius: '50%', background: C.gold, cursor: 'pointer', transition: 'all 0.2s ease',
+                  boxShadow: `0 2px 0 ${C.goldDk}`, border: 'none' }}
+                onMouseDown={e => { e.currentTarget.style.transform = 'translateY(1px)'; e.currentTarget.style.boxShadow = 'none'; }}
+                onMouseUp={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = `0 2px 0 ${C.goldDk}`; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = `0 2px 0 ${C.goldDk}`; }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14" /><path d="M19 12l-7 7-7-7" /></svg>
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default QuizSection;

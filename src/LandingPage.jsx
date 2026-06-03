@@ -4,7 +4,7 @@ import {
   Check, Plus, Minus, Menu, X
 } from 'lucide-react';
 import DeanyButton from './components/DeanyButton.jsx';
-import { PillarsIcon, FinanceIcon, QuranIcon, HistoryIcon } from './components/PathIcons.jsx';
+import QuizSection from './components/QuizSection.jsx';
 import { playClick } from './utils/clickSound.js';
 
 // ── Palette constants ──────────────────────────────────────────
@@ -13,8 +13,9 @@ const C = {
   gold: '#F0B429', goldDk: '#C8901A', goldSoft: '#FCEFCF', goldText: '#5A3E00',
   teal: '#22A39A', tealDk: '#1A8C82', tealDeep: '#0F4C5C',
   tealSoft: '#DCF3EF', tealPale: '#7FD8CE',
-  coral: '#EF6F53', coralSoft: '#FBE5DE',
-  blue: '#2E6E8E', blueSoft: '#E0EDF7',
+  coral: '#E8523A', coralSoft: '#FCDDD5',
+  emerald: '#2A9B6E', emeraldSoft: '#D6F0E4',
+  blue: '#4968A6', blueSoft: '#DDE4F4',
   text: '#173A4A', textDeep: '#0F4C5C', textMuted: '#5E7480', textFaint: '#94A3AA',
   border: 'rgba(15,76,92,0.15)',
 };
@@ -156,18 +157,19 @@ const AvatarStack = ({ size = 20 }) => (
   </div>
 );
 
-// ── Topic tile (colored icon chip) ──────────────────────────────
-const TopicTile = ({ chipBg, chipColor, title, level, icon: Icon, onClick }) => (
-  <button onClick={() => { playClick(); onClick?.(); }} style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14,
-    textAlign: 'center', cursor: 'pointer', width: '100%', padding: '20px 12px', boxShadow: S.card,
-    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
-    transition: 'box-shadow .28s cubic-bezier(.2,.7,.3,1), transform .28s cubic-bezier(.2,.7,.3,1)' }}
-    onMouseEnter={e => { e.currentTarget.style.boxShadow = S.cardRaised; e.currentTarget.style.transform = 'translateY(-4px)'; }}
-    onMouseLeave={e => { e.currentTarget.style.boxShadow = S.card; e.currentTarget.style.transform = 'translateY(0)'; }}>
-    <div style={{ width: 48, height: 48, borderRadius: 14, background: chipBg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <Icon size={22} color={chipColor} />
+// ── Topic tile (emoji chip + colored border) ────────────────────
+const TopicTile = ({ chipBg, emoji, title, level, borderColor, borderHover, onClick }) => (
+  <button onClick={() => { playClick(); onClick?.(); }} style={{ background: C.surface, border: `1.5px solid ${borderColor}`, borderRadius: 14,
+    textAlign: 'center', cursor: 'pointer', width: '100%', padding: '18px 10px', boxShadow: S.card,
+    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+    transition: 'box-shadow .28s cubic-bezier(.2,.7,.3,1), transform .28s cubic-bezier(.2,.7,.3,1), border-color .28s ease' }}
+    onMouseEnter={e => { e.currentTarget.style.boxShadow = S.cardRaised; e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.borderColor = borderHover; }}
+    onMouseLeave={e => { e.currentTarget.style.boxShadow = S.card; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = borderColor; }}>
+    <div style={{ width: 52, height: 52, borderRadius: 14, background: chipBg, display: 'flex', alignItems: 'center', justifyContent: 'center',
+      fontSize: 24, boxShadow: 'inset 0 -2px 4px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04)' }}>
+      {emoji}
     </div>
-    <div style={{ fontSize: 12.5, fontWeight: 600, color: C.text }}>{title}</div>
+    <div style={{ fontSize: 12, fontWeight: 600, color: C.text }}>{title}</div>
     <div style={{ fontSize: 11, color: C.textFaint }}>{level}</div>
   </button>
 );
@@ -213,10 +215,10 @@ const LandingPage = ({ onGetStarted, onPreviewLesson, onCalibration, onSelectPat
   const scrollTo = (id) => { document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }); setMobileNav(false); };
 
   const paths = [
-    { chipBg: C.tealSoft, chipColor: C.tealDk, title: '5 Pillars', level: 'Foundation', icon: PillarsIcon, topicId: '5-pillars' },
-    { chipBg: C.goldSoft, chipColor: C.goldDk, title: 'Islamic Finance', level: 'Practical', icon: FinanceIcon, topicId: 'islamic-finance' },
-    { chipBg: C.blueSoft, chipColor: C.blue, title: 'Quran & Arabic', level: 'Language', icon: QuranIcon, topicId: 'quran-arabic' },
-    { chipBg: C.coralSoft, chipColor: C.coral, title: 'Islamic History', level: 'Context', icon: HistoryIcon, topicId: 'islamic-history' },
+    { chipBg: C.emeraldSoft, emoji: '\u{1F54C}', title: '5 Pillars', level: 'Foundation', borderColor: 'rgba(42,155,110,0.6)', borderHover: 'rgba(42,155,110,0.9)', topicId: '5-pillars' },
+    { chipBg: C.goldSoft, emoji: '\u2696\uFE0F', title: 'Islamic Finance', level: 'Practical', borderColor: 'rgba(240,180,41,0.6)', borderHover: 'rgba(240,180,41,0.9)', topicId: 'islamic-finance' },
+    { chipBg: C.blueSoft, emoji: '\u{1F4D6}', title: 'Quran & Arabic', level: 'Language', borderColor: 'rgba(73,104,166,0.6)', borderHover: 'rgba(73,104,166,0.9)', topicId: 'quran-arabic' },
+    { chipBg: C.coralSoft, emoji: '\u{1F3DB}\uFE0F', title: 'Islamic History', level: 'Context', borderColor: 'rgba(232,82,58,0.6)', borderHover: 'rgba(232,82,58,0.9)', topicId: 'islamic-history' },
   ];
 
   return (
@@ -224,7 +226,6 @@ const LandingPage = ({ onGetStarted, onPreviewLesson, onCalibration, onSelectPat
       <style>{`
         @media (max-width: 639px) {
           .topic-grid { grid-template-columns: repeat(2, 1fr) !important; }
-          .showcase-grid { grid-template-columns: 1fr !important; }
         }
       `}</style>
 
@@ -287,11 +288,11 @@ const LandingPage = ({ onGetStarted, onPreviewLesson, onCalibration, onSelectPat
               Ten-minute lessons on the Pillars, the Quran, Islamic finance, and history. Reviewed by scholars. No prerequisites.
             </p>
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 20 }}>
-              <DeanyButton variant="primary" onClick={onCalibration || onGetStarted}>
-                Take the Calibration Quiz
+              <DeanyButton variant="primary" onClick={() => scrollTo('how-it-works')}>
+                See how it works
               </DeanyButton>
-              <DeanyButton variant="secondary" onClick={() => scrollTo('how-it-works')}>
-                How it works
+              <DeanyButton variant="secondary" onClick={onCalibration || onGetStarted}>
+                Calibration Quiz
               </DeanyButton>
             </div>
             <TrustDots />
@@ -315,25 +316,8 @@ const LandingPage = ({ onGetStarted, onPreviewLesson, onCalibration, onSelectPat
         </div>
       </section>
 
-      {/* ── A4. HOW IT WORKS ────────────────────────────────── */}
-      <section id="how-it-works" style={{ padding: '48px 22px 40px', maxWidth: 800, margin: '0 auto',
-        animation: 'slideUp 0.6s ease-out 0.15s both' }}>
-        <SectionHead eyebrow="HOW IT WORKS" title="Three steps to start your journey" />
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
-          {[
-            { n: '1', t: 'Find your path', d: 'Take a 2-minute Calibration Quiz to match you with the right starting point.' },
-            { n: '2', t: 'Learn in bites', d: 'Lessons of 5 to 15 minutes on the Pillars, Quran, Finance, and History.' },
-            { n: '3', t: 'Reflect daily', d: 'Save verses, journal reflections, and build a quiet daily habit.' },
-          ].map(s => (
-            <div key={s.n} style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14, padding: '18px 16px', boxShadow: S.card }}>
-              <div style={{ width: 32, height: 32, borderRadius: '50%', background: C.tealSoft, color: C.tealDeep,
-                display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: serif, fontSize: 15, fontWeight: 500, marginBottom: 12 }}>{s.n}</div>
-              <div style={{ fontFamily: serif, fontSize: 15, fontWeight: 500, color: C.tealDeep, marginBottom: 4 }}>{s.t}</div>
-              <div style={{ fontSize: 12, color: C.text, lineHeight: 1.5 }}>{s.d}</div>
-            </div>
-          ))}
-        </div>
-      </section>
+      {/* ── A4. HOW IT WORKS (interactive quiz) ─────────────── */}
+      <QuizSection />
 
       {/* ── A5. FOUR PATHS (topic tiles) ────────────────────── */}
       <section id="paths" style={{ padding: '40px 22px', background: C.surface }}>
@@ -342,50 +326,6 @@ const LandingPage = ({ onGetStarted, onPreviewLesson, onCalibration, onSelectPat
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}
             className="topic-grid">
             {paths.map(p => <TopicTile key={p.title} {...p} onClick={() => onSelectPath ? onSelectPath(p.topicId) : onGetStarted()} />)}
-          </div>
-        </div>
-      </section>
-
-      {/* ── A6. INTERACTIVE LESSONS SHOWCASE ─────────────────── */}
-      <section style={{ padding: '48px 22px', background: C.canvas }}>
-        <div style={{ maxWidth: 800, margin: '0 auto' }}>
-          <SectionHead eyebrow="INTERACTIVE LESSONS" title="Learn by doing, not just reading"
-            sub="Every lesson uses hands-on interactions to help concepts stick." />
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }} className="showcase-grid">
-            {/* Drag & match */}
-            <div style={{ background: C.surface, borderRadius: 14, padding: '20px 16px', boxShadow: `${S.card}, 0 4px 16px rgba(34,163,154,0.10)`,
-              transition: 'box-shadow .28s ease, transform .28s ease' }}
-              onMouseEnter={e => { e.currentTarget.style.boxShadow = `${S.cardRaised}, 0 8px 24px rgba(34,163,154,0.15)`; e.currentTarget.style.transform = 'translateY(-3px)'; }}
-              onMouseLeave={e => { e.currentTarget.style.boxShadow = `${S.card}, 0 4px 16px rgba(34,163,154,0.10)`; e.currentTarget.style.transform = 'translateY(0)'; }}>
-              <div style={{ background: C.tealSoft, borderRadius: 10, padding: '16px 14px', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 10 }}>
-                <span style={{ background: C.teal, color: '#fff', fontSize: 11, fontWeight: 600, padding: '4px 12px', borderRadius: 20 }}>Zakat</span>
-                <span style={{ border: `1.5px dashed ${C.tealDk}`, borderRadius: 20, padding: '4px 12px', fontSize: 11, color: C.tealDk }}>Drop here</span>
-              </div>
-              <div style={{ fontSize: 12, fontWeight: 600, color: C.text }}>Drag & match</div>
-            </div>
-            {/* Fill in the blank */}
-            <div style={{ background: C.surface, borderRadius: 14, padding: '20px 16px', boxShadow: `${S.card}, 0 4px 16px rgba(240,180,41,0.10)`,
-              transition: 'box-shadow .28s ease, transform .28s ease' }}
-              onMouseEnter={e => { e.currentTarget.style.boxShadow = `${S.cardRaised}, 0 8px 24px rgba(240,180,41,0.15)`; e.currentTarget.style.transform = 'translateY(-3px)'; }}
-              onMouseLeave={e => { e.currentTarget.style.boxShadow = `${S.card}, 0 4px 16px rgba(240,180,41,0.10)`; e.currentTarget.style.transform = 'translateY(0)'; }}>
-              <div style={{ background: C.goldSoft, borderRadius: 10, padding: '16px 14px', marginBottom: 14, fontSize: 12, color: C.text, lineHeight: 1.6 }}>
-                The second pillar is <span style={{ borderBottom: `2px solid ${C.gold}`, paddingBottom: 1, minWidth: 60, display: 'inline-block' }}>&nbsp;</span>
-              </div>
-              <div style={{ fontSize: 12, fontWeight: 600, color: C.text }}>Fill in the blank</div>
-            </div>
-            {/* Scenario card */}
-            <div style={{ background: C.surface, borderRadius: 14, padding: '20px 16px', boxShadow: `${S.card}, 0 4px 16px rgba(239,111,83,0.10)`,
-              transition: 'box-shadow .28s ease, transform .28s ease' }}
-              onMouseEnter={e => { e.currentTarget.style.boxShadow = `${S.cardRaised}, 0 8px 24px rgba(239,111,83,0.15)`; e.currentTarget.style.transform = 'translateY(-3px)'; }}
-              onMouseLeave={e => { e.currentTarget.style.boxShadow = `${S.card}, 0 4px 16px rgba(239,111,83,0.10)`; e.currentTarget.style.transform = 'translateY(0)'; }}>
-              <div style={{ background: C.coralSoft, borderRadius: 10, padding: '16px 14px', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={C.coral} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                </svg>
-                <span style={{ fontSize: 11, color: C.coral, fontWeight: 500 }}>What would you do?</span>
-              </div>
-              <div style={{ fontSize: 12, fontWeight: 600, color: C.text }}>Scenario card</div>
-            </div>
           </div>
         </div>
       </section>
