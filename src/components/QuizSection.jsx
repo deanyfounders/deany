@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { playClick } from '../utils/clickSound.js';
 
 // ── Palette ──────────────────────────────────────────
@@ -75,7 +75,7 @@ const Q3_PILLS = [
   { emoji: '\u{1F331}', text: 'New Muslims only', correct: false },
 ];
 
-// ── Stable sub-components (defined OUTSIDE main component) ──
+// ── Stable sub-components ────────────────────────────
 const Feedback = ({ text }) => text ? (
   <div style={{ marginTop: 14, padding: '11px 14px', borderRadius: 12, fontSize: 12.5, lineHeight: 1.5,
     background: C.tealSoft, border: '1px solid rgba(34,163,154,0.15)', color: C.tealDeep,
@@ -100,15 +100,10 @@ const BackArrow = ({ onClick, label }) => (
 
 // ═══════════════════════════════════════════════════════
 const QuizSection = () => {
-  // ── Core view state ────────────────────────────
-  // 'teaser' | 'read' | 'quiz' | 'result'
   const [view, setView] = useState('teaser');
   const [step, setStep] = useState(0);
   const [showBtn, setShowBtn] = useState(false);
-
-  // Transition flags (drive opacity/animation, NOT conditional rendering)
-  const [stepFading, setStepFading] = useState(false);
-  const [headerFading, setHeaderFading] = useState(false);
+  const [leaving, setLeaving] = useState(false); // fade-out phase for view transitions
 
   // Q1
   const [q1Chosen, setQ1Chosen] = useState(-1);
@@ -127,53 +122,92 @@ const QuizSection = () => {
   const [q3Fb, setQ3Fb] = useState(null);
 
   const cardRef = useRef(null);
-  const busy = useRef(false); // guard against double-clicks during transitions
+  const stepRefs = useRef([null, null, null]);
+  const busy = useRef(false);
+
+  // ── Force animation restart on step via ref ────
+  useEffect(() => {
+    if (leaving) return;
+    const el = stepRefs.current[step];
+    if (el && view === 'quiz') {
+      el.style.animation = 'none';
+      void el.offsetHeight; // force reflow
+      el.style.animation = '';
+    }
+  }, [step, view, leaving]);
 
   // ── Reset ──────────────────────────────────────
   const resetAll = useCallback(() => {
-    setStep(0); setShowBtn(false); setStepFading(false); setHeaderFading(false);
+    setStep(0); setShowBtn(false); setLeaving(false);
     setQ1Chosen(-1); setQ1Reveal(false); setQ1Fb(null);
     setQ2Placed([]); setQ2Rej(-1); setQ2Fb(null);
     setQ3Blank('?'); setQ3Filled(false); setQ3Wrong(false); setQ3Used(-1); setQ3Dimmed(false); setQ3Fb(null);
   }, []);
 
-  // ── Navigation ─────────────────────────────────
-  const startQuiz = () => { playClick(); setView('quiz'); };
-  const showRead = () => { playClick(); setView('read'); };
-  const backToTeaser = () => { playClick(); resetAll(); setView('teaser'); };
+  // ── View transitions (fade out → swap → fade in) ──
+  const goTo = useCallback((newView, delay = 200) => {
+    if (busy.current) return;
+    busy.current = true;
+    setLeaving(true);
+    setTimeout(() => {
+      setView(newView);
+      setLeaving(false);
+      busy.current = false;
+    }, delay);
+  }, []);
 
-  // ── Advance (Continue button) ──────────────────
+  const startQuiz = () => { playClick(); goTo('quiz'); };
+  const showRead = () => { playClick(); goTo('read'); };
+  const backToTeaser = () => {
+    if (busy.current) return;
+    busy.current = true;
+    playClick();
+    setLeaving(true);
+    setTimeout(() => {
+      resetAll();
+      setView('teaser');
+      setLeaving(false);
+      busy.current = false;
+    }, 200);
+  };
+
+  // ── Advance (Continue) ─────────────────────────
   const advance = () => {
     if (busy.current) return;
     busy.current = true;
     playClick();
     setShowBtn(false);
-    setStepFading(true);
+
+    // Phase 1: fade out current step
+    const el = stepRefs.current[step];
+    if (el) {
+      el.style.transition = 'opacity 0.2s ease';
+      el.style.opacity = '0';
+    }
 
     setTimeout(() => {
-      const next = step + 1;
+      // Clear the ref-based fade
+      if (el) { el.style.transition = ''; el.style.opacity = ''; }
 
+      const next = step + 1;
       if (next >= 3) {
         // ── Result transition ──
-        // Phase 1: fade header (step content already faded)
-        setHeaderFading(true);
+        // Phase 2: fade header via ref
+        const card = cardRef.current;
+        const hdr = card?.querySelector('[data-quiz-header]');
+        const body = card?.querySelector('[data-quiz-body]');
+        if (hdr) { hdr.style.transition = 'opacity 0.2s ease'; hdr.style.opacity = '0'; }
+        if (body) { body.style.transition = 'opacity 0.2s ease'; body.style.opacity = '0'; }
 
         setTimeout(() => {
-          // Phase 2: lock card height, swap to result
-          const card = cardRef.current;
-          if (card) {
-            card.style.height = card.offsetHeight + 'px';
-            card.style.overflow = 'hidden';
-          }
-
+          // Phase 3: lock height, swap to result
+          if (card) { card.style.height = card.offsetHeight + 'px'; card.style.overflow = 'hidden'; }
+          if (hdr) { hdr.style.transition = ''; hdr.style.opacity = ''; }
+          if (body) { body.style.transition = ''; body.style.opacity = ''; }
           setView('result');
-          setStepFading(false);
-          setHeaderFading(false);
 
-          // Phase 3: confetti + animate height
           setTimeout(() => {
-            playSuccess();
-            launchConfetti();
+            playSuccess(); launchConfetti();
             if (card) {
               requestAnimationFrame(() => {
                 card.style.transition = 'height 0.35s ease';
@@ -184,103 +218,56 @@ const QuizSection = () => {
               });
             }
             busy.current = false;
-          }, 60);
+          }, 50);
         }, 200);
       } else {
         // ── Next step ──
         setStep(next);
-        setStepFading(false);
         busy.current = false;
       }
     }, 220);
   };
 
-  // ── Q1 handler ─────────────────────────────────
+  // ── Q1 ─────────────────────────────────────────
   const doQ1 = (idx, correct) => {
     if (q1Chosen >= 0) return;
-    playClick();
-    setQ1Chosen(idx);
-    if (correct) {
-      playCorrect();
-      setQ1Fb('Bite-sized by design. Short enough for a commute, deep enough to stick.');
-    } else {
-      playWrong();
-      setQ1Fb('Bite-sized by design. Most lessons take about ten minutes. Short enough for a commute, deep enough to stick.');
-      setTimeout(() => setQ1Reveal(true), 300);
-    }
+    playClick(); setQ1Chosen(idx);
+    if (correct) { playCorrect(); setQ1Fb('Bite-sized by design. Short enough for a commute, deep enough to stick.'); }
+    else { playWrong(); setQ1Fb('Bite-sized by design. Most lessons take about ten minutes. Short enough for a commute, deep enough to stick.'); setTimeout(() => setQ1Reveal(true), 300); }
     setTimeout(() => setShowBtn(true), 400);
   };
 
-  // ── Q2 handler ─────────────────────────────────
+  // ── Q2 ─────────────────────────────────────────
   const doQ2 = (idx, correct) => {
     if (q2Placed.includes(idx)) return;
     playClick();
     if (correct) {
-      const np = [...q2Placed, idx];
-      setQ2Placed(np);
-      playCorrect();
-      if (np.length === 3) {
-        setQ2Fb("Instead of passively watching or reading, every Deany lesson has you do things: read a little, answer, get feedback, move on. That's how it sticks. You just did it to answer this.");
-        setTimeout(() => setShowBtn(true), 400);
-      }
-    } else {
-      playWrong();
-      setQ2Rej(idx);
-      setTimeout(() => setQ2Rej(-1), 400);
-    }
+      const np = [...q2Placed, idx]; setQ2Placed(np); playCorrect();
+      if (np.length === 3) { setQ2Fb("Instead of passively watching or reading, every Deany lesson has you do things: read a little, answer, get feedback, move on. That's how it sticks. You just did it to answer this."); setTimeout(() => setShowBtn(true), 400); }
+    } else { playWrong(); setQ2Rej(idx); setTimeout(() => setQ2Rej(-1), 400); }
   };
 
-  // ── Q3 handler ─────────────────────────────────
+  // ── Q3 ─────────────────────────────────────────
   const doQ3 = (idx, correct) => {
     if (q3Filled) return;
     playClick();
     const label = Q3_PILLS[idx].text;
     if (correct) {
-      setQ3Blank(label); setQ3Filled(true); setQ3Used(idx); setQ3Dimmed(true);
-      playCorrect();
+      setQ3Blank(label); setQ3Filled(true); setQ3Used(idx); setQ3Dimmed(true); playCorrect();
       setQ3Fb('Practising Muslims, curious non-Muslims, new converts, born Muslims who never studied. Deany is built for every starting point.');
       setTimeout(() => setShowBtn(true), 400);
-    } else {
-      playWrong();
-      setQ3Blank(label); setQ3Wrong(true);
-      setTimeout(() => { setQ3Blank('?'); setQ3Wrong(false); }, 500);
-    }
+    } else { playWrong(); setQ3Blank(label); setQ3Wrong(true); setTimeout(() => { setQ3Blank('?'); setQ3Wrong(false); }, 500); }
   };
 
-  // ── Step styles ────────────────────────────────
-  // Key fix: NO animation during fade-out (animation fill-mode overrides opacity)
-  const getStepStyle = (i) => {
-    if (i !== step) return { display: 'none' };
-    if (stepFading) return { opacity: 0, transition: 'opacity 0.2s ease' };
-    return { animation: 'quizStepIn 0.3s ease both' };
-  };
+  // ── Leaving style for current view ─────────────
+  const leaveStyle = leaving ? { opacity: 0, transform: 'scale(0.97)', transition: 'opacity 0.2s ease, transform 0.2s ease' } : {};
 
-  // ── Dots (inline, not a component) ─────────────
-  const renderDots = () => (
-    <div style={{ display: 'flex', gap: 5 }}>
-      {[0, 1, 2].map(i => (
-        <div key={i} style={{ width: 8, height: 8, borderRadius: '50%', transition: 'all 0.35s ease',
-          background: view === 'result' || i < step ? C.teal : i === step ? C.tealPale : C.border }} />
-      ))}
-    </div>
-  );
+  // ── Step display ───────────────────────────────
+  const stepStyle = (i) => i !== step ? { display: 'none' } : { animation: 'quizStepIn 0.3s ease both' };
 
-  // ── Continue button (inline, not a component) ──
-  const renderNextBtn = () => showBtn ? (
-    <button onClick={advance} style={{ width: '100%', marginTop: 16, padding: 12, border: 'none', borderRadius: 12,
-      background: C.teal, color: '#fff', fontSize: 13.5, fontWeight: 600, cursor: 'pointer',
-      boxShadow: `0 2px 0 ${C.tealDk}`, transition: 'transform 0.15s',
-      animation: 'quizPopIn 0.25s cubic-bezier(.2,.7,.3,1) both' }}
-      onMouseDown={e => { e.currentTarget.style.transform = 'translateY(1px)'; e.currentTarget.style.boxShadow = 'none'; }}
-      onMouseUp={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = `0 2px 0 ${C.tealDk}`; }}
-      onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = `0 2px 0 ${C.tealDk}`; }}>
-      Continue
-    </button>
-  ) : null;
-
-  // ── Q1 render ──────────────────────────────────
+  // ── Render Q1 ──────────────────────────────────
   const renderQ1 = () => (
-    <div style={getStepStyle(0)}>
+    <div ref={el => stepRefs.current[0] = el} style={stepStyle(0)}>
       <div style={{ fontFamily: serif, fontSize: 19, fontWeight: 500, color: C.tealDeep, lineHeight: 1.35, marginBottom: 18 }}>
         How long is a typical Deany lesson?
       </div>
@@ -305,24 +292,22 @@ const QuizSection = () => {
               pointerEvents: q1Chosen >= 0 ? 'none' : 'auto' }}>
               <span style={{ width: 24, height: 24, borderRadius: 7, background: lBg, color: lC,
                 fontSize: 11, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                flexShrink: 0, border: `1px solid ${bc}`, transition: 'all 0.18s ease' }}>
-                {o.letter}
-              </span>
+                flexShrink: 0, border: `1px solid ${bc}`, transition: 'all 0.18s ease' }}>{o.letter}</span>
               <span>{o.text}</span>
             </button>
           );
         })}
       </div>
       <Feedback text={q1Fb} />
-      {renderNextBtn()}
+      {showBtn && renderContinueBtn()}
     </div>
   );
 
-  // ── Q2 render ──────────────────────────────────
+  // ── Render Q2 ──────────────────────────────────
   const renderQ2 = () => {
     const done = q2Placed.length === 3;
     return (
-      <div style={getStepStyle(1)}>
+      <div ref={el => stepRefs.current[1] = el} style={stepStyle(1)}>
         <div style={{ fontFamily: serif, fontSize: 19, fontWeight: 500, color: C.tealDeep, lineHeight: 1.35, marginBottom: 18 }}>
           How do you actually learn on Deany?
         </div>
@@ -364,14 +349,14 @@ const QuizSection = () => {
           ))}
         </div>
         <Feedback text={q2Fb} />
-        {renderNextBtn()}
+        {showBtn && renderContinueBtn()}
       </div>
     );
   };
 
-  // ── Q3 render ──────────────────────────────────
+  // ── Render Q3 ──────────────────────────────────
   const renderQ3 = () => (
-    <div style={getStepStyle(2)}>
+    <div ref={el => stepRefs.current[2] = el} style={stepStyle(2)}>
       <div style={{ fontFamily: serif, fontSize: 19, fontWeight: 500, color: C.tealDeep, lineHeight: 1.35, marginBottom: 18 }}>
         Complete the sentence
       </div>
@@ -390,11 +375,7 @@ const QuizSection = () => {
             {q3Blank}
           </span>.
         </div>
-        {!q3Filled && (
-          <div style={{ fontSize: 11, color: C.textFaint, marginTop: 10, opacity: q3Wrong ? 0 : 1, transition: 'opacity 0.3s' }}>
-            tap a pill below
-          </div>
-        )}
+        {!q3Filled && <div style={{ fontSize: 11, color: C.textFaint, marginTop: 10, opacity: q3Wrong ? 0 : 1, transition: 'opacity 0.3s' }}>tap a pill below</div>}
       </div>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 9, justifyContent: 'center', position: 'relative' }}>
         {Q3_PILLS.map((p, i) => {
@@ -416,22 +397,34 @@ const QuizSection = () => {
         })}
       </div>
       <Feedback text={q3Fb} />
-      {renderNextBtn()}
+      {showBtn && renderContinueBtn()}
     </div>
   );
 
-  // ═══════════════════════════════════════════════
-  // RENDER
+  // ── Continue button (plain function, not component) ──
+  const renderContinueBtn = () => (
+    <button onClick={advance} style={{ width: '100%', marginTop: 16, padding: 12, border: 'none', borderRadius: 12,
+      background: C.teal, color: '#fff', fontSize: 13.5, fontWeight: 600, cursor: 'pointer',
+      boxShadow: `0 2px 0 ${C.tealDk}`, transition: 'transform 0.15s',
+      animation: 'quizPopIn 0.25s cubic-bezier(.2,.7,.3,1) both' }}
+      onMouseDown={e => { e.currentTarget.style.transform = 'translateY(1px)'; e.currentTarget.style.boxShadow = 'none'; }}
+      onMouseUp={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = `0 2px 0 ${C.tealDk}`; }}
+      onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = `0 2px 0 ${C.tealDk}`; }}>
+      Continue
+    </button>
+  );
+
   // ═══════════════════════════════════════════════
   return (
     <section id="how-it-works" style={{ padding: '56px 22px 48px', background: C.canvas }}>
       <style>{`
         @keyframes quizStepIn { 0% { opacity:0; transform:translateY(8px); } 100% { opacity:1; transform:translateY(0); } }
-        @keyframes quizPopIn { 0% { opacity:0; transform:scale(0.85) translateY(6px); } 100% { opacity:1; transform:scale(1) translateY(0); } }
+        @keyframes quizPopIn { 0% { opacity:0; transform:scale(0.92) translateY(6px); } 100% { opacity:1; transform:scale(1) translateY(0); } }
         @keyframes quizShake { 0%,100% { transform:translateX(0); } 20% { transform:translateX(-5px); } 40% { transform:translateX(5px); } 60% { transform:translateX(-3px); } 80% { transform:translateX(3px); } }
         @keyframes quizDropIn { 0% { opacity:0; transform:translateY(-10px) scale(0.9); } 100% { opacity:1; transform:translateY(0) scale(1); } }
         @keyframes quizCheckDraw { 0% { stroke-dashoffset:20; } 100% { stroke-dashoffset:0; } }
         @keyframes confettiFall { 0% { transform:translateY(0) rotate(0); opacity:1; } 100% { transform:translateY(calc(100vh + 40px)) rotate(720deg); opacity:0; } }
+        @keyframes quizBob { 0%,100% { transform:translateY(0); } 50% { transform:translateY(3px); } }
         @media (prefers-reduced-motion:reduce) { *, *::before, *::after { animation-duration:0.01ms !important; transition-duration:0.01ms !important; } }
       `}</style>
 
@@ -444,9 +437,11 @@ const QuizSection = () => {
           <div style={{ fontFamily: serif, fontSize: 24, fontWeight: 500, color: C.tealDeep, lineHeight: 1.3 }}>
             The Deany method
           </div>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.gold} strokeWidth="2.5"
-            strokeLinecap="round" strokeLinejoin="round" style={{ marginTop: 10 }}>
-            <path d="M12 5v14" /><path d="M19 12l-7 7-7-7" />
+          {/* Clean chevron with gentle bob */}
+          <svg width="20" height="12" viewBox="0 0 20 12" fill="none" stroke={C.gold} strokeWidth="2.5"
+            strokeLinecap="round" strokeLinejoin="round"
+            style={{ marginTop: 12, opacity: 0.7, animation: 'quizBob 2.5s ease-in-out infinite' }}>
+            <path d="M2 2l8 8 8-8" />
           </svg>
         </div>
 
@@ -460,7 +455,8 @@ const QuizSection = () => {
           <div style={{
             display: view === 'teaser' ? 'block' : 'none',
             padding: '28px 24px',
-            animation: view === 'teaser' ? 'quizPopIn 0.3s cubic-bezier(.2,.7,.3,1) both' : 'none' }}>
+            ...(leaving && view === 'teaser' ? leaveStyle : {}),
+            ...(!leaving && view === 'teaser' ? { animation: 'quizPopIn 0.3s cubic-bezier(.2,.7,.3,1) both' } : {}) }}>
             <div style={{ display: 'flex', gap: 10 }}>
               {[
                 { onClick: showRead, border: C.border, bg: C.canvas, iconBg: C.canvas, icon: '\u{1F4C4}', label: 'Just tell me', sub: 'Read a quick summary', labelColor: C.text },
@@ -481,11 +477,12 @@ const QuizSection = () => {
             </div>
           </div>
 
-          {/* ── READ MODE ── */}
+          {/* ── READ ── */}
           <div style={{
             display: view === 'read' ? 'block' : 'none',
             padding: 24,
-            animation: view === 'read' ? 'quizPopIn 0.3s cubic-bezier(.2,.7,.3,1) both' : 'none' }}>
+            ...(leaving && view === 'read' ? leaveStyle : {}),
+            ...(!leaving && view === 'read' ? { animation: 'quizPopIn 0.3s cubic-bezier(.2,.7,.3,1) both' } : {}) }}>
             {[
               { n: '1', text: 'Bite-sized lessons. Each one takes about 10 minutes. A short read, then hands-on questions with instant feedback.' },
               { n: '2', text: 'Four paths to choose from. The Pillars, Islamic Finance, Quran & Arabic, and History. Pick one or mix them.' },
@@ -493,9 +490,7 @@ const QuizSection = () => {
             ].map(s => (
               <div key={s.n} style={{ display: 'flex', gap: 12, alignItems: 'flex-start', marginBottom: 14 }}>
                 <div style={{ width: 24, height: 24, borderRadius: '50%', background: C.tealSoft, color: C.tealDeep,
-                  fontFamily: serif, fontSize: 12, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  {s.n}
-                </div>
+                  fontFamily: serif, fontSize: 12, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{s.n}</div>
                 <div style={{ fontSize: 14, color: C.text, lineHeight: 1.55 }}>
                   <strong style={{ color: C.tealDeep }}>{s.text.split('.')[0]}.</strong>
                   {s.text.substring(s.text.indexOf('.') + 1)}
@@ -505,25 +500,32 @@ const QuizSection = () => {
             <BackArrow onClick={backToTeaser} label="Or try it instead" />
           </div>
 
-          {/* ── QUIZ (header + body) ── stays mounted for quiz AND during result transition */}
-          <div style={{ display: view === 'quiz' || view === 'result' ? 'block' : 'none' }}>
+          {/* ── QUIZ + RESULT container ── */}
+          <div style={{
+            display: view === 'quiz' || view === 'result' ? 'block' : 'none',
+            ...(leaving && view === 'quiz' ? leaveStyle : {}),
+            ...(!leaving && view === 'quiz' ? { animation: 'quizPopIn 0.3s cubic-bezier(.2,.7,.3,1) both' } : {}) }}>
+
             {/* Header */}
-            <div style={{
+            <div data-quiz-header style={{
               display: view === 'result' ? 'none' : 'flex',
-              justifyContent: 'space-between', alignItems: 'center', padding: '20px 24px 0',
-              opacity: headerFading ? 0 : 1,
-              transition: 'opacity 0.2s ease' }}>
+              justifyContent: 'space-between', alignItems: 'center', padding: '20px 24px 0' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <BackArrow onClick={backToTeaser} />
                 <div style={{ fontSize: 9, letterSpacing: '1px', fontWeight: 700, textTransform: 'uppercase', color: C.textFaint }}>
                   <b style={{ color: C.textMuted, fontWeight: 700 }}>{LABELS[step]?.bold}</b> &middot; {LABELS[step]?.sub}
                 </div>
               </div>
-              {renderDots()}
+              <div style={{ display: 'flex', gap: 5 }}>
+                {[0, 1, 2].map(i => (
+                  <div key={i} style={{ width: 8, height: 8, borderRadius: '50%', transition: 'all 0.35s ease',
+                    background: view === 'result' || i < step ? C.teal : i === step ? C.tealPale : C.border }} />
+                ))}
+              </div>
             </div>
 
-            {/* Body (all 3 steps always rendered, visibility via display) */}
-            <div style={{
+            {/* Body */}
+            <div data-quiz-body style={{
               display: view === 'result' ? 'none' : 'block',
               padding: '18px 24px 24px' }}>
               {renderQ1()}
@@ -531,11 +533,10 @@ const QuizSection = () => {
               {renderQ3()}
             </div>
 
-            {/* Result (inside same container for smooth height transition) */}
+            {/* Result */}
             <div style={{
               display: view === 'result' ? 'block' : 'none',
-              textAlign: 'center',
-              padding: '28px 24px 20px',
+              textAlign: 'center', padding: '28px 24px 20px',
               animation: view === 'result' ? 'quizPopIn 0.4s cubic-bezier(.2,.7,.3,1) both' : 'none' }}>
               <div style={{ fontSize: 32, marginBottom: 14 }}>{'\u{1F389}'}</div>
               <div style={{ fontFamily: serif, fontSize: 21, fontWeight: 500, color: C.tealDeep, lineHeight: 1.3, marginBottom: 8 }}>
