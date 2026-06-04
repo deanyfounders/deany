@@ -258,13 +258,10 @@ const LandingPage = ({ onGetStarted, onPreviewLesson, onCalibration, onSelectPat
               onMouseLeave={e => e.currentTarget.style.color = C.textMuted}>{l}</button>
           ))}
         </div>
-        {/* Right */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        {/* Right: quiet sign-in only */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           <button onClick={onGetStarted} className="hidden sm:inline"
-            style={{ fontSize: 12, color: C.tealDeep, background: 'none', border: 'none', cursor: 'pointer' }}>Sign in</button>
-          <DeanyButton variant="primary" onClick={onGetStarted} style={{ padding: '7px 14px', fontSize: 12, minHeight: 36 }}>
-            Get started
-          </DeanyButton>
+            style={{ fontSize: 12, color: C.tealDeep, background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}>Sign in</button>
           {/* Mobile hamburger */}
           <button className="sm:hidden" onClick={() => setMobileNav(!mobileNav)}
             style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
@@ -281,6 +278,8 @@ const LandingPage = ({ onGetStarted, onPreviewLesson, onCalibration, onSelectPat
             <button key={l} onClick={() => scrollTo(l.toLowerCase().replace(/ /g, '-'))}
               style={{ fontSize: 13, color: C.textMuted, background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', padding: 0 }}>{l}</button>
           ))}
+          <button onClick={() => { setMobileNav(false); onGetStarted?.(); }}
+            style={{ fontSize: 13, color: C.tealDeep, background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', padding: 0, fontWeight: 600 }}>Sign in</button>
         </div>
       )}
 
@@ -297,13 +296,16 @@ const LandingPage = ({ onGetStarted, onPreviewLesson, onCalibration, onSelectPat
             <p style={{ fontSize: 14, color: C.textMuted, lineHeight: 1.65, maxWidth: 340, margin: '0 0 26px' }}>
               Ten-minute lessons on the Pillars, the Quran, Islamic finance, and history. Reviewed by scholars. No prerequisites.
             </p>
-            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 20 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 12, marginBottom: 20 }}>
               <DeanyButton variant="primary" onClick={onCalibration || onGetStarted}>
-                Calibration Quiz
+                Find your level
               </DeanyButton>
-              <DeanyButton variant="secondary" onClick={() => scrollTo('how-it-works')}>
-                See how it works
-              </DeanyButton>
+              <button onClick={onGetStarted}
+                style={{ fontSize: 12.5, color: C.textMuted, background: 'none', border: 'none', cursor: 'pointer', padding: 0, transition: 'color .15s ease' }}
+                onMouseEnter={e => e.currentTarget.style.color = C.tealDeep}
+                onMouseLeave={e => e.currentTarget.style.color = C.textMuted}>
+                I already have an account
+              </button>
             </div>
             <TrustDots />
           </div>
@@ -366,7 +368,8 @@ const LandingPage = ({ onGetStarted, onPreviewLesson, onCalibration, onSelectPat
       {/* ── A5. FOUR PATHS (topic tiles) ────────────────────── */}
       <section id="paths" style={{ padding: '40px 22px', background: C.surface }}>
         <div style={{ maxWidth: 700, margin: '0 auto' }}>
-          <SectionHead eyebrow="PICK A PATH" title="Pick one, or weave them together" />
+          <SectionHead eyebrow="Your turn" title="Pick a topic to start"
+            sub="Start with one. Add more whenever you like." />
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}
             className="topic-grid">
             {paths.map(p => <TopicTile key={p.title} {...p} onClick={() => onSelectPath ? onSelectPath(p.topicId) : onGetStarted()} />)}
@@ -450,10 +453,10 @@ const LandingPage = ({ onGetStarted, onPreviewLesson, onCalibration, onSelectPat
             Your first lesson is two minutes away
           </h2>
           <p style={{ fontSize: 13, color: 'rgba(251,250,246,0.7)', marginBottom: 22, lineHeight: 1.6 }}>
-            Take the Calibration Quiz, find your path, and start today.
+            Find your level, pick a path, and start today.
           </p>
           <DeanyButton variant="primary" onClick={onCalibration || onGetStarted}>
-            Take the Calibration Quiz
+            Find your level
           </DeanyButton>
           <div style={{ fontSize: 11, color: 'rgba(251,250,246,0.5)', marginTop: 14 }}>Free core content · No card required</div>
         </div>
