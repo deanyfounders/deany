@@ -392,9 +392,18 @@ const LandingPage = ({ onGetStarted, onPreviewLesson, onCalibration, onSelectPat
           </div>
           <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14, padding: '16px 18px', boxShadow: S.card }}>
             <div style={{ fontSize: 11, color: C.teal, fontWeight: 500, marginBottom: 10, letterSpacing: '0.5px' }}>REVIEW PROCESS</div>
+            <p style={{ fontSize: 12, color: C.text, lineHeight: 1.6, margin: '0 0 8px' }}>
+              Every lesson passes three checks before it goes live:
+            </p>
+            <ul style={{ margin: '0 0 10px', padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 5 }}>
+              {['Scholar review for doctrine', 'Teacher review for clarity', 'Citation audit for sources'].map(item => (
+                <li key={item} style={{ fontSize: 12, color: C.text, lineHeight: 1.5, display: 'flex', alignItems: 'flex-start', gap: 7 }}>
+                  <span style={{ color: C.teal, flexShrink: 0, lineHeight: 1.5 }}>{'•'}</span>{item}
+                </li>
+              ))}
+            </ul>
             <p style={{ fontSize: 12, color: C.text, lineHeight: 1.6, margin: 0 }}>
-              Each lesson passes three checks before it goes live: a scholar review for doctrine, a teacher review for clarity,
-              and a citation audit. Disagreements between schools are flagged, not flattened.
+              Where schools of thought differ, we flag it. We never flatten it.
             </p>
           </div>
         </div>
