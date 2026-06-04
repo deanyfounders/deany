@@ -6,6 +6,9 @@ import {
 import DeanyButton from './components/DeanyButton.jsx';
 import QuizSection from './components/QuizSection.jsx';
 import { playClick } from './utils/clickSound.js';
+import stepQuiz from './assets/step-quiz.jpg';
+import stepBites from './assets/step-bites.jpg';
+import stepHabit from './assets/step-habit.jpg';
 
 // ── Palette constants ──────────────────────────────────────────
 const C = {
@@ -216,16 +219,23 @@ const LandingPage = ({ onGetStarted, onPreviewLesson, onCalibration, onSelectPat
 
   const paths = [
     { chipBg: C.emeraldSoft, emoji: '\u{1F54C}', title: '5 Pillars', level: 'Foundation', borderColor: 'rgba(42,155,110,0.6)', borderHover: 'rgba(42,155,110,0.9)', topicId: '5-pillars' },
-    { chipBg: C.goldSoft, emoji: '\u2696\uFE0F', title: 'Islamic Finance', level: 'Practical', borderColor: 'rgba(240,180,41,0.6)', borderHover: 'rgba(240,180,41,0.9)', topicId: 'islamic-finance' },
+    { chipBg: C.goldSoft, emoji: '⚖️', title: 'Islamic Finance', level: 'Practical', borderColor: 'rgba(240,180,41,0.6)', borderHover: 'rgba(240,180,41,0.9)', topicId: 'islamic-finance' },
     { chipBg: C.blueSoft, emoji: '\u{1F4D6}', title: 'Quran & Arabic', level: 'Language', borderColor: 'rgba(73,104,166,0.6)', borderHover: 'rgba(73,104,166,0.9)', topicId: 'quran-arabic' },
-    { chipBg: C.coralSoft, emoji: '\u{1F3DB}\uFE0F', title: 'Islamic History', level: 'Context', borderColor: 'rgba(232,82,58,0.6)', borderHover: 'rgba(232,82,58,0.9)', topicId: 'islamic-history' },
+    { chipBg: C.coralSoft, emoji: '\u{1F3DB}️', title: 'Islamic History', level: 'Context', borderColor: 'rgba(232,82,58,0.6)', borderHover: 'rgba(232,82,58,0.9)', topicId: 'islamic-history' },
   ];
 
   return (
     <div style={{ background: C.canvas, color: C.text, minHeight: '100vh' }}>
       <style>{`
+        .steps3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .steps3-line { display: none; }
+        @media (min-width: 640px) {
+          .steps3-line { display: block; position: absolute; top: 23px; left: 16.66%; right: 16.66%;
+            height: 0; border-top: 2px dotted rgba(15,76,92,0.20); z-index: 0; }
+        }
         @media (max-width: 639px) {
           .topic-grid { grid-template-columns: repeat(2, 1fr) !important; }
+          .steps3 { grid-template-columns: 1fr; gap: 24px; }
         }
       `}</style>
 
@@ -313,6 +323,40 @@ const LandingPage = ({ onGetStarted, onPreviewLesson, onCalibration, onSelectPat
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><BookOpen size={14} color={C.gold} /> Cited sources</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Heart size={14} color={C.coral} /> Free forever core</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Users size={14} color={C.teal} /> Open to all faiths</div>
+        </div>
+      </section>
+
+      {/* ── A3b. GETTING STARTED (three steps) ──────────────── */}
+      <section style={{ padding: '44px 22px 8px', background: C.canvas }}>
+        <div style={{ maxWidth: 840, margin: '0 auto' }}>
+          <SectionHead eyebrow="Getting started" title="Three steps to begin" />
+          <div className="steps3">
+            {[
+              { n: '1', t: 'Find your level', d: 'A quick quiz places you at the right starting point.', img: stepQuiz, imgScale: 0.72 },
+              { n: '2', t: 'Learn in bites', d: 'Small lessons make steady progress easy.', img: stepBites, imgShiftY: 16 },
+              { n: '3', t: 'Build a daily habit', d: 'Show up daily and watch your knowledge grow.', img: stepHabit },
+            ].map(s => (
+              <div key={s.n} style={{ textAlign: 'center', padding: '0 8px' }}>
+                <div style={{ height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+                  {s.img ? (
+                    <img src={s.img} alt="" style={{ width: 200 * (s.imgScale || 1), height: 200 * (s.imgScale || 1), objectFit: 'contain', mixBlendMode: 'multiply', marginTop: s.imgShiftY || 0,
+                      transition: 'transform 0.3s cubic-bezier(.2,.7,.3,1)', willChange: 'transform', cursor: 'pointer' }}
+                      onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-7px) scale(1.06)'; }}
+                      onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0) scale(1)'; }} />
+                  ) : (
+                    <div style={{ width: 46, height: 46, borderRadius: '50%', background: C.tealSoft,
+                      color: C.tealDeep, border: `1.5px solid ${C.tealPale}`, fontFamily: serif, fontSize: 18, fontWeight: 600,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{s.n}</div>
+                  )}
+                </div>
+                <div style={{ width: 28, height: 28, borderRadius: '50%', margin: '0 auto 8px', background: C.tealSoft,
+                  color: C.tealDeep, border: `1.5px solid ${C.tealPale}`, fontFamily: serif, fontSize: 13, fontWeight: 600,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{s.n}</div>
+                <div style={{ fontFamily: serif, fontSize: 17, fontWeight: 500, color: C.tealDeep, marginBottom: 5 }}>{s.t}</div>
+                <div style={{ fontSize: 12.5, color: C.textMuted, lineHeight: 1.55, maxWidth: 200, margin: '0 auto' }}>{s.d}</div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
