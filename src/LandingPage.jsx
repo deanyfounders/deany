@@ -9,7 +9,6 @@ import { playClick } from './utils/clickSound.js';
 import stepQuiz from './assets/step-quiz.jpg';
 import stepBites from './assets/step-bites.jpg';
 import stepHabit from './assets/step-habit.jpg';
-import heroLeft from './assets/hero-left.jpg';
 
 // ── Palette constants ──────────────────────────────────────────
 const C = {
@@ -237,8 +236,6 @@ const LandingPage = ({ onGetStarted, onPreviewLesson, onCalibration, onSelectPat
         @media (max-width: 639px) {
           .topic-grid { grid-template-columns: repeat(2, 1fr) !important; }
           .steps3 { grid-template-columns: 1fr; gap: 24px; }
-          .hero-left { display: none !important; }
-          .hero-side { flex-basis: 200px !important; }
         }
       `}</style>
 
@@ -289,25 +286,17 @@ const LandingPage = ({ onGetStarted, onPreviewLesson, onCalibration, onSelectPat
       {/* ── A2. HERO ────────────────────────────────────────── */}
       <section style={{ background: `linear-gradient(180deg, ${C.heroWash} 0%, ${C.canvas} 100%)`,
         padding: '54px 22px 40px', animation: 'slideUp 0.6s ease-out both' }}>
-        <div style={{ maxWidth: 1300, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 90, flexWrap: 'wrap', justifyContent: 'center' }}>
-          {/* Left graphic - 3D scene */}
-          <div className="hero-side hero-left" style={{ flex: '0 1 230px', display: 'flex', justifyContent: 'center', order: 1 }}>
-            <img src={heroLeft} alt="Deany lessons around a mosque: Islamic History, Quran, Finance, the Five Pillars, all scholar verified."
-              style={{ width: '100%', maxWidth: 270, height: 'auto', display: 'block', mixBlendMode: 'multiply',
-                transition: 'transform 0.3s cubic-bezier(.2,.7,.3,1)', willChange: 'transform', cursor: 'pointer' }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-8px) scale(1.035)'; }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0) scale(1)'; }} />
-          </div>
-          {/* Center text block */}
-          <div style={{ flex: '1 1 320px', maxWidth: 400, textAlign: 'center', order: 2 }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 40, flexWrap: 'wrap', justifyContent: 'center' }}>
+          {/* Left column */}
+          <div style={{ flex: '1 1 360px', maxWidth: 520 }}>
             <h1 style={{ fontFamily: serif, fontSize: 'clamp(32px, 6vw, 44px)', fontWeight: 500, margin: '0 0 16px', color: C.textDeep,
               lineHeight: 1.12, letterSpacing: '-0.5px' }}>
               Start where you are.
             </h1>
-            <p style={{ fontSize: 14, color: C.textMuted, lineHeight: 1.65, maxWidth: 340, margin: '0 auto 26px' }}>
+            <p style={{ fontSize: 14, color: C.textMuted, lineHeight: 1.65, maxWidth: 340, margin: '0 0 26px' }}>
               Ten-minute lessons on the Pillars, the Quran, Islamic finance, and history. Reviewed by scholars. No prerequisites.
             </p>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 12, marginBottom: 20 }}>
               <DeanyButton variant="primary" onClick={onCalibration || onGetStarted}>
                 Find your level
               </DeanyButton>
@@ -318,10 +307,10 @@ const LandingPage = ({ onGetStarted, onPreviewLesson, onCalibration, onSelectPat
                 I already have an account
               </button>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'center' }}><TrustDots /></div>
+            <TrustDots />
           </div>
-          {/* Right graphic - floating cards */}
-          <div className="hero-side" style={{ flex: '0 1 280px', display: 'flex', justifyContent: 'center', order: 3 }}>
+          {/* Right column - geometric pattern */}
+          <div style={{ flex: '0 1 280px', display: 'flex', justifyContent: 'center' }}>
             <HeroVisual />
           </div>
         </div>
