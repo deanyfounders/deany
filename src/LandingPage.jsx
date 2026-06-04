@@ -330,18 +330,18 @@ const LandingPage = ({ onGetStarted, onPreviewLesson, onCalibration, onSelectPat
 
       {/* ── A3b. GETTING STARTED (three steps) ──────────────── */}
       <section style={{ padding: '44px 22px 8px', background: C.canvas }}>
-        <div style={{ maxWidth: 840, margin: '0 auto' }}>
+        <div style={{ maxWidth: 680, margin: '0 auto' }}>
           <SectionHead eyebrow="Getting started" title="Three steps to begin" />
           <div className="steps3">
             {[
-              { n: '1', t: 'Find your level', d: 'A quick quiz places you at the right starting point.', img: stepQuiz, imgScale: 0.72 },
-              { n: '2', t: 'Learn in bites', d: 'Small lessons make steady progress easy.', img: stepBites, imgShiftY: 16 },
-              { n: '3', t: 'Build a daily habit', d: 'Show up daily and watch your knowledge grow.', img: stepHabit },
+              { n: '1', t: 'Find your level', d: 'A quick quiz places you at the right starting point.', img: stepQuiz, imgScale: 0.72, badgeBg: C.gold, badgeFg: '#FFFFFF' },
+              { n: '2', t: 'Learn in bites', d: 'Small lessons make steady progress easy.', img: stepBites, imgShiftY: 16, badgeBg: '#7FD8CE', badgeFg: '#FFFFFF' },
+              { n: '3', t: 'Build a daily habit', d: 'Show up daily and watch your knowledge grow.', img: stepHabit, badgeBg: '#22D86A', badgeFg: '#FFFFFF' },
             ].map(s => (
               <div key={s.n} style={{ textAlign: 'center', padding: '0 8px' }}>
-                <div style={{ height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+                <div style={{ height: 168, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
                   {s.img ? (
-                    <img src={s.img} alt="" style={{ width: 200 * (s.imgScale || 1), height: 200 * (s.imgScale || 1), objectFit: 'contain', mixBlendMode: 'multiply', marginTop: s.imgShiftY || 0,
+                    <img src={s.img} alt="" style={{ width: 168 * (s.imgScale || 1), height: 168 * (s.imgScale || 1), objectFit: 'contain', mixBlendMode: 'multiply', marginTop: s.imgShiftY || 0,
                       transition: 'transform 0.3s cubic-bezier(.2,.7,.3,1)', willChange: 'transform', cursor: 'pointer' }}
                       onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-7px) scale(1.06)'; }}
                       onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0) scale(1)'; }} />
@@ -351,8 +351,8 @@ const LandingPage = ({ onGetStarted, onPreviewLesson, onCalibration, onSelectPat
                       display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{s.n}</div>
                   )}
                 </div>
-                <div style={{ width: 28, height: 28, borderRadius: '50%', margin: '0 auto 8px', background: C.tealSoft,
-                  color: C.tealDeep, border: `1.5px solid ${C.tealPale}`, fontFamily: serif, fontSize: 13, fontWeight: 600,
+                <div style={{ width: 28, height: 28, borderRadius: '50%', margin: '0 auto 8px', background: s.badgeBg,
+                  color: s.badgeFg, fontFamily: serif, fontSize: 13, fontWeight: 600,
                   display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{s.n}</div>
                 <div style={{ fontFamily: serif, fontSize: 17, fontWeight: 500, color: C.tealDeep, marginBottom: 5 }}>{s.t}</div>
                 <div style={{ fontSize: 12.5, color: C.textMuted, lineHeight: 1.55, maxWidth: 200, margin: '0 auto' }}>{s.d}</div>

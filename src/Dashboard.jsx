@@ -247,10 +247,10 @@ const Dashboard = ({
             <div style={{ fontSize: 10.5, color: C.textMuted, marginTop: 2 }}>Learn Islam, beautifully</div>
           </div>
           <button onClick={() => setLeftRailOpen(r => !r)} aria-label={leftRailOpen ? 'Collapse navigation' : 'Expand navigation'}
-            style={{ width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', border: 'none', borderRadius: '50%', cursor: 'pointer', color: C.textFaint, flexShrink: 0, transition: 'color .2s, transform .35s cubic-bezier(.4,0,.2,1)', transform: leftRailOpen ? 'rotate(0deg)' : 'rotate(-180deg)' }}
-            onMouseEnter={e => { e.currentTarget.style.color = C.tealDeep; }}
-            onMouseLeave={e => { e.currentTarget.style.color = C.textFaint; }}>
-            <ChevronUp size={15} />
+            style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', border: `1.5px solid ${C.teal}`, borderRadius: '50%', cursor: 'pointer', color: C.teal, flexShrink: 0, transition: 'background .2s ease, color .2s ease, transform .35s cubic-bezier(.4,0,.2,1)', transform: leftRailOpen ? 'rotate(0deg)' : 'rotate(-180deg)' }}
+            onMouseEnter={e => { e.currentTarget.style.background = C.tealSoft; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}>
+            <ChevronUp size={16} strokeWidth={2.5} />
           </button>
         </div>
         {/* Stats - pushed to the right */}
@@ -274,10 +274,10 @@ const Dashboard = ({
       <div style={{ display: 'flex', flex: 1, position: 'relative' }}>
         {/* Right rail toggle - fixed to right edge */}
         <button onClick={() => setRailOpen(r => !r)} aria-label={railOpen ? 'Collapse sidebar' : 'Expand sidebar'}
-          style={{ position: 'fixed', right: railOpen ? 232 : 10, top: 80, width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', background: C.surface, border: `1px solid ${C.border}`, borderRadius: '50%', cursor: 'pointer', color: C.textFaint, zIndex: 10, boxShadow: '0 1px 4px rgba(20,43,54,0.08)', transition: 'color .15s, right .35s cubic-bezier(.4,0,.2,1)' }}
-          onMouseEnter={e => { e.currentTarget.style.color = C.tealDeep; }}
-          onMouseLeave={e => { e.currentTarget.style.color = C.textFaint; }}>
-          {railOpen ? <PanelRightClose size={14} /> : <PanelRightOpen size={14} />}
+          style={{ position: 'fixed', right: railOpen ? 232 : 12, top: 80, width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', background: C.surface, border: `1.5px solid ${C.teal}`, borderRadius: '50%', cursor: 'pointer', color: C.teal, zIndex: 10, boxShadow: '0 1px 4px rgba(20,43,54,0.08)', transition: 'background .15s, right .35s cubic-bezier(.4,0,.2,1)' }}
+          onMouseEnter={e => { e.currentTarget.style.background = C.tealSoft; }}
+          onMouseLeave={e => { e.currentTarget.style.background = C.surface; }}>
+          {railOpen ? <PanelRightClose size={15} strokeWidth={2.25} /> : <PanelRightOpen size={15} strokeWidth={2.25} />}
         </button>
 
       {/* ════ LEFT RAIL - 184px, white, flush left, full height ═══ */}
