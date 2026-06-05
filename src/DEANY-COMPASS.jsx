@@ -5,14 +5,14 @@ const TOPICS = [
   { id: "5_pillars", title: "Five Pillars", icon: "\u{1F54C}", desc: "Prayer, fasting, zakat, hajj, and shahada" },
   { id: "islamic_finance", title: "Islamic Finance", icon: "\u{1F4B0}", desc: "Halal trade, contracts, and wealth" },
   { id: "islamic_history", title: "Islamic History", icon: "\u{1F4DC}", desc: "From revelation to the modern age" },
-  { id: "quran_memorisation", title: "Qur\u2019an Memorisation", icon: "\u{1F4D6}", desc: "Surahs, structure, and recitation" },
-  { id: "tafseer", title: "Tafsir", icon: "\u{1F50D}", desc: "Meaning and reflection on the Qur\u2019an" },
+  { id: "quran_memorisation", title: "Qur'an Memorisation", icon: "\u{1F4D6}", desc: "Surahs, structure, and recitation" },
+  { id: "tafseer", title: "Tafsir", icon: "\u{1F50D}", desc: "Meaning and reflection on the Qur'an" },
 ];
 
 const LEVELS = [
-  { id: "beginner", tier: 1, label: "Beginner", desc: "I\u2019m just getting started", icon: "\u{1F331}" },
+  { id: "beginner", tier: 1, label: "Beginner", desc: "I'm just getting started", icon: "\u{1F331}" },
   { id: "intermediate", tier: 2, label: "Intermediate", desc: "I know the basics well", icon: "\u{1F333}" },
-  { id: "advanced", tier: 3, label: "Advanced", desc: "I\u2019ve studied this seriously", icon: "\u{1F3D4}" },
+  { id: "advanced", tier: 3, label: "Advanced", desc: "I've studied this seriously", icon: "\u{1F3D4}" },
 ];
 
 const TIER_LABEL = { 0: "New", 1: "Beginner", 2: "Intermediate", 3: "Advanced" };
@@ -25,116 +25,116 @@ const QBANK = {
   "5_pillars": {
     1: [
       ["5P-B1", "How many obligatory daily prayers are there in Islam?", ["Three", "Four", "Five", "Six"], 2, "Five daily prayers: Fajr, Dhuhr, Asr, Maghrib, Isha. (Bukhari 349; Muslim 162)"],
-      ["5P-B2", "During which month do Muslims observe the obligatory fast?", ["Muharram", "Rajab", "Sha\u2019ban", "Ramadan"], 3, "Fasting in Ramadan is the fourth pillar. (Qur\u2019an 2:185)"],
-      ["5P-B3", "What is the Arabic name for the testimony of faith \u2014 the first pillar of Islam?", ["Salah", "Shahadah", "Zakat", "Sawm"], 1, "The Shahadah declares Allah\u2019s oneness and Muhammad\u2019s prophethood. (Bukhari 8)"],
-      ["5P-B4", "How often must a Muslim perform Hajj if they have the means and ability?", ["Every year", "Every five years", "Once in their lifetime", "Whenever they choose"], 2, "Hajj is obligatory once for those with means. (Muslim 1337; Qur\u2019an 3:97)"],
+      ["5P-B2", "During which month do Muslims observe the obligatory fast?", ["Muharram", "Rajab", "Sha'ban", "Ramadan"], 3, "Fasting in Ramadan is the fourth pillar. (Qur'an 2:185)"],
+      ["5P-B3", "What is the Arabic name for the testimony of faith - the first pillar of Islam?", ["Salah", "Shahadah", "Zakat", "Sawm"], 1, "The Shahadah declares Allah's oneness and Muhammad's prophethood. (Bukhari 8)"],
+      ["5P-B4", "How often must a Muslim perform Hajj if they have the means and ability?", ["Every year", "Every five years", "Once in their lifetime", "Whenever they choose"], 2, "Hajj is obligatory once for those with means. (Muslim 1337; Qur'an 3:97)"],
       ["5P-B5", "What is the standard rate of zakat on qualifying cash savings held for one lunar year?", ["1%", "2.5%", "5%", "10%"], 1, "Zakat on cash is 2.5% (one fortieth) above nisab. (Bukhari 1454)"],
     ],
     2: [
-      ["5P-I1", "How many rak\u2019ahs (units) are in the Maghrib prayer?", ["Two", "Three", "Four", "Five"], 1, "Maghrib is uniquely three rak\u2019ahs. (Bukhari 350)"],
-      ["5P-I2", "Which of the following invalidates wudu (ablution)?", ["Touching one\u2019s beard", "Drinking water", "Passing wind", "Walking outdoors"], 2, "Passing wind nullifies wudu by consensus. (Bukhari 135; Muslim 225)"],
-      ["5P-I3", "What is the opening Takbeer of Salah called?", ["Takbeerat al-Ihram", "Takbeer at-Tashreeq", "Takbeer at-Ruku\u2019", "Takbeer at-Sujood"], 0, "\u201CAllahu Akbar\u201D at the start enters the sacred state. (Bukhari 757)"],
+      ["5P-I1", "How many rak'ahs (units) are in the Maghrib prayer?", ["Two", "Three", "Four", "Five"], 1, "Maghrib is uniquely three rak'ahs. (Bukhari 350)"],
+      ["5P-I2", "Which of the following invalidates wudu (ablution)?", ["Touching one's beard", "Drinking water", "Passing wind", "Walking outdoors"], 2, "Passing wind nullifies wudu by consensus. (Bukhari 135; Muslim 225)"],
+      ["5P-I3", "What is the opening Takbeer of Salah called?", ["Takbeerat al-Ihram", "Takbeer at-Tashreeq", "Takbeer at-Ruku'", "Takbeer at-Sujood"], 0, "'Allahu Akbar' at the start enters the sacred state. (Bukhari 757)"],
       ["5P-I4", "The nisab (minimum threshold) for zakat on gold is approximately:", ["50 grams", "87.48 grams (20 mithqal)", "200 grams", "595 grams"], 1, "Classical nisab for gold is 20 mithqal \u2248 87.48g. (Bukhari 1447)"],
-      ["5P-I5", "Which of the following is NOT one of the four arkan (pillars) of Hajj according to Maliki fiqh?", ["Ihram (entering the sacred state)", "Wuquf at Arafah", "Tawaf al-Ifadah", "Throwing pebbles at the Jamarat"], 3, "Maliki arkan: Ihram, Wuquf, Tawaf al-Ifadah, Sa\u2019i. Pebbles are wajib, not rukn. (Al-Risalah of Ibn Abi Zayd)"],
+      ["5P-I5", "Which of the following is NOT one of the four arkan (pillars) of Hajj according to Maliki fiqh?", ["Ihram (entering the sacred state)", "Wuquf at Arafah", "Tawaf al-Ifadah", "Throwing pebbles at the Jamarat"], 3, "Maliki arkan: Ihram, Wuquf, Tawaf al-Ifadah, Sa'i. Pebbles are wajib, not rukn. (Al-Risalah of Ibn Abi Zayd)"],
     ],
     3: [
       ["5P-A1", "In Maliki madhab, what is the classical position of the hands during qiyam in obligatory prayer?", ["Folded over the chest", "Folded over the navel", "Folded below the navel", "Resting at the sides (sadl)"], 3, "Sadl is the classical Maliki position in fard prayer. (Mudawwana; al-Risalah)"],
-      ["5P-A2", "In Maliki fiqh, how is the Bismillah handled before Surah al-Fatiha during obligatory prayer?", ["Recited aloud", "Recited silently", "Omitted entirely", "Left to the worshipper\u2019s preference"], 2, "Maliki: omit Bismillah before Fatiha in fard prayer. (Al-Muwatta; Mudawwana)"],
-      ["5P-A3", "When is the raising of the hands (raf\u2019 al-yadayn) prescribed in Maliki obligatory prayer?", ["At the opening Takbeer only", "At the opening Takbeer and before ruku\u2019", "At the opening, before ruku\u2019, and rising from ruku\u2019", "At the opening Takbeer and before sujood"], 0, "Maliki: raise hands only at Takbeerat al-Ihram. (Al-Muwatta; Mudawwana)"],
-      ["5P-A4", "According to Maliki fiqh, what is the legal classification of the Witr prayer?", ["Fard", "Wajib", "Sunnah Mu\u2019akkadah", "Mustahabb"], 2, "Maliki: Witr is Sunnah Mu\u2019akkadah, not obligatory. (Mudawwana; al-Risalah)"],
-      ["5P-A5", "In Maliki fiqh, when does the time for Asr prayer begin?", ["Immediately after Dhuhr ends", "When the shadow of an object equals the object\u2019s own length", "When the shadow of an object is twice the object\u2019s length", "At the midpoint between Dhuhr and Maghrib"], 1, "Maliki, Shafi\u2019i, and Hanbali agree: Asr when shadow equals object length. (Al-Muwatta; al-Risalah)"],
+      ["5P-A2", "In Maliki fiqh, how is the Bismillah handled before Surah al-Fatiha during obligatory prayer?", ["Recited aloud", "Recited silently", "Omitted entirely", "Left to the worshipper's preference"], 2, "Maliki: omit Bismillah before Fatiha in fard prayer. (Al-Muwatta; Mudawwana)"],
+      ["5P-A3", "When is the raising of the hands (raf' al-yadayn) prescribed in Maliki obligatory prayer?", ["At the opening Takbeer only", "At the opening Takbeer and before ruku'", "At the opening, before ruku', and rising from ruku'", "At the opening Takbeer and before sujood"], 0, "Maliki: raise hands only at Takbeerat al-Ihram. (Al-Muwatta; Mudawwana)"],
+      ["5P-A4", "According to Maliki fiqh, what is the legal classification of the Witr prayer?", ["Fard", "Wajib", "Sunnah Mu'akkadah", "Mustahabb"], 2, "Maliki: Witr is Sunnah Mu'akkadah, not obligatory. (Mudawwana; al-Risalah)"],
+      ["5P-A5", "In Maliki fiqh, when does the time for Asr prayer begin?", ["Immediately after Dhuhr ends", "When the shadow of an object equals the object's own length", "When the shadow of an object is twice the object's length", "At the midpoint between Dhuhr and Maghrib"], 1, "Maliki, Shafi'i, and Hanbali agree: Asr when shadow equals object length. (Al-Muwatta; al-Risalah)"],
     ],
   },
   "islamic_finance": {
     1: [
-      ["IF-B1", "What is the term for interest or usury in Islamic finance?", ["Zakat", "Riba", "Sadaqah", "Khums"], 1, "Riba: interest and unjust gain. \u201CAllah has permitted trade and forbidden riba.\u201D (Qur\u2019an 2:275)"],
-      ["IF-B2", "Which of the following is permissible (halal) for a Muslim to earn through?", ["Lending money at interest", "Selling alcohol", "Honest trade in lawful goods and services", "Gambling on outcomes"], 2, "Trade in lawful goods is the foundation of permissible earning. (Qur\u2019an 2:275)"],
-      ["IF-B3", "What is zakat?", ["Voluntary daily charity", "An annual obligatory purification of qualifying wealth", "A tax paid to non-Muslim governments", "Money given only during Ramadan"], 1, "Zakat: third pillar, typically 2.5% of qualifying wealth above nisab. (Qur\u2019an 9:60)"],
-      ["IF-B4", "What does \u201Chalal\u201D mean in the context of food and earnings?", ["Required", "Recommended", "Permissible according to Islamic law", "Forbidden"], 2, "Halal means lawful or permissible; its opposite is haram."],
+      ["IF-B1", "What is the term for interest or usury in Islamic finance?", ["Zakat", "Riba", "Sadaqah", "Khums"], 1, "Riba: interest and unjust gain. 'Allah has permitted trade and forbidden riba.' (Qur'an 2:275)"],
+      ["IF-B2", "Which of the following is permissible (halal) for a Muslim to earn through?", ["Lending money at interest", "Selling alcohol", "Honest trade in lawful goods and services", "Gambling on outcomes"], 2, "Trade in lawful goods is the foundation of permissible earning. (Qur'an 2:275)"],
+      ["IF-B3", "What is zakat?", ["Voluntary daily charity", "An annual obligatory purification of qualifying wealth", "A tax paid to non-Muslim governments", "Money given only during Ramadan"], 1, "Zakat: third pillar, typically 2.5% of qualifying wealth above nisab. (Qur'an 9:60)"],
+      ["IF-B4", "What does 'halal' mean in the context of food and earnings?", ["Required", "Recommended", "Permissible according to Islamic law", "Forbidden"], 2, "Halal means lawful or permissible; its opposite is haram."],
       ["IF-B5", "What is sadaqah?", ["Obligatory annual charity", "Voluntary charity given for the sake of Allah", "Money given only to family members", "A type of prayer"], 1, "Sadaqah is voluntary charity beyond obligatory zakat. (Muslim 2588)"],
     ],
     2: [
       ["IF-I1", "What is Murabaha in Islamic finance?", ["An interest-bearing loan", "A profit-and-loss-sharing partnership", "A cost-plus sale where the seller transparently discloses the cost and adds a fixed margin", "A leasing contract"], 2, "Murabaha: cost-plus sale with known mark-up. (AAOIFI Standard No. 8)"],
       ["IF-I2", "What is Mudaraba?", ["A joint partnership where all partners contribute capital equally", "A partnership where one party provides capital and the other provides labour and expertise", "A guaranteed-return savings product", "A currency exchange contract"], 1, "Rabb al-mal provides capital, mudarib provides labour. Profits shared per ratio. (AAOIFI Standard No. 13)"],
-      ["IF-I3", "What is the difference between Riba al-Fadl and Riba al-Nasi\u2019ah?", ["They are two names for the same thing", "Riba al-Fadl arises from unequal exchange of the same ribawi commodity; Riba al-Nasi\u2019ah arises from delay or interest charged over time", "Riba al-Fadl is permissible; Riba al-Nasi\u2019ah is forbidden", "Riba al-Fadl applies only to gold; Riba al-Nasi\u2019ah applies only to silver"], 1, "Both forms are prohibited. (Bukhari 2174; Muslim 1584)"],
+      ["IF-I3", "What is the difference between Riba al-Fadl and Riba al-Nasi'ah?", ["They are two names for the same thing", "Riba al-Fadl arises from unequal exchange of the same ribawi commodity; Riba al-Nasi'ah arises from delay or interest charged over time", "Riba al-Fadl is permissible; Riba al-Nasi'ah is forbidden", "Riba al-Fadl applies only to gold; Riba al-Nasi'ah applies only to silver"], 1, "Both forms are prohibited. (Bukhari 2174; Muslim 1584)"],
       ["IF-I4", "What is Ijara in Islamic finance?", ["A profit-sharing investment fund", "A sale contract with deferred payment", "A leasing contract where ownership remains with the lessor and the lessee pays for usage", "A guaranteed-return deposit account"], 2, "Ijara: lessor retains ownership, lessee pays rent. (AAOIFI Standard No. 9)"],
       ["IF-I5", "What does Gharar refer to in Islamic finance?", ["Profit", "Excessive uncertainty or ambiguity in a contract", "Transparency in disclosure", "Profit-sharing between parties"], 1, "Gharar: excessive uncertainty that makes outcomes speculative. (Muslim 1513)"],
     ],
     3: [
-      ["IF-A1", "Which are the six commodities mentioned in the hadith of \u2018Ubadah ibn al-Samit as ribawi commodities?", ["Gold, silver, wheat, barley, rice, oil", "Gold, silver, wheat, barley, dates, salt", "Gold, silver, copper, wheat, dates, salt", "Gold, silver, wheat, oats, dates, sugar"], 1, "The six ribawi commodities from the hadith. (Muslim 1587)"],
-      ["IF-A2", "According to Maliki fiqh, what is the ruling on Bay\u2019 al-\u2018Inah?", ["Permissible without restriction", "Permissible only with witnesses", "Prohibited as a backdoor (hilah) to riba", "Permissible only between Muslims"], 2, "Maliki, Hanafi, Hanbali prohibit it. (Mudawwana; AAOIFI Standard No. 30)"],
-      ["IF-A3", "What is Takaful and how does it differ from conventional insurance?", ["An interest-bearing savings account with optional payouts", "A cooperative risk-sharing arrangement based on tabarru\u2019 (donation), avoiding gharar, riba, and maysir", "A guaranteed-return investment fund", "A type of zakat distribution fund"], 1, "Takaful: mutual cooperation via tabarru\u2019, removing gharar, riba, maysir. (AAOIFI Standard No. 26)"],
+      ["IF-A1", "Which are the six commodities mentioned in the hadith of 'Ubadah ibn al-Samit as ribawi commodities?", ["Gold, silver, wheat, barley, rice, oil", "Gold, silver, wheat, barley, dates, salt", "Gold, silver, copper, wheat, dates, salt", "Gold, silver, wheat, oats, dates, sugar"], 1, "The six ribawi commodities from the hadith. (Muslim 1587)"],
+      ["IF-A2", "According to Maliki fiqh, what is the ruling on Bay' al-'Inah?", ["Permissible without restriction", "Permissible only with witnesses", "Prohibited as a backdoor (hilah) to riba", "Permissible only between Muslims"], 2, "Maliki, Hanafi, Hanbali prohibit it. (Mudawwana; AAOIFI Standard No. 30)"],
+      ["IF-A3", "What is Takaful and how does it differ from conventional insurance?", ["An interest-bearing savings account with optional payouts", "A cooperative risk-sharing arrangement based on tabarru' (donation), avoiding gharar, riba, and maysir", "A guaranteed-return investment fund", "A type of zakat distribution fund"], 1, "Takaful: mutual cooperation via tabarru', removing gharar, riba, maysir. (AAOIFI Standard No. 26)"],
       ["IF-A4", "What are the classical fiqh rules of currency exchange (Sarf)?", ["Both same and different currencies must be equal and hand-to-hand", "Same currency: equal and hand-to-hand. Different currencies: hand-to-hand but may differ in value", "All exchange must be deferred for market pricing", "Only Muslims may engage in currency exchange"], 1, "Classical sarf rules from the ribawi hadith. (Muslim 1587)"],
-      ["IF-A5", "What is the Maliki position on conventional life insurance?", ["Permissible without restriction", "Permissible if premiums are invested in halal instruments", "Generally prohibited due to gharar, riba, and maysir; Takaful is the recognised alternative", "Permissible only for the elderly"], 2, "Contemporary Maliki fatwa councils follow AAOIFI\u2019s position. (AAOIFI Standard No. 26)"],
+      ["IF-A5", "What is the Maliki position on conventional life insurance?", ["Permissible without restriction", "Permissible if premiums are invested in halal instruments", "Generally prohibited due to gharar, riba, and maysir; Takaful is the recognised alternative", "Permissible only for the elderly"], 2, "Contemporary Maliki fatwa councils follow AAOIFI's position. (AAOIFI Standard No. 26)"],
     ],
   },
   "islamic_history": {
     1: [
       ["IH-B1", "In which city was the Prophet Muhammad \u{FDFA} born?", ["Madinah", "Makkah", "Jerusalem", "Damascus"], 1, "Born in Makkah c.\u00A0570\u00A0CE, the Year of the Elephant. (Ibn Hisham)"],
-      ["IH-B2", "What is the name of the Prophet\u2019s \u{FDFA} first wife?", ["Aisha", "Hafsa", "Khadijah", "Maymunah"], 2, "Khadijah bint Khuwaylid was the first to accept Islam. (Bukhari 3)"],
+      ["IH-B2", "What is the name of the Prophet's \u{FDFA} first wife?", ["Aisha", "Hafsa", "Khadijah", "Maymunah"], 2, "Khadijah bint Khuwaylid was the first to accept Islam. (Bukhari 3)"],
       ["IH-B3", "In which cave did the Prophet \u{FDFA} first receive revelation from the angel Jibreel?", ["Cave of Thawr", "Cave of Hira", "Cave of Uhud", "Cave of Badr"], 1, "First revelation in the Cave of Hira on Jabal an-Nour. (Bukhari 3)"],
       ["IH-B4", "Who was the first Caliph after the death of the Prophet \u{FDFA}?", ["Umar ibn al-Khattab", "Uthman ibn Affan", "Abu Bakr as-Siddiq", "Ali ibn Abi Talib"], 2, "Abu Bakr was first of the Rashidun Caliphs. (Bukhari 3667)"],
-      ["IH-B5", "What is the name of the Prophet\u2019s \u{FDFA} migration from Makkah to Madinah?", ["Hajj", "Umrah", "Hijrah", "Tabuk"], 2, "The Hijrah in 622\u00A0CE became Year 1 of the Islamic calendar."],
+      ["IH-B5", "What is the name of the Prophet's \u{FDFA} migration from Makkah to Madinah?", ["Hajj", "Umrah", "Hijrah", "Tabuk"], 2, "The Hijrah in 622\u00A0CE became Year 1 of the Islamic calendar."],
     ],
     2: [
-      ["IH-I1", "In what Hijri year did the Battle of Badr take place?", ["1 AH", "2 AH", "5 AH", "8 AH"], 1, "Badr in 2\u00A0AH (624\u00A0CE), first major engagement. (Qur\u2019an 3:123)"],
-      ["IH-I2", "Which of the Prophet\u2019s \u{FDFA} uncles raised and protected him without himself accepting Islam?", ["Hamza", "Abu Talib", "Abu Lahab", "Al-\u2018Abbas"], 1, "Abu Talib\u2019s death marks \u2018Aam al-Huzn, the Year of Sorrow."],
-      ["IH-I3", "Place the Rashidun Caliphs in chronological order:", ["Abu Bakr \u2192 Uthman \u2192 Umar \u2192 Ali", "Umar \u2192 Abu Bakr \u2192 Ali \u2192 Uthman", "Abu Bakr \u2192 Umar \u2192 Uthman \u2192 Ali", "Ali \u2192 Umar \u2192 Abu Bakr \u2192 Uthman"], 2, "Abu Bakr (11\u201313 AH), Umar (13\u201323), Uthman (23\u201335), Ali (35\u201340)."],
-      ["IH-I4", "The Treaty of Hudaybiyyah was signed in which Hijri year?", ["2 AH", "5 AH", "6 AH", "8 AH"], 2, "The Qur\u2019an calls it \u201Ca clear victory.\u201D (Qur\u2019an 48:1; Bukhari 2731)"],
+      ["IH-I1", "In what Hijri year did the Battle of Badr take place?", ["1 AH", "2 AH", "5 AH", "8 AH"], 1, "Badr in 2\u00A0AH (624\u00A0CE), first major engagement. (Qur'an 3:123)"],
+      ["IH-I2", "Which of the Prophet's \u{FDFA} uncles raised and protected him without himself accepting Islam?", ["Hamza", "Abu Talib", "Abu Lahab", "Al-'Abbas"], 1, "Abu Talib's death marks 'Aam al-Huzn, the Year of Sorrow."],
+      ["IH-I3", "Place the Rashidun Caliphs in chronological order:", ["Abu Bakr \u2192 Uthman \u2192 Umar \u2192 Ali", "Umar \u2192 Abu Bakr \u2192 Ali \u2192 Uthman", "Abu Bakr \u2192 Umar \u2192 Uthman \u2192 Ali", "Ali \u2192 Umar \u2192 Abu Bakr \u2192 Uthman"], 2, "Abu Bakr (11-13 AH), Umar (13-23), Uthman (23-35), Ali (35-40)."],
+      ["IH-I4", "The Treaty of Hudaybiyyah was signed in which Hijri year?", ["2 AH", "5 AH", "6 AH", "8 AH"], 2, "The Qur'an calls it 'a clear victory.' (Qur'an 48:1; Bukhari 2731)"],
       ["IH-I5", "Which event marks Year 1 of the Islamic (Hijri) calendar?", ["The birth of the Prophet \u{FDFA}", "The first revelation", "The migration (Hijrah) to Madinah", "The conquest of Makkah"], 2, "Caliph Umar established the Hijri calendar retroactively."],
     ],
     3: [
-      ["IH-A1", "Imam Malik ibn Anas, founder of the Maliki madhab, lived almost his entire life in which city?", ["Makkah", "Madinah", "Damascus", "Baghdad"], 1, "Imam Malik (d.\u00A0179\u00A0AH) relied on the \u2018amal of Madinah. (Muwatta)"],
-      ["IH-A2", "Who led the Muslim conquest of the Iberian Peninsula (al-Andalus) in 711 CE?", ["Musa ibn Nusayr", "Tariq ibn Ziyad", "Khalid ibn al-Walid", "\u2018Amr ibn al-\u2018As"], 1, "Jabal Tariq (Gibraltar) is named after Tariq ibn Ziyad."],
-      ["IH-A3", "The Umayyad Caliphate was founded by which figure?", ["Abu Sufyan", "Mu\u2019awiyah ibn Abi Sufyan", "Abdul Malik ibn Marwan", "Walid ibn Abdul Malik"], 1, "Mu\u2019awiyah established the Umayyad Caliphate in 41\u00A0AH (661\u00A0CE)."],
+      ["IH-A1", "Imam Malik ibn Anas, founder of the Maliki madhab, lived almost his entire life in which city?", ["Makkah", "Madinah", "Damascus", "Baghdad"], 1, "Imam Malik (d.\u00A0179\u00A0AH) relied on the 'amal of Madinah. (Muwatta)"],
+      ["IH-A2", "Who led the Muslim conquest of the Iberian Peninsula (al-Andalus) in 711 CE?", ["Musa ibn Nusayr", "Tariq ibn Ziyad", "Khalid ibn al-Walid", "'Amr ibn al-'As"], 1, "Jabal Tariq (Gibraltar) is named after Tariq ibn Ziyad."],
+      ["IH-A3", "The Umayyad Caliphate was founded by which figure?", ["Abu Sufyan", "Mu'awiyah ibn Abi Sufyan", "Abdul Malik ibn Marwan", "Walid ibn Abdul Malik"], 1, "Mu'awiyah established the Umayyad Caliphate in 41\u00A0AH (661\u00A0CE)."],
       ["IH-A4", "In which year did Constantinople fall to the Ottoman Empire?", ["1258 CE", "1453 CE", "1492 CE", "1517 CE"], 1, "Sultan Mehmed II conquered Constantinople on 29 May 1453 CE."],
-      ["IH-A5", "Imam al-Bukhari, compiler of Sahih al-Bukhari, was born in which region?", ["Arabia (Makkah)", "Andalusia (Cordoba)", "Khorasan (Bukhara, modern Uzbekistan)", "Egypt (Cairo)"], 2, "Al-Bukhari (194\u2013256 AH) was born in Bukhara. (Siyar A\u2019lam an-Nubala)"],
+      ["IH-A5", "Imam al-Bukhari, compiler of Sahih al-Bukhari, was born in which region?", ["Arabia (Makkah)", "Andalusia (Cordoba)", "Khorasan (Bukhara, modern Uzbekistan)", "Egypt (Cairo)"], 2, "Al-Bukhari (194-256 AH) was born in Bukhara. (Siyar A'lam an-Nubala)"],
     ],
   },
   "quran_memorisation": {
     1: [
-      ["QM-B1", "How many surahs (chapters) are in the Qur\u2019an?", ["99", "100", "110", "114"], 3, "114 surahs, from al-Fatiha to an-Nas."],
-      ["QM-B2", "What is the name of the first surah of the Qur\u2019an?", ["Al-Baqarah", "Al-Fatiha", "Yasin", "Al-Ikhlas"], 1, "Al-Fatiha (\u201CThe Opening\u201D), also called Umm al-Kitab. (Bukhari 4474)"],
-      ["QM-B3", "The Qur\u2019an is divided into how many ajza (parts)?", ["7", "30", "60", "114"], 1, "30 ajza, allowing one juz per day in Ramadan."],
-      ["QM-B4", "Which surah is recited in every rak\u2019ah of every obligatory prayer?", ["Al-Ikhlas", "Al-Fatiha", "An-Nas", "Al-Falaq"], 1, "\u201CNo prayer for the one who does not recite the Opening.\u201D (Bukhari 756; Muslim 394)"],
-      ["QM-B5", "In which language was the Qur\u2019an revealed?", ["Hebrew", "Aramaic", "Arabic", "Syriac"], 2, "\u201CWe have sent it down as an Arabic Qur\u2019an.\u201D (Qur\u2019an 12:2)"],
+      ["QM-B1", "How many surahs (chapters) are in the Qur'an?", ["99", "100", "110", "114"], 3, "114 surahs, from al-Fatiha to an-Nas."],
+      ["QM-B2", "What is the name of the first surah of the Qur'an?", ["Al-Baqarah", "Al-Fatiha", "Yasin", "Al-Ikhlas"], 1, "Al-Fatiha ('The Opening'), also called Umm al-Kitab. (Bukhari 4474)"],
+      ["QM-B3", "The Qur'an is divided into how many ajza (parts)?", ["7", "30", "60", "114"], 1, "30 ajza, allowing one juz per day in Ramadan."],
+      ["QM-B4", "Which surah is recited in every rak'ah of every obligatory prayer?", ["Al-Ikhlas", "Al-Fatiha", "An-Nas", "Al-Falaq"], 1, "'No prayer for the one who does not recite the Opening.' (Bukhari 756; Muslim 394)"],
+      ["QM-B5", "In which language was the Qur'an revealed?", ["Hebrew", "Aramaic", "Arabic", "Syriac"], 2, "'We have sent it down as an Arabic Qur'an.' (Qur'an 12:2)"],
     ],
     2: [
       ["QM-I1", "How many verses (ayahs) are in Surah al-Fatiha?", ["5", "7", "10", "11"], 1, "7 ayahs. (Bukhari 4474)"],
-      ["QM-I2", "Which is the only surah in the Qur\u2019an that does NOT begin with Bismillah?", ["Al-Fatiha", "Yasin", "At-Tawbah", "Al-Ikhlas"], 2, "At-Tawbah (Surah 9) has no opening Bismillah. (al-Itqan of as-Suyuti)"],
-      ["QM-I3", "Which surah is known as Umm al-Kitab \u2014 the Mother of the Book?", ["Al-Baqarah", "Al-Fatiha", "Yasin", "Ar-Rahman"], 1, "Al-Fatiha summarises the Qur\u2019an\u2019s central themes. (Bukhari 4474)"],
+      ["QM-I2", "Which is the only surah in the Qur'an that does NOT begin with Bismillah?", ["Al-Fatiha", "Yasin", "At-Tawbah", "Al-Ikhlas"], 2, "At-Tawbah (Surah 9) has no opening Bismillah. (al-Itqan of as-Suyuti)"],
+      ["QM-I3", "Which surah is known as Umm al-Kitab - the Mother of the Book?", ["Al-Baqarah", "Al-Fatiha", "Yasin", "Ar-Rahman"], 1, "Al-Fatiha summarises the Qur'an's central themes. (Bukhari 4474)"],
       ["QM-I4", "How many verses are in Surah al-Baqarah, the longest surah?", ["100", "200", "286", "320"], 2, "286 verses spanning roughly 2.5 ajza."],
-      ["QM-I5", "Which is the shortest surah in the Qur\u2019an?", ["Al-Ikhlas", "An-Nas", "Al-Kawthar", "Al-Falaq"], 2, "Al-Kawthar: 3 verses, about 10 words."],
+      ["QM-I5", "Which is the shortest surah in the Qur'an?", ["Al-Ikhlas", "An-Nas", "Al-Kawthar", "Al-Falaq"], 2, "Al-Kawthar: 3 verses, about 10 words."],
     ],
     3: [
-      ["QM-A1", "Which Qira\u2019a (recitation) is most commonly recited in North and West Africa?", ["Hafs \u2018an \u2018Asim", "Warsh \u2018an Nafi\u2019", "Qalun \u2018an Nafi\u2019", "Ad-Duri \u2018an Abu \u2018Amr"], 1, "Warsh is dominant in Morocco, Algeria, and West Africa. (Ibn al-Jazari)"],
+      ["QM-A1", "Which Qira'a (recitation) is most commonly recited in North and West Africa?", ["Hafs 'an 'Asim", "Warsh 'an Nafi'", "Qalun 'an Nafi'", "Ad-Duri 'an Abu 'Amr"], 1, "Warsh is dominant in Morocco, Algeria, and West Africa. (Ibn al-Jazari)"],
       ["QM-A2", "What general feature distinguishes Madani surahs from Makki surahs?", ["Madani surahs tend to be shorter and focused on tawhid", "Madani surahs tend to be longer and focus on legislation, social organisation, and dealings with other communities", "Madani surahs do not mention earlier prophets", "Madani surahs are recited only at night"], 1, "Madani = legislation, governance, community. Makki = tawhid, resurrection, warnings. (al-Burhan of az-Zarkashi)"],
-      ["QM-A3", "What does the term Sab\u2019at Ahruf (the Seven Ahruf) refer to?", ["The seven longest surahs of the Qur\u2019an", "The Seven Oft-Repeated Verses of al-Fatiha", "Seven modes or dialectal forms in which the Qur\u2019an was originally revealed", "Seven categories of Qur\u2019anic legal rulings"], 2, "Seven modes accommodating different Arab dialects. (Bukhari 4992; Muslim 819)"],
-      ["QM-A4", "Under which Rashidun Caliph was the Qur\u2019an standardised into a single official codex?", ["Abu Bakr (initial collection only)", "Umar ibn al-Khattab", "Uthman ibn Affan", "Ali ibn Abi Talib"], 2, "Uthman standardised the \u2018Uthmanic codex and distributed copies. (Bukhari 4986\u20134987)"],
-      ["QM-A5", "The first verses ever revealed to the Prophet \u{FDFA} were the opening verses of which surah?", ["Al-Fatiha", "Al-Muzzammil", "Al-\u2018Alaq (verses 1\u20135)", "Al-Mudaththir"], 2, "\u201CRead in the name of your Lord who created\u2026\u201D (Bukhari 3)"],
+      ["QM-A3", "What does the term Sab'at Ahruf (the Seven Ahruf) refer to?", ["The seven longest surahs of the Qur'an", "The Seven Oft-Repeated Verses of al-Fatiha", "Seven modes or dialectal forms in which the Qur'an was originally revealed", "Seven categories of Qur'anic legal rulings"], 2, "Seven modes accommodating different Arab dialects. (Bukhari 4992; Muslim 819)"],
+      ["QM-A4", "Under which Rashidun Caliph was the Qur'an standardised into a single official codex?", ["Abu Bakr (initial collection only)", "Umar ibn al-Khattab", "Uthman ibn Affan", "Ali ibn Abi Talib"], 2, "Uthman standardised the 'Uthmanic codex and distributed copies. (Bukhari 4986-4987)"],
+      ["QM-A5", "The first verses ever revealed to the Prophet \u{FDFA} were the opening verses of which surah?", ["Al-Fatiha", "Al-Muzzammil", "Al-'Alaq (verses 1-5)", "Al-Mudaththir"], 2, "'Read in the name of your Lord who created...' (Bukhari 3)"],
     ],
   },
   "tafseer": {
     1: [
-      ["TF-B1", "Which is the correct meaning order for the opening of al-Fatiha?", ["Bismillah \u2192 Praise to Allah, Lord of all worlds \u2192 The Most Compassionate, Most Merciful", "Praise to Allah \u2192 Bismillah \u2192 The Most Compassionate", "The Most Compassionate \u2192 Praise to Allah \u2192 Bismillah", "Master of Judgement Day \u2192 Praise to Allah \u2192 Bismillah"], 0, "Al-Fatiha opens with Bismillah, then praise, then mercy. (al-Qurtubi on 1:1\u20133)"],
-      ["TF-B2", "Which title best matches the name Surah al-Fatiha?", ["The Opening", "The Cave", "The Cow", "The Victory"], 0, "Al-Fatiha means \u201CThe Opening.\u201D (Bukhari 4474)"],
-      ["TF-B3", "In al-Fatiha, what does \u2018Lord of all worlds\u2019 point to?", ["Allah\u2019s lordship over all creation", "Only one tribe", "Only the prayer place", "Only worldly wealth"], 0, "Rabb al-\u2019alamin: Lord, Sustainer, and Nurturer of every creation. (al-Qurtubi on 1:2)"],
-      ["TF-B4", "What is the main meaning of: Iyyaka na\u2019budu wa iyyaka nasta\u2019in?", ["You alone we worship, and You alone we ask for help", "We ask people to worship us", "We rely only on our money", "We do not need guidance"], 0, "Worship and reliance directed to Allah alone. (al-Qurtubi on 1:5)"],
+      ["TF-B1", "Which is the correct meaning order for the opening of al-Fatiha?", ["Bismillah \u2192 Praise to Allah, Lord of all worlds \u2192 The Most Compassionate, Most Merciful", "Praise to Allah \u2192 Bismillah \u2192 The Most Compassionate", "The Most Compassionate \u2192 Praise to Allah \u2192 Bismillah", "Master of Judgement Day \u2192 Praise to Allah \u2192 Bismillah"], 0, "Al-Fatiha opens with Bismillah, then praise, then mercy. (al-Qurtubi on 1:1-3)"],
+      ["TF-B2", "Which title best matches the name Surah al-Fatiha?", ["The Opening", "The Cave", "The Cow", "The Victory"], 0, "Al-Fatiha means 'The Opening.' (Bukhari 4474)"],
+      ["TF-B3", "In al-Fatiha, what does 'Lord of all worlds' point to?", ["Allah's lordship over all creation", "Only one tribe", "Only the prayer place", "Only worldly wealth"], 0, "Rabb al-'alamin: Lord, Sustainer, and Nurturer of every creation. (al-Qurtubi on 1:2)"],
+      ["TF-B4", "What is the main meaning of: Iyyaka na'budu wa iyyaka nasta'in?", ["You alone we worship, and You alone we ask for help", "We ask people to worship us", "We rely only on our money", "We do not need guidance"], 0, "Worship and reliance directed to Allah alone. (al-Qurtubi on 1:5)"],
       ["TF-B5", "What are we asking for in: Ihdina s-sirata l-mustaqim?", ["Guidance to the straight path", "More wealth only", "A story about a battle", "Permission to skip prayer"], 0, "The central supplication of al-Fatiha: guidance. (al-Qurtubi on 1:6)"],
     ],
     2: [
-      ["TF-I1", "Which three meanings belong to Surah an-Nasr, in the correct order?", ["When Allah\u2019s help and victory comes \u2192 People entering Islam in crowds \u2192 Glorify and seek forgiveness", "Guide us to the straight path \u2192 Master of the Day \u2192 You alone we worship", "Seek refuge in the Lord of mankind \u2192 He neither begets \u2192 When help comes", "Glorify and seek forgiveness \u2192 People entering Islam \u2192 When help comes"], 0, "An-Nasr: help/victory, then crowds, then tasbih + istighfar. (al-Qurtubi on 110:1\u20133)"],
-      ["TF-I2", "What response does Surah an-Nasr command when victory comes?", ["Glorify Allah with praise and seek forgiveness", "Boast about personal power", "Stop worshipping because the mission is complete", "Treat victory as purely political"], 0, "The surah turns victory into humility: tasbih, praise, istighfar. (Qur\u2019an 110:3)"],
-      ["TF-I3", "Why is Surah an-Nasr connected to the nearing completion of the Prophet\u2019s mission?", ["It points to victory, people entering Islam in crowds, and the command to glorify and seek forgiveness", "It tells the story of Musa in detail", "It gives inheritance shares", "It begins the Qur\u2019an"], 0, "Understood as a sign of completion. (Bukhari 4969; al-Qurtubi)"],
-      ["TF-I4", "What does \u2018people entering Allah\u2019s religion in crowds\u2019 suggest?", ["A public turning toward Islam after Allah\u2019s help and victory", "Only one private conversation", "The start of creation", "The rules of trade"], 0, "Visible, collective acceptance of Islam after divine help. (Qur\u2019an 110:2)"],
-      ["TF-I5", "A user says: \u2018Victory means I should become proud.\u2019 Which answer best reflects Surah an-Nasr?", ["Victory should lead to tasbih, gratitude, and seeking forgiveness", "Victory means forgetting Allah", "Victory removes the need for humility", "Victory is only about numbers"], 0, "Success should increase humility and return to Allah. (Qur\u2019an 110:3)"],
+      ["TF-I1", "Which three meanings belong to Surah an-Nasr, in the correct order?", ["When Allah's help and victory comes \u2192 People entering Islam in crowds \u2192 Glorify and seek forgiveness", "Guide us to the straight path \u2192 Master of the Day \u2192 You alone we worship", "Seek refuge in the Lord of mankind \u2192 He neither begets \u2192 When help comes", "Glorify and seek forgiveness \u2192 People entering Islam \u2192 When help comes"], 0, "An-Nasr: help/victory, then crowds, then tasbih + istighfar. (al-Qurtubi on 110:1-3)"],
+      ["TF-I2", "What response does Surah an-Nasr command when victory comes?", ["Glorify Allah with praise and seek forgiveness", "Boast about personal power", "Stop worshipping because the mission is complete", "Treat victory as purely political"], 0, "The surah turns victory into humility: tasbih, praise, istighfar. (Qur'an 110:3)"],
+      ["TF-I3", "Why is Surah an-Nasr connected to the nearing completion of the Prophet's mission?", ["It points to victory, people entering Islam in crowds, and the command to glorify and seek forgiveness", "It tells the story of Musa in detail", "It gives inheritance shares", "It begins the Qur'an"], 0, "Understood as a sign of completion. (Bukhari 4969; al-Qurtubi)"],
+      ["TF-I4", "What does 'people entering Allah's religion in crowds' suggest?", ["A public turning toward Islam after Allah's help and victory", "Only one private conversation", "The start of creation", "The rules of trade"], 0, "Visible, collective acceptance of Islam after divine help. (Qur'an 110:2)"],
+      ["TF-I5", "A user says: 'Victory means I should become proud.' Which answer best reflects Surah an-Nasr?", ["Victory should lead to tasbih, gratitude, and seeking forgiveness", "Victory means forgetting Allah", "Victory removes the need for humility", "Victory is only about numbers"], 0, "Success should increase humility and return to Allah. (Qur'an 110:3)"],
     ],
     3: [
-      ["TF-A1", "Which is the correct opening sequence of themes in Surah al-A\u2019la?", ["Glorify your Lord, the Most High \u2192 Allah creates, proportions, and guides \u2192 Vegetation brought out then made dry", "The successful one purifies \u2192 Glorify your Lord \u2192 The Hereafter is better", "Vegetation brought out \u2192 Glorify your Lord \u2192 Allah creates and proportions", "The Hereafter is better \u2192 Reminder benefits the one who fears \u2192 Glorify your Lord"], 0, "Glorification, then creation signs, then vegetation. (al-Qurtubi on 87:1\u20135)"],
-      ["TF-A2", "What is the opening command of Surah al-A\u2019la?", ["Glorify the name of your Lord, the Most High", "Seek refuge in the Lord of mankind", "When Allah\u2019s help comes", "Woe to every slanderer"], 0, "Sabbih isma Rabbika l-A\u2019la. (Qur\u2019an 87:1)"],
-      ["TF-A3", "Which pair of meanings appears early in Surah al-A\u2019la?", ["Allah creates/proportions and determines/guides", "A detailed list of inheritance shares", "The story of the elephant army only", "Rules of divorce"], 0, "Creation, proportioning, decree, and guidance. (Qur\u2019an 87:2\u20133)"],
-      ["TF-A4", "Which statement best reflects the end of Surah al-A\u2019la?", ["The Hereafter is better and more lasting", "Worldly life is always the final goal", "There is no reminder in earlier scriptures", "Prayer and remembrance are disconnected from success"], 0, "Bal tu\u2019thiruna l-hayata d-dunya, wa l-akhiratu khayrun wa abqa. (Qur\u2019an 87:16\u201317)"],
-      ["TF-A5", "A learner says: \u2018I know the truth but keep choosing short-term comfort.\u2019 Which al-A\u2019la theme speaks most directly to this?", ["Preferring worldly life while the Hereafter is better and more lasting", "The order of zakah calculation", "The location of the cave of Hira", "The rules of murabaha"], 0, "Knowledge must reshape desire: the Hereafter is better. (Qur\u2019an 87:16\u201317)"],
+      ["TF-A1", "Which is the correct opening sequence of themes in Surah al-A'la?", ["Glorify your Lord, the Most High \u2192 Allah creates, proportions, and guides \u2192 Vegetation brought out then made dry", "The successful one purifies \u2192 Glorify your Lord \u2192 The Hereafter is better", "Vegetation brought out \u2192 Glorify your Lord \u2192 Allah creates and proportions", "The Hereafter is better \u2192 Reminder benefits the one who fears \u2192 Glorify your Lord"], 0, "Glorification, then creation signs, then vegetation. (al-Qurtubi on 87:1-5)"],
+      ["TF-A2", "What is the opening command of Surah al-A'la?", ["Glorify the name of your Lord, the Most High", "Seek refuge in the Lord of mankind", "When Allah's help comes", "Woe to every slanderer"], 0, "Sabbih isma Rabbika l-A'la. (Qur'an 87:1)"],
+      ["TF-A3", "Which pair of meanings appears early in Surah al-A'la?", ["Allah creates/proportions and determines/guides", "A detailed list of inheritance shares", "The story of the elephant army only", "Rules of divorce"], 0, "Creation, proportioning, decree, and guidance. (Qur'an 87:2-3)"],
+      ["TF-A4", "Which statement best reflects the end of Surah al-A'la?", ["The Hereafter is better and more lasting", "Worldly life is always the final goal", "There is no reminder in earlier scriptures", "Prayer and remembrance are disconnected from success"], 0, "Bal tu'thiruna l-hayata d-dunya, wa l-akhiratu khayrun wa abqa. (Qur'an 87:16-17)"],
+      ["TF-A5", "A learner says: 'I know the truth but keep choosing short-term comfort.' Which al-A'la theme speaks most directly to this?", ["Preferring worldly life while the Hereafter is better and more lasting", "The order of zakah calculation", "The location of the cave of Hira", "The rules of murabaha"], 0, "Knowledge must reshape desire: the Hereafter is better. (Qur'an 87:16-17)"],
     ],
   },
 };
@@ -240,13 +240,22 @@ const STYLES = `
   .cmp-count-up { animation: compassCountUp 0.5s cubic-bezier(.17,.67,.35,1.3) both; }
   .cmp-ring-fill { animation: compassRingFill 1.2s ease-out both; }
   .cmp-streak { animation: compassStreakPop 0.4s cubic-bezier(.17,.67,.35,1.3) both; }
+  .cmp-press { transition: transform .09s ease, box-shadow .09s ease, filter .15s ease; }
+  .cmp-press:hover { filter: brightness(1.04); }
+  .cmp-press:active { transform: translateY(4px) !important; box-shadow: 0 0 0 transparent !important; }
+  .cmp-press:focus-visible, .cmp-card:focus-visible { outline: 2px solid #F0B429; outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
 `;
 
-// ── Colours ──────────────────────────────────────────────────────────────
+// ── Colours (Deany brand palette) ─────────────────────────────────────────
+const serif = 'Georgia, serif';
 const C = {
-  gold: '#C9A84C', goldLight: '#F5EDD4', navy: '#1A2332', steel: '#4A5568',
-  muted: '#94a0b0', sage: '#7C9A82', sageLight: '#EEF3EF', cream: '#FAF8F5',
-  ivory: '#F5F1EC', border: '#E8E4DF', error: '#C53030', errorLight: '#FEF2F2',
+  gold: '#F0B429', goldDk: '#C8901A', goldLight: '#FCEFCF', goldText: '#5A3E00',
+  navy: '#0F4C5C', steel: '#5E7480', muted: '#94A3AA',
+  teal: '#22A39A', tealDk: '#1A8C82', tealDeep: '#0F4C5C',
+  sage: '#22A39A', sageLight: '#DCF3EF',
+  cream: '#FBFAF6', ivory: '#F5F1EC', heroWash: '#EAF7F5',
+  border: '#E8E4DF', error: '#C53030', errorLight: '#FEF2F2',
   white: '#FFFFFF',
 };
 
@@ -257,12 +266,15 @@ function WelcomeStep({ onNext }) {
   return (
     <div className="cmp-fade-up" style={{ textAlign: 'center', maxWidth: 480, margin: '0 auto' }}>
       {/* Compass visual */}
-      <div style={{ margin: '0 auto 28px', width: 96, height: 96, borderRadius: '50%', background: `linear-gradient(135deg, ${C.goldLight}, ${C.cream})`, border: `2px solid ${C.gold}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 44 }} className="cmp-pulse">
-        <span role="img" aria-label="compass">&#x1F9ED;</span>
+      <div style={{ position: 'relative', width: 112, height: 112, margin: '0 auto 26px' }}>
+        <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: `radial-gradient(circle at 50% 38%, ${C.sageLight}, transparent 70%)` }} />
+        <div className="cmp-pulse" style={{ position: 'absolute', inset: 9, borderRadius: '50%', background: `linear-gradient(140deg, ${C.goldLight}, ${C.white})`, border: `2px solid ${C.gold}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 44, boxShadow: '0 12px 30px rgba(240,180,41,0.22)' }}>
+          <span role="img" aria-label="compass">&#x1F9ED;</span>
+        </div>
       </div>
 
-      <p style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.18em', color: C.sage, marginBottom: 10 }}>Deany Compass</p>
-      <h1 style={{ fontSize: 28, fontWeight: 700, color: C.navy, lineHeight: 1.25, marginBottom: 14 }}>Find your starting point</h1>
+      <p style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.18em', color: C.teal, marginBottom: 10 }}>Deany Compass</p>
+      <h1 style={{ fontFamily: serif, fontSize: 32, fontWeight: 500, color: C.navy, lineHeight: 1.2, marginBottom: 14 }}>Find your starting point</h1>
       <p style={{ fontSize: 15, color: C.steel, lineHeight: 1.7, marginBottom: 8, maxWidth: 400, margin: '0 auto 28px' }}>
         Pick the subjects you care about, tell us where you think you are, then answer a short adaptive quiz.
         Deany will map your knowledge and build a path made for you.
@@ -278,13 +290,13 @@ function WelcomeStep({ onNext }) {
         ))}
       </div>
 
-      <button onClick={onNext} className="cmp-glow" style={{
-        background: C.gold, color: C.white, border: 'none', borderRadius: 14, padding: '15px 48px',
-        fontSize: 16, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s',
+      <button onClick={onNext} className="cmp-press" style={{
+        background: C.gold, color: C.goldText, border: 'none', borderRadius: 14, padding: '15px 48px',
+        fontSize: 16, fontWeight: 700, cursor: 'pointer', boxShadow: `0 4px 0 ${C.goldDk}`,
       }}>
         Begin Calibration
       </button>
-      <p style={{ fontSize: 12, color: C.muted, marginTop: 14 }}>Takes 3\u20135 minutes</p>
+      <p style={{ fontSize: 12, color: C.muted, marginTop: 16 }}>Takes 3 to 5 minutes</p>
     </div>
   );
 }
@@ -299,7 +311,7 @@ function TopicStep({ selected, setSelected, onNext }) {
     <div style={{ maxWidth: 540, margin: '0 auto' }}>
       <div className="cmp-fade-up" style={{ textAlign: 'center', marginBottom: 28 }}>
         <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.16em', color: C.sage, marginBottom: 6 }}>Step 1 of 3</div>
-        <h2 style={{ fontSize: 22, fontWeight: 700, color: C.navy, marginBottom: 6 }}>What do you want to learn?</h2>
+        <h2 style={{ fontFamily: serif, fontSize: 24, fontWeight: 500, color: C.navy, marginBottom: 6 }}>What do you want to learn?</h2>
         <p style={{ fontSize: 14, color: C.steel }}>Select one or more. Your quiz adapts to these.</p>
       </div>
 
@@ -338,9 +350,9 @@ function TopicStep({ selected, setSelected, onNext }) {
       {selected.length > 0 && (
         <div className="cmp-fade-up" style={{ marginTop: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ fontSize: 13, color: C.steel, fontWeight: 500 }}>{selected.length} subject{selected.length > 1 ? 's' : ''} selected</span>
-          <button onClick={onNext} style={{
-            background: C.gold, color: C.white, border: 'none', borderRadius: 12, padding: '13px 36px',
-            fontSize: 15, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s',
+          <button onClick={onNext} className="cmp-press" style={{
+            background: C.gold, color: C.goldText, border: 'none', borderRadius: 12, padding: '13px 36px',
+            fontSize: 15, fontWeight: 700, cursor: 'pointer', boxShadow: `0 4px 0 ${C.goldDk}`,
           }}>
             Continue
           </button>
@@ -359,8 +371,8 @@ function AssessStep({ selectedTopics, ratings, setRatings, onNext }) {
     <div style={{ maxWidth: 540, margin: '0 auto' }}>
       <div className="cmp-fade-up" style={{ textAlign: 'center', marginBottom: 28 }}>
         <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.16em', color: C.sage, marginBottom: 6 }}>Step 2 of 3</div>
-        <h2 style={{ fontSize: 22, fontWeight: 700, color: C.navy, marginBottom: 6 }}>Where do you think you are?</h2>
-        <p style={{ fontSize: 14, color: C.steel }}>Be honest \u2014 this helps us start you at the right level.</p>
+        <h2 style={{ fontFamily: serif, fontSize: 24, fontWeight: 500, color: C.navy, marginBottom: 6 }}>Where do you think you are?</h2>
+        <p style={{ fontSize: 14, color: C.steel }}>Be honest. This helps us start you at the right level.</p>
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -396,9 +408,9 @@ function AssessStep({ selectedTopics, ratings, setRatings, onNext }) {
 
       {allRated && (
         <div className="cmp-fade-up" style={{ marginTop: 24, textAlign: 'center' }}>
-          <button onClick={onNext} className="cmp-glow" style={{
-            background: C.gold, color: C.white, border: 'none', borderRadius: 14, padding: '15px 48px',
-            fontSize: 16, fontWeight: 600, cursor: 'pointer',
+          <button onClick={onNext} className="cmp-press" style={{
+            background: C.gold, color: C.goldText, border: 'none', borderRadius: 14, padding: '15px 48px',
+            fontSize: 16, fontWeight: 700, cursor: 'pointer', boxShadow: `0 4px 0 ${C.goldDk}`,
           }}>
             Start Quiz
           </button>
@@ -484,7 +496,7 @@ function QuizStep({ question, questionNumber, totalEstimate, streak, correctCoun
         border: `1.5px solid ${C.border}`, boxShadow: '0 8px 32px rgba(0,0,0,0.06)',
         marginBottom: 16,
       }}>
-        <p style={{ fontSize: 18, fontWeight: 600, color: C.navy, lineHeight: 1.55, margin: 0 }}>{question.prompt}</p>
+        <p style={{ fontFamily: serif, fontSize: 19, fontWeight: 500, color: C.navy, lineHeight: 1.5, margin: 0 }}>{question.prompt}</p>
       </div>
 
       {/* Options */}
@@ -543,10 +555,10 @@ function QuizStep({ question, questionNumber, totalEstimate, streak, correctCoun
           <p style={{ fontSize: 13, color: isCorrect ? '#065F46' : '#991B1B', lineHeight: 1.6, margin: '0 0 14px 0' }}>
             {question.why}
           </p>
-          <button onClick={next} style={{
-            background: isCorrect ? C.sage : C.navy, color: C.white, border: 'none',
-            borderRadius: 12, padding: '12px 32px', fontSize: 14, fontWeight: 600,
-            cursor: 'pointer', transition: 'all 0.2s', width: '100%',
+          <button onClick={next} className="cmp-press" style={{
+            background: isCorrect ? C.teal : C.navy, color: C.white, border: 'none',
+            borderRadius: 12, padding: '13px 32px', fontSize: 14, fontWeight: 700,
+            cursor: 'pointer', width: '100%', boxShadow: `0 3px 0 ${isCorrect ? C.tealDk : '#0A3A47'}`,
           }}>
             Next Question
           </button>
@@ -626,7 +638,7 @@ function ResultsStep({ selectedTopics, selfRatings, answers, onHome, onComplete,
       }}>
         <ScoreRing pct={accuracy} />
         <div className="cmp-count-up" style={{ animationDelay: '0.4s' }}>
-          <p style={{ fontSize: 20, fontWeight: 700, color: C.navy, margin: '18px 0 4px' }}>{grade}</p>
+          <p style={{ fontFamily: serif, fontSize: 23, fontWeight: 500, color: C.navy, margin: '18px 0 4px' }}>{grade}</p>
           <p style={{ fontSize: 13, color: C.steel }}>{totalCorrect} of {answers.length} correct across {selectedTopics.length} subject{selectedTopics.length > 1 ? 's' : ''}</p>
         </div>
       </div>
@@ -680,7 +692,7 @@ function ResultsStep({ selectedTopics, selfRatings, answers, onHome, onComplete,
             ? "You clearly have strong foundations. Deany will start you at a level that challenges you and fills any gaps."
             : accuracy >= 50
             ? "A solid start. Deany will reinforce the basics you know and build up the areas that need attention."
-            : "Everyone starts somewhere. Deany will build your knowledge from the ground up \u2014 no shortcuts, no judgement."}
+            : "Everyone starts somewhere. Deany will build your knowledge from the ground up, no shortcuts, no judgement."}
         </p>
       </div>
 
@@ -692,10 +704,10 @@ function ResultsStep({ selectedTopics, selfRatings, answers, onHome, onComplete,
           try { localStorage.setItem("deany-compass-result", JSON.stringify({ placements, accuracy, ts: Date.now() })); } catch {}
           if (onComplete) onComplete();
           else if (onHome) onHome();
-        }} className="cmp-glow" style={{
-          background: C.gold, color: C.white, border: 'none', borderRadius: 14,
-          padding: '15px 48px', fontSize: 16, fontWeight: 600, cursor: 'pointer',
-          width: '100%', maxWidth: 320,
+        }} className="cmp-press" style={{
+          background: C.gold, color: C.goldText, border: 'none', borderRadius: 14,
+          padding: '15px 48px', fontSize: 16, fontWeight: 700, cursor: 'pointer',
+          width: '100%', maxWidth: 320, boxShadow: `0 4px 0 ${C.goldDk}`,
         }}>
           Start Your Path
         </button>
@@ -758,7 +770,7 @@ export default function DeanyCompass({ onBack, onHome, onComplete }) {
   const stepLabel = { welcome: '', topics: 'Choose Subjects', assess: 'Self-Assessment', quiz: 'Quiz', results: 'Results' };
 
   return (
-    <div style={{ minHeight: '100vh', background: C.cream }}>
+    <div style={{ minHeight: '100vh', background: `linear-gradient(180deg, ${C.heroWash} 0%, ${C.cream} 340px)`, color: C.steel }}>
       <style>{STYLES}</style>
 
       {/* Header */}
