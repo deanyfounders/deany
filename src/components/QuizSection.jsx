@@ -425,6 +425,11 @@ const QuizSection = () => {
         @keyframes quizCheckDraw { 0% { stroke-dashoffset:20; } 100% { stroke-dashoffset:0; } }
         @keyframes confettiFall { 0% { transform:translateY(0) rotate(0); opacity:1; } 100% { transform:translateY(calc(100vh + 40px)) rotate(720deg); opacity:0; } }
         @keyframes quizBob { 0%,100% { transform:translateY(0); } 50% { transform:translateY(3px); } }
+        @keyframes methodPulse { 0%,100% { transform:scale(1); } 50% { transform:scale(1.12); } }
+        .method-cards { display:flex; gap:12px; align-items:stretch; }
+        .method-card { outline:none; }
+        .method-card:focus-visible { outline:2px solid #F0B429; outline-offset:2px; }
+        @media (max-width:560px) { .method-cards { flex-direction:column; } .method-hero { order:-1; } }
         @media (prefers-reduced-motion:reduce) { *, *::before, *::after { animation-duration:0.01ms !important; transition-duration:0.01ms !important; } }
       `}</style>
 
@@ -435,14 +440,11 @@ const QuizSection = () => {
             HOW IT WORKS
           </div>
           <div style={{ fontFamily: serif, fontSize: 24, fontWeight: 500, color: C.tealDeep, lineHeight: 1.3 }}>
-            The Deany method
+            The Deany Method
           </div>
-          {/* Clean chevron with gentle bob */}
-          <svg width="20" height="12" viewBox="0 0 20 12" fill="none" stroke={C.gold} strokeWidth="2.5"
-            strokeLinecap="round" strokeLinejoin="round"
-            style={{ display: 'block', margin: '12px auto 0', opacity: 0.7, animation: 'quizBob 2.5s ease-in-out infinite' }}>
-            <path d="M2 2l8 8 8-8" />
-          </svg>
+          <p style={{ fontSize: 13, color: C.textMuted, lineHeight: 1.5, margin: '8px auto 0', maxWidth: 320 }}>
+            Two ways to find out. Your call.
+          </p>
         </div>
 
         {/* ── Card ── */}
@@ -457,23 +459,56 @@ const QuizSection = () => {
             padding: '28px 24px',
             ...(leaving && view === 'teaser' ? leaveStyle : {}),
             ...(!leaving && view === 'teaser' ? { animation: 'quizPopIn 0.3s cubic-bezier(.2,.7,.3,1) both' } : {}) }}>
-            <div style={{ display: 'flex', gap: 10 }}>
-              {[
-                { onClick: showRead, border: C.border, bg: C.canvas, iconBg: C.canvas, icon: '\u{1F4C4}', label: 'Just tell me', sub: 'Read a quick summary', labelColor: C.text },
-                { onClick: startQuiz, border: C.teal, bg: C.tealSoft, iconBg: 'rgba(34,163,154,0.15)', icon: '\u26A1', label: 'Show me', sub: 'Try it the Deany way', labelColor: C.tealDeep },
-              ].map((c, i) => (
-                <button key={i} onClick={c.onClick} style={{
-                  flex: 1, borderRadius: 14, padding: '22px 16px', textAlign: 'center',
-                  cursor: 'pointer', transition: 'all 0.2s ease',
-                  border: `1.5px solid ${c.border}`, background: c.bg,
-                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}
-                  onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(15,76,92,0.1)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = ''; }}>
-                  <div style={{ width: 38, height: 38, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 17, background: c.iconBg }}>{c.icon}</div>
-                  <div style={{ fontSize: 13.5, fontWeight: 600, color: c.labelColor }}>{c.label}</div>
-                  <div style={{ fontSize: 11, color: C.textFaint, lineHeight: 1.4 }}>{c.sub}</div>
-                </button>
-              ))}
+            <div className="method-cards">
+              {/* Calm secondary: Just tell me */}
+              <button className="method-card" onClick={showRead} aria-label="Just tell me, read a 20 second summary" style={{
+                flex: 1, borderRadius: 16, padding: '22px 18px 20px', textAlign: 'center', cursor: 'pointer',
+                border: '1px solid rgba(15,76,92,0.12)', background: '#FFFFFF',
+                boxShadow: '0 1px 2px rgba(20,43,54,.04), 0 8px 18px rgba(20,43,54,.05)',
+                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 9, minHeight: 44,
+                transition: 'transform .24s cubic-bezier(.2,.7,.3,1), box-shadow .24s ease' }}
+                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 1px 2px rgba(20,43,54,.04), 0 14px 26px rgba(20,43,54,.09)'; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '0 1px 2px rgba(20,43,54,.04), 0 8px 18px rgba(20,43,54,.05)'; }}>
+                <div style={{ width: 46, height: 46, borderRadius: 13, background: '#F1F6F4', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9DAAB1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="9" y1="13" x2="15" y2="13" /><line x1="9" y1="17" x2="13" y2="17" />
+                  </svg>
+                </div>
+                <div style={{ fontFamily: serif, fontSize: 16, fontWeight: 600, color: C.tealDeep }}>Just tell me</div>
+                <div style={{ fontSize: 11.5, color: '#9DAAB1', lineHeight: 1.4 }}>A 20-second summary of how it works</div>
+                <span style={{ marginTop: 5, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minHeight: 36,
+                  border: '1px solid rgba(15,76,92,0.18)', color: C.textMuted, fontSize: 12, fontWeight: 600, padding: '8px 16px', borderRadius: 10, background: 'transparent' }}>
+                  Read summary
+                </span>
+              </button>
+
+              {/* Recommended hero: Show me */}
+              <button className="method-card method-hero" onClick={startQuiz} aria-label="Show me, try a real lesson the Deany way (recommended)" style={{
+                flex: 1, position: 'relative', borderRadius: 16, padding: '22px 18px 20px', textAlign: 'center', cursor: 'pointer',
+                border: '2px solid #5DCAA5', background: 'linear-gradient(160deg,#E4F6F1,#D2EFE8)',
+                boxShadow: '0 1px 2px rgba(20,43,54,.04), 0 12px 26px rgba(34,163,154,.18)',
+                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 9, minHeight: 44,
+                transition: 'transform .24s cubic-bezier(.2,.7,.3,1), box-shadow .24s ease' }}
+                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 1px 2px rgba(20,43,54,.04), 0 18px 34px rgba(34,163,154,.24)'; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '0 1px 2px rgba(20,43,54,.04), 0 12px 26px rgba(34,163,154,.18)'; }}>
+                <span style={{ position: 'absolute', top: 10, right: 10, background: '#0F6E56', color: '#fff', fontSize: 8.5, fontWeight: 700,
+                  letterSpacing: '0.6px', textTransform: 'uppercase', padding: '3px 8px', borderRadius: 20 }}>Recommended</span>
+                <div style={{ width: 46, height: 46, borderRadius: 13, background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  boxShadow: '0 4px 12px rgba(15,76,92,0.12)' }}>
+                  <span style={{ display: 'inline-flex', animation: 'methodPulse 2.4s ease-in-out infinite' }}>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="#F0B429" stroke="#F0B429" strokeWidth="1.5" strokeLinejoin="round">
+                      <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                    </svg>
+                  </span>
+                </div>
+                <div style={{ fontFamily: serif, fontSize: 16, fontWeight: 600, color: C.tealDeep }}>Show me</div>
+                <div style={{ fontSize: 11.5, color: '#0F6E56', lineHeight: 1.4 }}>Try a real lesson, the Deany way</div>
+                <span style={{ marginTop: 5, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6, minHeight: 36,
+                  background: '#F0B429', color: '#5A3E00', fontSize: 12.5, fontWeight: 700, padding: '9px 18px', borderRadius: 10, boxShadow: '0 3px 0 #C8901A' }}>
+                  Try a lesson
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="M12 5l7 7-7 7" /></svg>
+                </span>
+              </button>
             </div>
           </div>
 
