@@ -302,13 +302,25 @@ function WelcomeStep({ onNext }) {
 }
 
 // ── Topic Selection ──────────────────────────────────────────────────────
-function TopicStep({ selected, setSelected, onNext }) {
+function TopicStep({ selected, setSelected, onNext, onBack }) {
   function toggle(id) {
     setSelected(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
   }
 
   return (
     <div style={{ maxWidth: 540, margin: '0 auto' }}>
+      {onBack && (
+        <button onClick={onBack} style={{
+          display: 'inline-flex', alignItems: 'center', gap: 5, background: 'none', border: 'none',
+          color: C.steel, cursor: 'pointer', fontSize: 13, fontWeight: 600, padding: '4px 2px', marginBottom: 10,
+          transition: 'color 0.15s ease',
+        }}
+          onMouseEnter={e => { e.currentTarget.style.color = C.navy; }}
+          onMouseLeave={e => { e.currentTarget.style.color = C.steel; }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6" /></svg>
+          Back
+        </button>
+      )}
       <div className="cmp-fade-up" style={{ textAlign: 'center', marginBottom: 28 }}>
         <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.16em', color: C.sage, marginBottom: 6 }}>Step 1 of 3</div>
         <h2 style={{ fontFamily: serif, fontSize: 24, fontWeight: 500, color: C.navy, marginBottom: 6 }}>What do you want to learn?</h2>
@@ -879,7 +891,7 @@ export default function DeanyCompass({ onBack, onHome, onComplete }) {
 
         {step === "topics" && (
           <TopicStep selected={selectedTopics} setSelected={setSelectedTopics}
-            onNext={() => setStep("assess")} />
+            onNext={() => setStep("assess")} onBack={() => setStep("welcome")} />
         )}
 
         {step === "assess" && (
