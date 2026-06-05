@@ -323,7 +323,7 @@ const LandingPage = ({ onGetStarted, onPreviewLesson, onCalibration, onSelectPat
           flexWrap: 'wrap', gap: '8px 16px', fontSize: 11, color: C.textMuted, textAlign: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><ShieldCheck size={14} color={C.tealDeep} /> Scholar reviewed</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><BookOpen size={14} color={C.gold} /> Cited sources</div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Heart size={14} color={C.coral} /> Free forever core</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Heart size={14} color={C.coral} /> Free core</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Users size={14} color={C.teal} /> Open to all faiths</div>
         </div>
       </section>
