@@ -334,9 +334,9 @@ const LandingPage = ({ onGetStarted, onPreviewLesson, onCalibration, onSelectPat
           <SectionHead eyebrow="Getting started" title="Three steps to begin" />
           <div className="steps3">
             {[
-              { n: '1', t: 'Find your level', d: 'A quick quiz places you at the right starting point.', img: stepQuiz, imgScale: 0.72, badgeBg: C.gold, badgeFg: '#FFFFFF' },
-              { n: '2', t: 'Learn in bites', d: 'Small lessons make steady progress easy.', img: stepBites, imgShiftY: 16, badgeBg: '#7FD8CE', badgeFg: '#FFFFFF' },
-              { n: '3', t: 'Build a daily habit', d: 'Show up daily and watch your knowledge grow.', img: stepHabit, badgeBg: '#22D86A', badgeFg: '#FFFFFF' },
+              { n: '1', t: 'Find your level', d: 'A quick quiz places you at the right starting point.', img: stepQuiz, imgScale: 0.62, badgeBg: C.gold, badgeFg: '#FFFFFF' },
+              { n: '2', t: 'Learn in bites', d: 'Small lessons make steady progress easy.', img: stepBites, imgShiftY: 52, badgeBg: '#7FD8CE', badgeFg: '#FFFFFF' },
+              { n: '3', t: 'Build a daily habit', d: 'Show up daily and watch your knowledge grow.', img: stepHabit, imgScale: 0.88, badgeBg: '#22D86A', badgeFg: '#FFFFFF' },
             ].map(s => (
               <div key={s.n} style={{ textAlign: 'center', padding: '0 8px' }}>
                 <div style={{ height: 272, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
