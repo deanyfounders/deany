@@ -421,9 +421,9 @@ function AssessStep({ selectedTopics, ratings, setRatings, onNext }) {
 }
 
 // ── Quiz Question ────────────────────────────────────────────────────────
-function QuizStep({ question, questionNumber, totalEstimate, streak, correctCount, onAnswer }) {
-  const [selected, setSelected] = useState(null);
-  const [submitted, setSubmitted] = useState(false);
+function QuizStep({ question, questionNumber, totalEstimate, streak, correctCount, onAnswer, lockedSelection = null, isReview = false, onExitReview }) {
+  const [selected, setSelected] = useState(lockedSelection);
+  const [submitted, setSubmitted] = useState(lockedSelection !== null);
 
   const shuffled = useMemo(() => {
     const indexed = question.opts.map((text, i) => ({ text, idx: i }));
@@ -437,7 +437,7 @@ function QuizStep({ question, questionNumber, totalEstimate, streak, correctCoun
   const pct = totalEstimate ? Math.min(100, Math.max(5, (questionNumber / totalEstimate) * 100)) : 30;
 
   function choose(i) {
-    if (submitted) return;
+    if (submitted || isReview) return;
     setSelected(i);
     setSubmitted(true);
   }
@@ -447,6 +447,7 @@ function QuizStep({ question, questionNumber, totalEstimate, streak, correctCoun
     onAnswer({
       id: question.id, cat: question.cat, tier: question.tier,
       correct: shuffled[selected].idx === question.correct,
+      selectedShuffledIdx: selected, question,
     });
   }
 
@@ -473,15 +474,21 @@ function QuizStep({ question, questionNumber, totalEstimate, streak, correctCoun
             </span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            {streak >= 2 && (
-              <span className="cmp-streak" style={{
-                fontSize: 12, fontWeight: 800, color: '#E8590C',
-                display: 'flex', alignItems: 'center', gap: 3,
-              }}>
-                &#x1F525; {streak}
-              </span>
+            {isReview ? (
+              <span style={{ fontSize: 10, fontWeight: 800, padding: '4px 10px', borderRadius: 20, background: C.goldLight, color: C.goldDk, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Reviewing &middot; locked</span>
+            ) : (
+              <>
+                {streak >= 2 && (
+                  <span className="cmp-streak" style={{
+                    fontSize: 12, fontWeight: 800, color: '#E8590C',
+                    display: 'flex', alignItems: 'center', gap: 3,
+                  }}>
+                    &#x1F525; {streak}
+                  </span>
+                )}
+                <span style={{ fontSize: 12, fontWeight: 700, color: C.sage }}>{correctCount} correct</span>
+              </>
             )}
-            <span style={{ fontSize: 12, fontWeight: 700, color: C.sage }}>{correctCount} correct</span>
           </div>
         </div>
         {/* Progress bar */}
@@ -555,12 +562,12 @@ function QuizStep({ question, questionNumber, totalEstimate, streak, correctCoun
           <p style={{ fontSize: 13, color: isCorrect ? '#065F46' : '#991B1B', lineHeight: 1.6, margin: '0 0 14px 0' }}>
             {question.why}
           </p>
-          <button onClick={next} className="cmp-press" style={{
-            background: isCorrect ? C.teal : C.navy, color: C.white, border: 'none',
+          <button onClick={isReview ? onExitReview : next} className="cmp-press" style={{
+            background: isReview ? C.navy : (isCorrect ? C.teal : C.navy), color: C.white, border: 'none',
             borderRadius: 12, padding: '13px 32px', fontSize: 14, fontWeight: 700,
-            cursor: 'pointer', width: '100%', boxShadow: `0 3px 0 ${isCorrect ? C.tealDk : '#0A3A47'}`,
+            cursor: 'pointer', width: '100%', boxShadow: `0 3px 0 ${isReview ? '#0A3A47' : (isCorrect ? C.tealDk : '#0A3A47')}`,
           }}>
-            Next Question
+            {isReview ? 'Back to your current question' : 'Next Question'}
           </button>
         </div>
       )}
@@ -722,6 +729,43 @@ function ResultsStep({ selectedTopics, selfRatings, answers, onHome, onComplete,
   );
 }
 
+// ── Question progress strip (dotted; tap a past dot to review, read only) ──
+function QuestionStrip({ history, reviewIndex, liveNumber, onJump, onLive }) {
+  const dash = { width: 16, borderTop: `2px dotted ${C.border}`, flexShrink: 0 };
+  return (
+    <div style={{ maxWidth: 540, margin: '0 auto 22px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap', rowGap: 8 }}>
+        {history.map((h, i) => (
+          <React.Fragment key={i}>
+            {i > 0 && <div style={dash} />}
+            <button onClick={() => onJump(i)} aria-label={`Review question ${i + 1}`} title={`Review question ${i + 1}`}
+              className="cmp-press" style={{
+                width: 27, height: 27, borderRadius: '50%', flexShrink: 0, cursor: 'pointer', border: 'none',
+                background: h.correct ? C.teal : C.error, color: '#fff', fontSize: 11, fontWeight: 800,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                outline: reviewIndex === i ? `2px solid ${C.gold}` : 'none', outlineOffset: 2,
+              }}>{i + 1}</button>
+          </React.Fragment>
+        ))}
+        {history.length > 0 && <div style={dash} />}
+        <button onClick={onLive} aria-label="Current question" title="Current question"
+          className={reviewIndex === null ? 'cmp-pulse' : 'cmp-press'} style={{
+            width: 30, height: 30, borderRadius: '50%', flexShrink: 0,
+            cursor: reviewIndex !== null ? 'pointer' : 'default',
+            background: C.white, border: `2px solid ${C.gold}`, color: C.gold, fontSize: 11, fontWeight: 800,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            boxShadow: reviewIndex === null ? `0 0 0 4px ${C.goldLight}` : 'none',
+          }}>{liveNumber}</button>
+      </div>
+      <div style={{ textAlign: 'center', fontSize: 11, color: C.muted, marginTop: 9 }}>
+        {reviewIndex !== null
+          ? 'Reviewing a past question. Your answer is locked.'
+          : (history.length > 0 ? 'Tap a dot to look back at a question.' : 'Your progress shows here.')}
+      </div>
+    </div>
+  );
+}
+
 // ── Main Component ───────────────────────────────────────────────────────
 export default function DeanyCompass({ onBack, onHome, onComplete }) {
   const [step, setStep] = useState("welcome");
@@ -730,6 +774,8 @@ export default function DeanyCompass({ onBack, onHome, onComplete }) {
   const [answers, setAnswers] = useState([]);
   const [questionCount, setQuestionCount] = useState(0);
   const [streak, setStreak] = useState(0);
+  const [history, setHistory] = useState([]);       // full answered questions, for review
+  const [reviewIndex, setReviewIndex] = useState(null); // null = live, number = reviewing a past Q
 
   const effectiveRatings = useMemo(() => {
     const r = { ...selfRatings };
@@ -750,9 +796,11 @@ export default function DeanyCompass({ onBack, onHome, onComplete }) {
   const correctCount = answers.filter(a => a.correct).length;
 
   const handleAnswer = useCallback((answer) => {
-    setAnswers(prev => [...prev, answer]);
+    setAnswers(prev => [...prev, { id: answer.id, cat: answer.cat, tier: answer.tier, correct: answer.correct }]);
+    setHistory(prev => [...prev, { question: answer.question, selectedShuffledIdx: answer.selectedShuffledIdx, correct: answer.correct }]);
     setQuestionCount(c => c + 1);
     setStreak(s => answer.correct ? s + 1 : 0);
+    setReviewIndex(null);
   }, []);
 
   const quizDone = step === "quiz" && !currentQuestion && answers.length > 0;
@@ -764,19 +812,21 @@ export default function DeanyCompass({ onBack, onHome, onComplete }) {
     setAnswers([]);
     setQuestionCount(0);
     setStreak(0);
+    setHistory([]);
+    setReviewIndex(null);
   }
 
   // Step labels for header
   const stepLabel = { welcome: '', topics: 'Choose Subjects', assess: 'Self-Assessment', quiz: 'Quiz', results: 'Results' };
 
   return (
-    <div style={{ minHeight: '100vh', background: `linear-gradient(180deg, ${C.heroWash} 0%, ${C.cream} 340px)`, color: C.steel }}>
+    <div style={{ minHeight: '100vh', background: C.white, color: C.steel }}>
       <style>{STYLES}</style>
 
       {/* Header */}
       <div style={{
         position: 'sticky', top: 0, zIndex: 40,
-        background: 'rgba(250,248,245,0.85)', backdropFilter: 'blur(16px)',
+        background: 'rgba(255,255,255,0.82)', backdropFilter: 'blur(16px)',
         borderBottom: `1px solid ${C.border}`,
       }}>
         <div style={{ maxWidth: 580, margin: '0 auto', padding: '12px 20px' }}>
@@ -835,14 +885,26 @@ export default function DeanyCompass({ onBack, onHome, onComplete }) {
         {step === "assess" && (
           <AssessStep selectedTopics={selectedTopics} ratings={selfRatings}
             setRatings={setSelfRatings}
-            onNext={() => { setAnswers([]); setQuestionCount(0); setStreak(0); setStep("quiz"); }} />
+            onNext={() => { setAnswers([]); setQuestionCount(0); setStreak(0); setHistory([]); setReviewIndex(null); setStep("quiz"); }} />
         )}
 
-        {step === "quiz" && !quizDone && currentQuestion && (
-          <QuizStep key={currentQuestion.id} question={currentQuestion}
-            questionNumber={questionCount + 1} totalEstimate={totalEstimate}
-            streak={streak} correctCount={correctCount}
-            onAnswer={handleAnswer} />
+        {step === "quiz" && !quizDone && (
+          <>
+            <QuestionStrip history={history} reviewIndex={reviewIndex} liveNumber={history.length + 1}
+              onJump={(i) => setReviewIndex(i)} onLive={() => setReviewIndex(null)} />
+            {reviewIndex !== null ? (
+              <QuizStep key={`review-${reviewIndex}`} question={history[reviewIndex].question}
+                questionNumber={reviewIndex + 1} totalEstimate={totalEstimate}
+                streak={0} correctCount={correctCount}
+                lockedSelection={history[reviewIndex].selectedShuffledIdx} isReview
+                onExitReview={() => setReviewIndex(null)} onAnswer={() => {}} />
+            ) : currentQuestion ? (
+              <QuizStep key={currentQuestion.id} question={currentQuestion}
+                questionNumber={questionCount + 1} totalEstimate={totalEstimate}
+                streak={streak} correctCount={correctCount}
+                onAnswer={handleAnswer} />
+            ) : null}
+          </>
         )}
 
         {(step === "results" || quizDone) && (
