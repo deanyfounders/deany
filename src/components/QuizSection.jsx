@@ -483,7 +483,7 @@ const QuizSection = () => {
               </button>
 
               {/* Recommended hero: Show me */}
-              <button className="method-card method-hero" onClick={startQuiz} aria-label="Show me, try a real lesson the Deany way (recommended)" style={{
+              <button className="method-card method-hero" onClick={startQuiz} aria-label="Show me, try a real lesson the Deany way" style={{
                 flex: 1, position: 'relative', borderRadius: 16, padding: '22px 18px 20px', textAlign: 'center', cursor: 'pointer',
                 border: '2px solid #5DCAA5', background: 'linear-gradient(160deg,#E4F6F1,#D2EFE8)',
                 boxShadow: '0 1px 2px rgba(20,43,54,.04), 0 12px 26px rgba(34,163,154,.18)',
@@ -491,8 +491,6 @@ const QuizSection = () => {
                 transition: 'transform .24s cubic-bezier(.2,.7,.3,1), box-shadow .24s ease' }}
                 onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 1px 2px rgba(20,43,54,.04), 0 18px 34px rgba(34,163,154,.24)'; }}
                 onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '0 1px 2px rgba(20,43,54,.04), 0 12px 26px rgba(34,163,154,.18)'; }}>
-                <span style={{ position: 'absolute', top: 10, right: 10, background: '#0F6E56', color: '#fff', fontSize: 8.5, fontWeight: 700,
-                  letterSpacing: '0.6px', textTransform: 'uppercase', padding: '3px 8px', borderRadius: 20 }}>Recommended</span>
                 <div style={{ width: 46, height: 46, borderRadius: 13, background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
                   boxShadow: '0 4px 12px rgba(15,76,92,0.12)' }}>
                   <span style={{ display: 'inline-flex', animation: 'methodPulse 2.4s ease-in-out infinite' }}>
