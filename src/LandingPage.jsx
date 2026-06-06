@@ -372,7 +372,7 @@ const LandingPage = ({ onGetStarted, onPreviewLesson, onCalibration, onSelectPat
             sub="Start with one. Add more whenever you like." />
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}
             className="topic-grid">
-            {paths.map(p => <TopicTile key={p.title} {...p} onClick={() => onSelectPath ? onSelectPath(p.topicId) : onGetStarted()} />)}
+            {paths.map(p => <TopicTile key={p.title} {...p} />)}
           </div>
         </div>
       </section>

@@ -1,5 +1,5 @@
-import React, { useCallback } from 'react';
-import { Check, Lock, ChevronLeft, Home, Zap, ArrowRight, Clock, Play, BookOpen } from 'lucide-react';
+import React, { useCallback, useState } from 'react';
+import { Check, Lock, ChevronLeft, ChevronDown, Home, Zap, ArrowRight, Clock, Play, BookOpen } from 'lucide-react';
 import DeanyButton from './components/DeanyButton.jsx';
 
 /* ── Bright palette (mirrors Dashboard C) ─────────────────────────── */
@@ -19,6 +19,14 @@ const S = {
 const serif = 'Georgia, serif';
 const focusRing = { outline: 'none' };
 const focusVisibleRing = '0 0 0 2px #FBFAF6, 0 0 0 4px #22A39A';
+
+/* How you'll learn - the Deany method, shown collapsibly per module */
+const HOW_STEPS = [
+  { icon: BookOpen, label: 'Read a little', desc: 'Short, clear passages', bg: C.tealSoft, color: C.tealDk },
+  { icon: Zap, label: 'Answer', desc: 'Quick interactive checks', bg: C.goldSoft, color: C.goldText },
+  { icon: Check, label: 'Get feedback', desc: 'Instant and gentle', bg: C.blueSoft, color: C.blue },
+  { icon: Play, label: 'Repeat aloud', desc: 'Make it stick', bg: C.coralSoft, color: C.coral },
+];
 
 /* ── Module enrichment data ────────────────────────────────────────── */
 const MODULE_DATA = {
@@ -422,6 +430,7 @@ const QuranModuleSeparator = ({ prevMod, prevIndex, nextMod, nextIndex, modules,
 /*  ModuleBlock - the two-column layout per module                  */
 /* ================================================================ */
 const ModuleBlock = ({ mod, mi, topicId, completedLessons, loadProgress, onSelectLesson, onSelectModule }) => {
+  const [howOpen, setHowOpen] = useState(true);
   const lessons = mod.lessons || [];
   const isDone = (i) => !!completedLessons[`${mod.id}-lesson-${i}`];
   const doneCount = lessons.filter((_, i) => isDone(i)).length;
@@ -525,6 +534,35 @@ const ModuleBlock = ({ mod, mi, topicId, completedLessons, loadProgress, onSelec
           </div>
         </div>
 
+        {/* 3b. How you'll learn (collapsible) */}
+        <div style={{ background: C.canvas, borderRadius: 12, padding: '14px 18px', marginBottom: 16 }}>
+          <button onClick={() => setHowOpen(o => !o)} aria-expanded={howOpen}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%',
+              background: 'none', border: 'none', cursor: 'pointer', padding: 0, minHeight: 24 }}>
+            <span style={{ fontSize: 9, fontWeight: 600, letterSpacing: '1.4px', textTransform: 'uppercase', color: accent.accent }}>
+              How you'll learn
+            </span>
+            <ChevronDown size={16} color={C.textFaint}
+              style={{ transform: howOpen ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform .25s ease', flexShrink: 0 }} />
+          </button>
+          {howOpen && (
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 14 }}>
+              {HOW_STEPS.map((h) => (
+                <div key={h.label} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                  <div style={{ width: 30, height: 30, borderRadius: 9, background: h.bg, flexShrink: 0,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <h.icon size={15} color={h.color} />
+                  </div>
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ fontSize: 12, fontWeight: 600, color: C.textDeep, lineHeight: 1.2 }}>{h.label}</div>
+                    <div style={{ fontSize: 10.5, color: C.textMuted, lineHeight: 1.35, marginTop: 2 }}>{h.desc}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
         {/* 4. What you'll master */}
         {data.mastery.length > 0 && (
           <div style={{ background: C.canvas, borderRadius: 12, padding: 18, marginBottom: 16 }}>
@@ -582,7 +620,7 @@ const ModuleBlock = ({ mod, mi, topicId, completedLessons, loadProgress, onSelec
       <div>
         <div style={{ fontSize: 9, fontWeight: 600, letterSpacing: '1.4px', textTransform: 'uppercase',
           color: accent.accent, marginBottom: 20 }}>
-          Learning path
+          Today's path
         </div>
 
         <div style={{ position: 'relative' }}>
