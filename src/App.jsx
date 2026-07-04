@@ -24,6 +24,7 @@ import DeanyB1L3 from './DEANY-B1L3.jsx';
 import QuranicQuote from './components/QuranicQuote.jsx';
 import LandingPage from './LandingPage.jsx';
 import Dashboard from './Dashboard.jsx';
+import HomeShell from './app/home/HomeShell.jsx';
 import {
   CheckCircle, XCircle, Star, Trophy, ArrowRight, Sparkles, BookOpen, Home,
   Lightbulb, Award, Menu, X, ChevronLeft, Flame, Zap, Target,
@@ -349,7 +350,7 @@ const loadProgress = (id) => { try { const d = localStorage.getItem(`deany-progr
 const clearProgress = (id) => { try { localStorage.removeItem(`deany-progress-${id}`); } catch(e) {} };
 
 // ---- Main App ----------------------------------------------------
-const App = () => {
+const App = ({ appMode = false, appState = null } = {}) => {
   const [hasEntered, setHasEntered] = useState(() => {
     try { return localStorage.getItem('deany-entered') === '1'; } catch { return false; }
   });
@@ -1014,6 +1015,27 @@ const App = () => {
   }
 
   if (screen == 'home') {
+    // App mode: the installed-app home shell replaces the website home entirely.
+    if (appMode) {
+      return (
+        <HomeShell
+          appState={appState}
+          dailyStreak={dailyStreak} coins={coins} xp={xp} level={level} totalPoints={totalPoints}
+          mainTopics={mainTopics} modules={modules} completedLessons={completedLessons}
+          onSelectTopic={selectMainTopic}
+          onSelectLesson={(lesson, idx, mod) => {
+            if (!selectedMainTopic) {
+              const topic = mainTopics.find(t => (modules[t.id] || []).some(m => m.id === mod.id));
+              if (topic) { setSelectedMainTopic(topic); setLastSelectedTopicId(topic.id); }
+            }
+            setSelectedModule(mod);
+            setLaunchedFromDashboard(true);
+            selectLes(lesson, idx);
+          }}
+        />
+      );
+    }
+
     // Show landing page for first-time visitors, dashboard for returning users
     if (!hasEntered) {
       return (
