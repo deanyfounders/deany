@@ -13,6 +13,7 @@ import { useAppState } from './hooks/useAppState.js';
 import Welcome from './welcome/Welcome.jsx';
 import Calibrate from './calibrate/Calibrate.jsx';
 import Auth from './auth/Auth.jsx';
+import AppModeStyles from './shared/AppModeStyles.jsx';
 
 export default function AppGate() {
   const appMode = useAppMode();
@@ -22,11 +23,27 @@ export default function AppGate() {
   if (!appMode) return <App />;
 
   const { state } = appState;
-  if (!state.onboarded) return <Welcome appState={appState} />;
-  if (!state.calibrated) return <Calibrate appState={appState} />;
-  if (!state.user) return <Auth appState={appState} />;
 
   // Fully onboarded: run the real app in app mode. App renders the home shell
   // for its 'home' screen and reuses all existing lesson routing.
-  return <App appMode appState={appState} />;
+  if (state.onboarded && state.calibrated && state.user) {
+    return (
+      <>
+        <AppModeStyles />
+        <App appMode appState={appState} />
+      </>
+    );
+  }
+
+  // Pre-app flow. Each stage fades in as the user advances.
+  let stage = 'welcome', screen = <Welcome appState={appState} />;
+  if (state.onboarded && !state.calibrated) { stage = 'calibrate'; screen = <Calibrate appState={appState} />; }
+  else if (state.onboarded && state.calibrated && !state.user) { stage = 'auth'; screen = <Auth appState={appState} />; }
+
+  return (
+    <>
+      <AppModeStyles />
+      <div key={stage} className="deany-fade">{screen}</div>
+    </>
+  );
 }

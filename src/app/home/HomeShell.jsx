@@ -24,8 +24,9 @@ export default function HomeShell(props) {
     <div style={{ minHeight: '100vh', background: TOKENS.canvas, color: TOKENS.navy, fontFamily: '"Source Sans 3", system-ui, sans-serif', display: 'flex', flexDirection: 'column' }}>
       <style>{KEYFRAMES}</style>
 
-      {/* Scrollable content, padded so the fixed tab bar never covers it */}
-      <div style={{ flex: 1, overflowY: 'auto', paddingBottom: 'calc(env(safe-area-inset-bottom) + 76px)', maxWidth: 520, margin: '0 auto', width: '100%' }}>
+      {/* Scrollable content, padded so the fixed tab bar never covers it.
+          key={tab} + deany-fade gives a subtle transition on tab switch. */}
+      <div key={tab} className="deany-fade" style={{ flex: 1, overflowY: 'auto', paddingBottom: 'calc(env(safe-area-inset-bottom) + 76px)', maxWidth: 520, margin: '0 auto', width: '100%' }}>
         {tab === 'learn' && (
           <LearnTab
             dailyStreak={dailyStreak} level={level}
