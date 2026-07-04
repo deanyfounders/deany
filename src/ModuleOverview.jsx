@@ -214,6 +214,10 @@ const ModuleOverview = ({
         .mo-focus:focus-visible { box-shadow: ${focusVisibleRing}; }
         .mo-grid { grid-template-columns: 1fr; }
         @media (min-width: 768px) { .mo-grid { grid-template-columns: 45fr 55fr; align-items: start; } }
+        @media (max-width: 600px) {
+          .mo-learn-grid { grid-template-columns: 1fr !important; }
+          .mo-next-title { white-space: normal !important; }
+        }
         @keyframes hizbPulse {
           0%,100% { box-shadow: 0 0 18px rgba(29,158,117,.45), 0 0 36px rgba(29,158,117,.25), 0 2px 8px rgba(15,110,86,.2); }
           50%     { box-shadow: 0 0 26px rgba(29,158,117,.70), 0 0 52px rgba(29,158,117,.40), 0 2px 8px rgba(15,110,86,.2); }
@@ -398,7 +402,7 @@ const QuranModuleSeparator = ({ prevMod, prevIndex, nextMod, nextIndex, modules,
       <div style={{ fontSize: 8.5, fontWeight: 600, letterSpacing: '1.4px', textTransform: 'uppercase', color: '#235C7A' }}>
         {prevComplete ? `${prevMod.title} complete \u00B7 next` : 'Up next'}
       </div>
-      <div style={{ fontFamily: serif, fontSize: 15.5, fontWeight: 600, color: '#0F4C5C', marginTop: 2, whiteSpace: 'nowrap', lineHeight: 1.3 }}>
+      <div className="mo-next-title" style={{ fontFamily: serif, fontSize: 15.5, fontWeight: 600, color: '#0F4C5C', marginTop: 2, whiteSpace: 'nowrap', lineHeight: 1.3 }}>
         {nextMod.title}
       </div>
     </div>
@@ -546,7 +550,7 @@ const ModuleBlock = ({ mod, mi, topicId, completedLessons, loadProgress, onSelec
               style={{ transform: howOpen ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform .25s ease', flexShrink: 0 }} />
           </button>
           {howOpen && (
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 14 }}>
+            <div className="mo-learn-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 14 }}>
               {HOW_STEPS.map((h) => (
                 <div key={h.label} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
                   <div style={{ width: 30, height: 30, borderRadius: 9, background: h.bg, flexShrink: 0,

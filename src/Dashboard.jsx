@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, lazy, Suspense } from 'react';
-import { Flame, Star, Clock, ArrowRight, Trophy, BookOpen, Play, Home, Bookmark, Users, Search, Music, PanelRightOpen, PanelRightClose, ChevronDown, ChevronUp } from 'lucide-react';
+import { Flame, Star, Clock, ArrowRight, Trophy, BookOpen, Play, Home, Bookmark, Users, Search, Music, PanelRightOpen, PanelRightClose, ChevronDown, ChevronUp, Menu, X } from 'lucide-react';
 import { PillarsIcon, FinanceIcon, QuranIcon, HistoryIcon } from './components/PathIcons.jsx';
 import { getTodayContent } from './data/dailyContent.js';
 import TafseerPanel from './components/TafseerPanel.jsx';
@@ -48,7 +48,14 @@ const STYLE = `
 .el-left-rail{overflow:hidden}
 .el-left-rail-inner{transition:transform .35s cubic-bezier(.4,0,.2,1),opacity .25s cubic-bezier(.4,0,.2,1)}
 .el-right-rail-wrap{transition:width .35s cubic-bezier(.4,0,.2,1)}
-@media(max-width:1060px){.el-left-nav,.el-right-rail-wrap{display:none!important}.el-center-col{padding:0 22px 28px!important}}
+.el-mobile-menu-btn{display:none}
+.el-mobile-drawer-overlay{position:fixed;inset:0;background:rgba(15,76,92,0.35);z-index:60;opacity:0;pointer-events:none;transition:opacity .25s ease}
+.el-mobile-drawer-overlay.open{opacity:1;pointer-events:auto}
+.el-mobile-drawer{position:fixed;top:0;left:0;height:100%;width:284px;max-width:85vw;background:#FFFFFF;box-shadow:0 12px 40px rgba(15,76,92,0.25);z-index:61;transform:translateX(-100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;overflow-y:auto}
+.el-mobile-drawer.open{transform:translateX(0)}
+@media(min-width:1061px){.el-mobile-drawer-root{display:none!important}}
+@media(max-width:1060px){.el-left-nav,.el-right-rail-wrap{display:none!important}.el-center-col{padding:0 22px 28px!important}.el-mobile-menu-btn{display:inline-flex!important}.el-left-collapse-btn,.el-rail-toggle{display:none!important}.el-center-wrap{padding-left:0!important}}
+@media(max-width:640px){.el-grid-2,.el-grid-3{grid-template-columns:1fr!important}}
 `;
 
 const Eyebrow = ({ children, style: s, color }) => (
@@ -77,6 +84,7 @@ const Dashboard = ({
   const [showMap, setShowMap] = useState(false);
   const [railOpen, setRailOpen] = useState(false);
   const [leftRailOpen, setLeftRailOpen] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [activeNav, setActiveNav] = useState('home');
   const [searchQuery, setSearchQuery] = useState('');
   const [searchFocused, setSearchFocused] = useState(false);
@@ -96,7 +104,8 @@ const Dashboard = ({
   const xpNeeded = xpGoal - xpToday;
   const dailyItem = useMemo(getTodayContent, []);
   const hour = new Date().getHours();
-  const greeting = hour >= 5 && hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  const storedName = (() => { try { return localStorage.getItem('deany-name') || 'Ali'; } catch (_) { return 'Ali'; } })();
+  const greeting = `Hello ${storedName}`;
 
   const findContinueLesson = () => {
     // Default to Finance Lesson 3 (Riba, Gharar, Maysir)
@@ -183,6 +192,7 @@ const Dashboard = ({
   // Objectives
   const lessonDoneToday = xpToday > 0;
   const [checkedObj, setCheckedObj] = useState({ 0: false, 1: false, 2: false });
+  const [zakatValue, setZakatValue] = useState('');
   const toggleObj = (i) => setCheckedObj(prev => ({ ...prev, [i]: !prev[i] }));
   const objectives = [
     { label: 'Read today\'s verse', done: reflected || checkedObj[0] },
@@ -233,12 +243,96 @@ const Dashboard = ({
     <div style={{ background: C.canvas, color: C.text, minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <style>{STYLE}</style>
 
+      {/* ── MOBILE NAV DRAWER (only visible below 1060px) ─────────── */}
+      <div className="el-mobile-drawer-root">
+        <div className={`el-mobile-drawer-overlay${mobileNavOpen ? ' open' : ''}`} onClick={() => setMobileNavOpen(false)} />
+        <div className={`el-mobile-drawer${mobileNavOpen ? ' open' : ''}`} role="dialog" aria-label="Navigation menu" aria-hidden={!mobileNavOpen}>
+          {/* Drawer header */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '16px 14px 12px', borderBottom: `1px solid ${C.border}`, flexShrink: 0 }}>
+            <div style={{ width: 31, height: 31, borderRadius: 7, background: 'linear-gradient(145deg,#22A39A,#0F6E56)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontFamily: serif, fontSize: 15, flexShrink: 0 }}>{'د'}</div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontFamily: serif, fontSize: 16.5, fontWeight: 500, color: C.tealDeep, lineHeight: 1 }}>Deany</div>
+              <div style={{ fontSize: 10.5, color: C.textMuted, marginTop: 2 }}>Learn Islam, beautifully</div>
+            </div>
+            <button onClick={() => setMobileNavOpen(false)} aria-label="Close navigation"
+              style={{ width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', border: 'none', cursor: 'pointer', color: C.textMuted, flexShrink: 0 }}>
+              <X size={22} />
+            </button>
+          </div>
+          {/* Search */}
+          <div style={{ padding: '12px 12px 4px', flexShrink: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '10px 11px', background: C.canvas, border: `1px solid ${C.border}`, borderRadius: 8 }}>
+              <Search size={14} style={{ flexShrink: 0, color: C.textFaint }} />
+              <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Search..."
+                style={{ border: 'none', outline: 'none', background: 'transparent', fontSize: 14, color: C.text, width: '100%' }} />
+              {searchQuery && <button onClick={() => setSearchQuery('')} aria-label="Clear search"
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: C.textFaint, fontSize: 15, padding: 0, lineHeight: 1, flexShrink: 0 }}>&#10005;</button>}
+            </div>
+            {searchQuery && (
+              <div style={{ marginTop: 8, border: `1px solid ${C.border}`, borderRadius: 10, overflow: 'hidden' }}>
+                {searchResults.length === 0 ? (
+                  <div style={{ padding: '12px', fontSize: 12, color: C.textMuted, textAlign: 'center' }}>No results for "{searchQuery}"</div>
+                ) : (
+                  searchResults.map((r, i) => (
+                    <button key={i} onClick={() => { r.action?.(); setSearchQuery(''); setMobileNavOpen(false); }}
+                      style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '11px 12px', border: 'none', background: 'transparent', cursor: r.action ? 'pointer' : 'default', textAlign: 'left', borderBottom: i < searchResults.length - 1 ? `1px solid ${C.border}` : 'none' }}>
+                      <div style={{ width: 6, height: 6, borderRadius: '50%', background: r.color, flexShrink: 0 }} />
+                      <div style={{ minWidth: 0 }}>
+                        <div style={{ fontSize: 13, color: C.text, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.label}</div>
+                        <div style={{ fontSize: 10, color: C.textFaint, marginTop: 1 }}>{r.type === 'note' ? 'Note' : r.type === 'path' ? 'Path' : r.type === 'module' ? 'Module' : 'Lesson'} · {r.sub}</div>
+                      </div>
+                    </button>
+                  ))
+                )}
+              </div>
+            )}
+          </div>
+          {/* Nav groups */}
+          <div style={{ padding: '8px 0', flex: 1 }}>
+            {navGroups.map(g => (
+              <div key={g.label} style={{ marginBottom: 14 }}>
+                <div style={{ padding: '0 16px', fontSize: 10, letterSpacing: '1.2px', textTransform: 'uppercase', color: C.textFaint, fontWeight: 600, marginBottom: 4 }}>{g.label}</div>
+                {g.items.map(it => {
+                  const isActive = activeNav === it.id;
+                  return (
+                    <button key={it.id} onClick={() => { handleNav(it.id); if (!it.soon) setMobileNavOpen(false); }}
+                      style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '11px 16px', border: 'none',
+                        cursor: it.soon ? 'default' : 'pointer', fontSize: 15, fontWeight: isActive ? 500 : 400,
+                        background: isActive ? C.tealSoft : 'transparent',
+                        color: isActive ? '#0F6E56' : it.soon ? C.textFaint : C.textMuted,
+                        borderLeft: isActive ? '3px solid #0F6E56' : '3px solid transparent',
+                        minHeight: 48, opacity: it.soon ? 0.6 : 1 }}>
+                      {React.createElement(it.icon, { size: 17 })} {it.label}
+                      {it.badge && <span style={{ marginLeft: 'auto', fontSize: 9.5, padding: '2px 6px', background: C.goldSoft, color: C.goldText, borderRadius: 8, fontWeight: 600 }}>{it.badge}</span>}
+                      {it.soon && <span style={{ marginLeft: 'auto', fontSize: 8.5, padding: '1px 6px', background: 'rgba(15,76,92,0.06)', color: C.textFaint, borderRadius: 6 }}>Soon</span>}
+                    </button>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+          {/* Deany Plus */}
+          <div style={{ margin: '0 12px 16px', padding: '14px 13px', borderRadius: 12, background: 'linear-gradient(155deg,#0F4C5C,#1A8C82)', color: '#fff', flexShrink: 0 }}>
+            <div style={{ fontSize: 9.5, letterSpacing: '1px', textTransform: 'uppercase', opacity: 0.7, marginBottom: 3 }}>Deany Plus</div>
+            <div style={{ fontSize: 11.5, opacity: 0.85, lineHeight: 1.4, marginBottom: 10 }}>Unlock advanced lessons &amp; features</div>
+            <button style={{ width: '100%', padding: '9px 14px', fontSize: 12, fontWeight: 500, background: C.gold, border: 'none', borderRadius: 8, color: '#fff', cursor: 'pointer', minHeight: 40 }}>
+              Upgrade &#8599;
+            </button>
+          </div>
+        </div>
+      </div>
+
       {/* Top accent border */}
       {/* Top accent border */}
       <div style={{ height: 3, background: `linear-gradient(90deg, ${C.teal}, ${C.tealDk}, ${C.gold}, ${C.coral})`, flexShrink: 0 }} />
 
       {/* ── FULL-WIDTH HEADER ──────────────────────────────── */}
       <header style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
+        {/* Mobile hamburger - only shows below 1060px */}
+        <button className="el-mobile-menu-btn" onClick={() => setMobileNavOpen(true)} aria-label="Open navigation"
+          style={{ width: 40, height: 40, marginLeft: 8, alignItems: 'center', justifyContent: 'center', background: 'transparent', border: `1px solid ${C.border}`, borderRadius: 10, cursor: 'pointer', color: C.tealDeep, flexShrink: 0 }}>
+          <Menu size={20} />
+        </button>
         {/* Logo zone - same width as left rail so they align */}
         <div style={{ width: leftRailOpen ? 225 : 'auto', flexShrink: 0, padding: '14px 17px', display: 'flex', alignItems: 'center', gap: 10, background: leftRailOpen ? C.surface : 'transparent', borderRight: leftRailOpen ? `1px solid ${C.border}` : '1px solid transparent', transition: 'all .35s cubic-bezier(.4,0,.2,1)' }}>
           <div style={{ width: 31, height: 31, borderRadius: 7, background: 'linear-gradient(145deg,#22A39A,#0F6E56)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontFamily: serif, fontSize: 15, flexShrink: 0 }}>{'\u062F'}</div>
@@ -246,7 +340,7 @@ const Dashboard = ({
             <div style={{ fontFamily: serif, fontSize: 16.5, fontWeight: 500, color: C.tealDeep, lineHeight: 1 }}>Deany</div>
             <div style={{ fontSize: 10.5, color: C.textMuted, marginTop: 2 }}>Learn Islam, beautifully</div>
           </div>
-          <button onClick={() => setLeftRailOpen(r => !r)} aria-label={leftRailOpen ? 'Collapse navigation' : 'Expand navigation'}
+          <button className="el-left-collapse-btn" onClick={() => setLeftRailOpen(r => !r)} aria-label={leftRailOpen ? 'Collapse navigation' : 'Expand navigation'}
             style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', border: `1.5px solid ${C.teal}`, borderRadius: '50%', cursor: 'pointer', color: C.teal, flexShrink: 0, transition: 'background .2s ease, color .2s ease, transform .35s cubic-bezier(.4,0,.2,1)', transform: leftRailOpen ? 'rotate(0deg)' : 'rotate(-180deg)' }}
             onMouseEnter={e => { e.currentTarget.style.background = C.tealSoft; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}>
@@ -273,7 +367,7 @@ const Dashboard = ({
       {/* ── THREE-COLUMN LAYOUT (below header) ───────────── */}
       <div style={{ display: 'flex', flex: 1, position: 'relative' }}>
         {/* Right rail toggle - fixed to right edge */}
-        <button onClick={() => setRailOpen(r => !r)} aria-label={railOpen ? 'Collapse sidebar' : 'Expand sidebar'}
+        <button className="el-rail-toggle" onClick={() => setRailOpen(r => !r)} aria-label={railOpen ? 'Collapse sidebar' : 'Expand sidebar'}
           style={{ position: 'fixed', right: railOpen ? 232 : 12, top: 80, width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', background: C.surface, border: `1.5px solid ${C.teal}`, borderRadius: '50%', cursor: 'pointer', color: C.teal, zIndex: 10, boxShadow: '0 1px 4px rgba(20,43,54,0.08)', transition: 'background .15s, right .35s cubic-bezier(.4,0,.2,1)' }}
           onMouseEnter={e => { e.currentTarget.style.background = C.tealSoft; }}
           onMouseLeave={e => { e.currentTarget.style.background = C.surface; }}>
@@ -376,7 +470,7 @@ const Dashboard = ({
       </div>{/* end left rail wrapper */}
 
       {/* ════ CENTER COLUMN - the original dashboard ═════════════ */}
-      <div style={{ flex: 1, minWidth: 0, display: 'flex', justifyContent: 'center', paddingLeft: 30 }}>
+      <div className="el-center-wrap" style={{ flex: 1, minWidth: 0, display: 'flex', justifyContent: 'center', paddingLeft: 30 }}>
       <main className="el-center-col" style={{ width: '100%', maxWidth: 760, padding: '0 28px 28px' }}>
 
         {/* Greeting (centered) */}
@@ -464,7 +558,7 @@ const Dashboard = ({
         {/* Your Paths */}
         <section ref={pathsSectionRef} style={{ marginBottom: 18, animation: 'slideUp 0.6s ease-out 0.2s both' }}>
           <div style={{ fontFamily: serif, fontSize: 18, fontWeight: 500, color: C.tealDeep, margin: '8px 0 12px', textAlign: 'center' }}>Learning paths</div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+          <div className="el-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             {mainTopics.map(t => {
               const stats = getTopicStats(t.id);
               const stripe = pathColors[t.id] || C.teal;
@@ -503,7 +597,7 @@ const Dashboard = ({
         </section>
 
         {/* XP Ring + Quick Session */}
-        <section style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 18, animation: 'slideUp 0.6s ease-out 0.25s both' }}>
+        <section className="el-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 18, animation: 'slideUp 0.6s ease-out 0.25s both' }}>
           <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14, padding: 18, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', boxShadow: S.card }}>
             <svg width="120" height="120" viewBox="0 0 120 120" style={{ marginBottom: 10 }}>
               <circle cx="60" cy="60" r={ringR} fill="none" stroke="rgba(34,163,154,0.15)" strokeWidth={ringStroke} />
@@ -559,8 +653,71 @@ const Dashboard = ({
           </div>
         </section>
 
+        {/* Zakat Calculator */}
+        <section style={{ marginBottom: 18, animation: 'slideUp 0.6s ease-out 0.33s both' }}>
+          <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14, padding: '20px 22px', boxShadow: S.card }}>
+            <Eyebrow style={{ marginBottom: 14 }}>ZAKAT CALCULATOR - STOCKS</Eyebrow>
+            <div style={{ fontSize: 13, color: C.textMuted, lineHeight: 1.5, marginBottom: 14 }}>
+              Enter the current market value of your stock portfolio. Zakat is 2.5% on holdings kept for one lunar year above the nisab threshold.
+            </div>
+            <div style={{ display: 'flex', gap: 10, alignItems: 'stretch', marginBottom: 14 }}>
+              <div style={{ flex: 1, position: 'relative' }}>
+                <span style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', fontSize: 15, color: C.textMuted, fontWeight: 500 }}>$</span>
+                <input
+                  type="number"
+                  placeholder="0.00"
+                  value={zakatValue}
+                  onChange={e => setZakatValue(e.target.value)}
+                  style={{ width: '100%', padding: '12px 14px 12px 28px', border: `1px solid ${C.border}`, borderRadius: 10, fontSize: 15, color: C.tealDeep, fontWeight: 500, background: '#F8FAF9', outline: 'none', transition: 'border-color .2s', boxSizing: 'border-box' }}
+                  onFocus={e => { e.target.style.borderColor = C.teal; }}
+                  onBlur={e => { e.target.style.borderColor = C.border; }}
+                />
+              </div>
+              {zakatValue && (
+                <button onClick={() => setZakatValue('')}
+                  style={{ background: 'none', border: `1px solid ${C.border}`, borderRadius: 10, padding: '0 14px', fontSize: 12, color: C.textMuted, cursor: 'pointer', transition: 'background .15s' }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(239,111,83,0.08)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'none'; }}>
+                  Clear
+                </button>
+              )}
+            </div>
+            {(() => {
+              const val = parseFloat(zakatValue) || 0;
+              const nisab = 5950;
+              const zakatDue = val >= nisab ? val * 0.025 : 0;
+              const aboveNisab = val >= nisab;
+              return (
+                <div className="el-grid-3" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
+                  <div style={{ background: aboveNisab ? 'rgba(34,163,154,0.08)' : '#F8FAF9', borderRadius: 10, padding: '12px 14px', textAlign: 'center' }}>
+                    <div style={{ fontSize: 10, letterSpacing: '1px', color: C.textMuted, fontWeight: 500, marginBottom: 4 }}>PORTFOLIO</div>
+                    <div style={{ fontFamily: serif, fontSize: 18, fontWeight: 500, color: C.tealDeep }}>${val.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</div>
+                  </div>
+                  <div style={{ background: aboveNisab ? 'rgba(240,180,41,0.10)' : '#F8FAF9', borderRadius: 10, padding: '12px 14px', textAlign: 'center' }}>
+                    <div style={{ fontSize: 10, letterSpacing: '1px', color: C.textMuted, fontWeight: 500, marginBottom: 4 }}>ZAKAT DUE</div>
+                    <div style={{ fontFamily: serif, fontSize: 18, fontWeight: 500, color: aboveNisab ? C.goldDk : C.textFaint }}>${zakatDue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                  </div>
+                  <div style={{ background: '#F8FAF9', borderRadius: 10, padding: '12px 14px', textAlign: 'center' }}>
+                    <div style={{ fontSize: 10, letterSpacing: '1px', color: C.textMuted, fontWeight: 500, marginBottom: 4 }}>NISAB</div>
+                    <div style={{ fontFamily: serif, fontSize: 14, fontWeight: 500, color: aboveNisab ? C.teal : C.textFaint }}>
+                      {aboveNisab ? 'Reached' : `$${nisab.toLocaleString()}`}
+                    </div>
+                    <div style={{ fontSize: 9, color: C.textFaint, marginTop: 2 }}>~85g gold</div>
+                  </div>
+                </div>
+              );
+            })()}
+            {parseFloat(zakatValue) > 0 && parseFloat(zakatValue) < 5950 && (
+              <div style={{ marginTop: 12, fontSize: 12, color: C.textMuted, textAlign: 'center', fontStyle: 'italic' }}>
+                Your holdings are below the nisab threshold. No zakat is due.
+              </div>
+            )}
+            {/* REVIEW:FIQH - Nisab value uses gold standard (~85g). Some scholars use silver standard which is lower. Verify preferred approach. */}
+          </div>
+        </section>
+
         {/* Community */}
-        <section style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 18, animation: 'slideUp 0.6s ease-out 0.35s both' }}>
+        <section className="el-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 18, animation: 'slideUp 0.6s ease-out 0.35s both' }}>
           <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14, padding: '14px 16px', boxShadow: S.card }}>
             <Eyebrow style={{ marginBottom: 8 }}>LEARNING TOGETHER</Eyebrow>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}><AvatarStack /><span style={{ fontSize: 13, fontWeight: 500, color: C.tealDeep }}>1,247 learners</span></div>
@@ -585,7 +742,7 @@ const Dashboard = ({
         {/* Footer */}
         <section style={{ animation: 'slideUp 0.6s ease-out 0.4s both' }}>
           <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14, padding: '16px 18px', marginBottom: 14, boxShadow: S.card }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr', gap: 18, alignItems: 'start' }}>
+            <div className="el-grid-3" style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr', gap: 18, alignItems: 'start' }}>
               <div>
                 <Eyebrow style={{ marginBottom: 10 }}>PRAYER TIMES · DUBAI</Eyebrow>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>

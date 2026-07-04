@@ -185,7 +185,7 @@ const CelebrationResults = ({ quizScore, quizResults, eXP, eC, pct, correct, tit
           </div>
 
           {/* Stats row */}
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:10, marginBottom:20 }}>
+          <div className="grid grid-cols-2 sm:grid-cols-4" style={{ gap:10, marginBottom:20 }}>
             {[
               { l:'Points', v:quizScore, c:CC.goldDk, bg:'rgba(201,169,97,0.08)' },
               { l:'XP earned', v:`+${eXP}`, c:CC.forest, bg:'rgba(107,142,127,0.08)' },
