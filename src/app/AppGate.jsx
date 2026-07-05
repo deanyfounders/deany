@@ -54,7 +54,7 @@ export default function AppGate() {
   // Pre-app flow. Each stage fades in as the user advances.
   const topics = state.topics || [];
   let stage = 'welcome', screen = <Welcome appState={appState} />;
-  if (state.onboarded && topics.length === 0) { stage = 'topics'; screen = <TopicSelect appState={appState} />; }
+  if (state.onboarded && !state.calibrated && topics.length === 0) { stage = 'topics'; screen = <TopicSelect appState={appState} />; }
   else if (state.onboarded && topics.length > 0 && !state.calibrated) { stage = 'calibrate'; screen = <Calibration appState={appState} />; }
   else if (state.onboarded && state.calibrated && !state.user) { stage = 'auth'; screen = <Auth appState={appState} />; }
 
