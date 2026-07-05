@@ -4,7 +4,14 @@
 import { useState, useCallback } from 'react';
 
 const KEY = 'deany_app_state';
-const DEFAULT = { onboarded: false, calibrated: false, level: null, user: null };
+const DEFAULT = {
+  onboarded: false,
+  topics: [],            // selected topic ids (Phase 4)
+  calibration: {},       // { [topicId]: { level, tier, answered, unsureCount, completedAt } }
+  calibrated: false,
+  level: null,
+  user: null,
+};
 
 function read() {
   if (typeof window === 'undefined') return DEFAULT;
@@ -33,10 +40,14 @@ export function useAppState() {
   }, []);
 
   const completeOnboarding = useCallback(() => update({ onboarded: true }), [update]);
-  const setCalibration = useCallback((level) => update({ calibrated: true, level }), [update]);
+  const setTopics = useCallback((topics) => update({ topics }), [update]);
+  const saveTopicResult = useCallback((topicId, result) =>
+    update(prev => ({ calibration: { ...prev.calibration, [topicId]: result } })), [update]);
+  const finishCalibration = useCallback((level) => update({ calibrated: true, level }), [update]);
+  const setCalibration = useCallback((level) => update({ calibrated: true, level }), [update]); // legacy
   const signIn = useCallback((username) => update({ user: { username } }), [update]);
   const signOut = useCallback(() => update({ user: null }), [update]);
   const resetAll = useCallback(() => { write(DEFAULT); setState(DEFAULT); }, []);
 
-  return { state, update, completeOnboarding, setCalibration, signIn, signOut, resetAll };
+  return { state, update, completeOnboarding, setTopics, saveTopicResult, finishCalibration, setCalibration, signIn, signOut, resetAll };
 }

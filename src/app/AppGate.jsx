@@ -11,6 +11,7 @@ import App from '../App.jsx';
 import { useAppMode } from './hooks/useAppMode.js';
 import { useAppState } from './hooks/useAppState.js';
 import Welcome from './welcome/Welcome.jsx';
+import TopicSelect from '../onboarding/screens/TopicSelect.jsx';
 import Calibrate from './calibrate/Calibrate.jsx';
 import Auth from './auth/Auth.jsx';
 import AppModeStyles from './shared/AppModeStyles.jsx';
@@ -51,8 +52,10 @@ export default function AppGate() {
   }
 
   // Pre-app flow. Each stage fades in as the user advances.
+  const topics = state.topics || [];
   let stage = 'welcome', screen = <Welcome appState={appState} />;
-  if (state.onboarded && !state.calibrated) { stage = 'calibrate'; screen = <Calibrate appState={appState} />; }
+  if (state.onboarded && topics.length === 0) { stage = 'topics'; screen = <TopicSelect appState={appState} />; }
+  else if (state.onboarded && topics.length > 0 && !state.calibrated) { stage = 'calibrate'; screen = <Calibrate appState={appState} />; }
   else if (state.onboarded && state.calibrated && !state.user) { stage = 'auth'; screen = <Auth appState={appState} />; }
 
   return (
