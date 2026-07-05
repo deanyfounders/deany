@@ -1,6 +1,8 @@
 // Generates the DEANY PWA icon set from an inline SVG of the brand mark.
-// Dev-only tooling. Run: node scripts/generate-icons.mjs
-// Requires the sharp devDependency.
+// Dev-only tooling. The generated icons are committed under public/, so this
+// only needs to run when the mark changes. `sharp` is NOT a project dependency
+// (it is not needed at build time); install it on demand first:
+//   npm i -D sharp && node scripts/generate-icons.mjs
 import sharp from 'sharp';
 import { mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
