@@ -1,11 +1,12 @@
 // Phase 5 - Calibration flow. Per selected topic: level-intent, then an
 // adaptive staircase of placement questions, then a "plan is ready" result.
 // Placement only - default no per-question feedback. Nobody fails onboarding.
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import OnboardingShell from '../kit/OnboardingShell.jsx';
 import { PrimaryButton, GhostButton } from '../kit/buttons.jsx';
 import OptionCard from '../kit/OptionCard.jsx';
 import { ProgressBar } from '../kit/Progress.jsx';
+import { riseDelay, Particles, haptic } from '../kit/motion.jsx';
 import { T, SUBJECT, SERIF } from '../kit/tokens.js';
 import {
   seedTier, nextTier, pickNextQuestion, shouldStop, finalTierFrom, levelForTier, maxTierFor,
@@ -39,6 +40,8 @@ export default function Calibration({ appState }) {
   const topic = topics[ti];
   const subj = SUBJECT[topic] || { label: 'this topic', short: 'Topic', accent: T.teal, tint: 'rgba(34,163,154,0.1)' };
   const topicMax = maxTierFor(topic);
+
+  useEffect(() => { if (phase === 'result') haptic(); }, [phase]);
 
   const startQuestions = () => {
     const seed = seedTier(intent);
@@ -89,9 +92,12 @@ export default function Calibration({ appState }) {
   if (phase === 'result') {
     return (
       <OnboardingShell cta={<PrimaryButton onClick={() => finishCalibration(results[topics[0]]?.level || 'Foundations')}>Continue</PrimaryButton>}>
-        <div style={{ textAlign: 'center', margin: '6px 0 18px' }}>
-          <div style={{ fontSize: 12, letterSpacing: '1.5px', textTransform: 'uppercase', color: T.teal, fontWeight: 500, marginBottom: 8 }}>Your plan is ready</div>
-          <h1 style={{ fontFamily: SERIF, fontSize: 25, fontWeight: 500, color: T.ink, margin: 0 }}>Here is where you start</h1>
+        <div style={{ textAlign: 'center', margin: '6px 0 18px', position: 'relative' }}>
+          <div style={{ position: 'relative', display: 'inline-block' }}>
+            <div style={{ fontSize: 12, letterSpacing: '1.5px', textTransform: 'uppercase', color: T.teal, fontWeight: 500, marginBottom: 8 }}>Your plan is ready</div>
+            <Particles show color={T.gold} />
+          </div>
+          <h1 className="ob-rise" style={{ fontFamily: SERIF, fontSize: 25, fontWeight: 500, color: T.ink, margin: 0 }}>Here is where you start</h1>
         </div>
         <div style={{ background: T.navy, borderRadius: 16, padding: 20, color: '#fff' }}>
           {topics.map(tp => {
@@ -135,8 +141,9 @@ export default function Calibration({ appState }) {
         </h1>
         <p style={{ fontSize: 13, color: T.inkSecondary, margin: '0 0 20px' }}>This just sets a starting point. The questions adapt as you go.</p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          {INTENTS.map(it => (
+          {INTENTS.map((it, i) => (
             <OptionCard key={it.id} label={it.label} sublabel={it.sub} accent={subj.accent}
+              className="ob-rise" style={riseDelay(i)}
               state={intent === it.id ? 'selected' : 'idle'} onClick={() => setIntent(it.id)} />
           ))}
         </div>
@@ -154,13 +161,15 @@ export default function Calibration({ appState }) {
       {current && (
         <>
           <h2 style={{ fontFamily: SERIF, fontSize: 21, fontWeight: 500, color: T.ink, lineHeight: 1.4, margin: '12px 0 18px' }}>{current.prompt}</h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div key={current.id} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {current.options.map((opt, i) => (
               <OptionCard key={i} label={opt} accent={subj.accent}
+                className="ob-rise" style={riseDelay(i)}
                 state={picked === i ? 'selected' : (locked ? 'dimmed' : 'idle')}
                 onClick={() => answer(i === current.answerIndex ? 'correct' : 'wrong', i)} />
             ))}
             <OptionCard label="I'm not sure yet" accent={subj.accent}
+              className="ob-rise" style={riseDelay(current.options.length)}
               state={picked === 'unsure' ? 'selected' : (locked ? 'dimmed' : 'unsure')}
               onClick={() => answer('unsure', 'unsure')} />
           </div>

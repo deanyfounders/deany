@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import OnboardingShell from '../kit/OnboardingShell.jsx';
 import { PrimaryButton } from '../kit/buttons.jsx';
 import TopicCard from '../kit/TopicCard.jsx';
+import { riseDelay } from '../kit/motion.jsx';
 import { T, SUBJECT, SERIF } from '../kit/tokens.js';
 
 const ORDER = ['quran-arabic', 'islamic-history', '5-pillars', 'islamic-finance'];
@@ -35,11 +36,13 @@ export default function TopicSelect({ appState }) {
         Pick as many as you like. You can change this later.
       </p>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-        {ORDER.map(id => {
+        {ORDER.map((id, i) => {
           const s = SUBJECT[id];
           return (
             <TopicCard
               key={id}
+              className="ob-rise"
+              style={riseDelay(i)}
               emoji={s.emoji}
               title={s.label}
               sub={SUBS[id]}

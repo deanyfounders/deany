@@ -5,11 +5,12 @@
 //   correct  same grammar in green
 //   dimmed   faded (a non-answer once one is chosen)
 //   unsure   dashed hairline border (the "I'm not sure yet" option)
-import React from 'react';
+import React, { useState } from 'react';
 import { Check } from 'lucide-react';
 import { T, RADIUS, FONT } from './tokens.js';
 
-export default function OptionCard({ label, sublabel, icon, accent = T.teal, state = 'idle', onClick, style }) {
+export default function OptionCard({ label, sublabel, icon, accent = T.teal, state = 'idle', onClick, style, className }) {
+  const [pressed, setPressed] = useState(false);
   const c = state === 'correct' ? T.correct : accent;
   const active = state === 'selected' || state === 'correct';
 
@@ -24,10 +25,15 @@ export default function OptionCard({ label, sublabel, icon, accent = T.teal, sta
     <button
       onClick={onClick}
       disabled={state === 'dimmed'}
+      className={className}
+      onPointerDown={() => setPressed(true)}
+      onPointerUp={() => setPressed(false)}
+      onPointerLeave={() => setPressed(false)}
       style={{
         position: 'relative', width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 12,
         padding: active ? '15px 15px' : '16px 16px', border, background, borderRadius: RADIUS.card,
         cursor: onClick ? 'pointer' : 'default', opacity, fontFamily: FONT,
+        transform: pressed && onClick ? 'scale(0.98)' : 'scale(1)',
         transition: 'border-color .15s ease, background .15s ease, transform .12s ease, opacity .2s ease',
         WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation', ...style,
       }}>

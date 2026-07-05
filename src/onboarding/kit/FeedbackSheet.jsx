@@ -1,12 +1,14 @@
 // FeedbackSheet - bottom sheet for correct/incorrect states. Green ramp for
 // correct; neutral coaching tone for incorrect. Nobody fails onboarding.
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Check, ArrowRight } from 'lucide-react';
 import { T, RADIUS, FONT, SERIF } from './tokens.js';
 import { PrimaryButton } from './buttons.jsx';
+import { Particles, haptic } from './motion.jsx';
 
 export default function FeedbackSheet({ open, correct, title, message, onContinue }) {
   const accent = correct ? T.correct : T.navy;
+  useEffect(() => { if (open && correct) haptic(); }, [open, correct]);
   return (
     <>
       {/* dim */}
@@ -23,8 +25,11 @@ export default function FeedbackSheet({ open, correct, title, message, onContinu
         padding: '22px 22px calc(env(safe-area-inset-bottom) + 20px)', fontFamily: FONT,
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-          <span style={{ width: 30, height: 30, borderRadius: '50%', background: accent, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <Check size={17} color="#fff" strokeWidth={3} />
+          <span style={{ position: 'relative', width: 30, height: 30, flexShrink: 0 }}>
+            <span className={open && correct ? 'ob-pop' : undefined} style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: accent, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Check size={17} color="#fff" strokeWidth={3} />
+            </span>
+            <Particles show={open && correct} />
           </span>
           <span style={{ fontFamily: SERIF, fontSize: 20, fontWeight: 500, color: accent }}>{title}</span>
         </div>
