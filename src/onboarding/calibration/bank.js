@@ -10,6 +10,10 @@
 
 const P = 'pending_mehdi';
 const q = (id, topic, tier, prompt, options, answerIndex) => ({ id, topic, tier, prompt, options, answerIndex, review: P });
+// qL: questions reused VERBATIM from a shipped, human-written lesson. Already
+// approved content, so review:'from_lesson' (not pending_mehdi). `source` cites
+// the lesson.
+const qL = (id, topic, tier, prompt, options, answerIndex, source) => ({ id, topic, tier, prompt, options, answerIndex, review: 'from_lesson', source });
 
 export const BANK = [
   // ── Quran and Arabic (tiers 1-5) ──────────────────────────────
@@ -51,9 +55,30 @@ export const BANK = [
   q('if-2b', 'islamic-finance', 2, 'A cost-plus sale contract is known as?', ['Mudarabah', 'Murabaha', 'Riba', 'Gharar'], 1),
   q('if-3a', 'islamic-finance', 3, 'Islamic bonds are known as?', ['Sukuk', 'Shares', 'Riba', 'Takaful'], 0),
   q('if-3b', 'islamic-finance', 3, 'Islamic cooperative insurance is called?', ['Takaful', 'Riba', 'Ijarah', 'Sukuk'], 0),
+
+  // ── Reused verbatim from shipped lessons (approved, review:'from_lesson') ──
+  // Islamic finance - Lesson 3 (Riba, Gharar, Maysir)
+  qL('fin-l3-riba', 'islamic-finance', 2, 'Which BEST describes why ribā is prohibited?',
+    ['Because making profit is wrong in Islam.', 'Because the lender profits with zero risk while the borrower bears everything.', 'Because lending money to people is not allowed.', 'Because interest rates are too high.'], 1, 'DEANY_M1L3 q2'),
+  // Islamic history - Lesson 2
+  qL('his-l2-makkah', 'islamic-history', 2, 'Why was Makkah particularly important to ancient trade routes?',
+    ['It was the largest and most populous city on the Arabian Peninsula', 'It sat at the crossroads of north-south and east-west trade arteries', 'It had the most fertile land and freshwater sources in Arabia', 'It was the closest Arab settlement to the Persian Empire'], 1, 'DEANY-HB1L2 q2'),
+  qL('his-l2-isolation', 'islamic-history', 3, 'A historian argues: "Pre-Islamic Arabs were fully isolated from the civilised world." Based on what you have learned, what is the most accurate response?',
+    ['This is correct  -  the vast desert formed a complete barrier between Arabia and other civilisations', 'This is partially correct  -  Arabs were geographically isolated but had some limited trade contact', 'This is incorrect  -  Arabia sat between the Byzantine and Sasanian Empires and was central to ancient trade routes', 'This is incorrect  -  Arabia was in fact fully part of the Byzantine Empire'], 2, 'DEANY-HB1L2 q4'),
+  // Quran and Arabic - Al-Fatiha tafsir
+  qL('qur-tafsir-journey', 'quran-arabic', 3, 'What journey has the surah taken so far?',
+    ['The surah begins with Allah’s name and mercy, moves into praise and Lordship, then brings the servant before the reality of Judgement.', 'The surah begins by asking for guidance, then later explains who Allah is and why He should be praised.', 'The opening section is mainly about Judgement, while mercy and praise are secondary background details.', 'The opening section begins with the servant’s worship, then later introduces Allah’s names and attributes.'], 0, 'DEANY-TAFSIR-FATIHA CheckpointOne'),
+  // Five Pillars - Shahada Lesson 2 (the second testimony)
+  qL('sha-l2-rasul', '5-pillars', 1, 'In the second testimony, Muhammad ﷺ is named as rasul of Allah. Which best captures what rasul means?',
+    ['A teacher or wise man who arrives at religious truth through reflection.', 'Anyone who speaks about Allah in a general spiritual sense.', 'One who is sent with a message and a mission by an authority.', 'The most virtuous person in a generation, regardless of revelation.'], 2, 'DEANY-B1L2 q1'),
+  qL('sha-l2-relationship', '5-pillars', 2, 'Which answer best captures the relationship between the two testimonies?',
+    ['They are independent. One can be accepted without the other.', 'The second testimony is a recommendation, while the first is the obligation.', 'They form one structural whole: the first names the object of worship, and the second establishes the method by which that worship is taught and known.', 'The second testimony is necessary because Muhammad ﷺ is divine.'], 2, 'DEANY-B1L2 q5'),
+  qL('sha-l2-tariq', '5-pillars', 3, "Tariq believes in Allah, prays five times a day, and accepts the Qur'an as Allah's revealed word. He argues that only the Qur'an is binding and that the Sunnah is not necessary. He says he loves Allah and that following only the Qur'an is enough. What is the issue with his position, structurally?",
+    ["There is no issue. Following only the Qur'an is complete and coherent.", 'His prayer does not count because he has misunderstood the Sunnah.', "It contradicts itself: the Qur'an he accepts directly instructs the believer to follow the Messenger ﷺ.", "He is correct about Qur'an-only practice but should make exceptions for widely accepted hadith."], 2, 'DEANY-B1L2 q4'),
 ];
 
 export const MAX_TIER = { 'quran-arabic': 5, 'islamic-history': 5, '5-pillars': 3, 'islamic-finance': 3 };
 
-// All draft question ids, for the pending_mehdi report.
-export const PENDING_IDS = BANK.map(x => x.id);
+// Draft ids still needing scholar review, and the approved lesson-sourced ids.
+export const PENDING_IDS = BANK.filter(x => x.review === 'pending_mehdi').map(x => x.id);
+export const FROM_LESSON_IDS = BANK.filter(x => x.review === 'from_lesson').map(x => x.id);
