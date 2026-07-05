@@ -102,8 +102,16 @@
     <script type="module" src="/src/main.jsx"></script>
     <script>
       if ('serviceWorker' in navigator) {
+        var deanyRefreshing = false;
+        navigator.serviceWorker.addEventListener('controllerchange', function () {
+          if (deanyRefreshing) return;
+          deanyRefreshing = true;
+          window.location.reload();
+        });
         window.addEventListener('load', function () {
-          navigator.serviceWorker.register('/sw.js').catch(function () {});
+          navigator.serviceWorker.register('/sw.js')
+            .then(function (reg) { reg.update(); })
+            .catch(function () {});
         });
       }
     </script>

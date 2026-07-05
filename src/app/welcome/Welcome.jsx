@@ -35,7 +35,7 @@ function Hero({ onStart, onHaveAccount }) {
         </>
       }
     >
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', paddingTop: '14vh' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', paddingTop: '6vh' }}>
         <DeanyMark size={88} />
         <div style={{ fontFamily: SERIF, fontSize: 20, letterSpacing: '6px', color: T.navy, fontWeight: 500, margin: '18px 0 24px' }}>DEANY</div>
         <h1 style={{ fontFamily: SERIF, fontSize: 27, fontWeight: 500, color: T.ink, margin: '0 0 12px', lineHeight: 1.2 }}>Start where you are.</h1>
@@ -91,7 +91,7 @@ function Carousel({ onDone }) {
         <GhostButton onClick={onDone} style={{ width: 'auto', color: T.inkHint, fontSize: 13 }}>Skip</GhostButton>
       </div>
 
-      <div ref={ref} onScroll={onScroll} className="ob-deck" style={{ flex: 1, display: 'flex', overflowX: 'auto', overflowY: 'hidden', scrollSnapType: 'x mandatory', overscrollBehavior: 'contain' }}>
+      <div ref={ref} onScroll={onScroll} className="ob-deck" style={{ flex: 1, minHeight: 0, display: 'flex', overflowX: 'auto', overflowY: 'hidden', scrollSnapType: 'x mandatory', overscrollBehavior: 'contain' }}>
         {PANES.map((p, i) => (
           <div key={i} style={{ flex: '0 0 100%', width: '100%', scrollSnapAlign: 'start', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 28px', textAlign: 'center' }}>
             <div style={{ marginBottom: 28 }}><MiniCards accent={p.accent} /></div>
@@ -143,7 +143,7 @@ function Sample({ onDone }) {
         </div>
       </div>
 
-      <div style={{ flex: 1, overflowY: 'auto', padding: '12px 22px 8px' }}>
+      <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '12px 22px 8px' }}>
         <div style={{ fontSize: 11, letterSpacing: '1.5px', textTransform: 'uppercase', color: T.teal, fontWeight: 500, marginBottom: 10 }}>The Deany way · try one</div>
         <h2 style={{ fontFamily: SERIF, fontSize: 21, fontWeight: 500, color: T.ink, lineHeight: 1.4, margin: '0 0 18px' }}>{SAMPLE.prompt}</h2>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>

@@ -3,6 +3,7 @@
 // onboarding screen composes from this so structure is consistent.
 import React from 'react';
 import { T, FONT } from './tokens.js';
+import { MotionStyles } from './motion.jsx';
 
 export default function OnboardingShell({ header, children, cta, contentStyle }) {
   return (
@@ -10,13 +11,14 @@ export default function OnboardingShell({ header, children, cta, contentStyle })
       position: 'fixed', inset: 0, background: T.canvas, color: T.ink,
       fontFamily: FONT, display: 'flex', flexDirection: 'column',
     }}>
+      <MotionStyles />
       {header != null && (
         <div style={{ flexShrink: 0, paddingTop: 'calc(env(safe-area-inset-top) + 12px)', paddingLeft: 22, paddingRight: 22 }}>
           {header}
         </div>
       )}
 
-      <div style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain' }}>
+      <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain' }}>
         <div style={{ padding: '20px 22px 8px', ...contentStyle }}>
           {children}
         </div>
