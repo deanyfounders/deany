@@ -29,7 +29,7 @@ export default function HomeShell(props) {
       <div key={tab} className="deany-fade" style={{ flex: 1, overflowY: 'auto', paddingBottom: 'calc(env(safe-area-inset-bottom) + 76px)', maxWidth: 520, margin: '0 auto', width: '100%' }}>
         {tab === 'learn' && (
           <LearnTab
-            dailyStreak={dailyStreak} level={level}
+            dailyStreak={dailyStreak} xp={props.xp || 0} appState={appState}
             mainTopics={mainTopics} modules={modules} completedLessons={completedLessons}
             onSelectLesson={onSelectLesson} onGoReview={() => setTab('review')}
           />
