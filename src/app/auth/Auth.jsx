@@ -12,7 +12,7 @@ const serif = 'Georgia, serif';
 const MAX = 100;
 
 export default function Auth({ appState }) {
-  const { signIn } = appState;
+  const { signIn, resetAll } = appState;
   const [mode, setMode] = useState('signup'); // visual toggle only - both do the same thing
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -98,6 +98,12 @@ export default function Auth({ appState }) {
         <p style={{ fontSize: 11.5, color: TOKENS.muted, opacity: 0.7, marginTop: 18, lineHeight: 1.5 }}>
           Demo sign in - any username and password works. Nothing is sent anywhere.
         </p>
+        <button type="button" onClick={resetAll} style={{
+          marginTop: 14, background: 'none', border: 'none', color: TOKENS.muted, fontSize: 12.5,
+          textDecoration: 'underline', cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+        }}>
+          Start over from the intro
+        </button>
       </div>
     </div>
   );

@@ -6,7 +6,7 @@
 //   not calibrated -> Calibrate
 //   not signed in  -> Auth
 //   otherwise      -> HomeShell
-import React from 'react';
+import React, { useEffect } from 'react';
 import App from '../App.jsx';
 import { useAppMode } from './hooks/useAppMode.js';
 import { useAppState } from './hooks/useAppState.js';
@@ -18,6 +18,21 @@ import AppModeStyles from './shared/AppModeStyles.jsx';
 export default function AppGate() {
   const appMode = useAppMode();
   const appState = useAppState();
+
+  // ?reset=1 restarts the whole app flow from the first onboarding page
+  // (for testing / "start over"). The param is stripped after resetting.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('reset') === '1') {
+      appState.resetAll();
+      params.delete('reset');
+      const qs = params.toString();
+      window.history.replaceState(null, '', window.location.pathname + (qs ? `?${qs}` : ''));
+    }
+    // resetAll is stable; run once on mount.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Website: zero change for regular browser visitors.
   if (!appMode) return <App />;
