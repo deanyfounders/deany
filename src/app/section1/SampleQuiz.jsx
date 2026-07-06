@@ -10,20 +10,21 @@ import { ProgressBar } from '../../onboarding/kit/Progress.jsx';
 import { ChunkyButton } from '../../onboarding/kit/buttons.jsx';
 import { T, SERIF } from '../../onboarding/kit/tokens.js';
 
-// Reused VERBATIM from shipped lessons (approved content, not pending_mehdi).
-// Q1 from Shahada lesson 1 (DEANY-B1L1). Q2 from Finance lesson 3 (DEANY_M1L3).
+// Reused VERBATIM from the website's "learn the Deany way" quiz
+// (src/components/QuizSection.jsx). These are that quiz's own questions - not
+// lesson content, not invented.
 const QS = [
   {
-    prompt: 'How many distinct testimonies does the Shahadah contain?',
-    options: ['One unified testimony, divided into two phrases for emphasis.', 'Two separate testimonies: one about Allah and one about the Prophet ﷺ.', 'Three: one about Allah, one about the Prophet ﷺ, and one about Islam itself.', 'The number varies depending on the version recited.'],
+    prompt: 'How long is a typical Deany lesson?',
+    options: ['2 hours', 'About 10 minutes', '45 minutes'],
     answer: 1,
-    payoff: "Correct. Ashhadu appears twice. The first testimony is about Allah: what He is and what He is not. The second is about Muhammad ﷺ and his role as Allah's Messenger. The word wa joins them.",
+    payoff: 'Bite-sized by design. Short enough for a commute, deep enough to stick.',
   },
   {
-    prompt: 'Which BEST describes why ribā is prohibited?',
-    options: ['Because making profit is wrong in Islam.', 'Because the lender profits with zero risk while the borrower bears everything.', 'Because lending money to people is not allowed.', 'Because interest rates are too high.'],
-    answer: 1,
-    payoff: "Exactly. The issue isn't profit - Islam encourages fair profit from real trade. The issue is RISK-FREE profit from money lent. One side bears everything, the other bears nothing. That's the injustice.",
+    prompt: 'Complete the sentence: Deany is built for...',
+    options: ['Only Muslims', 'Scholars', 'Everyone', 'Just curious (non-Muslim)', 'New Muslims only'],
+    answer: 2,
+    payoff: 'Practising Muslims, curious non-Muslims, new converts, born Muslims who never studied. Deany is built for every starting point.',
   },
 ];
 
