@@ -5,6 +5,7 @@ import { D, TYPE, subjectOf } from '../tokens.js';
 import { StatPill, GoalBar, HeroContinueCard, ReviewDueCard, TopicMiniCard, ExploreCard, SectionHeading } from '../components.jsx';
 import { getContinueTarget, getActiveTopics, topicProgress, getDueReviews } from '../selectors.js';
 import { haptic } from '../motion.jsx';
+import AyahCard from '../AyahCard.jsx';
 
 // Entrance stagger runs once per app open, not on every tab switch.
 let homeEntered = false;
@@ -85,8 +86,9 @@ export default function Home({ name, state, deps, coins, streak, onOpenTopic, on
 
       <div className={riseC} style={{ animationDelay: riseD(1) }}>{hero}</div>
       {reviewCard && <div className={riseC} style={{ animationDelay: riseD(2), marginTop: 10 }}>{reviewCard}</div>}
+      <div className={riseC} style={{ animationDelay: riseD(3), marginTop: 10 }}><AyahCard /></div>
 
-      <div className={riseC} style={{ animationDelay: riseD(3), marginTop: 16 }}>
+      <div className={riseC} style={{ animationDelay: riseD(4), marginTop: 16 }}>
         <SectionHeading action={<button onClick={() => onGoTab('topics')} style={{ background: 'none', border: 'none', color: D.tealDeep, fontSize: TYPE.meta, fontWeight: 500, cursor: 'pointer' }}>Add topic</button>}>Your topics</SectionHeading>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
           {gridTopics.map((id, i) => {
