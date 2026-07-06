@@ -10,10 +10,21 @@ import { ProgressBar } from '../../onboarding/kit/Progress.jsx';
 import { ChunkyButton } from '../../onboarding/kit/buttons.jsx';
 import { T, SERIF } from '../../onboarding/kit/tokens.js';
 
-// pending_mehdi
+// Reused VERBATIM from shipped lessons (approved content, not pending_mehdi).
+// Q1 from Shahada lesson 1 (DEANY-B1L1). Q2 from Finance lesson 3 (DEANY_M1L3).
 const QS = [
-  { prompt: "The word 'Islam' comes from an Arabic root that means?", options: ['Submission and peace', 'Knowledge', 'A place of prayer', 'The final month'], answer: 0, payoff: "Islam shares its root with 'salam', peace. Submission to God is where that peace begins." },
-  { prompt: 'Which of these is one of the five pillars of Islam?', options: ['Fasting in Ramadan', 'Visiting every mosque', 'Memorising the whole Quran', 'Learning Arabic'], answer: 0, payoff: 'Sawm, fasting in Ramadan, is one of the five pillars every Muslim builds on.' },
+  {
+    prompt: 'How many distinct testimonies does the Shahadah contain?',
+    options: ['One unified testimony, divided into two phrases for emphasis.', 'Two separate testimonies: one about Allah and one about the Prophet ﷺ.', 'Three: one about Allah, one about the Prophet ﷺ, and one about Islam itself.', 'The number varies depending on the version recited.'],
+    answer: 1,
+    payoff: "Correct. Ashhadu appears twice. The first testimony is about Allah: what He is and what He is not. The second is about Muhammad ﷺ and his role as Allah's Messenger. The word wa joins them.",
+  },
+  {
+    prompt: 'Which BEST describes why ribā is prohibited?',
+    options: ['Because making profit is wrong in Islam.', 'Because the lender profits with zero risk while the borrower bears everything.', 'Because lending money to people is not allowed.', 'Because interest rates are too high.'],
+    answer: 1,
+    payoff: "Exactly. The issue isn't profit - Islam encourages fair profit from real trade. The issue is RISK-FREE profit from money lent. One side bears everything, the other bears nothing. That's the injustice.",
+  },
 ];
 
 export default function SampleQuiz({ onDone, onExit }) {
