@@ -86,7 +86,7 @@ function Carousel({ onDone }) {
   };
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: T.canvas, display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', height: '100dvh', maxHeight: '100dvh', overflow: 'hidden', background: T.canvas, display: 'flex', flexDirection: 'column' }}>
       <div style={{ flexShrink: 0, paddingTop: 'calc(env(safe-area-inset-top) + 12px)', paddingRight: 18, display: 'flex', justifyContent: 'flex-end' }}>
         <GhostButton onClick={onDone} style={{ width: 'auto', color: T.inkHint, fontSize: 13 }}>Skip</GhostButton>
       </div>
@@ -133,7 +133,7 @@ function Sample({ onDone }) {
   const correct = picked === SAMPLE.answerIndex;
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: T.canvas, display: 'flex', flexDirection: 'column', fontFamily: '"Source Sans 3", system-ui, sans-serif' }}>
+    <div style={{ minHeight: '100vh', height: '100dvh', maxHeight: '100dvh', overflow: 'hidden', background: T.canvas, display: 'flex', flexDirection: 'column', fontFamily: '"Source Sans 3", system-ui, sans-serif' }}>
       {/* lesson-style header */}
       <div style={{ flexShrink: 0, paddingTop: 'calc(env(safe-area-inset-top) + 12px)', padding: 'calc(env(safe-area-inset-top) + 12px) 20px 0' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>

@@ -8,7 +8,8 @@ import { MotionStyles } from './motion.jsx';
 export default function OnboardingShell({ header, children, cta, contentStyle }) {
   return (
     <div style={{
-      position: 'fixed', inset: 0, background: T.canvas, color: T.ink,
+      minHeight: '100vh', height: '100dvh', maxHeight: '100dvh', overflow: 'hidden',
+      background: T.canvas, color: T.ink,
       fontFamily: FONT, display: 'flex', flexDirection: 'column',
     }}>
       <MotionStyles />

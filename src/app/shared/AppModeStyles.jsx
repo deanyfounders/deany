@@ -20,9 +20,10 @@ html.deany-app-mode, body.deany-app-mode {
   user-select: none;
   touch-action: manipulation;
 }
-/* subtle 180ms transition into tabs and screens */
+/* subtle 180ms transition into tabs and screens - opacity only, so it never
+   becomes a containing block for position:fixed descendants (an iOS trap). */
 .deany-fade { animation: deanyFade 180ms ease-out both; }
-@keyframes deanyFade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes deanyFade { from { opacity: 0; } to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) {
   .deany-fade { animation: none; }
 }
