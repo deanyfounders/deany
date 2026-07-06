@@ -25,6 +25,7 @@ import QuranicQuote from './components/QuranicQuote.jsx';
 import LandingPage from './LandingPage.jsx';
 import Dashboard from './Dashboard.jsx';
 import HomeShell from './app/home/HomeShell.jsx';
+import AppDashboard from './app/dashboard/Dashboard.jsx';
 import {
   CheckCircle, XCircle, Star, Trophy, ArrowRight, Sparkles, BookOpen, Home,
   Lightbulb, Award, Menu, X, ChevronLeft, Flame, Zap, Target,
@@ -1018,7 +1019,7 @@ const App = ({ appMode = false, appState = null } = {}) => {
     // App mode: the installed-app home shell replaces the website home entirely.
     if (appMode) {
       return (
-        <HomeShell
+        <AppDashboard
           appState={appState}
           dailyStreak={dailyStreak} coins={coins} xp={xp} level={level} totalPoints={totalPoints}
           mainTopics={mainTopics} modules={modules} completedLessons={completedLessons}

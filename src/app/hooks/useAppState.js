@@ -47,7 +47,10 @@ export function useAppState() {
   const setCalibration = useCallback((level) => update({ calibrated: true, level }), [update]); // legacy
   const signIn = useCallback((username) => update({ user: { username } }), [update]);
   const signOut = useCallback(() => update({ user: null }), [update]);
-  const resetAll = useCallback(() => { write(DEFAULT); setState(DEFAULT); }, []);
+  const resetAll = useCallback(() => {
+    write(DEFAULT); setState(DEFAULT);
+    if (typeof window !== 'undefined') { try { window.localStorage.removeItem('deany.state.v1'); } catch (_) {} }
+  }, []);
 
   return { state, update, completeOnboarding, setTopics, saveTopicResult, finishCalibration, setCalibration, signIn, signOut, resetAll };
 }
