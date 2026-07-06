@@ -24,15 +24,19 @@ export function NavBar({ tab, onTab, reviewDot }) {
         const showDot = t.id === 'review' && reviewDot;
         return (
           <button key={t.id} onClick={() => onTab(t.id)} aria-label={t.label} aria-current={active} className="dash-press" style={{
-            flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '7px 0', background: 'none',
-            border: 'none', cursor: 'pointer', minHeight: 48, color: active ? D.tealDeep : D.inkFaint, position: 'relative',
+            flex: 1, display: 'flex', justifyContent: 'center', padding: '5px 0', background: 'none', border: 'none', cursor: 'pointer', minHeight: 48,
             transition: 'transform .12s ease', WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation',
           }}>
-            <span style={{ position: 'relative', display: 'inline-flex' }}>
-              {React.createElement(t.icon, { size: 21, strokeWidth: active ? 2.3 : 2 })}
-              {showDot && <span className="dash-dot" style={{ position: 'absolute', top: -2, right: -3, width: 8, height: 8, borderRadius: '50%', background: D.history, border: `1.5px solid ${D.card}` }} />}
+            <span style={{
+              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: active ? '6px 14px' : '6px 8px',
+              background: active ? '#E9F6F4' : 'transparent', borderRadius: 14, color: active ? D.tealDeep : D.inkFaint, transition: 'background .15s ease',
+            }}>
+              <span style={{ position: 'relative', display: 'inline-flex' }}>
+                {React.createElement(t.icon, { size: 21, strokeWidth: active ? 2.3 : 2 })}
+                {showDot && <span className="dash-dot" style={{ position: 'absolute', top: -2, right: -3, width: 8, height: 8, borderRadius: '50%', background: D.history, border: `1.5px solid ${D.card}` }} />}
+              </span>
+              <span style={{ fontSize: TYPE.hint, fontWeight: active ? 500 : 400 }}>{t.label}</span>
             </span>
-            <span style={{ fontSize: TYPE.hint, fontWeight: active ? 500 : 400 }}>{t.label}</span>
           </button>
         );
       })}

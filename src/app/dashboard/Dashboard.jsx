@@ -21,7 +21,10 @@ function Inner({ mainTopics = [], modules = {}, completedLessons = {}, onSelectL
   const [pathTopicId, setPathTopicId] = useState(null);
   const deps = useMemo(() => ({ modules, completedLessons }), [modules, completedLessons]);
 
-  const name = appState?.state?.user?.username || dash.state.user?.name || null;
+  // Name rule: use it if 2+ chars; else the email local-part capitalized; else null.
+  const rawName = (appState?.state?.user?.username || dash.state.user?.name || '').trim();
+  let name = rawName.length >= 2 ? rawName : null;
+  if (!name && rawName.includes('@')) { const p = rawName.split('@')[0]; if (p) name = p.charAt(0).toUpperCase() + p.slice(1); }
   const guest = !name;
 
   // Seed the review queue from lessons already completed, so Review is real.
@@ -70,7 +73,7 @@ function Inner({ mainTopics = [], modules = {}, completedLessons = {}, onSelectL
           onOpenTopic={setPathTopicId} onGoTab={setTab} onSelectLesson={onSelectLesson} />
       )}
       {tab === 'topics' && (
-        <Topics state={dash.state} deps={deps} onOpenTopic={setPathTopicId} addTopic={dash.addTopic} pauseTopic={dash.pauseTopic} resumeTopic={dash.resumeTopic} />
+        <Topics state={dash.state} deps={deps} onOpenTopic={setPathTopicId} addTopic={dash.addTopic} pauseTopic={dash.pauseTopic} resumeTopic={dash.resumeTopic} removeTopic={dash.removeTopic} />
       )}
       {tab === 'review' && (
         <Review state={dash.state} onGoTab={setTab} onSelectLesson={onSelectLesson} resolveLesson={resolveLesson} />

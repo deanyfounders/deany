@@ -65,7 +65,7 @@ export default function Review({ state, onGoTab, onSelectLesson, resolveLesson }
           const s = subjectOf(id);
           return (
             <div key={id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 2px', borderBottom: `1px solid ${D.border}` }}>
-              <IconTile emoji={s.emoji} tint={s.tint} size={36} />
+              <IconTile subjectId={id} size={36} />
               <span style={{ flex: 1, fontSize: TYPE.body, color: D.ink }}>{s.name}</span>
               <span style={{ fontSize: TYPE.body, fontWeight: 500, color: n > 0 ? s.ink : D.inkFaint }}>{n > 0 ? `${n} due` : '0'}</span>
             </div>

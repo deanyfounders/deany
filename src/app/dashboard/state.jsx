@@ -76,6 +76,7 @@ export function DashboardProvider({ children }) {
     })),
     pauseTopic: (id) => patch(p => ({ topics: { ...p.topics, [id]: { ...p.topics[id], active: false } } })),
     resumeTopic: (id) => patch(p => ({ topics: { ...p.topics, [id]: { ...p.topics[id], active: true } } })),
+    removeTopic: (id) => patch(p => { const topics = { ...p.topics }; delete topics[id]; return { topics }; }),
     gradeReview: (id, passed) => patch(p => ({ review: { items: p.review.items.map(it => it.id === id ? (passed ? passItem(it, Date.now()) : failItem(it, Date.now())) : it) } })),
     // Seed the review queue from lessons already completed (due now). Idempotent.
     ensureReviews: (pairs) => patch(p => {
