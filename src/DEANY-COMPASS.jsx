@@ -21,7 +21,7 @@ const TIER_EMOJI = { 0: "\u{1F331}", 1: "\u{1F331}", 2: "\u{1F333}", 3: "\u{1F3D
 // ── Question bank - sourced verbatim from DEANY Calibration Question Bank v1 ──
 // REVIEW:FIQH - Maliki madhab standard. Hadith: Bukhari + Muslim only.
 // Format: [id, prompt, [opt0,opt1,opt2,opt3], correctIndex, source/explanation]
-const QBANK = {
+export const QBANK = {
   "5_pillars": {
     1: [
       ["5P-B1", "How many obligatory daily prayers are there in Islam?", ["Three", "Four", "Five", "Six"], 2, "Five daily prayers: Fajr, Dhuhr, Asr, Maghrib, Isha. (Bukhari 349; Muslim 162)"],
