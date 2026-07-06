@@ -1,16 +1,25 @@
 // Home - one decision for the user. The hero is driven only by
 // getContinueTarget; nothing else decides what it shows.
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { D, TYPE, subjectOf } from '../tokens.js';
 import { StatPill, GoalBar, HeroContinueCard, ReviewDueCard, TopicMiniCard, ExploreCard, SectionHeading } from '../components.jsx';
 import { getContinueTarget, getActiveTopics, topicProgress, getDueReviews } from '../selectors.js';
+import { haptic } from '../motion.jsx';
+
+// Entrance stagger runs once per app open, not on every tab switch.
+let homeEntered = false;
 
 export default function Home({ name, state, deps, coins, streak, onOpenTopic, onGoTab, onSelectLesson }) {
+  const [firstOpen] = useState(() => { const v = !homeEntered; homeEntered = true; return v; });
   const now = Date.now();
   const target = getContinueTarget(state, deps, now);
   const due = getDueReviews(state, now);
   const hasEverReviewed = (state.review?.items || []).length > 0;
   const goal = state.goal || { minutesToday: 0, dailyMinutes: 5 };
+  const goalMet = (goal.minutesToday || 0) > 0 && (goal.minutesToday || 0) >= (goal.dailyMinutes || 5);
+  useEffect(() => { if (firstOpen && goalMet) haptic(); /* eslint-disable-next-line */ }, []);
+  const riseD = (i) => (firstOpen ? `${i * 50}ms` : undefined);
+  const riseC = firstOpen ? 'dash-rise' : undefined;
 
   // topics ordered by recent activity then onboarding order, max 4
   const active = getActiveTopics(state)
@@ -54,21 +63,21 @@ export default function Home({ name, state, deps, coins, streak, onOpenTopic, on
   return (
     <div style={{ padding: 'calc(env(safe-area-inset-top) + 16px) 20px 24px' }}>
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, marginBottom: 16 }}>
+      <div className={riseC} style={{ animationDelay: riseD(0), display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, marginBottom: 16 }}>
         <div style={{ minWidth: 0 }}>
           <div style={{ fontSize: TYPE.screenTitle, fontWeight: 500, color: D.ink, marginBottom: 8 }}>{name ? `Salam, ${name}` : 'Salam'}</div>
           <GoalBar value={goal.minutesToday} max={goal.dailyMinutes} width={90} label={`${goal.minutesToday} of ${goal.dailyMinutes} min today`} />
         </div>
         <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
-          <StatPill kind="streak" value={streak} />
+          <StatPill kind="streak" value={streak} pop={firstOpen && goalMet} />
           <StatPill kind="coins" value={coins} />
         </div>
       </div>
 
-      {hero}
-      {reviewCard && <div style={{ marginTop: 10 }}>{reviewCard}</div>}
+      <div className={riseC} style={{ animationDelay: riseD(1) }}>{hero}</div>
+      {reviewCard && <div className={riseC} style={{ animationDelay: riseD(2), marginTop: 10 }}>{reviewCard}</div>}
 
-      <div style={{ marginTop: 16 }}>
+      <div className={riseC} style={{ animationDelay: riseD(3), marginTop: 16 }}>
         <SectionHeading action={<button onClick={() => onGoTab('topics')} style={{ background: 'none', border: 'none', color: D.tealDeep, fontSize: TYPE.meta, fontWeight: 500, cursor: 'pointer' }}>Add topic</button>}>Your topics</SectionHeading>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
           {gridTopics.map(id => {

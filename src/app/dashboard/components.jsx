@@ -17,10 +17,10 @@ export function IconTile({ emoji, tint, size = 38 }) {
   return <span style={{ width: size, height: size, borderRadius: RADIUS.tile, background: tint, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: size * 0.5, flexShrink: 0 }}>{emoji}</span>;
 }
 
-export function StatPill({ kind = 'streak', value }) {
+export function StatPill({ kind = 'streak', value, pop }) {
   const isStreak = kind === 'streak';
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 11px', background: D.card, border: `1px solid ${D.border}`, borderRadius: RADIUS.pill, minHeight: 32 }}>
+    <span className={pop ? 'dash-pop' : undefined} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 11px', background: D.card, border: `1px solid ${D.border}`, borderRadius: RADIUS.pill, minHeight: 32 }}>
       {isStreak ? <Flame size={15} color={D.goldInk} /> : <Coins size={15} color={D.tealDeep} />}
       <span style={{ fontSize: TYPE.meta, fontWeight: 500, color: isStreak ? D.goldInk : D.tealDeep }}>{value}</span>
     </span>
