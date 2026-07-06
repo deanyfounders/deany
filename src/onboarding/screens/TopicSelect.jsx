@@ -2,7 +2,7 @@
 // Persists selection into app state; selected topics drive calibration.
 import React, { useState } from 'react';
 import OnboardingShell from '../kit/OnboardingShell.jsx';
-import { PrimaryButton } from '../kit/buttons.jsx';
+import { ChunkyButton } from '../kit/buttons.jsx';
 import TopicCard from '../kit/TopicCard.jsx';
 import { riseDelay } from '../kit/motion.jsx';
 import { T, SUBJECT, SERIF } from '../kit/tokens.js';
@@ -24,9 +24,9 @@ export default function TopicSelect({ appState }) {
   return (
     <OnboardingShell
       cta={
-        <PrimaryButton disabled={n === 0} onClick={() => setTopics(sel)}>
+        <ChunkyButton disabled={n === 0} onClick={() => setTopics(sel)}>
           {n === 0 ? 'Pick at least one topic' : `Continue with ${n} topic${n > 1 ? 's' : ''}`}
-        </PrimaryButton>
+        </ChunkyButton>
       }
     >
       <h1 style={{ fontFamily: SERIF, fontSize: 24, fontWeight: 500, color: T.ink, margin: '4px 0 8px', lineHeight: 1.25 }}>

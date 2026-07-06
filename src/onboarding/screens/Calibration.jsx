@@ -3,7 +3,7 @@
 // Placement only - default no per-question feedback. Nobody fails onboarding.
 import React, { useState, useEffect } from 'react';
 import OnboardingShell from '../kit/OnboardingShell.jsx';
-import { PrimaryButton, GhostButton } from '../kit/buttons.jsx';
+import { ChunkyButton, GhostButton } from '../kit/buttons.jsx';
 import OptionCard from '../kit/OptionCard.jsx';
 import { ProgressBar } from '../kit/Progress.jsx';
 import { riseDelay, Particles, haptic } from '../kit/motion.jsx';
@@ -88,10 +88,13 @@ export default function Calibration({ appState }) {
     finishCalibration(res[topics[0]]?.level || 'Foundations');
   };
 
+  // If the user chose "Skip for now" at Find your level, seed tier 1 and move on.
+  useEffect(() => { if (state.calibrationSkip) skipAll(); /* eslint-disable-next-line */ }, []);
+
   // ── Result ─────────────────────────────────────────────────────
   if (phase === 'result') {
     return (
-      <OnboardingShell cta={<PrimaryButton onClick={() => finishCalibration(results[topics[0]]?.level || 'Foundations')}>Continue</PrimaryButton>}>
+      <OnboardingShell cta={<ChunkyButton onClick={() => finishCalibration(results[topics[0]]?.level || 'Foundations')}>Continue</ChunkyButton>}>
         <div style={{ textAlign: 'center', margin: '6px 0 18px', position: 'relative' }}>
           <div style={{ position: 'relative', display: 'inline-block' }}>
             <div style={{ fontSize: 12, letterSpacing: '1.5px', textTransform: 'uppercase', color: T.teal, fontWeight: 500, marginBottom: 8 }}>Your plan is ready</div>
@@ -131,7 +134,7 @@ export default function Calibration({ appState }) {
         header={<ChromeBar subj={subj} value={(ti / Math.max(topics.length, 1)) * 100} labelLeft={`Topic ${ti + 1} of ${topics.length}`} />}
         cta={
           <>
-            <PrimaryButton disabled={!intent} onClick={startQuestions}>Continue</PrimaryButton>
+            <ChunkyButton disabled={!intent} onClick={startQuestions}>Continue</ChunkyButton>
             <GhostButton onClick={skipAll} style={{ color: T.inkHint }}>Skip for now</GhostButton>
           </>
         }

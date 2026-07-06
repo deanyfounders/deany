@@ -6,11 +6,12 @@
 //   not calibrated -> Calibrate
 //   not signed in  -> Auth
 //   otherwise      -> HomeShell
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import App from '../App.jsx';
 import { useAppMode } from './hooks/useAppMode.js';
 import { useAppState } from './hooks/useAppState.js';
-import Welcome from './welcome/Welcome.jsx';
+import Splash from './section1/Splash.jsx';
+import Section1 from './section1/Section1.jsx';
 import TopicSelect from '../onboarding/screens/TopicSelect.jsx';
 import Calibration from '../onboarding/screens/Calibration.jsx';
 import Auth from './auth/Auth.jsx';
@@ -19,6 +20,7 @@ import AppModeStyles from './shared/AppModeStyles.jsx';
 export default function AppGate() {
   const appMode = useAppMode();
   const appState = useAppState();
+  const [splashDone, setSplashDone] = useState(false);
 
   // ?reset=1 restarts the whole app flow from the first onboarding page
   // (for testing / "start over"). The param is stripped after resetting.
@@ -38,6 +40,9 @@ export default function AppGate() {
   // Website: zero change for regular browser visitors.
   if (!appMode) return <App />;
 
+  // Cold-start splash (once per app open), then resolve the flow / dashboard.
+  if (!splashDone) return (<><AppModeStyles /><Splash onDone={() => setSplashDone(true)} /></>);
+
   const { state } = appState;
 
   // Fully onboarded: run the real app in app mode. App renders the home shell
@@ -53,7 +58,7 @@ export default function AppGate() {
 
   // Pre-app flow. Each stage fades in as the user advances.
   const topics = state.topics || [];
-  let stage = 'welcome', screen = <Welcome appState={appState} />;
+  let stage = 'welcome', screen = <Section1 appState={appState} />;
   if (state.onboarded && !state.calibrated && topics.length === 0) { stage = 'topics'; screen = <TopicSelect appState={appState} />; }
   else if (state.onboarded && topics.length > 0 && !state.calibrated) { stage = 'calibrate'; screen = <Calibration appState={appState} />; }
   else if (state.onboarded && state.calibrated && !state.user) { stage = 'auth'; screen = <Auth appState={appState} />; }
