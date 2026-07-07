@@ -102,6 +102,18 @@ export default function Calibration({ appState }) {
   // If the user chose "Skip for now" at Find your level, seed tier 1 and move on.
   useEffect(() => { if (state.calibrationSkip) skipAll(); /* eslint-disable-next-line */ }, []);
 
+  // Welcome-picker feed-forward: for the seeded topic only, pre-select the
+  // level intent that matches the picked tier (Foundations/Intermediate/
+  // Advanced -> starting/basics/comfortable). The user can still change it.
+  const seed = state.pickerSeed;
+  const SEED_INTENT = { foundations: 'start', intermediate: 'basics', advanced: 'comfortable' };
+  useEffect(() => {
+    if (phase === 'intent' && intent === null && seed?.touched && seed.seed === topic && SEED_INTENT[seed.tier]) {
+      setIntent(SEED_INTENT[seed.tier]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase, ti]);
+
   // ── Setting up (dried-out assembly, ~1.8s) ─────────────────────
   if (phase === 'settingup') {
     const topicList = topics.map(tp => SUBJECT[tp]?.short || tp).join(', ');

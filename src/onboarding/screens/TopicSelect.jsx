@@ -16,8 +16,12 @@ const SUBS = {
 };
 
 export default function TopicSelect({ appState }) {
-  const { setTopics } = appState;
-  const [sel, setSel] = useState([]);
+  const { setTopics, state } = appState;
+  // If the welcome picker was actually touched, pre-select its seeded topic
+  // (a real selection the user can freely deselect). Auto-roll seeds nothing.
+  const seed = state?.pickerSeed;
+  const [sel, setSel] = useState(() =>
+    seed?.touched && ORDER.includes(seed.seed) ? [seed.seed] : []);
   const toggle = (id) => setSel(s => (s.includes(id) ? s.filter(x => x !== id) : [...s, id]));
   const n = sel.length;
 
