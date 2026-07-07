@@ -2,7 +2,7 @@
 // [boring detour] -> Sample quiz -> Find your level -> completeOnboarding
 // (which hands off to the existing topic select + calibration).
 import React, { useState } from 'react';
-import { Target, Zap, RefreshCw, HelpCircle, Clock } from 'lucide-react';
+import { Target, Zap, RefreshCw, HelpCircle, Clock, X, Flame } from 'lucide-react';
 import { DeanyMark } from '../shared/AppScreen.jsx';
 import { S1Screen, S1Header } from './ui.jsx';
 import { ChunkyButton, GhostButton } from '../../onboarding/kit/buttons.jsx';
@@ -10,7 +10,9 @@ import { T, SERIF } from '../../onboarding/kit/tokens.js';
 import HowItWorks from './HowItWorks.jsx';
 import MethodChooser from './MethodChooser.jsx';
 import BoringWay from './BoringWay.jsx';
-import SampleQuiz from './SampleQuiz.jsx';
+import QuizSection from '../../components/QuizSection.jsx';
+
+const S1_CSS = `@keyframes s1Cross { from { opacity: 0; } to { opacity: 1; } } .s1-cross { animation: s1Cross .28s ease-out both; } @media (prefers-reduced-motion: reduce){ .s1-cross { animation: none; } }`;
 
 export default function Section1({ appState }) {
   const { completeOnboarding, update } = appState;
@@ -20,13 +22,29 @@ export default function Section1({ appState }) {
   const takeTest = () => completeOnboarding();
   const skipTest = () => { update({ calibrationSkip: true }); completeOnboarding(); };
 
-  if (phase === 'how') return <HowItWorks onBack={() => setPhase('welcome')} onSkip={() => setPhase('method')} onDone={() => setPhase('method')} />;
-  if (phase === 'method') return <MethodChooser onBack={() => setPhase('how')} onDeanyWay={() => setPhase('sample')} onBoringWay={() => setPhase('boring')} />;
-  if (phase === 'boring') return <BoringWay onBack={() => setPhase('method')} onDeanyWay={() => setPhase('sample')} />;
-  if (phase === 'sample') return <SampleQuiz onExit={() => setPhase('method')} onDone={() => setPhase('level')} />;
-  if (phase === 'level') return <FindLevel onBack={() => setPhase('sample')} onTakeTest={takeTest} onSkip={skipTest} />;
+  let screen;
+  if (phase === 'how') screen = <HowItWorks onBack={() => setPhase('welcome')} onSkip={() => setPhase('method')} onDone={() => setPhase('method')} />;
+  else if (phase === 'method') screen = <MethodChooser onBack={() => setPhase('how')} onDeanyWay={() => setPhase('sample')} onBoringWay={() => setPhase('boring')} />;
+  else if (phase === 'boring') screen = <BoringWay onBack={() => setPhase('method')} onDeanyWay={() => setPhase('sample')} />;
+  else if (phase === 'sample') screen = <Sample onExit={() => setPhase('method')} onDone={() => setPhase('level')} />;
+  else if (phase === 'level') screen = <FindLevel onBack={() => setPhase('sample')} onTakeTest={takeTest} onSkip={skipTest} />;
+  else screen = <Welcome onStart={() => setPhase('how')} onHaveAccount={haveAccount} />;
 
-  return <Welcome onStart={() => setPhase('how')} onHaveAccount={haveAccount} />;
+  return (<><style>{S1_CSS}</style><div key={phase} className="s1-cross" style={{ height: '100%' }}>{screen}</div></>);
+}
+
+// The DEANY-way taste is the real website quiz, started at the questions.
+function Sample({ onExit, onDone }) {
+  return (
+    <S1Screen>
+      <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', padding: 'calc(env(safe-area-inset-top) + 12px) 16px 0' }}>
+        <button onClick={onExit} aria-label="Exit" style={{ width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'none', border: 'none', cursor: 'pointer', color: T.inkSecondary, WebkitTapHighlightColor: 'transparent' }}><X size={20} /></button>
+      </div>
+      <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
+        <QuizSection autoStart onDone={onDone} />
+      </div>
+    </S1Screen>
+  );
 }
 
 // ── Welcome (calm) ─────────────────────────────────────────────
@@ -34,11 +52,12 @@ function Welcome({ onStart, onHaveAccount }) {
   return (
     <S1Screen>
       <Corners />
-      <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '24px 28px' }}>
-        <DeanyMark size={80} />
-        <div style={{ fontFamily: SERIF, fontSize: 20, letterSpacing: '6px', color: T.navy, fontWeight: 500, margin: '18px 0 22px' }}>DEANY</div>
+      <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '20px 28px' }}>
+        <DeanyMark size={72} />
+        <div style={{ fontFamily: SERIF, fontSize: 19, letterSpacing: '6px', color: T.navy, fontWeight: 500, margin: '16px 0 18px' }}>DEANY</div>
         <h1 style={{ fontFamily: SERIF, fontSize: 27, fontWeight: 500, color: T.ink, margin: '0 0 12px', lineHeight: 1.2 }}>Start where you are.</h1>
         <p style={{ fontSize: 14, color: T.inkSecondary, lineHeight: 1.6, maxWidth: 320, margin: 0 }}>Bite-size lessons in Quran, history, and Islamic finance - reviewed by scholars.</p>
+        <div style={{ marginTop: 30 }}><HeroCards /></div>
       </div>
       <div style={{ flexShrink: 0, padding: '10px 22px calc(env(safe-area-inset-bottom) + 16px)' }}>
         <ChunkyButton onClick={onStart}>Get started</ChunkyButton>
@@ -55,6 +74,33 @@ function Corners() {
         <rect key={i} x={x - s / 2} y={y - s / 2} width={s} height={s} fill="none" stroke={T.gold} strokeWidth={1.5} transform={`rotate(45 ${x} ${y})`} />
       ))}
     </svg>
+  );
+}
+
+// Floating lesson cards - the hero visual.
+function HeroCards() {
+  const cards = [
+    { r: -7, l: 0, t: 8, z: 1, accent: T.teal, title: 'Five Pillars', sub: 'Lesson 1 of 7', fill: '35%' },
+    { r: 5, l: 60, t: 24, z: 3, accent: T.gold, title: 'Islamic finance', sub: 'Riba and gharar', fill: '62%' },
+  ];
+  return (
+    <div style={{ position: 'relative', width: 220, height: 132, margin: '0 auto' }}>
+      {cards.map((c, i) => (
+        <div key={i} style={{ position: 'absolute', left: c.l, top: c.t, width: 140, padding: '13px 13px', background: '#fff', border: `1px solid ${T.border}`, borderRadius: 13, transform: `rotate(${c.r}deg)`, zIndex: c.z, boxShadow: '0 10px 28px rgba(15,76,92,0.10)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 9 }}>
+            <span style={{ width: 24, height: 24, borderRadius: 7, background: c.accent, opacity: 0.16 }} />
+            <span style={{ fontSize: 11.5, fontWeight: 700, color: T.tealDeep }}>{c.title}</span>
+          </div>
+          <div style={{ fontSize: 9.5, color: T.inkHint, marginBottom: 8 }}>{c.sub}</div>
+          <div style={{ height: 5, borderRadius: 3, background: 'rgba(15,76,92,0.08)', overflow: 'hidden' }}>
+            <div style={{ width: c.fill, height: '100%', background: c.accent, borderRadius: 3 }} />
+          </div>
+        </div>
+      ))}
+      <div style={{ position: 'absolute', top: 0, right: 0, zIndex: 4, background: '#fff', borderRadius: 20, padding: '5px 11px', boxShadow: '0 4px 14px rgba(15,76,92,0.12)', border: `1px solid ${T.border}`, display: 'flex', alignItems: 'center', gap: 5 }}>
+        <Flame size={13} color={T.gold} /><span style={{ fontSize: 10, fontWeight: 700, color: T.tealDeep }}>5 day streak</span>
+      </div>
+    </div>
   );
 }
 

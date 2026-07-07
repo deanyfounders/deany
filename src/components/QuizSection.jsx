@@ -99,8 +99,8 @@ const BackArrow = ({ onClick, label }) => (
 );
 
 // ═══════════════════════════════════════════════════════
-const QuizSection = () => {
-  const [view, setView] = useState('teaser');
+const QuizSection = ({ autoStart = false, onDone } = {}) => {
+  const [view, setView] = useState(autoStart ? 'quiz' : 'teaser');
   const [step, setStep] = useState(0);
   const [showBtn, setShowBtn] = useState(false);
   const [leaving, setLeaving] = useState(false); // fade-out phase for view transitions
@@ -579,7 +579,7 @@ const QuizSection = () => {
                 Short reads, real questions, instant feedback. Have a look at what we cover and see what catches your eye.
               </div>
               <button
-                onClick={() => document.getElementById('paths')?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
+                onClick={() => { if (onDone) { onDone(); } else { document.getElementById('paths')?.scrollIntoView({ behavior: 'smooth', block: 'center' }); } }}
                 style={{
                   display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                   width: 42, height: 42, borderRadius: '50%',
