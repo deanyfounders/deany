@@ -21,6 +21,12 @@ const QS = [
     payoff: 'Bite-sized by design. Short enough for a commute, deep enough to stick.',
   },
   {
+    prompt: 'How do you actually learn on Deany?',
+    options: ['By watching video lectures', 'By reading a little, answering, and getting instant feedback', 'By sitting a final exam', 'By memorising a textbook'],
+    answer: 1,
+    payoff: "Instead of passively watching or reading, every Deany lesson has you do things: read a little, answer, get feedback, move on. That's how it sticks. You just did it to answer this.",
+  },
+  {
     prompt: 'Complete the sentence: Deany is built for...',
     options: ['Only Muslims', 'Scholars', 'Everyone', 'Just curious (non-Muslim)', 'New Muslims only'],
     answer: 2,
@@ -54,7 +60,7 @@ export default function SampleQuiz({ onDone, onExit }) {
         <div style={{ background: T.canvas }}>
           <div style={{ background: '#fff', borderTop: `1px solid ${T.border}`, borderTopLeftRadius: 22, borderTopRightRadius: 22, padding: '24px 22px calc(env(safe-area-inset-bottom) + 20px)' }}>
             <div style={{ fontFamily: SERIF, fontSize: 22, fontWeight: 500, color: T.tealDeep, marginBottom: 6 }}>That is the DEANY way</div>
-            <p style={{ fontSize: 14, color: T.inkSecondary, lineHeight: 1.55, margin: '0 0 20px' }}>Short, active, and it sticks. Now let us find where you should start.</p>
+            <p style={{ fontSize: 14, color: T.inkSecondary, lineHeight: 1.55, margin: '0 0 20px' }}>The real lessons work exactly like this.</p>
             <ChunkyButton onClick={onDone}>Continue</ChunkyButton>
           </div>
         </div>

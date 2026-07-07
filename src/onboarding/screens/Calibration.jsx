@@ -36,6 +36,7 @@ export default function Calibration({ appState }) {
   const [current, setCurrent] = useState(null);
   const [picked, setPicked] = useState(null);
   const [locked, setLocked] = useState(false);
+  const [checked, setChecked] = useState(false);
 
   const topic = topics[ti];
   const subj = SUBJECT[topic] || { label: 'this topic', short: 'Topic', accent: T.teal, tint: 'rgba(34,163,154,0.1)' };
@@ -47,7 +48,7 @@ export default function Calibration({ appState }) {
     const seed = seedTier(intent);
     const set = new Set();
     setTier(seed); setAsked(set); setHistory([]); setUnsure(0);
-    setPicked(null); setLocked(false); setCurrent(pickNextQuestion(topic, seed, set));
+    setPicked(null); setLocked(false); setChecked(false); setCurrent(pickNextQuestion(topic, seed, set));
     setPhase('questions');
   };
 
@@ -61,21 +62,25 @@ export default function Calibration({ appState }) {
     else { setPhase('result'); }
   };
 
-  const answer = (outcome, optIndex) => {
+  // Select an option, then show the explanation. Advance is a separate step.
+  const select = (optIndex) => {
     if (locked) return;
     setPicked(optIndex);
     setLocked(true);
+    setChecked(true);
+  };
+
+  const advance = () => {
+    const outcome = picked === 'unsure' ? 'unsure' : (picked === current.answerIndex ? 'correct' : 'wrong');
     const newHist = [...history, current.tier];
     const newAsked = new Set(asked); newAsked.add(current.id);
     const newUnsure = unsure + (outcome === 'unsure' ? 1 : 0);
     const nt = nextTier(tier, outcome, topicMax);
-    setTimeout(() => {
-      setTier(nt); setHistory(newHist); setAsked(newAsked); setUnsure(newUnsure);
-      if (shouldStop(newHist, newAsked, topic)) { finalizeTopic(newHist, newUnsure, results); return; }
-      const next = pickNextQuestion(topic, nt, newAsked);
-      if (!next) { finalizeTopic(newHist, newUnsure, results); return; }
-      setCurrent(next); setPicked(null); setLocked(false);
-    }, 300);
+    setTier(nt); setHistory(newHist); setAsked(newAsked); setUnsure(newUnsure);
+    if (shouldStop(newHist, newAsked, topic)) { finalizeTopic(newHist, newUnsure, results); return; }
+    const next = pickNextQuestion(topic, nt, newAsked);
+    if (!next) { finalizeTopic(newHist, newUnsure, results); return; }
+    setCurrent(next); setPicked(null); setLocked(false); setChecked(false);
   };
 
   const skipAll = () => {
@@ -159,28 +164,46 @@ export default function Calibration({ appState }) {
   return (
     <OnboardingShell
       header={<ChromeBar subj={subj} value={(history.length / MAX_Q) * 100} labelLeft={`Finding your level · ${subj.short}`} labelRight={`Question ${n}`} gold />}
-      cta={<GhostButton onClick={skipAll} style={{ color: T.inkHint }}>Skip for now</GhostButton>}
+      cta={checked
+        ? <ChunkyButton onClick={advance}>Continue</ChunkyButton>
+        : <GhostButton onClick={skipAll} style={{ color: T.inkHint }}>Skip for now</GhostButton>}
     >
-      {current && (
-        <>
-          <h2 style={{ fontFamily: SERIF, fontSize: 21, fontWeight: 500, color: T.ink, lineHeight: 1.4, margin: '12px 0 18px' }}>{current.prompt}</h2>
-          <div key={current.id} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {current.options.map((opt, i) => (
-              <OptionCard key={i} label={opt} accent={subj.accent}
-                className="ob-rise" style={riseDelay(i)}
-                state={picked === i ? 'selected' : (locked ? 'dimmed' : 'idle')}
-                onClick={() => answer(i === current.answerIndex ? 'correct' : 'wrong', i)} />
-            ))}
-            <OptionCard label="I'm not sure yet" accent={subj.accent}
-              className="ob-rise" style={riseDelay(current.options.length)}
-              state={picked === 'unsure' ? 'selected' : (locked ? 'dimmed' : 'unsure')}
-              onClick={() => answer('unsure', 'unsure')} />
-          </div>
-          <p style={{ fontSize: 12, color: T.inkHint, textAlign: 'center', margin: '16px 0 0', lineHeight: 1.5 }}>
-            No penalties here - your answers shape the questions that follow.
-          </p>
-        </>
-      )}
+      {current && (() => {
+        const correct = picked === current.answerIndex;
+        return (
+          <>
+            <h2 style={{ fontFamily: SERIF, fontSize: 21, fontWeight: 500, color: T.ink, lineHeight: 1.4, margin: '12px 0 18px' }}>{current.prompt}</h2>
+            <div key={current.id} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {current.options.map((opt, i) => {
+                let st = 'idle';
+                if (checked) st = i === current.answerIndex ? 'correct' : (i === picked ? 'selected' : 'dimmed');
+                else if (picked === i) st = 'selected';
+                return <OptionCard key={i} label={opt} accent={subj.accent} className="ob-rise" style={riseDelay(i)}
+                  state={st} onClick={checked ? undefined : () => select(i)} />;
+              })}
+              <OptionCard label="I'm not sure yet" accent={subj.accent}
+                className="ob-rise" style={riseDelay(current.options.length)}
+                state={picked === 'unsure' ? 'selected' : (checked ? 'dimmed' : 'unsure')}
+                onClick={checked ? undefined : () => select('unsure')} />
+            </div>
+
+            {checked ? (
+              <div style={{ marginTop: 16, padding: '13px 15px', borderRadius: 12,
+                background: correct ? 'rgba(42,155,110,0.08)' : picked === 'unsure' ? 'rgba(15,42,52,0.04)' : 'rgba(197,48,48,0.05)',
+                border: `1px solid ${correct ? 'rgba(42,155,110,0.25)' : picked === 'unsure' ? T.border : 'rgba(197,48,48,0.2)'}` }}>
+                <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 4, color: correct ? '#2A9B6E' : picked === 'unsure' ? T.ink : '#C53030' }}>
+                  {correct ? 'Correct' : picked === 'unsure' ? `The answer is ${current.options[current.answerIndex]}` : 'Not quite'}
+                </div>
+                <div style={{ fontSize: 13, color: T.inkSecondary, lineHeight: 1.5 }}>{current.why}</div>
+              </div>
+            ) : (
+              <p style={{ fontSize: 12, color: T.inkHint, textAlign: 'center', margin: '16px 0 0', lineHeight: 1.5 }}>
+                No penalties here - your answers shape the questions that follow.
+              </p>
+            )}
+          </>
+        );
+      })()}
     </OnboardingShell>
   );
 }

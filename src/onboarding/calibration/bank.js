@@ -22,8 +22,8 @@ function buildBank() {
     const topic = TOPIC_MAP[cat] || cat;
     for (const tier of [1, 2, 3]) {
       for (const row of (QBANK[cat]?.[tier] || [])) {
-        const [id, prompt, options, answerIndex] = row;
-        out.push({ id, topic, tier, prompt, options, answerIndex, review: 'from_compass', source: cat });
+        const [id, prompt, options, answerIndex, why] = row;
+        out.push({ id, topic, tier, prompt, options, answerIndex, why, review: 'from_compass', source: cat });
       }
     }
   }
