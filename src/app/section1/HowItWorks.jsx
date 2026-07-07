@@ -1,65 +1,69 @@
-// How it works - 3 swipeable panes using the website's Getting Started step
-// images and verbatim copy. Step chip, heading, one line. Chunky Continue.
-import React, { useRef, useState } from 'react';
+// How it works - the definitive three-steps screen. Single screen (no carousel):
+// three stacked cards, each a 66px illustration tile holding the website's
+// Getting Started image (54px, object-fit contain) with a corner number chip
+// (gold 1 / teal 2 / green 3). Copy is byte-identical to the website. Cards
+// stagger in (0.15 / 0.55 / 0.95s). Chunky Continue.
+//
+// Tiles use the amendment's flattened-image path: one neutral #F6F4EC tile with
+// the baked-white backdrop blended away via mixBlendMode multiply (no panel
+// edge) and a 12px round-mask. Images are app-only 200px exports (~3.7x the
+// 54px display), separate from the 272px files the website uses.
+import React from 'react';
 import { S1Header, S1Screen } from './ui.jsx';
 import { ChunkyButton } from '../../onboarding/kit/buttons.jsx';
 import { T, SERIF } from '../../onboarding/kit/tokens.js';
-import stepQuiz from '../../assets/step-quiz.jpg';
-import stepBites from '../../assets/step-bites.jpg';
-import stepHabit from '../../assets/step-habit.jpg';
+import stepQuiz from '../../assets/step-quiz-tile.jpg';
+import stepBites from '../../assets/step-bites-tile.jpg';
+import stepHabit from '../../assets/step-habit-tile.jpg';
 
 const STEPS = [
-  { img: stepQuiz, chip: 'Step 1', heading: 'Find your level', line: 'A quick quiz places you at the right starting point.' },
-  { img: stepBites, chip: 'Step 2', heading: 'Learn in bites', line: 'Small lessons make steady progress easy.' },
-  { img: stepHabit, chip: 'Step 3', heading: 'Build a daily habit', line: 'Show up daily and watch your knowledge grow.' },
+  { img: stepQuiz, n: '1', chip: T.gold, heading: 'Find your level', line: 'A quick quiz places you at the right starting point.' },
+  { img: stepBites, n: '2', chip: T.teal, heading: 'Learn in bites', line: 'Small lessons make steady progress easy.' },
+  { img: stepHabit, n: '3', chip: '#22D86A', heading: 'Build a daily habit', line: 'Show up daily and watch your knowledge grow.' },
 ];
 
 export default function HowItWorks({ onDone, onSkip, onBack }) {
-  const ref = useRef(null);
-  const [active, setActive] = useState(0);
-  const last = STEPS.length - 1;
-
-  const onScroll = () => { const el = ref.current; if (!el) return; const i = Math.round(el.scrollLeft / el.clientWidth); if (i !== active) setActive(i); };
-  const next = () => { if (active >= last) { onDone(); return; } const el = ref.current; el?.scrollTo({ left: (active + 1) * el.clientWidth, behavior: 'smooth' }); };
-
   return (
     <S1Screen style={{ background: '#FFFFFF' }}>
       <S1Header onBack={onBack} dot={0} onSkip={onSkip} />
 
-      <div className="s1-enter" style={{ flexShrink: 0, textAlign: 'center', padding: '2px 22px 2px' }}>
-        <div style={{ fontSize: 12, fontWeight: 500, color: T.teal }}>Here is how it works</div>
-      </div>
-
-      <div ref={ref} onScroll={onScroll} className="s1-deck" style={{ flex: 1, minHeight: 0, display: 'flex', overflowX: 'auto', overflowY: 'hidden', scrollSnapType: 'x mandatory', overscrollBehavior: 'contain' }}>
-        {STEPS.map((s, i) => (
-          <section key={i} style={{ flex: '0 0 100%', width: '100%', scrollSnapAlign: 'start', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 28px', textAlign: 'center' }}>
-            <div style={{ height: '46%', maxHeight: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 24 }}>
-              <img key={`${i}-${active === i}`} className="s1-img-in" src={s.img} alt="" style={{ maxHeight: '100%', maxWidth: '80%', objectFit: 'contain', mixBlendMode: 'multiply' }} />
-            </div>
-            <span style={{ fontSize: 11, fontWeight: 500, color: T.tealDeep, background: '#E9F6F4', borderRadius: 999, padding: '4px 12px', marginBottom: 12 }}>{s.chip}</span>
-            <h2 style={{ fontFamily: SERIF, fontSize: 22, fontWeight: 500, color: T.ink, margin: '0 0 8px' }}>{s.heading}</h2>
-            <p style={{ fontSize: 13, color: T.inkSecondary, lineHeight: 1.55, maxWidth: 300, margin: 0 }}>{s.line}</p>
-          </section>
-        ))}
-      </div>
-
-      <div style={{ flexShrink: 0, padding: '12px 22px calc(env(safe-area-inset-bottom) + 16px)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
-        <div style={{ display: 'flex', gap: 7 }}>
-          {STEPS.map((_, i) => <span key={i} style={{ width: i === active ? 18 : 7, height: 7, borderRadius: 4, background: i === active ? T.teal : 'rgba(15,76,92,0.18)', transition: 'width .25s ease' }} />)}
+      <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '8px 24px' }}>
+        <div className="s3-head" style={{ textAlign: 'center', marginBottom: 22 }}>
+          <div style={{ fontSize: 11, letterSpacing: '1px', textTransform: 'uppercase', color: T.teal, fontWeight: 600, marginBottom: 6 }}>Getting started</div>
+          <h1 style={{ fontFamily: SERIF, fontSize: 24, fontWeight: 500, color: T.ink, margin: 0 }}>Three steps to begin</h1>
         </div>
-        <ChunkyButton onClick={next}>{active === last ? 'Continue' : 'Next'}</ChunkyButton>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: '100%', maxWidth: 360, margin: '0 auto' }}>
+          {STEPS.map((s, i) => (
+            <div key={i} className="s3-card" style={{ animationDelay: `${[0.15, 0.55, 0.95][i]}s`,
+              display: 'flex', alignItems: 'center', gap: 14, background: '#FFFFFF',
+              border: `1px solid ${T.border}`, borderRadius: 16, padding: 14, boxShadow: '0 1px 3px rgba(15,76,92,0.05)' }}>
+              <div style={{ position: 'relative', flexShrink: 0, width: 66, height: 66, borderRadius: 16, background: '#F6F4EC', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <img src={s.img} alt="" loading="eager" decoding="async"
+                  style={{ width: 54, height: 54, objectFit: 'contain', mixBlendMode: 'multiply', borderRadius: 12 }} />
+                <span style={{ position: 'absolute', top: -7, right: -7, width: 22, height: 22, borderRadius: '50%',
+                  background: s.chip, color: '#fff', fontFamily: SERIF, fontSize: 12, fontWeight: 600,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 5px rgba(15,76,92,0.18)' }}>{s.n}</span>
+              </div>
+              <div style={{ textAlign: 'left' }}>
+                <h2 style={{ fontFamily: SERIF, fontSize: 17, fontWeight: 500, color: T.ink, margin: '0 0 3px' }}>{s.heading}</h2>
+                <p style={{ fontSize: 12.5, color: T.inkSecondary, lineHeight: 1.5, margin: 0 }}>{s.line}</p>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
+
+      <div style={{ flexShrink: 0, padding: '12px 22px calc(env(safe-area-inset-bottom) + 16px)' }}>
+        <ChunkyButton onClick={onDone}>Continue</ChunkyButton>
+      </div>
+
       <style>{`
-        .s1-deck::-webkit-scrollbar{display:none}.s1-deck{scrollbar-width:none}
-        @keyframes s1ImgIn { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
-        @keyframes s1EnterRise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-        @keyframes s1Fade { from { opacity: 0; } to { opacity: 1; } }
-        .s1-img-in { animation: s1ImgIn .42s cubic-bezier(.2,.7,.3,1) both; }
-        .s1-enter { animation: s1EnterRise .3s ease-out both; }
-        @media (prefers-reduced-motion: reduce) {
-          .s1-img-in { animation: s1Fade .3s ease-out both !important; }
-          .s1-enter { animation: s1Fade .3s ease-out both !important; }
-        }
+        @keyframes s3Rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+        @keyframes s3Fade { from { opacity: 0; } to { opacity: 1; } }
+        .s3-card { animation: s3Rise .5s cubic-bezier(.2,.7,.3,1) both; }
+        .s3-head { animation: s3Fade .35s ease-out both; }
+        @media (prefers-reduced-motion: reduce) { .s3-card { animation: s3Fade .35s ease-out both; } }
       `}</style>
     </S1Screen>
   );
