@@ -4,10 +4,11 @@
 // (gold 1 / teal 2 / green 3). Copy is byte-identical to the website. Cards
 // stagger in (0.15 / 0.55 / 0.95s). Chunky Continue.
 //
-// Tiles use the amendment's flattened-image path: one neutral #F6F4EC tile with
-// the baked-white backdrop blended away via mixBlendMode multiply (no panel
-// edge) and a 12px round-mask. Images are app-only 200px exports (~3.7x the
-// 54px display), separate from the 272px files the website uses.
+// The images carry a baked-white backdrop, so - exactly like the website - they
+// sit flush via mixBlendMode multiply directly on the card with NO tinted tile
+// behind them (a tinted tile would show as a coloured square). Images are
+// app-only 200px exports (~3.7x the 54px display), separate from the 272px
+// files the website uses.
 import React from 'react';
 import { S1Header, S1Screen } from './ui.jsx';
 import { ChunkyButton } from '../../onboarding/kit/buttons.jsx';
@@ -38,9 +39,9 @@ export default function HowItWorks({ onDone, onSkip, onBack }) {
             <div key={i} className="s3-card" style={{ animationDelay: `${[0.15, 0.55, 0.95][i]}s`,
               display: 'flex', alignItems: 'center', gap: 14, background: '#FFFFFF',
               border: `1px solid ${T.border}`, borderRadius: 16, padding: 14, boxShadow: '0 1px 3px rgba(15,76,92,0.05)' }}>
-              <div style={{ position: 'relative', flexShrink: 0, width: 66, height: 66, borderRadius: 16, background: '#F6F4EC', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ position: 'relative', flexShrink: 0, width: 66, height: 66, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <img src={s.img} alt="" loading="eager" decoding="async"
-                  style={{ width: 54, height: 54, objectFit: 'contain', mixBlendMode: 'multiply', borderRadius: 12 }} />
+                  style={{ width: 54, height: 54, objectFit: 'contain', mixBlendMode: 'multiply' }} />
                 <span style={{ position: 'absolute', top: -7, right: -7, width: 22, height: 22, borderRadius: '50%',
                   background: s.chip, color: '#fff', fontFamily: SERIF, fontSize: 12, fontWeight: 600,
                   display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 5px rgba(15,76,92,0.18)' }}>{s.n}</span>
