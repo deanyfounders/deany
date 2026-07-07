@@ -1,5 +1,5 @@
-// Section 1 orchestrator: Welcome -> How it works -> Method chooser ->
-// [boring detour] -> Sample quiz -> Find your level -> completeOnboarding
+// Section 1 orchestrator: Welcome -> How it works -> Learn the Deany way (the
+// real website quiz, teaser and all) -> Find your level -> completeOnboarding
 // (which hands off to the existing topic select + calibration).
 import React, { useRef, useState } from 'react';
 import { Target, Zap, RefreshCw, HelpCircle, Clock, X } from 'lucide-react';
@@ -8,8 +8,6 @@ import { S1Screen, S1Header } from './ui.jsx';
 import { ChunkyButton, GhostButton } from '../../onboarding/kit/buttons.jsx';
 import { T, SERIF } from '../../onboarding/kit/tokens.js';
 import HowItWorks from './HowItWorks.jsx';
-import MethodChooser from './MethodChooser.jsx';
-import BoringWay from './BoringWay.jsx';
 import QuizSection from '../../components/QuizSection.jsx';
 import LinkedPicker from '../../onboarding/components/LinkedPicker.jsx';
 
@@ -25,25 +23,24 @@ export default function Section1({ appState }) {
   const seedPicker = (sel) => { if (sel) update({ pickerSeed: sel }); };
 
   let screen;
-  if (phase === 'how') screen = <HowItWorks onBack={() => setPhase('welcome')} onSkip={() => setPhase('method')} onDone={() => setPhase('method')} />;
-  else if (phase === 'method') screen = <MethodChooser onBack={() => setPhase('how')} onDeanyWay={() => setPhase('sample')} onBoringWay={() => setPhase('boring')} />;
-  else if (phase === 'boring') screen = <BoringWay onBack={() => setPhase('method')} onDeanyWay={() => setPhase('sample')} />;
-  else if (phase === 'sample') screen = <Sample onExit={() => setPhase('method')} onDone={() => setPhase('level')} />;
-  else if (phase === 'level') screen = <FindLevel onBack={() => setPhase('sample')} onTakeTest={takeTest} onSkip={skipTest} />;
+  if (phase === 'how') screen = <HowItWorks onBack={() => setPhase('welcome')} onSkip={() => setPhase('deany')} onDone={() => setPhase('deany')} />;
+  else if (phase === 'deany') screen = <Sample onExit={() => setPhase('how')} onDone={() => setPhase('level')} />;
+  else if (phase === 'level') screen = <FindLevel onBack={() => setPhase('deany')} onTakeTest={takeTest} onSkip={skipTest} />;
   else screen = <Welcome onStart={() => setPhase('how')} onHaveAccount={haveAccount} onSeed={seedPicker} />;
 
   return (<><style>{S1_CSS}</style><div key={phase} className="s1-cross" style={{ height: '100%' }}>{screen}</div></>);
 }
 
-// The DEANY-way taste is the real website quiz, started at the questions.
+// "Learn the Deany way" is the real website quiz, teaser and all - one
+// consistent website style throughout (no separate branded method chooser).
 function Sample({ onExit, onDone }) {
   return (
     <S1Screen>
       <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', padding: 'calc(env(safe-area-inset-top) + 12px) 16px 0' }}>
-        <button onClick={onExit} aria-label="Exit" style={{ width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'none', border: 'none', cursor: 'pointer', color: T.inkSecondary, WebkitTapHighlightColor: 'transparent' }}><X size={20} /></button>
+        <button onClick={onExit} aria-label="Back" style={{ width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'none', border: 'none', cursor: 'pointer', color: T.inkSecondary, WebkitTapHighlightColor: 'transparent' }}><X size={20} /></button>
       </div>
       <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
-        <QuizSection autoStart onDone={onDone} />
+        <QuizSection onDone={onDone} />
       </div>
     </S1Screen>
   );

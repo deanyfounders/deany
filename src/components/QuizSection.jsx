@@ -106,8 +106,8 @@ const QuizSection = ({ autoStart = false, onDone } = {}) => {
   const [leaving, setLeaving] = useState(false); // fade-out phase for view transitions
 
   // Q1
-  const [q1Chosen, setQ1Chosen] = useState(-1);
-  const [q1Reveal, setQ1Reveal] = useState(false);
+  const [q1Chosen, setQ1Chosen] = useState(-1); // set only once the correct one is picked
+  const [q1Rej, setQ1Rej] = useState(-1);       // transient wrong-answer shake
   const [q1Fb, setQ1Fb] = useState(null);
   // Q2
   const [q2Placed, setQ2Placed] = useState([]);
@@ -139,7 +139,7 @@ const QuizSection = ({ autoStart = false, onDone } = {}) => {
   // ── Reset ──────────────────────────────────────
   const resetAll = useCallback(() => {
     setStep(0); setShowBtn(false); setLeaving(false);
-    setQ1Chosen(-1); setQ1Reveal(false); setQ1Fb(null);
+    setQ1Chosen(-1); setQ1Rej(-1); setQ1Fb(null);
     setQ2Placed([]); setQ2Rej(-1); setQ2Fb(null);
     setQ3Blank('?'); setQ3Filled(false); setQ3Wrong(false); setQ3Used(-1); setQ3Dimmed(false); setQ3Fb(null);
   }, []);
@@ -230,11 +230,17 @@ const QuizSection = ({ autoStart = false, onDone } = {}) => {
 
   // ── Q1 ─────────────────────────────────────────
   const doQ1 = (idx, correct) => {
-    if (q1Chosen >= 0) return;
-    playClick(); setQ1Chosen(idx);
-    if (correct) { playCorrect(); setQ1Fb('Bite-sized by design. Short enough for a commute, deep enough to stick.'); }
-    else { playWrong(); setQ1Fb('Bite-sized by design. Most lessons take about ten minutes. Short enough for a commute, deep enough to stick.'); setTimeout(() => setQ1Reveal(true), 300); }
-    setTimeout(() => setShowBtn(true), 400);
+    if (q1Chosen >= 0) return;               // already solved
+    playClick();
+    if (correct) {
+      setQ1Chosen(idx); playCorrect();
+      setQ1Fb('Bite-sized by design. Short enough for a commute, deep enough to stick.');
+      setTimeout(() => setShowBtn(true), 400);
+    } else {
+      // Wrong: shake red briefly, but keep the question open to retry.
+      playWrong(); setQ1Rej(idx);
+      setTimeout(() => setQ1Rej(-1), 450);
+    }
   };
 
   // ── Q2 ─────────────────────────────────────────
@@ -273,10 +279,10 @@ const QuizSection = ({ autoStart = false, onDone } = {}) => {
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
         {Q1_OPTS.map((o, i) => {
-          const chosen = q1Chosen === i;
-          const green = (chosen && o.correct) || (q1Reveal && o.correct);
-          const red = chosen && !o.correct;
-          const dim = q1Chosen >= 0 && !chosen && !(q1Reveal && o.correct);
+          const solved = q1Chosen >= 0;
+          const green = q1Chosen === i;   // only the correct, solved pick turns green
+          const red = q1Rej === i;        // transient wrong shake
+          const dim = solved && !green;
           const bg = green ? C.tealSoft : red ? C.coralSoft : C.canvas;
           const bc = green ? C.teal : red ? C.coral : C.border;
           const lBg = green ? C.teal : red ? C.coral : C.surface;
@@ -285,11 +291,12 @@ const QuizSection = ({ autoStart = false, onDone } = {}) => {
             <button key={i} onClick={() => doQ1(i, o.correct)} style={{
               background: bg, border: `1.5px solid ${bc}`, borderRadius: 12,
               padding: '12px 14px', fontSize: 13.5, color: C.text,
-              cursor: q1Chosen >= 0 ? 'default' : 'pointer',
+              cursor: solved ? 'default' : 'pointer',
               transition: 'all 0.18s ease', textAlign: 'left',
               display: 'flex', alignItems: 'center', gap: 10,
               minHeight: 46, opacity: dim ? 0.35 : 1,
-              pointerEvents: q1Chosen >= 0 ? 'none' : 'auto' }}>
+              pointerEvents: solved ? 'none' : 'auto',
+              animation: red ? 'quizShake 0.35s ease' : 'none' }}>
               <span style={{ width: 24, height: 24, borderRadius: 7, background: lBg, color: lC,
                 fontSize: 11, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center',
                 flexShrink: 0, border: `1px solid ${bc}`, transition: 'all 0.18s ease' }}>{o.letter}</span>
