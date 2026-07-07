@@ -2,6 +2,7 @@
 // adaptive staircase of placement questions, then a "plan is ready" result.
 // Placement only - default no per-question feedback. Nobody fails onboarding.
 import React, { useState, useEffect } from 'react';
+import { Check } from 'lucide-react';
 import OnboardingShell from '../kit/OnboardingShell.jsx';
 import { ChunkyButton, GhostButton } from '../kit/buttons.jsx';
 import OptionCard from '../kit/OptionCard.jsx';
@@ -37,6 +38,7 @@ export default function Calibration({ appState }) {
   const [picked, setPicked] = useState(null);
   const [locked, setLocked] = useState(false);
   const [checked, setChecked] = useState(false);
+  const [topicCorrect, setTopicCorrect] = useState(0);
 
   const topic = topics[ti];
   const subj = SUBJECT[topic] || { label: 'this topic', short: 'Topic', accent: T.teal, tint: 'rgba(34,163,154,0.1)' };
@@ -48,18 +50,18 @@ export default function Calibration({ appState }) {
     const seed = seedTier(intent);
     const set = new Set();
     setTier(seed); setAsked(set); setHistory([]); setUnsure(0);
-    setPicked(null); setLocked(false); setChecked(false); setCurrent(pickNextQuestion(topic, seed, set));
+    setPicked(null); setLocked(false); setChecked(false); setTopicCorrect(0); setCurrent(pickNextQuestion(topic, seed, set));
     setPhase('questions');
   };
 
-  const finalizeTopic = (hist, uns, nextResults) => {
+  const finalizeTopic = (hist, uns, correctCount, nextResults) => {
     const ft = finalTierFrom(hist, topicMax);
-    const result = { level: levelForTier(ft, topicMax), tier: ft, answered: hist.length, unsureCount: uns, completedAt: Date.now() };
+    const result = { level: levelForTier(ft, topicMax), tier: ft, answered: hist.length, correct: correctCount, unsureCount: uns, completedAt: Date.now() };
     const merged = { ...nextResults, [topic]: result };
     setResults(merged);
     saveTopicResult(topic, result);
     if (ti + 1 < topics.length) { setTi(ti + 1); setIntent(null); setPhase('intent'); }
-    else { setPhase('result'); }
+    else { setPhase('settingup'); }
   };
 
   // Select an option, then show the explanation. Advance is a separate step.
@@ -75,13 +77,17 @@ export default function Calibration({ appState }) {
     const newHist = [...history, current.tier];
     const newAsked = new Set(asked); newAsked.add(current.id);
     const newUnsure = unsure + (outcome === 'unsure' ? 1 : 0);
+    const newCorrect = topicCorrect + (outcome === 'correct' ? 1 : 0);
     const nt = nextTier(tier, outcome, topicMax);
-    setTier(nt); setHistory(newHist); setAsked(newAsked); setUnsure(newUnsure);
-    if (shouldStop(newHist, newAsked, topic)) { finalizeTopic(newHist, newUnsure, results); return; }
+    setTier(nt); setHistory(newHist); setAsked(newAsked); setUnsure(newUnsure); setTopicCorrect(newCorrect);
+    if (shouldStop(newHist, newAsked, topic)) { finalizeTopic(newHist, newUnsure, newCorrect, results); return; }
     const next = pickNextQuestion(topic, nt, newAsked);
-    if (!next) { finalizeTopic(newHist, newUnsure, results); return; }
+    if (!next) { finalizeTopic(newHist, newUnsure, newCorrect, results); return; }
     setCurrent(next); setPicked(null); setLocked(false); setChecked(false);
   };
+
+  // Setting up screen (dried-out assembly), then the plan.
+  useEffect(() => { if (phase === 'settingup') { const t = setTimeout(() => setPhase('result'), 1800); return () => clearTimeout(t); } }, [phase]);
 
   const skipAll = () => {
     const res = {};
@@ -96,17 +102,36 @@ export default function Calibration({ appState }) {
   // If the user chose "Skip for now" at Find your level, seed tier 1 and move on.
   useEffect(() => { if (state.calibrationSkip) skipAll(); /* eslint-disable-next-line */ }, []);
 
-  // ── Result ─────────────────────────────────────────────────────
+  // ── Setting up (dried-out assembly, ~1.8s) ─────────────────────
+  if (phase === 'settingup') {
+    const topicList = topics.map(tp => SUBJECT[tp]?.short || tp).join(', ');
+    const items = [`Topics: ${topicList}`, 'Starting levels set', 'Review schedule ready', 'First lesson ready'];
+    return (
+      <OnboardingShell>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '68vh', textAlign: 'center' }}>
+          <div className="cal-spin" style={{ width: 46, height: 46, borderRadius: '50%', border: `3px solid ${T.border}`, borderTopColor: T.teal, marginBottom: 24 }} />
+          <h1 style={{ fontFamily: SERIF, fontSize: 22, fontWeight: 500, color: T.ink, margin: '0 0 20px' }}>Setting up</h1>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: '100%', maxWidth: 280 }}>
+            {items.map((it, i) => (
+              <div key={i} className="ob-rise" style={{ ...riseDelay(i * 3), display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ width: 20, height: 20, borderRadius: '50%', background: T.correct, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Check size={12} color="#fff" strokeWidth={3} /></span>
+                <span style={{ fontSize: 13, color: T.inkSecondary, textAlign: 'left' }}>{it}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <style>{`@keyframes calSpin { to { transform: rotate(360deg); } } .cal-spin { animation: calSpin .9s linear infinite; } @media (prefers-reduced-motion: reduce){ .cal-spin { animation: none; } }`}</style>
+      </OnboardingShell>
+    );
+  }
+
+  // ── Plan ready (factual) ───────────────────────────────────────
   if (phase === 'result') {
+    const primary = topics.filter(tp => (results[tp]?.answered || 0) > 0).sort((a, b) => results[b].answered - results[a].answered)[0];
+    const because = primary ? `${SUBJECT[primary]?.short || primary} starts at ${results[primary].level} - you got ${results[primary].correct} of ${results[primary].answered}.` : null;
     return (
       <OnboardingShell cta={<ChunkyButton onClick={() => finishCalibration(results[topics[0]]?.level || 'Foundations')}>Continue</ChunkyButton>}>
-        <div style={{ textAlign: 'center', margin: '6px 0 18px', position: 'relative' }}>
-          <div style={{ position: 'relative', display: 'inline-block' }}>
-            <div style={{ fontSize: 12, letterSpacing: '1.5px', textTransform: 'uppercase', color: T.teal, fontWeight: 500, marginBottom: 8 }}>Your plan is ready</div>
-            <Particles show color={T.gold} />
-          </div>
-          <h1 className="ob-rise" style={{ fontFamily: SERIF, fontSize: 25, fontWeight: 500, color: T.ink, margin: 0 }}>Here is where you start</h1>
-        </div>
+        <h1 style={{ fontFamily: SERIF, fontSize: 24, fontWeight: 500, color: T.ink, margin: '6px 0 16px' }}>Your plan</h1>
         <div style={{ background: T.navy, borderRadius: 16, padding: 20, color: '#fff' }}>
           {topics.map(tp => {
             const s = SUBJECT[tp] || {};
@@ -122,12 +147,10 @@ export default function Calibration({ appState }) {
             );
           })}
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 14, fontSize: 13, color: 'rgba(255,255,255,0.8)' }}>
-            <span>Daily goal</span><span style={{ color: T.gold, fontWeight: 500 }}>5 min</span>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6, fontSize: 13, color: 'rgba(255,255,255,0.8)' }}>
             <span>First lesson</span><span style={{ fontWeight: 500 }}>Ready</span>
           </div>
         </div>
+        {because && <p style={{ fontSize: 12.5, color: T.inkSecondary, lineHeight: 1.5, margin: '14px 2px 0' }}>{because}</p>}
       </OnboardingShell>
     );
   }

@@ -30,7 +30,7 @@ export default function MethodChooser({ onDeanyWay, onBoringWay, onBack }) {
             <span style={{ fontFamily: SERIF, fontSize: 17, fontWeight: 500, color: T.tealDeep }}>The DEANY way</span>
             <span style={{ marginLeft: 'auto', fontSize: 10.5, fontWeight: 500, color: '#fff', background: T.teal, borderRadius: 999, padding: '3px 10px' }}>Try a taste</span>
           </div>
-          <p style={{ fontSize: 13, color: T.ink, lineHeight: 1.55, margin: 0 }}>Answer, get it wrong, get it right, remember it forever. Takes 2 minutes.</p>
+          <p style={{ fontSize: 13, color: T.ink, lineHeight: 1.55, margin: 0 }}>Questions first, explanations when you need them. Two minutes.</p>
         </Card>
 
         {/* The boring way - deliberately flat */}

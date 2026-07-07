@@ -38,7 +38,7 @@ function Welcome({ onStart, onHaveAccount }) {
         <DeanyMark size={80} />
         <div style={{ fontFamily: SERIF, fontSize: 20, letterSpacing: '6px', color: T.navy, fontWeight: 500, margin: '18px 0 22px' }}>DEANY</div>
         <h1 style={{ fontFamily: SERIF, fontSize: 27, fontWeight: 500, color: T.ink, margin: '0 0 12px', lineHeight: 1.2 }}>Start where you are.</h1>
-        <p style={{ fontSize: 14, color: T.inkSecondary, lineHeight: 1.6, maxWidth: 320, margin: 0 }}>Ten-minute lessons on the Pillars, the Quran, Islamic finance, and history.</p>
+        <p style={{ fontSize: 14, color: T.inkSecondary, lineHeight: 1.6, maxWidth: 320, margin: 0 }}>Bite-size lessons in Quran, history, and Islamic finance - reviewed by scholars.</p>
       </div>
       <div style={{ flexShrink: 0, padding: '10px 22px calc(env(safe-area-inset-bottom) + 16px)' }}>
         <ChunkyButton onClick={onStart}>Get started</ChunkyButton>
@@ -71,7 +71,7 @@ function FindLevel({ onBack, onTakeTest, onSkip }) {
       <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '10px 26px 8px', justifyContent: 'center' }}>
         <LevelArt />
         <h1 style={{ fontFamily: SERIF, fontSize: 23, fontWeight: 500, color: T.ink, margin: '20px 0 8px' }}>Find your level</h1>
-        <p style={{ fontSize: 13, color: T.inkSecondary, lineHeight: 1.55, maxWidth: 320, margin: '0 0 22px' }}>A few quick questions per topic set your starting point. No penalties, no grades.</p>
+        <p style={{ fontSize: 13, color: T.inkSecondary, lineHeight: 1.55, maxWidth: 320, margin: '0 0 22px' }}>A few questions per topic set where you start. About 2 minutes each, no penalties.</p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: '100%', maxWidth: 300 }}>
           {rows.map(([Icon, label], i) => (
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -80,6 +80,7 @@ function FindLevel({ onBack, onTakeTest, onSkip }) {
             </div>
           ))}
         </div>
+        <p style={{ fontSize: 12, color: T.inkHint, marginTop: 18 }}>Lessons run about 5 minutes.</p>
       </div>
       <div style={{ flexShrink: 0, padding: '10px 22px calc(env(safe-area-inset-bottom) + 16px)' }}>
         <ChunkyButton onClick={onTakeTest}>Take the calibration test</ChunkyButton>

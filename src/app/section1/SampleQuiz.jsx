@@ -79,7 +79,7 @@ export default function SampleQuiz({ onDone, onExit }) {
       </div>
 
       <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '16px 22px 8px' }}>
-        <div style={{ fontSize: 11, letterSpacing: '1px', textTransform: 'uppercase', color: T.teal, fontWeight: 500, marginBottom: 10 }}>The DEANY way · try one</div>
+        <div style={{ fontSize: 11, letterSpacing: '0.5px', color: T.teal, fontWeight: 500, marginBottom: 10 }}>The DEANY way · try one</div>
         <h2 style={{ fontFamily: SERIF, fontSize: 21, fontWeight: 500, color: T.ink, lineHeight: 1.4, margin: '0 0 18px' }}>{q.prompt}</h2>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {q.options.map((opt, i) => {

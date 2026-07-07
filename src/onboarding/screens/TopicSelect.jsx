@@ -10,7 +10,7 @@ import { T, SUBJECT, SERIF } from '../kit/tokens.js';
 const ORDER = ['quran-arabic', 'islamic-history', '5-pillars', 'islamic-finance'];
 const SUBS = {
   'quran-arabic': 'Read and understand',
-  'islamic-history': 'Journey through time',
+  'islamic-history': 'The story over time',
   '5-pillars': 'Foundations of faith',
   'islamic-finance': 'Money the halal way',
 };
