@@ -129,13 +129,13 @@ export default function LinkedPicker({ onChange, soundEnabled = true }) {
     const delta = endTop - startTop;
     if (Math.abs(delta) < 1) { emit(); return; }
     if (reduced.current) { m.lockUntil = now() + 200; el.scrollTop = endTop; normalizeWrap(el, key); emit(); return; }
-    // Duration grows with distance (~1.6px/ms) so a long spin is not a blur and
-    // a short one is not sluggish. Clamped to a calm 560-1200ms.
-    const dur = Math.min(1200, Math.max(560, Math.abs(delta) * 1.6));
+    // Duration grows with distance (~1.6px/ms): a short detent settle is quick,
+    // a long spin glides. Clamped 220-1150ms.
+    const dur = Math.min(1150, Math.max(220, Math.abs(delta) * 1.6));
     m.lockUntil = now() + dur + 400;
     const t0 = now();
-    // easeInOutCubic - smooth acceleration and settle, no abrupt launch.
-    const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+    // easeOutCubic - a decelerating glide to rest, like a picker settling.
+    const ease = (t) => 1 - Math.pow(1 - t, 3);
     const step = () => {
       const p = Math.min(1, (now() - t0) / dur);
       el.scrollTop = startTop + delta * ease(p);
@@ -174,8 +174,11 @@ export default function LinkedPicker({ onChange, soundEnabled = true }) {
     const m = meta.current.left;
     if (now() < m.lockUntil) return;          // our own move, ignore
     normalizeWrap(l, 'left');
-    const ti = realIdx(centeredTri(l), topics.length);
-    const topicId = topics[ti].id;
+    // Soft-snap the wheel the user released to its nearest detent (the iPhone
+    // picker settle - there is no CSS snap), then sync the partner.
+    const detent = Math.round(l.scrollTop / ITEM);
+    if (Math.abs(l.scrollTop - detent * ITEM) > 0.5) animateTo(l, 'left', detent);
+    const topicId = topics[realIdx(detent, topics.length)].id;
     const rTri = centeredTri(r);
     const rLi = realIdx(rTri, lessons.length);
     if (lessons[rLi].t === topicId) { emit(); return; } // already matches
@@ -193,8 +196,10 @@ export default function LinkedPicker({ onChange, soundEnabled = true }) {
     const m = meta.current.right;
     if (now() < m.lockUntil) return;
     normalizeWrap(r, 'right');
-    const li = realIdx(centeredTri(r), lessons.length);
-    const topicId = lessons[li].t;
+    // Soft-snap the released wheel to its nearest detent, then sync the partner.
+    const detent = Math.round(r.scrollTop / ITEM);
+    if (Math.abs(r.scrollTop - detent * ITEM) > 0.5) animateTo(r, 'right', detent);
+    const topicId = lessons[realIdx(detent, lessons.length)].t;
     const lTri = centeredTri(l);
     const lTi = realIdx(lTri, topics.length);
     if (topics[lTi].id === topicId) { emit(); return; }
@@ -417,8 +422,7 @@ function Wheel({ refEl, rows, align, width, render, onScroll, onKeyDown, ariaLab
       className="lp-wheel"
       style={{
         flex: width === '1' ? 1 : `0 0 ${width}`, height: WHEEL_H, overflowY: 'scroll',
-        scrollSnapType: 'y mandatory', overscrollBehavior: 'contain',
-        WebkitOverflowScrolling: 'touch', outline: 'none',
+        overscrollBehavior: 'contain', WebkitOverflowScrolling: 'touch', outline: 'none',
       }}
     >
       <div style={{ height: PAD }} />
@@ -429,7 +433,7 @@ function Wheel({ refEl, rows, align, width, render, onScroll, onKeyDown, ariaLab
             height: ITEM, display: 'flex', alignItems: 'center',
             justifyContent: align === 'right' ? 'flex-end' : 'flex-start',
             padding: align === 'right' ? '0 4px 0 0' : '0 0 0 4px',
-            scrollSnapAlign: 'center', willChange: 'opacity, transform',
+            willChange: 'opacity, transform',
           }}>
             <span style={{
               fontSize: r.size, fontWeight: r.weight, color: r.color, fontFamily: FONT,
