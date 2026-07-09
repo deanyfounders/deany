@@ -85,10 +85,12 @@ export default function LinkedPicker({ onChange, soundEnabled = true }) {
   const audio = useRef(null);
   const reduced = useRef(false);
 
-  // per-wheel mutable scroll bookkeeping (never triggers React renders)
+  // per-wheel mutable scroll bookkeeping (never triggers React renders).
+  // rowsEl caches the row nodes (re-queried only on mount / tier change) so the
+  // paint loop never touches the DOM tree. anim holds the in-flight sync rAF id.
   const meta = useRef({
-    left: { lockUntil: 0, lastIdx: 0, len: topics.length, settleT: null, lastTop: -1 },
-    right: { lockUntil: 0, lastIdx: 0, len: lessons.length, settleT: null, lastTop: -1 },
+    left: { lockUntil: 0, lastIdx: 0, len: topics.length, settleT: null, lastTop: -1, rowsEl: null, anim: 0 },
+    right: { lockUntil: 0, lastIdx: 0, len: lessons.length, settleT: null, lastTop: -1, rowsEl: null, anim: 0 },
   });
   const userTouched = useRef(false);
   const rafId = useRef(0);
@@ -116,19 +118,50 @@ export default function LinkedPicker({ onChange, soundEnabled = true }) {
     });
   }, [onChange, topics, lessons, tier]);
 
-  // programmatic scroll with lock + optional tock
-  const scrollTo = (el, key, tri, smooth) => {
+  // Custom eased scroll for sync moves - constant-duration and buttery smooth at
+  // any distance (native `smooth` is browser-timed and stutters over long spins).
+  // Locks the wheel long enough to swallow the post-animation settle debounce.
+  const animateTo = (el, key, targetTri, duration = 540) => {
     const m = meta.current[key];
-    m.lockUntil = now() + LOCK_MS;
-    el.scrollTo({ top: tri * ITEM, behavior: smooth && !reduced.current ? 'smooth' : 'auto' });
+    if (m.anim) { cancelAnimationFrame(m.anim); m.anim = 0; }
+    const startTop = el.scrollTop;
+    const endTop = targetTri * ITEM;
+    const delta = endTop - startTop;
+    if (Math.abs(delta) < 1) { emit(); return; }
+    if (reduced.current) { m.lockUntil = now() + 200; el.scrollTop = endTop; normalizeWrap(el, key); emit(); return; }
+    const dur = duration;
+    m.lockUntil = now() + dur + 400;
+    const t0 = now();
+    const ease = (t) => 1 - Math.pow(1 - t, 3); // easeOutCubic
+    const step = () => {
+      const p = Math.min(1, (now() - t0) / dur);
+      el.scrollTop = startTop + delta * ease(p);
+      if (p < 1) { m.anim = requestAnimationFrame(step); }
+      else { m.anim = 0; el.scrollTop = endTop; normalizeWrap(el, key); emit(); }
+    };
+    m.anim = requestAnimationFrame(step);
+  };
+
+  // A random matching target that actually travels: random copy, plus an
+  // occasional extra loop, so the partner wheel never just nudges 1-2 rows.
+  const spinTarget = (real, len, fromTri) => {
+    const copy = Math.floor(Math.random() * 3);            // random of the 3 copies
+    let t = real + copy * len;
+    if (Math.random() < 0.6) t += (t + len < 3 * len ? len : -len); // extra spin
+    if (Math.abs(t - fromTri) < 3) t = nearestTri(real, len, fromTri) + len; // force visible travel
+    if (t < 0) t += len; if (t >= 3 * len) t -= len;
+    return t;
   };
 
   // wrap the scroll position back into the middle copy, silently.
   const normalizeWrap = (el, key) => {
     const m = meta.current[key];
     const tri = centeredTri(el);
-    if (tri < m.len) { el.scrollTop += m.len * ITEM; m.lastTop = el.scrollTop; }
-    else if (tri >= 2 * m.len) { el.scrollTop -= m.len * ITEM; m.lastTop = el.scrollTop; }
+    if (tri < m.len) { el.scrollTop += m.len * ITEM; }
+    else if (tri >= 2 * m.len) { el.scrollTop -= m.len * ITEM; }
+    else return;
+    m.lastTop = -1;                                 // force a repaint of the recentred copy
+    m.lastIdx = Math.round(el.scrollTop / ITEM);    // avoid a phantom detent tick
   };
 
   const settleLeft = () => {
@@ -142,19 +175,13 @@ export default function LinkedPicker({ onChange, soundEnabled = true }) {
     const rTri = centeredTri(r);
     const rLi = realIdx(rTri, lessons.length);
     if (lessons[rLi].t === topicId) { emit(); return; } // already matches
-    // nearest lesson of this topic to the right wheel's current index
-    let bestReal = -1, bd = Infinity;
-    lessons.forEach((row, j) => {
-      if (row.t !== topicId) return;
-      const cand = nearestTri(j, lessons.length, rTri);
-      const d = Math.abs(cand - rTri);
-      if (d < bd) { bd = d; bestReal = cand; }
-    });
-    if (bestReal >= 0) {
-      scrollTo(r, 'right', bestReal, true);
-      if (soundEnabled && audio.current) setTimeout(() => audio.current.tock(), 240);
-    }
-    emit();
+    // Land on a RANDOM lesson of this topic, spun a random distance - not the
+    // nearest. animateTo emits once it lands.
+    const matches = [];
+    lessons.forEach((row, j) => { if (row.t === topicId) matches.push(j); });
+    const baseReal = matches[Math.floor(Math.random() * matches.length)];
+    animateTo(r, 'right', spinTarget(baseReal, lessons.length, rTri));
+    if (soundEnabled && audio.current) setTimeout(() => audio.current.tock(), 300);
   };
 
   const settleRight = () => {
@@ -167,12 +194,13 @@ export default function LinkedPicker({ onChange, soundEnabled = true }) {
     const topicId = lessons[li].t;
     const lTri = centeredTri(l);
     const lTi = realIdx(lTri, topics.length);
-    if (topics[lTi].id !== topicId) {
-      const real = topics.findIndex(t => t.id === topicId);
-      scrollTo(l, 'left', nearestTri(real, topics.length, lTri), true);
-      if (soundEnabled && audio.current) setTimeout(() => audio.current.tock(), 240);
-    }
-    emit();
+    if (topics[lTi].id === topicId) { emit(); return; }
+    const real = topics.findIndex(t => t.id === topicId);
+    // On a user spin, send the left wheel a random distance to the matching
+    // topic; during idle auto-roll keep it calm (nearest). animateTo emits.
+    const target = userTouched.current ? spinTarget(real, topics.length, lTri) : nearestTri(real, topics.length, lTri);
+    animateTo(l, 'left', target);
+    if (soundEnabled && audio.current) setTimeout(() => audio.current.tock(), 300);
   };
 
   const onScroll = (key) => {
@@ -191,13 +219,19 @@ export default function LinkedPicker({ onChange, soundEnabled = true }) {
       if (top === m.lastTop) return;          // nothing moved; skip DOM writes
       m.lastTop = top;
       const center = top + WHEEL_H / 2;
-      const rows = el.querySelectorAll('[data-row]');
-      rows.forEach((node, i) => {
-        const rowCenter = PAD + i * ITEM + ITEM / 2;
-        const dist = Math.abs(rowCenter - center);
-        node.style.opacity = String(Math.max(0.22, 1 - dist / 110));
-        node.style.transform = `scale(${Math.max(0.85, 1 - dist / 600)})`;
-      });
+      // Cached node list - never query the DOM inside the frame loop.
+      let rows = m.rowsEl;
+      if (!rows || !rows.length) { rows = el.querySelectorAll('[data-row]'); m.rowsEl = rows; }
+      // Only repaint the rows near the centre (the rest sit under the fade mask).
+      const mid = Math.round(top / ITEM);
+      const lo = Math.max(0, mid - 5), hi = Math.min(rows.length - 1, mid + 5);
+      for (let i = lo; i <= hi; i++) {
+        const node = rows[i];
+        const dist = Math.abs((PAD + i * ITEM + ITEM / 2) - center);
+        // Gentle falloff so words stay legible while spinning (was 0.22 / 110).
+        node.style.opacity = String(Math.max(0.5, 1 - dist / 200));
+        node.style.transform = `scale(${Math.max(0.9, 1 - dist / 700)})`;
+      }
       // user-detent tick (only during genuine user scrolling, not locked moves)
       const tri = Math.round(top / ITEM);
       if (tri !== m.lastIdx) {
@@ -246,6 +280,11 @@ export default function LinkedPicker({ onChange, soundEnabled = true }) {
     if (!audio.current) audio.current = makeAudio();
     if (soundEnabled && audio.current) audio.current.init();
     userTouched.current = true;
+    // A touch takes over: kill any in-flight sync animation and its lock.
+    for (const k of ['left', 'right']) {
+      const m = meta.current[k];
+      if (m.anim) { cancelAnimationFrame(m.anim); m.anim = 0; m.lockUntil = 0; }
+    }
   };
 
   // ---- suspend audio when hidden --------------------------------------------
@@ -276,6 +315,7 @@ export default function LinkedPicker({ onChange, soundEnabled = true }) {
     if (!r || capturedTopic.current == null) return;
     const list = LESSONS[tier];
     meta.current.right.len = list.length;
+    meta.current.right.rowsEl = null;          // rows were replaced; drop stale cache
     const cur = centeredTri(r);
     const real = list.findIndex(x => x.t === capturedTopic.current);
     const target = real >= 0 ? nearestTri(real, list.length, cur) : cur;
