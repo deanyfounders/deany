@@ -121,7 +121,7 @@ export default function LinkedPicker({ onChange, soundEnabled = true }) {
   // Custom eased scroll for sync moves - constant-duration and buttery smooth at
   // any distance (native `smooth` is browser-timed and stutters over long spins).
   // Locks the wheel long enough to swallow the post-animation settle debounce.
-  const animateTo = (el, key, targetTri, duration = 540) => {
+  const animateTo = (el, key, targetTri) => {
     const m = meta.current[key];
     if (m.anim) { cancelAnimationFrame(m.anim); m.anim = 0; }
     const startTop = el.scrollTop;
@@ -129,10 +129,13 @@ export default function LinkedPicker({ onChange, soundEnabled = true }) {
     const delta = endTop - startTop;
     if (Math.abs(delta) < 1) { emit(); return; }
     if (reduced.current) { m.lockUntil = now() + 200; el.scrollTop = endTop; normalizeWrap(el, key); emit(); return; }
-    const dur = duration;
+    // Duration grows with distance (~1.6px/ms) so a long spin is not a blur and
+    // a short one is not sluggish. Clamped to a calm 560-1200ms.
+    const dur = Math.min(1200, Math.max(560, Math.abs(delta) * 1.6));
     m.lockUntil = now() + dur + 400;
     const t0 = now();
-    const ease = (t) => 1 - Math.pow(1 - t, 3); // easeOutCubic
+    // easeInOutCubic - smooth acceleration and settle, no abrupt launch.
+    const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
     const step = () => {
       const p = Math.min(1, (now() - t0) / dur);
       el.scrollTop = startTop + delta * ease(p);
@@ -142,15 +145,16 @@ export default function LinkedPicker({ onChange, soundEnabled = true }) {
     m.anim = requestAnimationFrame(step);
   };
 
-  // A random matching target that actually travels: random copy, plus an
-  // occasional extra loop, so the partner wheel never just nudges 1-2 rows.
-  const spinTarget = (real, len, fromTri) => {
-    const copy = Math.floor(Math.random() * 3);            // random of the 3 copies
-    let t = real + copy * len;
-    if (Math.random() < 0.6) t += (t + len < 3 * len ? len : -len); // extra spin
-    if (Math.abs(t - fromTri) < 3) t = nearestTri(real, len, fromTri) + len; // force visible travel
-    if (t < 0) t += len; if (t >= 3 * len) t -= len;
-    return t;
+  // A random matching target that travels a PLEASANT distance - random among the
+  // matching rows (any lesson, any copy) whose travel sits in a 5-18 row window,
+  // so it visibly spins without blurring across the whole list.
+  const spinTarget = (reals, len, fromTri) => {
+    const MINT = 5, MAXT = 18;
+    const all = [];
+    for (const real of reals) for (let c = 0; c < 3; c++) all.push(real + c * len);
+    const win = all.filter((t) => { const d = Math.abs(t - fromTri); return d >= MINT && d <= MAXT; });
+    const pool = win.length ? win : all;
+    return pool[Math.floor(Math.random() * pool.length)];
   };
 
   // wrap the scroll position back into the middle copy, silently.
@@ -179,8 +183,7 @@ export default function LinkedPicker({ onChange, soundEnabled = true }) {
     // nearest. animateTo emits once it lands.
     const matches = [];
     lessons.forEach((row, j) => { if (row.t === topicId) matches.push(j); });
-    const baseReal = matches[Math.floor(Math.random() * matches.length)];
-    animateTo(r, 'right', spinTarget(baseReal, lessons.length, rTri));
+    animateTo(r, 'right', spinTarget(matches, lessons.length, rTri));
     if (soundEnabled && audio.current) setTimeout(() => audio.current.tock(), 300);
   };
 
@@ -198,7 +201,7 @@ export default function LinkedPicker({ onChange, soundEnabled = true }) {
     const real = topics.findIndex(t => t.id === topicId);
     // On a user spin, send the left wheel a random distance to the matching
     // topic; during idle auto-roll keep it calm (nearest). animateTo emits.
-    const target = userTouched.current ? spinTarget(real, topics.length, lTri) : nearestTri(real, topics.length, lTri);
+    const target = userTouched.current ? spinTarget([real], topics.length, lTri) : nearestTri(real, topics.length, lTri);
     animateTo(l, 'left', target);
     if (soundEnabled && audio.current) setTimeout(() => audio.current.tock(), 300);
   };
