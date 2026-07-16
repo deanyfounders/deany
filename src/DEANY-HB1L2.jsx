@@ -1389,6 +1389,9 @@ const FLOW = (()=>{
   return f;
 })();
 
+// Flow indices of every question, in order - drives the navigator dots.
+const Q_IDXS = FLOW.map((f,i)=>f.type==='question'?i:-1).filter(i=>i>=0);
+
 // ================================================================
 // SECTION CARD
 // ================================================================
@@ -1489,38 +1492,48 @@ function SectionCard({section,onContinue}){
 // ================================================================
 // QUESTION CARD
 // ================================================================
-function QuestionCard({q,qNum,totalQ,onAnswer,onNext}){
-  const [done,    setDone]    = useState(false);
-  const [correct, setCorrect] = useState(false);
-  const [fbText,  setFbText]  = useState('');
-  const [fbMeta,  setFbMeta]  = useState(null);
+function QuestionCard({q,idx,qNum,totalQ,onAnswer,onNext,onReturn,saved,reviewing}){
+  // Locked is decided once at mount: if this question was already answered
+  // (saved present when it mounts), it renders review-only and never exposes
+  // the interactive renderer, so a past answer can never be changed.
+  const lockedRef=useRef(!!saved);
+  const locked=lockedRef.current;
+  const [done,    setDone]    = useState(locked);
+  const [correct, setCorrect] = useState(locked?!!saved.correct:false);
+  const [fbText,  setFbText]  = useState(locked?saved.fbText:'');
+  const [fbMeta,  setFbMeta]  = useState(locked?(saved.fbMeta||null):null);
 
   const finish=useCallback((isCorrect,text,pts,meta)=>{
     setDone(true);setCorrect(isCorrect);setFbText(text);
     if(meta)setFbMeta(meta);
-    onAnswer(isCorrect,pts,{scored:q.scored,q});
-  },[onAnswer,q.scored]);
+    onAnswer(isCorrect,pts,{scored:q.scored,q,idx,fbText:text,fbMeta:meta,reflection:q.type==='reflection-multi'});
+  },[onAnswer,q.scored,idx,q.type]);
 
   const isReflection=q.type==='reflection-multi';
 
   return(
     <div className="su rounded-[22px] overflow-hidden" style={{background:'rgba(255,255,255,0.88)',backdropFilter:'blur(18px)',border:`1px solid ${rgba(C.border,0.9)}`,boxShadow:`0 20px 60px ${rgba(C.navy,0.09)}`}}>
       <div className="p-5">
-        <ModeBadge mode={q.mode} type={q.typeLabel} unscored={q.scored===false}/>
+        <div className="flex items-start justify-between gap-2">
+          <ModeBadge mode={q.mode} type={q.typeLabel} unscored={q.scored===false}/>
+          {locked&&<span className="text-[10px] font-bold px-2 py-1 rounded-full flex-shrink-0" style={{background:rgba(C.navy,0.06),color:C.mid,whiteSpace:'nowrap'}}>Answered</span>}
+        </div>
         <h3 className="text-lg font-black leading-snug mb-5" style={{color:C.navy,fontFamily:'Georgia,serif',letterSpacing:'-0.01em'}}>{q.question}</h3>
 
-        {q.type==='rapid-fire-tf'    &&<RapidFireTF        q={q} onFinish={finish}/>}
-        {q.type==='mcq'              &&<MCQ                q={q} onFinish={finish}/>}
-        {q.type==='bucket-sort'      &&<BucketSort         q={q} onFinish={finish}/>}
-        {q.type==='fill-in-blank'    &&<FillInBlank        q={q} onFinish={finish}/>}
-        {q.type==='reflection-multi' &&<ReflectionMultiSelect q={q} onFinish={finish}/>}
+        {!locked&&q.type==='rapid-fire-tf'    &&<RapidFireTF        q={q} onFinish={finish}/>}
+        {!locked&&q.type==='mcq'              &&<MCQ                q={q} onFinish={finish}/>}
+        {!locked&&q.type==='bucket-sort'      &&<BucketSort         q={q} onFinish={finish}/>}
+        {!locked&&q.type==='fill-in-blank'    &&<FillInBlank        q={q} onFinish={finish}/>}
+        {!locked&&q.type==='reflection-multi' &&<ReflectionMultiSelect q={q} onFinish={finish}/>}
 
         {done&&fbText&&<FeedbackPanel correct={correct||isReflection} text={fbText} bridge={q.bridge} meta={fbMeta} reflection={isReflection}/>}
 
         {done&&(
           <div className="mt-4 su">
-            <ChunkyBtn onClick={onNext} fill={C.gold} edge={GOLD_EDGE} ink={C.navy}
-              label={<span>{qNum>=SCORED_COUNT?'Complete lesson':'Next'} <ArrowRight className="w-4 h-4 inline ml-1 -mt-0.5"/></span>}/>
+            {reviewing
+              ? <ChunkyBtn onClick={onReturn} label={<span>Return to current <ArrowRight className="w-4 h-4 inline ml-1 -mt-0.5"/></span>}/>
+              : <ChunkyBtn onClick={onNext} fill={C.gold} edge={GOLD_EDGE} ink={C.navy}
+                  label={<span>{qNum>=SCORED_COUNT?'Complete lesson':'Next'} <ArrowRight className="w-4 h-4 inline ml-1 -mt-0.5"/></span>}/>}
           </div>
         )}
       </div>
@@ -1534,6 +1547,8 @@ function QuestionCard({q,qNum,totalQ,onAnswer,onNext}){
 export default function DEANY_HB1_L2({onBack, onHome}={}){
   const [screen,      setScreen]     = useState('intro');
   const [flowIdx,     setFlowIdx]    = useState(0);
+  const [liveIdx,     setLiveIdx]    = useState(0);   // furthest flow item reached (the live progression point)
+  const [answered,    setAnswered]   = useState({});  // { [flowIdx]: {correct, fbText, fbMeta, reflection} }
   const [score,       setScore]      = useState(0);
   const [results,     setResults]    = useState([]);
   const [streak,      setStreak]     = useState(0);
@@ -1549,6 +1564,9 @@ export default function DEANY_HB1_L2({onBack, onHome}={}){
   const current=FLOW[flowIdx];
 
   const handleAnswer=useCallback((correct,pts,flags={})=>{
+    if(flags.idx!=null){
+      setAnswered(a=>a[flags.idx]?a:{...a,[flags.idx]:{correct,fbText:flags.fbText,fbMeta:flags.fbMeta,reflection:flags.reflection}});
+    }
     const isScored=flags.scored!==false;
     if(isScored)setResults(r=>[...r,{correct}]);
     if(correct&&isScored){
@@ -1558,9 +1576,12 @@ export default function DEANY_HB1_L2({onBack, onHome}={}){
     if(!correct&&isScored&&flags.q){setWrongQs(w=>[...w,flags.q]);}
   },[]);
 
+  // Jump back to a previously answered question (review only).
+  const review=useCallback((i)=>{ window.scrollTo({top:0,behavior:'smooth'}); setFlowIdx(i); },[]);
+
   const advance=useCallback(()=>{
     window.scrollTo({top:0,behavior:'smooth'});
-    if(flowIdx<FLOW.length-1){setFlowIdx(i=>i+1);}
+    if(flowIdx<FLOW.length-1){const n=flowIdx+1;setFlowIdx(n);setLiveIdx(li=>Math.max(li,n));}
     else{setScreen('complete');snd.fanfare();haptic(20);setConfetti(true);setTimeout(()=>setConfetti(false),5000);}
   },[flowIdx]);
 
@@ -1782,11 +1803,30 @@ export default function DEANY_HB1_L2({onBack, onHome}={}){
 
         <ProgressBar qNum={qDoneNum} totalQ={SCORED_COUNT} score={score}/>
 
+        {/* Question navigator - tap an answered dot to review it (view only) */}
+        <div className="flex items-center justify-center gap-2 mb-4">
+          {Q_IDXS.map((fi,qi)=>{
+            const ans=answered[fi];
+            const isCur=flowIdx===fi;
+            const reached=fi<=liveIdx;
+            const canTap=!isCur&&reached;
+            const bg=ans?(ans.correct?C.green:C.coral):isCur?C.teal:reached?rgba(C.teal,0.45):rgba(C.navy,0.14);
+            return(
+              <button key={fi} type="button" disabled={!canTap} onClick={()=>review(fi)}
+                aria-label={`Question ${qi+1}${ans?', answered':''}`}
+                style={{width:isCur?24:11,height:11,borderRadius:999,background:bg,border:'none',padding:0,
+                  cursor:canTap?'pointer':'default',opacity:reached?1:0.5,transition:'all 0.25s ease'}}/>
+            );
+          })}
+        </div>
+
         {current.type==='section'&&(
           <SectionCard key={`s${flowIdx}`} section={current.data} onContinue={advance}/>
         )}
         {current.type==='question'&&(
-          <QuestionCard key={`q${flowIdx}`} q={current.data} qNum={qDoneNum} totalQ={SCORED_COUNT} onAnswer={handleAnswer} onNext={advance}/>
+          <QuestionCard key={`q${flowIdx}`} idx={flowIdx} q={current.data} qNum={qDoneNum} totalQ={SCORED_COUNT}
+            onAnswer={handleAnswer} onNext={advance}
+            saved={answered[flowIdx]} reviewing={!!answered[flowIdx]&&flowIdx<liveIdx} onReturn={()=>review(liveIdx)}/>
         )}
       </div>
     </div>
