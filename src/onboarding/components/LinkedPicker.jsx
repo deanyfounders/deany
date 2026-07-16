@@ -75,6 +75,17 @@ function nearestTri(real, len, fromTri) {
   return best;
 }
 
+// nearest triplicated index among several matching reals to fromTri - the
+// shortest, calmest glide to a matching row (no random long spins).
+function nearestMatch(reals, len, fromTri) {
+  let best = fromTri, bd = Infinity;
+  for (const real of reals) for (let c = 0; c < 3; c++) {
+    const t = real + c * len; const d = Math.abs(t - fromTri);
+    if (d < bd) { bd = d; best = t; }
+  }
+  return best;
+}
+
 export default function LinkedPicker({ onChange, soundEnabled = true }) {
   const [tier, setTier] = useState('foundations');
   const lessons = LESSONS[tier];
@@ -145,18 +156,6 @@ export default function LinkedPicker({ onChange, soundEnabled = true }) {
     m.anim = requestAnimationFrame(step);
   };
 
-  // A random matching target that travels a PLEASANT distance - random among the
-  // matching rows (any lesson, any copy) whose travel sits in a 5-18 row window,
-  // so it visibly spins without blurring across the whole list.
-  const spinTarget = (reals, len, fromTri) => {
-    const MINT = 5, MAXT = 18;
-    const all = [];
-    for (const real of reals) for (let c = 0; c < 3; c++) all.push(real + c * len);
-    const win = all.filter((t) => { const d = Math.abs(t - fromTri); return d >= MINT && d <= MAXT; });
-    const pool = win.length ? win : all;
-    return pool[Math.floor(Math.random() * pool.length)];
-  };
-
   // wrap the scroll position back into the middle copy, silently.
   const normalizeWrap = (el, key) => {
     const m = meta.current[key];
@@ -186,7 +185,7 @@ export default function LinkedPicker({ onChange, soundEnabled = true }) {
     // nearest. animateTo emits once it lands.
     const matches = [];
     lessons.forEach((row, j) => { if (row.t === topicId) matches.push(j); });
-    animateTo(r, 'right', spinTarget(matches, lessons.length, rTri));
+    animateTo(r, 'right', nearestMatch(matches, lessons.length, rTri));
     if (soundEnabled && audio.current) setTimeout(() => audio.current.tock(), 300);
   };
 
@@ -204,10 +203,9 @@ export default function LinkedPicker({ onChange, soundEnabled = true }) {
     const lTi = realIdx(lTri, topics.length);
     if (topics[lTi].id === topicId) { emit(); return; }
     const real = topics.findIndex(t => t.id === topicId);
-    // On a user spin, send the left wheel a random distance to the matching
-    // topic; during idle auto-roll keep it calm (nearest). animateTo emits.
-    const target = userTouched.current ? spinTarget([real], topics.length, lTri) : nearestTri(real, topics.length, lTri);
-    animateTo(l, 'left', target);
+    // Always glide the shortest path to the matching topic - calm and
+    // predictable (the random long spin read as glitchy). animateTo emits.
+    animateTo(l, 'left', nearestTri(real, topics.length, lTri));
     if (soundEnabled && audio.current) setTimeout(() => audio.current.tock(), 300);
   };
 

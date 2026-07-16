@@ -213,11 +213,10 @@ export default function Calibration({ appState }) {
                 let st = 'idle';
                 if (checked) st = i === current.answerIndex ? 'correct' : (i === picked ? 'selected' : 'dimmed');
                 else if (picked === i) st = 'selected';
-                return <OptionCard key={i} label={opt} accent={subj.accent} className="ob-rise" style={riseDelay(i)}
+                return <OptionCard key={`${current.id}-${i}`} label={opt} accent={subj.accent}
                   state={st} onClick={checked ? undefined : () => select(i)} />;
               })}
               <OptionCard label="I'm not sure yet" accent={subj.accent}
-                className="ob-rise" style={riseDelay(current.options.length)}
                 state={picked === 'unsure' ? 'selected' : (checked ? 'dimmed' : 'unsure')}
                 onClick={checked ? undefined : () => select('unsure')} />
             </div>
