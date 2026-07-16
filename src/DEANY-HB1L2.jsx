@@ -762,7 +762,6 @@ function TribalDiagram({onActivate}){
 function MCQ({q,onFinish}){
   const [sel,setSel]=useState(null);
   const [sub,setSub]=useState(false);
-  const [reveal,setReveal]=useState(false);
   const [stars,spawn]=useStars();
   const boardRef=useRef(null);
   const cardRefs=useRef({});
@@ -789,7 +788,6 @@ function MCQ({q,onFinish}){
     } else {
       snd.buzz(); haptic(30);
       setTimeout(()=>{
-        setReveal(true);
         onFinish(false,q.feedback[opt.id],0);
       },MT.correctRevealDelay);
     }
@@ -798,16 +796,16 @@ function MCQ({q,onFinish}){
     const opt=q.options[i];
     if(!sub) return sel===i?'sel':'idle';
     if(q.options[sel].correct) return opt.correct?'good':'dim';
-    if(i===sel) return reveal?'dim':'bad';
-    if(opt.correct) return reveal?'good':'idle';
-    return reveal?'dim':'idle';
+    // Wrong answer: mark the chosen option wrong and let the feedback card
+    // explain why. Never auto-reveal or highlight the correct option.
+    return i===sel?'bad':'dim';
   };
   return(
     <div>
       <div ref={boardRef} className="grid grid-cols-1 gap-2.5 mb-4" style={{position:'relative'}}>
         {q.options.map((opt,i)=>{
           const st=stateFor(i);
-          const shaking=sub&&!q.options[sel].correct&&i===sel&&!reveal;
+          const shaking=sub&&!q.options[sel].correct&&i===sel;
           const badge={
             idle:{border:C.border,bg:'transparent',ink:'#9ca3af'},
             sel:{border:C.teal,bg:C.teal,ink:'white'},
@@ -1051,15 +1049,24 @@ function BucketSort({q,onFinish}){
 // --- FILL IN BLANK (Q5) ---
 function FillInBlank({q,onFinish}){
   const [sels,setSels]=useState(Array(q.blanks.length).fill(''));
+  const [active,setActive]=useState(0);
   const [submitted,setSubmitted]=useState(false);
   const [results,setResults]=useState([]);
   const lockedRef=useRef(false);
 
+  const filledCount=sels.filter(Boolean).length;
   const allFilled=sels.every(s=>s!=='');
 
-  const set=(i,val)=>{
+  const choose=(val)=>{
+    if(submitted)return;
     snd.tick(); haptic(5);
-    const n=[...sels];n[i]=val;setSels(n);
+    setSels(prev=>{
+      const n=[...prev]; n[active]=val;
+      const after=n.findIndex((s,idx)=>idx>active&&s==='');
+      const nextEmpty=after!==-1?after:n.findIndex(s=>s==='');
+      if(nextEmpty!==-1) setActive(nextEmpty);
+      return n;
+    });
   };
 
   const submit=()=>{
@@ -1078,54 +1085,72 @@ function FillInBlank({q,onFinish}){
 
   return(
     <div>
-      <div className="rounded-xl p-4 mb-5 border" style={{background:rgba(C.navy,0.03),borderColor:rgba(C.navy,0.09)}}>
-        <p className="text-sm leading-relaxed" style={{color:C.dark,lineHeight:2}}>
+      {/* Passage with tappable blank chips */}
+      <div className="rounded-2xl p-4 mb-4" style={{background:'#fff',border:`1px solid ${rgba(C.navy,0.09)}`}}>
+        <p className="text-sm" style={{color:C.dark,lineHeight:2.5}}>
           {parts.map((part,i)=>{
             const match=part.match(/\[B(\d)\]/);
             if(!match) return <span key={i}>{part}</span>;
             const bi=parseInt(match[1]);
-            const blank=q.blanks[bi];
             const val=sels[bi];
-            const isCorrect=submitted&&results[bi];
-            const isWrong=submitted&&!results[bi];
+            const isActive=!submitted&&active===bi;
+            const ok=submitted&&results[bi];
+            const no=submitted&&!results[bi];
+            const bg=ok?C.greenLight:no?C.coralLight:val?C.tealLight:'#fff';
+            const bc=ok?C.green:no?C.coral:isActive?C.teal:val?C.teal:C.border;
+            const ink=ok?C.green:no?C.coral:val?C.teal:C.mid;
             return(
-              <select key={i} value={val} disabled={submitted}
-                onChange={e=>set(bi,e.target.value)}
-                style={{
-                  display:'inline-block',marginInline:4,padding:'2px 6px',
-                  borderRadius:6,border:`2px solid`,
-                  borderColor:isCorrect?C.green:isWrong?C.coral:val?C.teal:'#d1d5db',
-                  background:isCorrect?C.greenLight:isWrong?C.coralLight:val?rgba(C.teal,0.07):'white',
-                  color:isCorrect?C.green:isWrong?C.coral:val?C.teal:C.mid,
-                  fontSize:13,fontWeight:600,cursor:'pointer',
-                  appearance:'auto',
-                }}>
-                <option value=""> -  choose  - </option>
-                {blank.options.map(o=>(
-                  <option key={o} value={o}>{o}</option>
-                ))}
-              </select>
+              <button key={i} disabled={submitted} onClick={()=>{snd.tick();setActive(bi);}}
+                style={{display:'inline-flex',alignItems:'center',gap:5,margin:'3px 3px',padding:'5px 12px',
+                  borderRadius:999,border:`2px ${val||submitted?'solid':'dashed'} ${bc}`,background:bg,color:ink,
+                  fontSize:13.5,fontWeight:700,verticalAlign:'middle',minHeight:34,cursor:submitted?'default':'pointer',
+                  boxShadow:isActive?`0 0 0 3px ${rgba(C.teal,0.16)}`:'none',transition:'all 0.15s'}}>
+                <span style={{fontSize:9,fontWeight:800,opacity:0.55}}>{bi+1}</span>
+                {val||<span style={{letterSpacing:2,opacity:0.7}}>____</span>}
+              </button>
             );
           })}
         </p>
       </div>
 
+      {/* Option pills for the active blank */}
+      {!submitted&&(
+        <div className="mb-4 fi">
+          <p className="text-xs font-semibold mb-2" style={{color:C.mid}}>
+            Choose the word for blank <span style={{color:C.teal,fontWeight:800}}>{active+1}</span>
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {q.blanks[active].options.map(o=>{
+              const isSel=sels[active]===o;
+              return(
+                <button key={o} onClick={()=>choose(o)}
+                  style={chunky(isSel?'sel':'idle',{padding:'11px 16px',fontSize:14,fontWeight:600,borderRadius:12})}>
+                  {o}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Per-blank feedback after submit */}
       {submitted&&(
         <div className="space-y-2 mb-4">
           {q.blanks.map((b,i)=>(
-            <div key={i} className="flex items-center gap-2 text-xs fi">
+            <div key={i} className="flex items-start gap-2 text-xs fi">
               {results[i]
-                ?<CheckCircle className="w-3.5 h-3.5 flex-shrink-0" style={{color:C.green}}/>
-                :<XCircle className="w-3.5 h-3.5 flex-shrink-0" style={{color:C.coral}}/>}
-              <span style={{color:results[i]?C.green:C.coral,fontWeight:600}}>{b.answer}</span>
-              <span style={{color:C.mid}}> -  {b.feedback}</span>
+                ?<CheckCircle className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" style={{color:C.green}}/>
+                :<XCircle className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" style={{color:C.coral}}/>}
+              <span style={{color:results[i]?C.green:C.coral,fontWeight:700}}>{b.answer}</span>
+              <span style={{color:C.mid}}>{b.feedback}</span>
             </div>
           ))}
         </div>
       )}
 
       {!submitted&&(
-        <ChunkyBtn onClick={submit} enabled={allFilled} label="Check my answers"/>
+        <ChunkyBtn onClick={submit} enabled={allFilled}
+          label={allFilled?'Check my answers':`Fill all blanks (${filledCount}/${q.blanks.length})`}/>
       )}
     </div>
   );
@@ -1737,16 +1762,17 @@ export default function DEANY_HB1_L2({onBack, onHome}={}){
 
       <div className="relative z-10 max-w-md mx-auto px-4 py-6">
         <div className="sticky top-4 z-30 flex items-center justify-between mb-5 rounded-2xl px-4 py-3" style={{background:'rgba(255,255,255,0.74)',backdropFilter:'blur(16px)',border:`1px solid ${rgba(C.border,0.86)}`,boxShadow:`0 16px 40px ${rgba(C.navy,0.08)}`}}>
-          <div className="flex items-center gap-2">
-            {onBack&&(
-              <button type="button" onClick={onBack} aria-label="Back" className="flex items-center justify-center" style={{width:32,height:32,borderRadius:999,color:C.mid,background:'none',border:'none',cursor:'pointer'}}>
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3l-5 5 5 5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
-              </button>
-            )}
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center text-sm" style={{background:rgba(C.teal,0.15),color:C.teal}}>🗺️</div>
-            <div>
-              <div className="text-xs font-bold" style={{color:C.navy}}>Lesson H-B1.2</div>
-              <div className="text-[10px]" style={{color:C.mid}}>The Land and Its People</div>
+          <div className="flex items-center gap-2 min-w-0">
+            <button type="button" aria-label="Back"
+              onClick={()=>{ if(onBack) onBack(); else if(onHome) onHome(); else if(typeof window!=='undefined') window.history.back(); }}
+              className="flex items-center gap-1 flex-shrink-0"
+              style={{padding:'6px 11px',borderRadius:999,color:C.navy,background:rgba(C.navy,0.05),border:`1px solid ${rgba(C.border,0.9)}`,cursor:'pointer',fontSize:12,fontWeight:700,minHeight:34}}>
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M10 3l-5 5 5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              Back
+            </button>
+            <div className="min-w-0">
+              <div className="text-xs font-bold truncate" style={{color:C.navy}}>The Land and Its People</div>
+              <div className="text-[10px]" style={{color:C.mid}}>Lesson H-B1.2</div>
             </div>
           </div>
           <div className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold" style={{background:C.goldLight,color:C.gold}}>
