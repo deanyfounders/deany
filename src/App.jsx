@@ -691,6 +691,20 @@ const App = ({ appMode = false, appState = null } = {}) => {
     ]
   };
 
+  // The home/path shell (AppDashboard, Dashboard) reads mod.lessons directly.
+  // Islamic History is stored as epochs -> levels -> lessons, so flatten each
+  // epoch's active level up to mod.lessons; otherwise the History path is empty.
+  const homeModules = {
+    ...modules,
+    'islamic-history': (modules['islamic-history'] || []).map(epoch => {
+      if (epoch.comingSoon || !epoch.levels) return epoch;
+      const lvl = epoch.levels.find(l => (l.lessons || []).length > 0);
+      if (!lvl) return { ...epoch, lessons: [] };
+      const lessons = lvl.lessons.map(l => ({ ...l, description: l.subtitle || '', duration: l.estimatedTime || '', questions: l.questions || [] }));
+      return { ...epoch, lessons, difficulty: lvl.name || 'Beginner' };
+    }),
+  };
+
   // ---- Helpers ----------------------------------------------------
   const isModuleLocked = (i, tid) => false;
   const isLessonLocked = (i, mid) => false;
@@ -1022,11 +1036,11 @@ const App = ({ appMode = false, appState = null } = {}) => {
         <AppDashboard
           appState={appState}
           dailyStreak={dailyStreak} coins={coins} xp={xp} level={level} totalPoints={totalPoints}
-          mainTopics={mainTopics} modules={modules} completedLessons={completedLessons}
+          mainTopics={mainTopics} modules={homeModules} completedLessons={completedLessons}
           onSelectTopic={selectMainTopic}
           onSelectLesson={(lesson, idx, mod) => {
             if (!selectedMainTopic) {
-              const topic = mainTopics.find(t => (modules[t.id] || []).some(m => m.id === mod.id));
+              const topic = mainTopics.find(t => (homeModules[t.id] || []).some(m => m.id === mod.id));
               if (topic) { setSelectedMainTopic(topic); setLastSelectedTopicId(topic.id); }
             }
             setSelectedModule(mod);
@@ -1053,12 +1067,12 @@ const App = ({ appMode = false, appState = null } = {}) => {
     return (
       <Dashboard
         dailyStreak={dailyStreak} coins={coins} xp={xp} level={level} totalPoints={totalPoints}
-        mainTopics={mainTopics} modules={modules} completedLessons={completedLessons}
+        mainTopics={mainTopics} modules={homeModules} completedLessons={completedLessons}
         lastSelectedTopicId={lastSelectedTopicId}
         onSelectTopic={selectMainTopic}
         onSelectLesson={(lesson, idx, mod) => {
           if (!selectedMainTopic) {
-            const topic = mainTopics.find(t => (modules[t.id] || []).some(m => m.id === mod.id));
+            const topic = mainTopics.find(t => (homeModules[t.id] || []).some(m => m.id === mod.id));
             if (topic) { setSelectedMainTopic(topic); setLastSelectedTopicId(topic.id); }
           }
           setSelectedModule(mod);
