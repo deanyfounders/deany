@@ -2,7 +2,7 @@
 // - App shell precached so navigations work offline.
 // - Hashed build assets + CDN Tailwind/fonts cached stale-while-revalidate.
 // No build step, no Node/OS requirements.
-const CACHE = 'deany-v4';
+const CACHE = 'deany-__BUILD_ID__';
 const SHELL = [
   '/', '/index.html', '/manifest.webmanifest',
   '/apple-touch-icon.png', '/favicon-64.png',
