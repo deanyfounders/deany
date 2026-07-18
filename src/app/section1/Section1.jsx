@@ -62,7 +62,7 @@ const WELCOME_CSS = `
 function Welcome({ onStart, onHaveAccount, onSeed }) {
   const sel = useRef(null);
   const start = () => { onSeed && onSeed(sel.current); onStart(); };
-  const words = ['Start', 'where', 'you are.'];
+  const words = ['Start', 'where', 'you are!'];
   return (
     <S1Screen>
       <style>{WELCOME_CSS}</style>
