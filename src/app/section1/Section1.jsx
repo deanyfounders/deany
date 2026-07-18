@@ -76,7 +76,7 @@ function Welcome({ onStart, onHaveAccount, onSeed }) {
             <span key={i} className="s1-word" style={{ animationDelay: `${[0.05, 0.18, 0.31][i]}s` }}>
               {w}{i < words.length - 1 ? ' ' : (
                 <svg viewBox="0 0 150 8" width="118" height="7" style={{ display: 'block', margin: '3px auto 0' }} aria-hidden="true">
-                  <path className="s1-underline" d="M2 5 C 40 1, 110 1, 148 5" fill="none" stroke={IX.gold} strokeWidth="3" strokeLinecap="round" />
+                  <path className="s1-underline" d="M2 5 C 40 1, 110 1, 148 5" fill="none" stroke={IX.teal} strokeWidth="3" strokeLinecap="round" />
                 </svg>
               )}
             </span>
