@@ -349,7 +349,7 @@ export default function LinkedPicker({ onChange, soundEnabled = true }) {
     <div style={{ width: '100%', maxWidth: 340, margin: '0 auto' }} onPointerDown={onFirstGesture}>
       <style>{`.lp-wheel::-webkit-scrollbar{width:0;height:0;display:none}.lp-wheel{scrollbar-width:none;-ms-overflow-style:none}`}</style>
       <div style={{ textAlign: 'center', fontSize: 13, fontWeight: 500, color: '#8A94A8', marginBottom: 8 }}>
-        Ten minutes of
+        Ten minutes of...
       </div>
 
       <div style={{ position: 'relative' }}>
