@@ -28,12 +28,22 @@ function deanyBuildId() {
         const src = fs.readFileSync(sw, 'utf8')
         fs.writeFileSync(sw, src.replace(/__BUILD_ID__/g, BUILD_ID))
       } catch (_) {}
+      // A tiny, uncached version marker the running app polls to detect a new
+      // deploy (the reliable auto-update path on iOS, where SW updates are flaky).
+      try {
+        fs.writeFileSync(path.join(dir, 'version.json'), JSON.stringify({ build: BUILD_ID }))
+      } catch (_) {}
     },
   }
 }
 
 export default defineConfig({
   plugins: [react(), deanyBuildId()],
+  // Embed the same build id into the app bundle so it can compare itself
+  // against the deployed version.json at runtime.
+  define: {
+    __DEANY_BUILD_ID__: JSON.stringify(BUILD_ID),
+  },
   build: {
     chunkSizeWarningLimit: 1500,
   },

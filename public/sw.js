@@ -34,6 +34,13 @@ self.addEventListener('fetch', (event) => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
 
+  // The version marker must never be cached - always hit the network so the
+  // runtime auto-updater sees the real deployed build.
+  if (url.origin === self.location.origin && url.pathname === '/version.json') {
+    event.respondWith(fetch(req));
+    return;
+  }
+
   // Navigations: network-first, fall back to the cached app shell offline.
   if (req.mode === 'navigate') {
     event.respondWith(

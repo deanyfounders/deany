@@ -1,6 +1,9 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import AppGate from './app/AppGate.jsx'
+import { startAutoUpdate } from './pwa-update.js'
+
+startAutoUpdate()
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
