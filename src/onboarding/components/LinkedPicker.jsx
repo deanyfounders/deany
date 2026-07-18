@@ -1,381 +1,413 @@
-// LinkedPicker - the welcome hero. Two bidirectionally-linked scroll wheels
-// ("Five minutes of {Topic} {Lesson}") over a three-tier difficulty toggle.
-// Detents tick with Web Audio + vibration; the centered pair + tier seed
-// onboarding silently. Refs (not React state) drive the scroll paint loop so
-// flicks stay at 60fps; React state only changes on settle / tier switch.
+// LinkedPicker - the welcome hero. Two bidirectionally-linked iPhone-style wheel
+// pickers ("Ten minutes of {Topic} {Lesson}") over a three-tier difficulty toggle.
 //
-// SSR: all window / AudioContext / navigator access is inside effects and
-// handlers, never in render, so the SSR smoke test cannot touch them.
-import React, { useEffect, useLayoutEffect, useRef, useState, useCallback } from 'react';
+// The movement is a hand-rolled inertial engine (pointer events + rAF), NOT a
+// native scroll container. This gives true infinite looping with no wrap glitch
+// at the ends, 1:1 dragging, momentum with friction, and a critically-damped
+// settle. Live positions/velocities live in refs; React state only holds the
+// tier and the settled selection, so the wheels never rerender mid-flick.
+//
+// Linking: the left wheel is Subjects, the right wheel is the flattened lesson
+// list (each lesson tagged with its subject). Dragging the lesson wheel glides
+// the subject wheel to the parent subject with a soft spring lag; settling the
+// subject wheel glides the lesson wheel to that subject's remembered lesson. A
+// single `active` owner ref prevents a sync feedback loop.
+//
+// SSR: all window / performance / navigator access is inside effects and
+// handlers, never in render.
+import React, { useEffect, useLayoutEffect, useRef, useState, useCallback, forwardRef, useImperativeHandle } from 'react';
 import { TOPICS, LESSONS, TIERS, TIER_META } from '../content/pickerCatalog.js';
 import { T, FONT } from '../kit/tokens.js';
 
-// Layout effects only make sense on the client; fall back to useEffect on the
-// server so the SSR smoke gate stays warning-free.
-const useIsoLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
+const useIso = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
-const ITEM = 40;                 // row height (comfier touch than the 38 demo)
+const ITEM = 40;                 // row height
 const WHEEL_H = 200;             // ~5 visible rows
 const PAD = (WHEEL_H - ITEM) / 2;
-const LOCK_MS = 700;             // feedback-loop guard around programmatic scrolls
-const SETTLE_MS = 140;           // debounce fallback for scrollend
-const TICK_GAP = 30;             // min ms between ticks
+const RENDER = 5;                // slots rendered each side of centre
+const ANGLE = 16;                // deg of cylinder tilt per row
+const FRICTION = 1.9;            // inertia decay (per second, exponential)
+const MIN_FLICK = 2.0;           // rows/sec: below this, settle immediately
+const SETTLE_VEL = 2.2;          // rows/sec: inertia hands off to the spring
+const K_SETTLE = 200, R_SETTLE = 0.82;   // user settle spring (tiny overshoot)
+const K_FOLLOW = 110, R_FOLLOW = 0.92;   // linked-wheel follow spring (soft lag)
 
-const prefersReduced = () =>
+const now = () => (typeof performance !== 'undefined' ? performance.now() : 0);
+const mod = (n, m) => ((n % m) + m) % m;
+const reducedMotion = () =>
   typeof window !== 'undefined' && window.matchMedia &&
   window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// ---- tiny Web Audio tick engine (whisper-quiet, no assets) ------------------
-function makeAudio() {
-  let ctx = null, master = null, lastAt = 0;
-  const ensure = () => {
-    if (typeof window === 'undefined') return null;
-    const AC = window.AudioContext || window.webkitAudioContext;
-    if (!AC) return null;
-    if (!ctx) {
-      ctx = new AC();
-      master = ctx.createGain();
-      master.gain.value = 0.5;      // all envelopes below are pre-master
-      master.connect(ctx.destination);
+// Coerce a label (string or md()-style node array) to plain text for the wheel.
+function labelText(l) {
+  if (typeof l === 'string') return l;
+  if (Array.isArray(l)) return l.map(labelText).join('');
+  if (l && l.props && l.props.children != null) return labelText(l.props.children);
+  return l == null ? '' : String(l);
+}
+
+// ── One infinite inertial wheel ─────────────────────────────────
+const Wheel = forwardRef(function Wheel(
+  { items, align, ariaLabel, onGrab, onLive, onSettle, defaultInk },
+  api
+) {
+  const hostRef = useRef(null);
+  const slots = useRef([]);
+  const itemsRef = useRef(items);
+  itemsRef.current = items;
+  const reduced = useRef(false);
+
+  const S = useRef({
+    pos: 0, vel: 0, dragging: false, mode: 'idle', target: 0,
+    kK: K_SETTLE, kR: R_SETTLE, raf: 0, lastT: 0, lastY: 0, lastMoveT: 0,
+    samples: [], lastBase: 0,
+  });
+
+  const paint = useCallback(() => {
+    const s = S.current;
+    const list = itemsRef.current;
+    const L = list.length;
+    const base = Math.round(s.pos);
+    const frac = s.pos - base;
+    for (let o = -RENDER; o <= RENDER; o++) {
+      const el = slots.current[o + RENDER];
+      if (!el) continue;
+      const d = o - frac;
+      const ad = Math.abs(d);
+      const angle = d * ANGLE;
+      if (ad > RENDER + 0.5 || Math.abs(angle) >= 90) { el.style.opacity = '0'; continue; }
+      const scale = Math.max(0.5, 1 - ad * 0.08);
+      const opacity = Math.max(0.1, 1 - ad * 0.2);
+      el.style.transform =
+        `translate3d(0, ${d * ITEM}px, 0) perspective(760px) rotateX(${-angle}deg) scale(${scale})`;
+      el.style.opacity = String(opacity);
+      const it = list[mod(base + o, L)];
+      const txt = labelText(it.label);
+      if (el.__txt !== txt) {
+        el.firstChild.textContent = txt;
+        el.firstChild.style.color = it.ink || defaultInk || '#3A4763';
+        el.__txt = txt;
+      }
     }
-    if (ctx.state === 'suspended') ctx.resume();
-    return ctx;
-  };
-  const blip = (freq, peak, ms) => {
-    const c = ctx; if (!c) return;
-    const now = c.currentTime;
-    const osc = c.createOscillator();
-    const g = c.createGain();
-    osc.type = 'sine';
-    osc.frequency.value = freq;
-    g.gain.setValueAtTime(peak, now);
-    g.gain.exponentialRampToValueAtTime(0.0001, now + ms / 1000);
-    osc.connect(g); g.connect(master);
-    osc.start(now); osc.stop(now + (ms + 5) / 1000);
-  };
-  return {
-    init: ensure,
-    tick() {                        // user detent
-      if (!ctx) return;
-      const t = ctx.currentTime * 1000;
-      if (t - lastAt < TICK_GAP) return;
-      lastAt = t; blip(1800, 0.06, 30);
+    if (base !== s.lastBase) {
+      s.lastBase = base;
+      if (onLive) onLive(mod(base, L));
+    }
+  }, [onLive, defaultInk]);
+
+  const stop = useCallback(() => {
+    const s = S.current;
+    if (s.raf) { cancelAnimationFrame(s.raf); s.raf = 0; }
+  }, []);
+
+  const tick = useCallback(() => {
+    const s = S.current;
+    const t = now();
+    let dt = (t - s.lastT) / 1000;
+    s.lastT = t;
+    if (dt > 0.05) dt = 0.05;
+    if (dt <= 0) dt = 0.016;
+
+    if (!s.dragging) {
+      if (s.mode === 'inertia') {
+        s.pos += s.vel * dt;
+        s.vel *= Math.exp(-FRICTION * dt);
+        if (Math.abs(s.vel) < SETTLE_VEL) { s.mode = 'spring'; s.target = Math.round(s.pos); s.kK = K_SETTLE; s.kR = R_SETTLE; }
+      } else if (s.mode === 'spring') {
+        const c = 2 * Math.sqrt(s.kK) * s.kR;
+        const a = -s.kK * (s.pos - s.target) - c * s.vel;
+        s.vel += a * dt;
+        s.pos += s.vel * dt;
+        if (Math.abs(s.pos - s.target) < 0.0009 && Math.abs(s.vel) < 0.03) {
+          s.pos = s.target; s.vel = 0; s.mode = 'idle';
+          paint(); stop();
+          if (onSettle) onSettle(mod(s.target, itemsRef.current.length));
+          return;
+        }
+      } else {
+        paint(); stop(); return;
+      }
+    }
+    paint();
+    s.raf = requestAnimationFrame(tick);
+  }, [paint, stop, onSettle]);
+
+  const run = useCallback(() => {
+    const s = S.current;
+    if (!s.raf) { s.lastT = now(); s.raf = requestAnimationFrame(tick); }
+  }, [tick]);
+
+  // ---- pointer / drag ----
+  const onDown = useCallback((e) => {
+    const s = S.current;
+    try { hostRef.current.setPointerCapture(e.pointerId); } catch (_) {}
+    stop();
+    s.dragging = true; s.mode = 'drag'; s.vel = 0;
+    s.lastY = e.clientY; s.lastMoveT = now(); s.samples = [];
+    if (onGrab) onGrab();
+    run();
+  }, [onGrab, run, stop]);
+
+  const onMove = useCallback((e) => {
+    const s = S.current;
+    if (!s.dragging) return;
+    e.preventDefault();
+    const t = now();
+    const dy = e.clientY - s.lastY;
+    s.lastY = e.clientY;
+    s.pos -= dy / ITEM;
+    let dt = (t - s.lastMoveT) / 1000;
+    s.lastMoveT = t;
+    if (dt > 0) {
+      const v = (-dy / ITEM) / dt;
+      s.samples.push(v);
+      if (s.samples.length > 5) s.samples.shift();
+    }
+    paint();
+  }, [paint]);
+
+  const onUp = useCallback((e) => {
+    const s = S.current;
+    if (!s.dragging) return;
+    s.dragging = false;
+    try { hostRef.current.releasePointerCapture(e.pointerId); } catch (_) {}
+    const v = s.samples.length ? s.samples.reduce((a, b) => a + b, 0) / s.samples.length : 0;
+    s.vel = v;
+    s.kK = K_SETTLE; s.kR = R_SETTLE;
+    if (reduced.current || Math.abs(v) < MIN_FLICK) { s.mode = 'spring'; s.target = Math.round(s.pos); }
+    else { s.mode = 'inertia'; }
+    run();
+  }, [run]);
+
+  // ---- keyboard ----
+  const onKey = useCallback((e) => {
+    const s = S.current;
+    const step = e.key === 'PageDown' ? 3 : e.key === 'PageUp' ? -3
+      : e.key === 'ArrowDown' ? 1 : e.key === 'ArrowUp' ? -1 : 0;
+    if (!step && e.key !== 'Home' && e.key !== 'End') return;
+    e.preventDefault();
+    if (onGrab) onGrab();
+    stop();
+    s.mode = 'spring'; s.vel = 0; s.kK = K_SETTLE; s.kR = R_SETTLE;
+    if (e.key === 'Home') s.target = Math.round(s.pos) - mod(Math.round(s.pos), itemsRef.current.length);
+    else if (e.key === 'End') s.target = Math.round(s.pos) + (itemsRef.current.length - 1 - mod(Math.round(s.pos), itemsRef.current.length));
+    else s.target = Math.round(s.pos) + step;
+    run();
+  }, [onGrab, run, stop]);
+
+  useImperativeHandle(api, () => ({
+    // Programmatic glide to a real index, shortest path, with a soft follow spring.
+    glideTo(index, soft = true) {
+      const s = S.current;
+      if (s.dragging) return;
+      const L = itemsRef.current.length;
+      const diff = Math.round((s.pos - index) / L);
+      s.target = index + diff * L;
+      s.mode = 'spring';
+      s.kK = soft ? K_FOLLOW : K_SETTLE;
+      s.kR = soft ? R_FOLLOW : R_SETTLE;
+      run();
     },
-    tock() { blip(900, 0.04, 40); }, // partner wheel answered
-    toggle() { blip(1400, 0.05, 25); setTimeout(() => blip(1400, 0.05, 25), 60); },
-    suspend() { if (ctx && ctx.state === 'running') ctx.suspend(); },
-  };
-}
+    setIndex(index) {
+      const s = S.current;
+      stop();
+      s.pos = index; s.target = index; s.vel = 0; s.mode = 'idle'; s.lastBase = Math.round(index);
+      paint();
+    },
+    getIndex() { return mod(Math.round(S.current.pos), itemsRef.current.length); },
+    isDragging() { return S.current.dragging; },
+    repaint() { paint(); },
+  }), [paint, run, stop]);
 
-// nearest triplicated index (of `real` in a list of length `len`) to `fromTri`.
-function nearestTri(real, len, fromTri) {
-  const cands = [real, real + len, real + 2 * len];
-  let best = cands[0], bd = Infinity;
-  for (const c of cands) { const d = Math.abs(c - fromTri); if (d < bd) { bd = d; best = c; } }
-  return best;
-}
+  useIso(() => { reduced.current = reducedMotion(); paint(); return stop; /* eslint-disable-next-line */ }, []);
 
-// nearest triplicated index among several matching reals to fromTri - the
-// shortest, calmest glide to a matching row (no random long spins).
-function nearestMatch(reals, len, fromTri) {
-  let best = fromTri, bd = Infinity;
-  for (const real of reals) for (let c = 0; c < 3; c++) {
-    const t = real + c * len; const d = Math.abs(t - fromTri);
-    if (d < bd) { bd = d; best = t; }
-  }
-  return best;
-}
+  const rows = [];
+  for (let o = -RENDER; o <= RENDER; o++) rows.push(o);
 
+  return (
+    <div
+      ref={hostRef}
+      role="listbox"
+      aria-label={ariaLabel}
+      tabIndex={0}
+      onPointerDown={onDown}
+      onPointerMove={onMove}
+      onPointerUp={onUp}
+      onPointerCancel={onUp}
+      onKeyDown={onKey}
+      style={{
+        position: 'relative', flex: 1, height: WHEEL_H, outline: 'none',
+        touchAction: 'none', userSelect: 'none', WebkitUserSelect: 'none',
+        cursor: 'grab', overflow: 'hidden',
+      }}
+    >
+      <div style={{ position: 'absolute', top: PAD, left: 0, right: 0, height: ITEM, transformStyle: 'preserve-3d', pointerEvents: 'none' }}>
+        {rows.map((o) => (
+          <div
+            key={o}
+            ref={(el) => { slots.current[o + RENDER] = el; }}
+            style={{
+              position: 'absolute', left: 0, right: 0, height: ITEM,
+              display: 'flex', alignItems: 'center',
+              justifyContent: align === 'right' ? 'flex-end' : 'flex-start',
+              padding: align === 'right' ? '0 6px 0 0' : '0 0 0 6px',
+              willChange: 'transform, opacity', backfaceVisibility: 'hidden',
+            }}
+          >
+            <span style={{
+              fontFamily: FONT, fontSize: align === 'right' ? 15 : 13,
+              fontWeight: align === 'right' ? 600 : 500, whiteSpace: 'nowrap',
+              overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%',
+            }} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+});
+
+// ── The linked picker ───────────────────────────────────────────
 export default function LinkedPicker({ onChange, soundEnabled = true }) {
   const [tier, setTier] = useState('foundations');
   const lessons = LESSONS[tier];
   const topics = TOPICS;
 
-  const leftRef = useRef(null);
-  const rightRef = useRef(null);
-  const audio = useRef(null);
-  const reduced = useRef(false);
+  const subjApi = useRef(null);
+  const lessApi = useRef(null);
+  const active = useRef(null);          // 'subject' | 'lesson'
+  const touched = useRef(false);
+  const lastLessonBySubject = useRef({});
+  const tierRef = useRef(tier);
+  tierRef.current = tier;
 
-  // per-wheel mutable scroll bookkeeping (never triggers React renders).
-  // rowsEl caches the row nodes (re-queried only on mount / tier change) so the
-  // paint loop never touches the DOM tree. anim holds the in-flight sync rAF id.
-  const meta = useRef({
-    left: { lockUntil: 0, lastIdx: 0, len: topics.length, settleT: null, lastTop: -1, rowsEl: null, anim: 0 },
-    right: { lockUntil: 0, lastIdx: 0, len: lessons.length, settleT: null, lastTop: -1, rowsEl: null, anim: 0 },
-  });
-  const userTouched = useRef(false);
-  const rafId = useRef(0);
+  const firstGesture = () => { touched.current = true; };
 
-  meta.current.right.len = lessons.length; // keep length fresh across tier changes
-
-  const now = () => (typeof performance !== 'undefined' ? performance.now() : 0);
-
-  const centeredTri = (el) => Math.round(el.scrollTop / ITEM);
-  const realIdx = (tri, len) => ((tri % len) + len) % len;
+  const lessonIndexForSubject = useCallback((subjId, list) => {
+    const remembered = lastLessonBySubject.current[subjId];
+    if (remembered != null) {
+      const i = list.findIndex((l) => l.t === subjId && l.label === remembered);
+      if (i >= 0) return i;
+    }
+    const f = list.findIndex((l) => l.t === subjId);
+    return f >= 0 ? f : 0;
+  }, []);
 
   const emit = useCallback(() => {
-    const l = leftRef.current, r = rightRef.current;
-    if (!l || !r || !onChange) return;
-    const ti = realIdx(centeredTri(l), topics.length);
-    const li = realIdx(centeredTri(r), lessons.length);
-    const topic = topics[ti];
-    const lesson = lessons[li];
-    onChange({
-      topicId: topic.id,
-      seed: topic.seed,
-      lessonLabel: lesson.label,
-      tier,
-      touched: userTouched.current,
-    });
-  }, [onChange, topics, lessons, tier]);
+    if (!subjApi.current || !lessApi.current || !onChange) return;
+    const si = subjApi.current.getIndex();
+    const li = lessApi.current.getIndex();
+    const subj = topics[si];
+    const les = LESSONS[tierRef.current][li];
+    onChange({ topicId: subj.id, seed: subj.seed, lessonLabel: labelText(les.label), tier: tierRef.current, touched: touched.current });
+  }, [onChange, topics]);
 
-  // Custom eased scroll for sync moves - constant-duration and buttery smooth at
-  // any distance (native `smooth` is browser-timed and stutters over long spins).
-  // Locks the wheel long enough to swallow the post-animation settle debounce.
-  const animateTo = (el, key, targetTri) => {
-    const m = meta.current[key];
-    if (m.anim) { cancelAnimationFrame(m.anim); m.anim = 0; }
-    const startTop = el.scrollTop;
-    const endTop = targetTri * ITEM;
-    const delta = endTop - startTop;
-    if (Math.abs(delta) < 1) { emit(); return; }
-    if (reduced.current) { m.lockUntil = now() + 200; el.scrollTop = endTop; normalizeWrap(el, key); emit(); return; }
-    // Duration grows with distance (~1.6px/ms): a short detent settle is quick,
-    // a long spin glides. Clamped 220-1150ms.
-    const dur = Math.min(1150, Math.max(220, Math.abs(delta) * 1.6));
-    m.lockUntil = now() + dur + 400;
-    const t0 = now();
-    // easeOutCubic - a decelerating glide to rest, like a picker settling.
-    const ease = (t) => 1 - Math.pow(1 - t, 3);
-    const step = () => {
-      const p = Math.min(1, (now() - t0) / dur);
-      el.scrollTop = startTop + delta * ease(p);
-      if (p < 1) { m.anim = requestAnimationFrame(step); }
-      else { m.anim = 0; el.scrollTop = endTop; normalizeWrap(el, key); emit(); }
-    };
-    m.anim = requestAnimationFrame(step);
-  };
-
-  // wrap the scroll position back into the middle copy, silently.
-  const normalizeWrap = (el, key) => {
-    const m = meta.current[key];
-    const tri = centeredTri(el);
-    if (tri < m.len) { el.scrollTop += m.len * ITEM; }
-    else if (tri >= 2 * m.len) { el.scrollTop -= m.len * ITEM; }
-    else return;
-    m.lastTop = -1;                                 // force a repaint of the recentred copy
-    m.lastIdx = Math.round(el.scrollTop / ITEM);    // avoid a phantom detent tick
-  };
-
-  const settleLeft = () => {
-    const l = leftRef.current, r = rightRef.current;
-    if (!l || !r) return;
-    const m = meta.current.left;
-    if (now() < m.lockUntil) return;          // our own move, ignore
-    normalizeWrap(l, 'left');
-    // Soft-snap the wheel the user released to its nearest detent (the iPhone
-    // picker settle - there is no CSS snap), then sync the partner.
-    const detent = Math.round(l.scrollTop / ITEM);
-    if (Math.abs(l.scrollTop - detent * ITEM) > 0.5) animateTo(l, 'left', detent);
-    const topicId = topics[realIdx(detent, topics.length)].id;
-    const rTri = centeredTri(r);
-    const rLi = realIdx(rTri, lessons.length);
-    if (lessons[rLi].t === topicId) { emit(); return; } // already matches
-    // Land on a RANDOM lesson of this topic, spun a random distance - not the
-    // nearest. animateTo emits once it lands.
-    const matches = [];
-    lessons.forEach((row, j) => { if (row.t === topicId) matches.push(j); });
-    animateTo(r, 'right', nearestMatch(matches, lessons.length, rTri));
-    if (soundEnabled && audio.current) setTimeout(() => audio.current.tock(), 300);
-  };
-
-  const settleRight = () => {
-    const l = leftRef.current, r = rightRef.current;
-    if (!l || !r) return;
-    const m = meta.current.right;
-    if (now() < m.lockUntil) return;
-    normalizeWrap(r, 'right');
-    // Soft-snap the released wheel to its nearest detent, then sync the partner.
-    const detent = Math.round(r.scrollTop / ITEM);
-    if (Math.abs(r.scrollTop - detent * ITEM) > 0.5) animateTo(r, 'right', detent);
-    const topicId = lessons[realIdx(detent, lessons.length)].t;
-    const lTri = centeredTri(l);
-    const lTi = realIdx(lTri, topics.length);
-    if (topics[lTi].id === topicId) { emit(); return; }
-    const real = topics.findIndex(t => t.id === topicId);
-    // Always glide the shortest path to the matching topic - calm and
-    // predictable (the random long spin read as glitchy). animateTo emits.
-    animateTo(l, 'left', nearestTri(real, topics.length, lTri));
-    if (soundEnabled && audio.current) setTimeout(() => audio.current.tock(), 300);
-  };
-
-  const onScroll = (key) => {
-    const m = meta.current[key];
-    if (m.settleT) clearTimeout(m.settleT);
-    m.settleT = setTimeout(() => (key === 'left' ? settleLeft() : settleRight()), SETTLE_MS);
-  };
-
-  // ---- rAF paint pass: opacity + scale barrel, plus user-detent ticks --------
-  useEffect(() => {
-    reduced.current = prefersReduced();
-    const paintWheel = (el, key) => {
-      if (!el) return;
-      const m = meta.current[key];
-      const top = el.scrollTop;
-      if (top === m.lastTop) return;          // nothing moved; skip DOM writes
-      m.lastTop = top;
-      const center = top + WHEEL_H / 2;
-      // Cached node list - never query the DOM inside the frame loop.
-      let rows = m.rowsEl;
-      if (!rows || !rows.length) { rows = el.querySelectorAll('[data-row]'); m.rowsEl = rows; }
-      // Only repaint the rows near the centre (the rest sit under the fade mask).
-      const mid = Math.round(top / ITEM);
-      const lo = Math.max(0, mid - 5), hi = Math.min(rows.length - 1, mid + 5);
-      for (let i = lo; i <= hi; i++) {
-        const node = rows[i];
-        const dist = Math.abs((PAD + i * ITEM + ITEM / 2) - center);
-        // Gentle falloff so words stay legible while spinning (was 0.22 / 110).
-        node.style.opacity = String(Math.max(0.5, 1 - dist / 200));
-        node.style.transform = `scale(${Math.max(0.9, 1 - dist / 700)})`;
-      }
-      // user-detent tick (only during genuine user scrolling, not locked moves)
-      const tri = Math.round(top / ITEM);
-      if (tri !== m.lastIdx) {
-        const userScroll = userTouched.current && now() >= m.lockUntil;
-        if (userScroll && typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(5);
-        if (userScroll && soundEnabled && audio.current) audio.current.tick();
-        m.lastIdx = tri;
-      }
-    };
-    const loop = () => {
-      paintWheel(leftRef.current, 'left');
-      paintWheel(rightRef.current, 'right');
-      rafId.current = requestAnimationFrame(loop);
-    };
-    rafId.current = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(rafId.current);
-    // soundEnabled read fresh each frame via closure over the latest prop is fine
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [soundEnabled]);
-
-  // ---- initial centering (mount) --------------------------------------------
-  useIsoLayoutEffect(() => {
-    const l = leftRef.current, r = rightRef.current;
-    if (l) { l.scrollTop = topics.length * ITEM; meta.current.left.lastIdx = topics.length; meta.current.left.lastTop = -1; }
-    if (r) { r.scrollTop = lessons.length * ITEM; meta.current.right.lastIdx = lessons.length; meta.current.right.lastTop = -1; }
-    emit();
-    // mount only
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // ---- idle auto-roll (right wheel, until first touch) -----------------------
-  // Scroll WITHOUT locking so the right wheel's settle still fires and drags the
-  // left wheel to the new topic. userTouched is false here, so no ticks/haptics.
-  useEffect(() => {
-    if (prefersReduced()) return;
-    const id = setInterval(() => {
-      if (userTouched.current) return;
-      const r = rightRef.current; if (!r) return;
-      r.scrollTo({ top: (centeredTri(r) + 1) * ITEM, behavior: 'smooth' });
-    }, 2600);
-    return () => clearInterval(id);
-  }, []);
-
-  // ---- first user gesture: init audio, cancel auto-roll ----------------------
-  const onFirstGesture = () => {
-    if (!audio.current) audio.current = makeAudio();
-    if (soundEnabled && audio.current) audio.current.init();
-    userTouched.current = true;
-    // A touch takes over: kill any in-flight sync animation and its lock.
-    for (const k of ['left', 'right']) {
-      const m = meta.current[k];
-      if (m.anim) { cancelAnimationFrame(m.anim); m.anim = 0; m.lockUntil = 0; }
+  const haptic = () => {
+    if (soundEnabled && typeof navigator !== 'undefined' && navigator.vibrate) {
+      try { navigator.vibrate(4); } catch (_) {}
     }
   };
 
-  // ---- suspend audio when hidden --------------------------------------------
-  useEffect(() => {
-    const onVis = () => { if (document.hidden && audio.current) audio.current.suspend(); };
-    document.addEventListener('visibilitychange', onVis);
-    return () => document.removeEventListener('visibilitychange', onVis);
-  }, []);
+  // Subject wheel drives the lesson wheel.
+  const onSubjGrab = useCallback(() => { active.current = 'subject'; firstGesture(); }, []);
+  const onSubjSettle = useCallback((i) => {
+    if (active.current === 'subject') {
+      const subj = topics[i];
+      const li = lessonIndexForSubject(subj.id, LESSONS[tierRef.current]);
+      lessApi.current?.glideTo(li, true);
+      haptic();
+    }
+    emit();
+  }, [topics, lessonIndexForSubject, emit]);
 
-  // ---- tier switch: hold topic, fade + rebuild right wheel -------------------
-  const capturedTopic = useRef(null);
-  const switchTier = (next) => {
-    if (next === tier) return;
-    onFirstGesture(); // a deliberate interaction
-    if (soundEnabled && audio.current) audio.current.toggle();
-    if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
-    const l = leftRef.current;
-    capturedTopic.current = l ? topics[realIdx(centeredTri(l), topics.length)].id : topics[0].id;
-    const r = rightRef.current;
-    if (r) { meta.current.right.lockUntil = now() + 400; r.style.transition = 'opacity .15s ease'; r.style.opacity = '0'; }
-    setTier(next);
-  };
+  // Lesson wheel drives the subject wheel (live follow + on settle).
+  const onLessGrab = useCallback(() => { active.current = 'lesson'; firstGesture(); }, []);
+  const onLessLive = useCallback((i) => {
+    if (active.current !== 'lesson') return;
+    const subjId = LESSONS[tierRef.current][i].t;
+    const si = topics.findIndex((t) => t.id === subjId);
+    if (si >= 0 && !subjApi.current?.isDragging()) subjApi.current?.glideTo(si, true);
+  }, [topics]);
+  const onLessSettle = useCallback((i) => {
+    if (active.current === 'lesson') {
+      const les = LESSONS[tierRef.current][i];
+      lastLessonBySubject.current[les.t] = labelText(les.label);
+      const si = topics.findIndex((t) => t.id === les.t);
+      if (si >= 0) subjApi.current?.glideTo(si, true);
+      haptic();
+    }
+    emit();
+  }, [topics, emit]);
 
-  // after the new tier's rows render: jump to the held topic's nearest lesson,
-  // paint, then fade back in. Never animate-scroll through the new list.
-  useIsoLayoutEffect(() => {
-    const r = rightRef.current;
-    if (!r || capturedTopic.current == null) return;
-    const list = LESSONS[tier];
-    meta.current.right.len = list.length;
-    meta.current.right.rowsEl = null;          // rows were replaced; drop stale cache
-    const cur = centeredTri(r);
-    const real = list.findIndex(x => x.t === capturedTopic.current);
-    const target = real >= 0 ? nearestTri(real, list.length, cur) : cur;
-    r.scrollTop = target * ITEM;               // instant
-    meta.current.right.lastIdx = target;
-    meta.current.right.lastTop = -1;           // force a repaint next frame
-    requestAnimationFrame(() => { r.style.opacity = '1'; });
-    capturedTopic.current = null;
+  // initial centering
+  useIso(() => {
+    subjApi.current?.setIndex(0);
+    lessApi.current?.setIndex(lessonIndexForSubject(topics[0].id, LESSONS['foundations']));
     emit();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tier]);
+  }, []);
 
-  // ---- keyboard: one detent per Arrow on the focused wheel -------------------
-  const onKey = (key) => (e) => {
-    if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return;
-    e.preventDefault();
-    onFirstGesture();
-    const el = (key === 'left' ? leftRef : rightRef).current;
-    if (!el) return;
-    const dir = e.key === 'ArrowDown' ? 1 : -1;
-    el.scrollTo({ top: (centeredTri(el) + dir) * ITEM, behavior: reduced.current ? 'auto' : 'smooth' });
+  // idle auto-roll of the lesson wheel until first touch, so it reads as alive.
+  useEffect(() => {
+    if (reducedMotion()) return;
+    const id = setInterval(() => {
+      if (touched.current) return;
+      const cur = lessApi.current?.getIndex();
+      if (cur == null) return;
+      active.current = 'lesson';
+      lessApi.current?.glideTo(cur + 1, false);
+      // let the live-follow drag the subject; but do not mark touched.
+      touched.current = false;
+    }, 2600);
+    return () => clearInterval(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Tier switch: keep the subject, remap the lesson wheel to that subject's lesson
+  // in the new tier. The lesson items change under the wheel; realign instantly.
+  const switchTier = (next) => {
+    if (next === tier) return;
+    firstGesture();
+    haptic();
+    const si = subjApi.current?.getIndex() ?? 0;
+    const subjId = topics[si].id;
+    setTier(next);
+    // after the new lessons render, snap the lesson wheel onto the matching lesson
+    requestAnimationFrame(() => {
+      const li = lessonIndexForSubject(subjId, LESSONS[next]);
+      lessApi.current?.setIndex(li);
+      emit();
+    });
   };
 
   return (
-    <div style={{ width: '100%', maxWidth: 340, margin: '0 auto' }} onPointerDown={onFirstGesture}>
-      <style>{`.lp-wheel::-webkit-scrollbar{width:0;height:0;display:none}.lp-wheel{scrollbar-width:none;-ms-overflow-style:none}`}</style>
+    <div style={{ width: '100%', maxWidth: 340, margin: '0 auto' }}>
       <div style={{ textAlign: 'center', fontSize: 13, fontWeight: 500, color: '#8A94A8', marginBottom: 8 }}>
         Ten minutes of...
       </div>
 
       <div style={{ position: 'relative' }}>
-        {/* center selection chrome */}
+        {/* fixed centre selection band */}
         <div aria-hidden="true" style={{
           position: 'absolute', left: 8, right: 8, top: PAD - 1, height: ITEM + 2,
-          borderRadius: 12, background: '#fff', border: `1px solid ${T.border}`, pointerEvents: 'none',
+          borderRadius: 12, background: 'rgba(34,163,154,0.06)',
+          borderTop: `1px solid ${T.border}`, borderBottom: `1px solid ${T.border}`,
+          pointerEvents: 'none', zIndex: 2,
         }} />
 
-        {/* wheels under a top/bottom fade mask */}
         <div style={{
           display: 'flex', alignItems: 'stretch', position: 'relative', height: WHEEL_H,
-          WebkitMaskImage: 'linear-gradient(to bottom, transparent, black 26%, black 74%, transparent)',
-          maskImage: 'linear-gradient(to bottom, transparent, black 26%, black 74%, transparent)',
+          WebkitMaskImage: 'linear-gradient(to bottom, transparent, black 24%, black 76%, transparent)',
+          maskImage: 'linear-gradient(to bottom, transparent, black 24%, black 76%, transparent)',
         }}>
-          <Wheel
-            side="left" refEl={leftRef} rows={topics} align="right" width="42%"
-            render={(t) => ({ text: t.label, color: t.ink, weight: 600, size: 15 })}
-            onScroll={() => onScroll('left')} onKeyDown={onKey('left')} ariaLabel="Topic"
-          />
-          <div style={{ width: 14, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: T.inkHint, fontSize: 15 }}>·</div>
-          <Wheel
-            side="right" refEl={rightRef} rows={lessons} align="left" width="1"
-            render={(l) => ({ text: l.label, color: '#3A4763', weight: 500, size: 13 })}
-            onScroll={() => onScroll('right')} onKeyDown={onKey('right')} ariaLabel="Lesson"
-          />
+          <div style={{ flex: '0 0 44%', display: 'flex' }}>
+            <Wheel ref={subjApi} items={topics} align="right" ariaLabel="Subject"
+              onGrab={onSubjGrab} onSettle={onSubjSettle} defaultInk={T.navy} />
+          </div>
+          <div style={{ width: 14, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: T.inkHint, fontSize: 15, pointerEvents: 'none' }}>·</div>
+          <div style={{ flex: 1, display: 'flex' }}>
+            <Wheel ref={lessApi} items={lessons} align="left" ariaLabel="Topic"
+              onGrab={onLessGrab} onLive={onLessLive} onSettle={onLessSettle} defaultInk="#3A4763" />
+          </div>
         </div>
       </div>
 
@@ -385,62 +417,23 @@ export default function LinkedPicker({ onChange, soundEnabled = true }) {
         border: `1px solid ${T.border}`, borderRadius: 14,
       }}>
         {TIERS.map((k) => {
-          const active = tier === k;
-          const meta2 = TIER_META[k];
+          const activeTier = tier === k;
+          const meta = TIER_META[k];
           return (
-            <button key={k} type="button" aria-pressed={active} onClick={() => switchTier(k)}
+            <button key={k} type="button" aria-pressed={activeTier} onClick={() => switchTier(k)}
               style={{
                 flex: 1, minHeight: 44, padding: '9px 4px', border: 'none', cursor: 'pointer',
                 borderRadius: 10, fontFamily: FONT, fontSize: 12, fontWeight: 600,
-                background: active ? meta2.color : 'transparent',
-                color: active ? '#fff' : T.inkSecondary,
+                background: activeTier ? meta.color : 'transparent',
+                color: activeTier ? '#fff' : T.inkSecondary,
                 transition: 'background .18s ease, color .18s ease',
                 WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation',
               }}>
-              {meta2.label}
+              {meta.label}
             </button>
           );
         })}
       </div>
-    </div>
-  );
-}
-
-// A single wheel: triplicated rows, scroll-snap, spacers, hidden scrollbar.
-function Wheel({ refEl, rows, align, width, render, onScroll, onKeyDown, ariaLabel }) {
-  const tripled = [...rows, ...rows, ...rows];
-  return (
-    <div
-      ref={refEl}
-      role="listbox"
-      aria-label={ariaLabel}
-      tabIndex={0}
-      onScroll={onScroll}
-      onKeyDown={onKeyDown}
-      className="lp-wheel"
-      style={{
-        flex: width === '1' ? 1 : `0 0 ${width}`, height: WHEEL_H, overflowY: 'scroll',
-        overscrollBehavior: 'contain', WebkitOverflowScrolling: 'touch', outline: 'none',
-      }}
-    >
-      <div style={{ height: PAD }} />
-      {tripled.map((row, i) => {
-        const r = render(row);
-        return (
-          <div key={i} data-row role="option" style={{
-            height: ITEM, display: 'flex', alignItems: 'center',
-            justifyContent: align === 'right' ? 'flex-end' : 'flex-start',
-            padding: align === 'right' ? '0 4px 0 0' : '0 0 0 4px',
-            willChange: 'opacity, transform',
-          }}>
-            <span style={{
-              fontSize: r.size, fontWeight: r.weight, color: r.color, fontFamily: FONT,
-              whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%',
-            }}>{r.text}</span>
-          </div>
-        );
-      })}
-      <div style={{ height: PAD }} />
     </div>
   );
 }
