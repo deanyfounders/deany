@@ -71,7 +71,7 @@ function Welcome({ onStart, onHaveAccount, onSeed }) {
           <DeanyMark size={54} />
           <div style={{ fontFamily: SERIF, fontSize: 13, letterSpacing: '6px', color: IX.tealDeep, fontWeight: 500, margin: '11px 0 16px' }}>DEANY</div>
         </div>
-        <h1 style={{ fontFamily: SERIF, fontSize: 27, fontWeight: 500, color: IX.tealDeep, margin: '0 0 10px', lineHeight: 1.2, wordSpacing: '-0.26em' }}>
+        <h1 style={{ fontFamily: SERIF, fontSize: 27, fontWeight: 500, color: IX.tealDeep, margin: '0 0 10px', lineHeight: 1.2 }}>
           {words.map((w, i) => (
             <span key={i} className="s1-word" style={{ animationDelay: `${[0.05, 0.18, 0.31][i]}s` }}>
               {w}{i < words.length - 1 ? ' ' : (
