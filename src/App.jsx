@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import DEANY_M1L1 from './DEANY-M1L1.jsx';
 import DEANY_M1L2 from "../DEANY_M1L2.jsx";
 import DEANY_M1L3 from "../DEANY_M1L3.jsx";
+import DEANY_FIN_L3_PICKER from "./DEANY-FIN-L3-PICKER.jsx";
 import DEANY_M1L4 from "../DEANY_M1L4.jsx";
 import DEANY_M1L5 from "../DEANY_M1L5.jsx";
 import DEANY_HB1_L1 from './DEANY-HB1L1.jsx';
@@ -956,7 +957,7 @@ const App = ({ appMode = false, appState = null } = {}) => {
   }
 
   if (screen === 'lesson-component-3') {
-    return <DEANY_M1L3 onBack={goLessons} onHome={goHome} onGoToNext={() => setScreen('lesson-component-4')} savedProgress={loadProgress('lesson-1-3')} />;
+    return <DEANY_FIN_L3_PICKER onBack={goLessons} onHome={goHome} onGoToNext={() => setScreen('lesson-component-4')} savedProgress={loadProgress('lesson-1-3')} />;
   }
 
   if (screen === 'lesson-component-2') {
