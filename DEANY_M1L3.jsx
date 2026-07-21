@@ -28,12 +28,11 @@
 //   - Add "use client" at the top for the Next.js App Router.
 //   - Needs React + lucide-react. Renders standalone.
 
-import React, { useState, useRef, useEffect, useMemo } from "react";
+import React, { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import {
   ArrowLeft, ArrowRight, Check, X, BookOpen, Sparkles, Scale, Moon, Star, ChevronDown,
   AlertTriangle, Landmark, HeartHandshake, RotateCcw, SlidersHorizontal, Zap,
-  Play, Pause, Calculator, CreditCard, Wifi, Lock, Clock, TrendingUp, Home, PiggyBank,
-} from "lucide-react";
+  Play, Pause, Calculator, CreditCard, Wifi, Lock, Clock, TrendingUp, Home, PiggyBank, MessageCircle } from "lucide-react";
 
 /* ================================================================ tokens */
 const C = {
@@ -76,6 +75,18 @@ const STYLE = `
   @keyframes dqStar { 0%{transform:scale(0) rotate(0deg);opacity:0} 35%{transform:scale(1.25) rotate(20deg);opacity:1} 100%{transform:scale(.6) rotate(45deg);opacity:0} }
   .deany-btn{ touch-action:manipulation; user-select:none; -webkit-user-select:none }
   .dq-press:active{ transform:scale(.97) translateY(1px) }
+  @keyframes dqSheet { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:none} }
+  .dq-sheetin{ animation:dqSheet .38s cubic-bezier(.34,1.3,.64,1) both }
+  @keyframes chapterIn { from{opacity:0;transform:translateX(24px)} to{opacity:1;transform:none} }
+  .chapter-in{ animation:chapterIn .4s cubic-bezier(.2,.8,.2,1) both }
+  @keyframes fsSheetUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+  @keyframes fsScrim { from{opacity:0} to{opacity:1} }
+  .fs-scrim{ animation:fsScrim .25s ease both }
+  .fs-sheet{ animation:fsSheetUp .34s cubic-bezier(.34,1.3,.64,1) both }
+  @media (prefers-reduced-motion: reduce){ .fs-sheet{animation:none} .fs-scrim{animation:none} .chapter-in{animation:none} }
+  @media (prefers-reduced-motion: reduce){ .chapter-in{animation:none} .dq-sheen{animation:none} }
+  @keyframes dqSheen { 0%{left:-60%} 55%{left:130%} 100%{left:130%} }
+  .dq-sheen{ position:absolute; top:0; left:-60%; width:40%; height:100%; background:linear-gradient(105deg,transparent,rgba(255,255,255,0.3),transparent); transform:skewX(-18deg); animation:dqSheen 5s ease-in-out 2s infinite; pointer-events:none }
   .swl{ animation:swL .32s ease-in both } .swr{ animation:swR .32s ease-in both }
   .pulsing{ animation:softPulse 1.4s ease-in-out infinite }
   .ccard{ animation:cardIn .7s ${SPRING} both }
@@ -111,7 +122,7 @@ const gbp = (n) => `£${Math.abs(Math.round(n)).toLocaleString()}`;
 const MT = { press:120, selectColor:120, correctFlashHold:300, wrongShake:340,
   fadeToDone:250, sheetSlide:300, progressSpring:400, matchSeal:550,
   tileFlight:250, correctRevealDelay:380 };
-const EDGE = "rgba(201,169,97,0.42)";
+const EDGE = "rgba(201,169,97,0.72)";
 const EDGE_GOLD = C.goldDark, EDGE_SAGE = C.sageDark, EDGE_TERRA = C.terraDark, EDGE_EMERALD = C.emeraldDark;
 
 let _sndCtx = null; let _lastTone = 0;
@@ -143,10 +154,13 @@ const reducedMotion = () => typeof window !== "undefined" && window.matchMedia &
 function StarSeal({ x, y }){
   if (reducedMotion()) return null;
   return (
-    <div style={{ position:"absolute", left:x-15, top:y-15, width:30, height:30, pointerEvents:"none", zIndex:6, animation:`dqStar ${MT.matchSeal}ms ease-out both` }}>
-      <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true">
-        <path d="M15 2 L18 12 L28 15 L18 18 L15 28 L12 18 L2 15 L12 12 Z" fill={C.gold}/>
-      </svg>
+    <div style={{ position:"absolute", left:x-18, top:y-18, width:36, height:36, pointerEvents:"none", zIndex:6 }}>
+      <span style={{ position:"absolute", inset:0, borderRadius:999, border:"2px solid #F0B429", animation:"ring .55s ease-out both" }}/>
+      <div style={{ position:"absolute", inset:0, animation:`dqStar ${MT.matchSeal}ms ease-out both` }}>
+        <svg width="36" height="36" viewBox="0 0 30 30" aria-hidden="true">
+          <path d="M15 2 L18 12 L28 15 L18 18 L15 28 L12 18 L2 15 L12 12 Z" fill="#F0B429"/>
+        </svg>
+      </div>
     </div>
   );
 }
@@ -160,18 +174,66 @@ function useStars(){
   return [stars, spawn];
 }
 
+/* Reveal wrapper: when late content (feedback, working, verdicts) mounts,
+   the screen shifts to it instead of leaving the user to scroll.
+   Fires twice - once early, once after entrance animations settle -
+   and only when the element sits outside the comfortable viewport band. */
+// Reveal wrapper with CORRECT autoscroll: when a feedback/explanation block
+// mounts, wait for it to actually finish expanding, then bring the WHOLE
+// block into a comfortable reading position. Never uses "nearest" (which
+// leaves you halfway); scrolls so the block's top sits below the sticky
+// header and, if the block is tall, keeps its top anchored rather than
+// centering a giant block off-screen.
+function AutoScroll({ children, style, className, active = true }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    if (!active) return;
+    const el = ref.current;
+    if (!el || typeof window === "undefined") return;
+    let raf1 = 0, raf2 = 0, timer = 0, cancelled = false;
+    const doScroll = () => {
+      if (cancelled || !el) return;
+      const r = el.getBoundingClientRect();
+      const vh = window.innerHeight || 0;
+      if (!vh) return;
+      const HEADER = 88;   // sticky header + breathing room
+      const FOOTER = 128;  // fixed Continue bar
+      const bandTop = HEADER, bandBottom = vh - FOOTER;
+      const fullyVisible = r.top >= bandTop && r.bottom <= bandBottom;
+      if (fullyVisible) return; // already readable - do not jump
+      let targetTop;
+      if (r.height <= (bandBottom - bandTop)) {
+        // fits in band: center it within the reading band
+        targetTop = window.scrollY + r.top - (bandTop + (bandBottom - bandTop - r.height) / 2);
+      } else {
+        // taller than band: anchor its top just under the header
+        targetTop = window.scrollY + r.top - bandTop;
+      }
+      window.scrollTo({ top: Math.max(0, targetTop), behavior: reducedMotion() ? "auto" : "smooth" });
+    };
+    // wait for mount + expand animation to settle before measuring
+    raf1 = requestAnimationFrame(() => {
+      raf2 = requestAnimationFrame(() => {
+        timer = window.setTimeout(doScroll, reducedMotion() ? 0 : 260);
+      });
+    });
+    return () => { cancelled = true; cancelAnimationFrame(raf1); cancelAnimationFrame(raf2); clearTimeout(timer); };
+  }, [active]);
+  return <div ref={ref} className={className} style={style}>{children}</div>;
+}
+
 function chunky(state, extra){
   const base = {
-    background: C.white, border: `2px solid ${C.border}`, borderBottomWidth: 4,
+    background: C.white, border: `2px solid rgba(201,169,97,0.5)`, borderBottomWidth: 4,
     borderBottomColor: EDGE, borderRadius: 14, color: C.text, cursor: "pointer",
     userSelect: "none", WebkitUserSelect: "none", touchAction: "manipulation",
     transition: `background ${MT.selectColor}ms, border-color ${MT.selectColor}ms, color ${MT.selectColor}ms, opacity ${MT.fadeToDone}ms, transform ${MT.press}ms`,
   };
   const states = {
     idle: {},
-    sel:  { background: C.goldSoft, borderColor: C.gold, borderBottomColor: EDGE_GOLD, color: C.goldDark },
-    good: { background: C.sageSoft, borderColor: C.sage, borderBottomColor: EDGE_SAGE, color: C.sageDark, transform: "scale(1.03)" },
-    bad:  { background: C.terraSoft, borderColor: C.terra, borderBottomColor: EDGE_TERRA, color: C.terraDark },
+    sel:  { background: "rgba(223,162,40,0.28)", borderColor: "#D9A335", borderBottomColor: EDGE_GOLD, color: C.goldDark, fontWeight: 700 },
+    good: { background: "#EAF3DE", borderColor: "#3B6D11", borderBottomColor: "#2C520C", color: "#3B6D11", transform: "scale(1.03)" },
+    bad:  { background: "#FDECEA", borderColor: "#C25446", borderBottomColor: "#A03A2D", color: "#B3261E" },
     done: { opacity: 0.4, borderColor: "rgba(201,169,97,0.15)", borderBottomColor: "rgba(201,169,97,0.15)", color: C.muted, pointerEvents: "none" },
     dim:  { opacity: 0.45, pointerEvents: "none" },
   };
@@ -198,11 +260,22 @@ const lesson = {
       "What Islamic alternatives exist",
     ],
   },
+  /* pending_mehdi - MANDATORY VERIFICATION:
+     1. arabicText below is typed from well-attested standard texts and MUST be
+        checked character-for-character against the locked Tanzil source (Qur'an)
+        and the printed Sahih Muslim text (hadith) before ship.
+     2. tafsir stays EMPTY by design. Required content: the English translation
+        of Tafsir Ibn Kathir for each ayah, pasted VERBATIM from a licensed copy
+        (Darussalam abridged edition, trans. al-Mubarakpuri). That text is under
+        copyright: it must come from DEANY's licensed copy, never generated,
+        summarised, or reconstructed. tafsirSource carries the exact citation to
+        pull. The hadith slot takes an explanation from Sharh an-Nawawi on
+        Muslim, same rule. */
   sources: [
-    { ref: "Qur'an · al-Baqarah 2:275", arabicText: "", transliteration: "", audioUrl: "", meaning: "Allah has permitted trade and forbidden riba.", tafsir: "", tafsirSource: "", tag: "Consensus" },
-    { ref: "Qur'an · al-Baqarah 2:279", arabicText: "", transliteration: "", audioUrl: "", meaning: "If they repent, they keep their principal, neither wronging nor being wronged.", tafsir: "", tafsirSource: "", tag: "Consensus" },
-    { ref: "Qur'an · Aal Imran 3:130", arabicText: "", transliteration: "", audioUrl: "", meaning: "Do not consume riba, doubled and multiplied, and be mindful of Allah so that you may succeed.", tafsir: "", tafsirSource: "", tag: "Consensus" },
-    { ref: "Hadith · Sahih Muslim", arabicText: "", transliteration: "", audioUrl: "", meaning: "The Prophet, peace be upon him, cursed the one who consumes riba, the one who pays it, the one who records it, and its two witnesses, and said they are equal in sin.", tafsir: "", tafsirSource: "", grading: "Sahih (Muslim)" },
+    { ref: "Qur'an · al-Baqarah 2:275", arabicText: "وَأَحَلَّ اللَّهُ الْبَيْعَ وَحَرَّمَ الرِّبَا", transliteration: "wa ahalla Allahu al-bay'a wa harrama ar-riba", audioUrl: "", meaning: "Allah has permitted trade and forbidden riba.", tafsir: "", tafsirSource: "Tafsir Ibn Kathir on al-Baqarah 2:275 · to be pasted verbatim from the licensed Darussalam abridged translation", tag: "Consensus" },
+    { ref: "Qur'an · al-Baqarah 2:279", arabicText: "وَإِن تُبْتُمْ فَلَكُمْ رُءُوسُ أَمْوَالِكُمْ لَا تَظْلِمُونَ وَلَا تُظْلَمُونَ", transliteration: "wa in tubtum falakum ru'usu amwalikum la tazlimuna wa la tuzlamun", audioUrl: "", meaning: "If they repent, they keep their principal, neither wronging nor being wronged.", tafsir: "", tafsirSource: "Tafsir Ibn Kathir on al-Baqarah 2:278-279 · to be pasted verbatim from the licensed Darussalam abridged translation", tag: "Consensus" },
+    { ref: "Qur'an · Aal Imran 3:130", arabicText: "يَا أَيُّهَا الَّذِينَ آمَنُوا لَا تَأْكُلُوا الرِّبَا أَضْعَافًا مُّضَاعَفَةً وَاتَّقُوا اللَّهَ لَعَلَّكُمْ تُفْلِحُونَ", transliteration: "ya ayyuha alladhina amanu la ta'kulu ar-riba ad'afan muda'afatan wa-ittaqu Allaha la'allakum tuflihun", audioUrl: "", meaning: "Do not consume riba, doubled and multiplied, and be mindful of Allah so that you may succeed.", tafsir: "", tafsirSource: "Tafsir Ibn Kathir on Aal Imran 3:130 · to be pasted verbatim from the licensed Darussalam abridged translation", tag: "Consensus" },
+    { ref: "Hadith · Sahih Muslim", arabicText: "لَعَنَ رَسُولُ اللَّهِ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ آكِلَ الرِّبَا وَمُؤْكِلَهُ وَكَاتِبَهُ وَشَاهِدَيْهِ وَقَالَ هُمْ سَوَاءٌ", transliteration: "la'ana rasulu Allahi salla Allahu 'alayhi wa sallam akila ar-riba wa mu'kilahu wa katibahu wa shahidayhi, wa qala: hum sawa'", audioUrl: "", meaning: "The Prophet, peace be upon him, cursed the one who consumes riba, the one who pays it, the one who records it, and its two witnesses, and said they are equal in sin.", tafsir: "", tafsirSource: "Sahih Muslim 1598 · explanation to be pasted verbatim from a licensed translation of Sharh an-Nawawi", grading: "Sahih (Muslim)" },
   ],
   definition: "Riba is a prohibited increase in certain financial exchanges. In this lesson, focus on two beginner cases: a fixed increase required on a loan, and an exchange of the same item that is unequal or delayed.",
   glossary: [
@@ -379,8 +452,9 @@ function Tag({ kind }) {
 function Primary({ children, onClick, disabled, icon: Icon = ArrowRight }) {
   return (
     <button className="deany-btn dq-press" onClick={() => { if (!disabled) { buzz(); snd.pop(); onClick(); } }} disabled={disabled}
-      style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8, width: "100%", padding: "14px 22px 12px", border: "none", borderBottom: `4px solid ${disabled ? "rgba(27,67,50,0.14)" : EDGE_EMERALD}`, borderRadius: 14, background: disabled ? "rgba(27,67,50,0.26)" : C.emerald, color: "#F4EFE6", fontFamily: SANS, fontSize: 16, fontWeight: 600, cursor: disabled ? "not-allowed" : "pointer", transition: `background .25s ease, transform ${MT.press}ms` }}>
-      {children} <Icon size={18} />
+      style={{ position: "relative", overflow: "hidden", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8, width: "100%", padding: "14px 22px 12px", border: "none", borderBottom: `4px solid ${disabled ? "rgba(27,67,50,0.14)" : EDGE_EMERALD}`, borderRadius: 14, background: disabled ? "rgba(27,67,50,0.26)" : "linear-gradient(135deg,#1B4332 0%,#17604A 100%)", boxShadow: disabled ? "none" : "0 6px 16px rgba(27,67,50,0.28)", color: "#F4EFE6", fontFamily: SANS, fontSize: 16, fontWeight: 600, cursor: disabled ? "not-allowed" : "pointer", transition: `background .25s ease, transform ${MT.press}ms` }}>
+      <span style={{ position: "relative", zIndex: 1, display: "inline-flex", alignItems: "center", gap: 8 }}>{children} <Icon size={18} /></span>
+      {!disabled && <span className="dq-sheen" aria-hidden="true" />}
     </button>
   );
 }
@@ -416,7 +490,7 @@ function Bridge({ text }) {
 function Band({ ok, total }) {
   const r = ok / total;
   const label = r === 1 ? "Perfect" : r >= 0.67 ? "Almost there" : "Keep going";
-  const color = r === 1 ? C.sageDark : r >= 0.67 ? C.goldDark : C.terraDark;
+  const color = r === 1 ? "#3B6D11" : r >= 0.67 ? C.goldDark : "#B3261E";
   return (
     <div style={{ display: "inline-flex", alignItems: "center", gap: 8, fontFamily: SANS }}>
       <span style={{ fontSize: 19, fontWeight: 800, color }}>{ok}/{total}</span>
@@ -599,7 +673,7 @@ function SectionLabel({ children }) {
 function Principle({ children }) {
   return (
     <div style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 14 }}>
-      <span aria-hidden="true" style={{ width: 3, alignSelf: "stretch", borderRadius: 999, background: `linear-gradient(${C.gold},${C.sage})`, flexShrink: 0 }} />
+      <span aria-hidden="true" style={{ width: 3, alignSelf: "stretch", borderRadius: 999, background: "linear-gradient(#F0B429,#4E8A6C)", flexShrink: 0 }} />
       <p style={{ fontFamily: SERIF, fontSize: 20, lineHeight: 1.4, color: C.emerald, margin: 0 }}>{children}</p>
     </div>
   );
@@ -879,7 +953,7 @@ function MCQ({ id, record, onAnswer, confidenceMode = false, lockOnCorrectOnly =
                 {resolvedView && st === "bad" && phase !== "flash" && <X size={16} style={{ flexShrink: 0 }} />}
                 {opt.t}
               </span>
-              <span aria-hidden="true" style={{ width: 20, height: 20, borderRadius: 999, flexShrink: 0, border: `2px solid ${st === "sel" ? C.gold : "rgba(201,169,97,0.35)"}`, background: st === "sel" ? C.gold : "transparent", display: resolvedView ? "none" : "inline-flex", alignItems: "center", justifyContent: "center", transition: `all ${MT.selectColor}ms` }}>
+              <span aria-hidden="true" style={{ width: 22, height: 22, borderRadius: 999, flexShrink: 0, border: `2px solid ${st === "sel" ? C.gold : "rgba(201,169,97,0.45)"}`, background: st === "sel" ? C.gold : "transparent", display: resolvedView ? "none" : "inline-flex", alignItems: "center", justifyContent: "center", transition: `all ${MT.selectColor}ms` }}>
                 {st === "sel" && <Check size={13} color="#fff" strokeWidth={3} />}
               </span>
             </button>
@@ -890,24 +964,25 @@ function MCQ({ id, record, onAnswer, confidenceMode = false, lockOnCorrectOnly =
       {!resolvedView && !locked && (
         <div style={{ marginTop: 11 }}>
           <button className="deany-btn dq-press" onClick={check} disabled={sel === null || needConf}
-            style={{ width: "100%", padding: "13px 0 11px", border: "none", borderBottom: `4px solid ${sel !== null && !needConf ? EDGE_EMERALD : "rgba(27,67,50,0.12)"}`, borderRadius: 14, background: sel !== null && !needConf ? C.emerald : "rgba(27,67,50,0.18)", color: sel !== null && !needConf ? "#F4EFE6" : "rgba(244,239,230,0.7)", fontFamily: SANS, fontSize: 14, fontWeight: 700, cursor: sel !== null && !needConf ? "pointer" : "not-allowed", transition: `background .2s ease, transform ${MT.press}ms` }}>
+            style={{ width: "100%", padding: "13px 0 11px", border: "none", borderBottom: `4px solid ${sel !== null && !needConf ? EDGE_EMERALD : "rgba(27,67,50,0.12)"}`, borderRadius: 14, background: sel !== null && !needConf ? "linear-gradient(135deg,#1B4332 0%,#17604A 100%)" : "rgba(27,67,50,0.18)", color: sel !== null && !needConf ? "#F4EFE6" : "rgba(244,239,230,0.7)", fontFamily: SANS, fontSize: 14, fontWeight: 700, cursor: sel !== null && !needConf ? "pointer" : "not-allowed", transition: `background .2s ease, transform ${MT.press}ms` }}>
             Check
           </button>
         </div>
       )}
       {needConf && <div style={{ fontFamily: SANS, fontSize: 12, color: C.muted, marginTop: 8 }}>Pick how sure you are, then answer.</div>}
       {answered && phase !== "flash" && (
-        <div className="reveal in" style={{ marginTop: 11, padding: "11px 13px", borderRadius: 12, background: correct ? C.sageSoft : C.terraSoft }}>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: 6, fontFamily: SANS, fontSize: 13, fontWeight: 700, color: correct ? C.sageDark : C.terraDark, marginBottom: 4 }}>
+        <AutoScroll className="dq-sheetin" style={{ marginTop: 11, padding: "12px 14px", borderRadius: 12, background: C.white, border: `1px solid ${C.border}`, borderLeft: `4px solid ${correct ? "#3B6D11" : "#C25446"}`, boxShadow: "0 4px 14px rgba(42,37,32,0.06)" }}>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 6, fontFamily: SANS, fontSize: 13, fontWeight: 700, color: correct ? "#3B6D11" : "#B3261E", marginBottom: 4 }}>
             {correct ? <Check size={15} /> : <AlertTriangle size={15} />}{correct ? "Correct" : "Not quite"}
           </div>
           <div style={{ fontFamily: SANS, fontSize: 14, lineHeight: 1.55, color: C.muted }}>{feedback}</div>
           {!locked && lockOnCorrectOnly && <div style={{ fontFamily: SANS, fontSize: 12.5, fontWeight: 600, color: C.goldDark, marginTop: 6 }}>Tap an option to try again.</div>}
-        </div>
+        </AutoScroll>
       )}
     </div>
   );
 }
+
 
 /* ===================================================== page: 1 hook */
 function BeatHook({ answers, onAnswer }) {
@@ -932,7 +1007,7 @@ function BeatHook({ answers, onAnswer }) {
       </div>
       {answered && (
         <>
-          <Bridge text={lesson.hook.note} />
+          <AutoScroll><Bridge text={lesson.hook.note} /></AutoScroll>
           <Reveal>
             <Card style={{ marginTop: 16, background: rgba(C.emerald, 0.04), borderColor: "rgba(27,67,50,0.18)" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10, color: C.emerald }}>
@@ -963,7 +1038,7 @@ function AyahCard({ s, focal, translit, idx, playingId, setPlayingId }) {
   const center = !!focal;
   return (
     <div style={{ position: "relative", background: C.white, border: `1px solid ${focal ? "rgba(201,169,97,0.5)" : C.border}`, borderRadius: 18, padding: focal ? "22px 22px 18px" : "16px 18px", overflow: "hidden", boxShadow: focal ? "0 12px 32px rgba(42,37,32,0.08)" : "none" }}>
-      <div style={{ position: "absolute", top: 0, left: 0, width: 4, height: "100%", background: `linear-gradient(${C.gold},${C.sage})` }} />
+      <div style={{ position: "absolute", top: 0, left: 0, width: 4, height: "100%", background: "linear-gradient(#F0B429,#4E8A6C)" }} />
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, marginBottom: focal ? 14 : 10, flexWrap: "wrap" }}>
         <span style={{ fontFamily: SANS, fontSize: 12.5, fontWeight: 800, letterSpacing: 0.4, color: C.goldDark, textTransform: "uppercase" }}>{s.ref}</span>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -994,10 +1069,10 @@ function AyahCard({ s, focal, translit, idx, playingId, setPlayingId }) {
           <ChevronDown size={15} style={{ transform: open ? "rotate(180deg)" : "none", transition: "transform .3s" }} />
         </button>
         {open && (
-          <div className="reveal in" style={{ marginTop: 10 }}>
+          <AutoScroll className="dq-sheetin" style={{ marginTop: 10 }}>
             <p style={{ fontFamily: SANS, fontSize: 14, lineHeight: 1.6, color: C.text, margin: 0 }}>{s.tafsir || `Short ${drawerWord} to be added from a named source.`}</p>
             <div style={{ fontFamily: SANS, fontSize: 11, color: C.muted, marginTop: 6 }}>{s.tafsirSource || (isHadith ? "Source to be cited" : "Tafsir source to be cited")}</div>
-          </div>
+          </AutoScroll>
         )}
       </div>
     </div>
@@ -1103,31 +1178,32 @@ function RapidFire({ answers, onAnswer }) {
       <BeatHeading icon={Zap} kicker="Spot it fast" title="Riba or not riba?" />
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
         <span style={{ color: C.terraDark, fontFamily: SANS, fontSize: 12.5, fontWeight: 700 }}>← Riba</span>
-        <div style={{ display: "flex", gap: 6 }}>{cards.map((c, i) => <div key={i} className="spring" style={{ width: 8, height: 8, borderRadius: 999, background: answers[c.id] ? (answers[c.id].correct ? C.sage : C.terra) : (i === idx ? C.gold : C.border) }} />)}</div>
+        <div style={{ display: "flex", gap: 6 }}>{cards.map((c, i) => <div key={i} className="spring" style={{ width: 8, height: 8, borderRadius: 999, background: answers[c.id] ? (answers[c.id].correct ? "#3B6D11" : "#C25446") : (i === idx ? "#F0B429" : C.border) }} />)}</div>
         <span style={{ color: C.sageDark, fontFamily: SANS, fontSize: 12.5, fontWeight: 700 }}>Not riba →</span>
       </div>
       <div ref={cardBoxRef} style={{ position: "relative", minHeight: 150, marginBottom: 14 }}>
         {rfStars.map((s) => <StarSeal key={s.id} x={s.x} y={s.y} />)}
         {card ? (
           <div key={card.id} className={exit === "l" ? "swl" : exit === "r" ? "swr" : "card-enter"}
-            style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: 18, padding: "26px 22px", boxShadow: "0 8px 28px rgba(42,37,32,0.07)", display: "flex", alignItems: "center", justifyContent: "center", minHeight: 150 }}>
+            style={{ position: "relative", background: C.white, border: `1px solid ${C.border}`, borderTop: `3px solid ${C.gold}`, borderRadius: 18, padding: "26px 22px", boxShadow: "0 8px 28px rgba(42,37,32,0.09)", display: "flex", alignItems: "center", justifyContent: "center", minHeight: 150 }}>
+            <span style={{ position: "absolute", top: 10, right: 12, opacity: 0.4 }}><Ornament size={20} /></span>
             <p style={{ fontFamily: SERIF, fontSize: 23, lineHeight: 1.4, color: C.text, textAlign: "center", margin: 0 }}>{card.text}</p>
           </div>
         ) : (
-          <div className="reveal in" style={{ minHeight: 150, display: "flex", flexDirection: "column", gap: 8, alignItems: "center", justifyContent: "center", color: C.sageDark, fontFamily: SANS, fontWeight: 700 }}>
+          <AutoScroll className="dq-sheetin" style={{ minHeight: 150, display: "flex", flexDirection: "column", gap: 8, alignItems: "center", justifyContent: "center", color: C.sageDark, fontFamily: SANS, fontWeight: 700 }}>
             <div style={{ display: "inline-flex", alignItems: "center", gap: 8 }}><Check size={18} /> All sorted</div>
             <Band ok={ok} total={cards.length} />
-          </div>
+          </AutoScroll>
         )}
       </div>
       {card && (
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-          <button className="deany-btn dq-press" onClick={() => choose("riba")} style={chunky("idle", { padding: "13px 14px 11px", minHeight: 48, fontFamily: SANS, fontSize: 15, fontWeight: 700, textAlign: "center", color: C.terraDark, borderColor: "rgba(184,105,77,0.5)", borderBottomColor: C.terraDark, background: C.terraSoft })}>Riba</button>
-          <button className="deany-btn dq-press" onClick={() => choose("not")} style={chunky("idle", { padding: "13px 14px 11px", minHeight: 48, fontFamily: SANS, fontSize: 15, fontWeight: 700, textAlign: "center", color: C.sageDark, borderColor: "rgba(107,142,127,0.5)", borderBottomColor: C.sageDark, background: C.sageSoft })}>Not riba</button>
+          <button className="deany-btn dq-press" onClick={() => choose("riba")} style={chunky("idle", { padding: "13px 14px 11px", minHeight: 48, fontFamily: SANS, fontSize: 15, fontWeight: 700, textAlign: "center", color: C.terraDark, borderColor: "rgba(184,105,77,0.65)", borderBottomColor: C.terraDark, background: "rgba(184,105,77,0.18)" })}>Riba</button>
+          <button className="deany-btn dq-press" onClick={() => choose("not")} style={chunky("idle", { padding: "13px 14px 11px", minHeight: 48, fontFamily: SANS, fontSize: 15, fontWeight: 700, textAlign: "center", color: C.sageDark, borderColor: "rgba(107,142,127,0.65)", borderBottomColor: C.sageDark, background: "rgba(78,138,108,0.18)" })}>Not riba</button>
         </div>
       )}
       <div aria-live="polite">
-        {fb && card && <div className="reveal in" style={{ marginTop: 12, padding: "11px 13px", borderRadius: 12, background: fb.correct ? C.sageSoft : C.terraSoft, fontFamily: SANS, fontSize: 13.5, lineHeight: 1.5, color: fb.correct ? C.sageDark : C.terraDark }}>{fb.text}</div>}
+        {fb && card && <div className="reveal in" style={{ marginTop: 12, padding: "11px 13px", borderRadius: 12, background: fb.correct ? "#EAF3DE" : "#FDECEA", fontFamily: SANS, fontSize: 13.5, lineHeight: 1.5, color: fb.correct ? "#3B6D11" : "#B3261E" }}>{fb.text}</div>}
       </div>
       {done && <Bridge text="Sharp. Now make the increase concrete with a little maths." />}
     </div>
@@ -1162,12 +1238,12 @@ function CalcQuestion({ id, record, onAnswer, index }) {
       <p style={{ fontFamily: SANS, fontSize: 15.5, lineHeight: 1.5, color: C.text, margin: "0 0 13px", fontWeight: 500 }}>{def.prompt}</p>
       <div ref={rowRef} className={shakeNow ? "dq-shk" : ""} style={{ display: "flex", gap: 8, alignItems: "stretch", position: "relative" }}>
         {calcStars.map((s) => <StarSeal key={s.id} x={s.x} y={s.y} />)}
-        <div style={{ display: "flex", alignItems: "center", flex: 1, border: `1.5px solid ${correct ? C.sage : C.border}`, borderRadius: 12, background: locked ? (correct ? C.sageSoft : C.terraSoft) : C.white, padding: "0 12px" }}>
+        <div style={{ display: "flex", alignItems: "center", flex: 1, border: `1.5px solid ${correct ? "#3B6D11" : C.border}`, borderRadius: 12, background: locked ? (correct ? "#EAF3DE" : "#FDECEA") : C.white, padding: "0 12px" }}>
           <span style={{ fontFamily: MONO, fontSize: 17, fontWeight: 700, color: C.goldDark, marginRight: 4 }}>£</span>
           <input className="num-input" inputMode="decimal" aria-label={def.prompt} value={locked ? (correct ? String(def.answer) : (val || "")) : val} disabled={locked}
             onChange={(e) => setVal(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") submit(); }}
             placeholder="0" style={{ flex: 1, minWidth: 0, border: "none", background: "transparent", fontSize: 17, fontWeight: 700, color: C.text, padding: "12px 0" }} />
-          {correct && <Check size={18} color={C.sageDark} />}
+          {correct && <Check size={18} color="#3B6D11" />}
         </div>
         {!locked && (
           <button className="deany-btn dq-press" onClick={submit} style={{ padding: "0 18px", borderRadius: 12, border: "none", borderBottom: `4px solid ${EDGE_EMERALD}`, background: C.emerald, color: "#F4EFE6", fontFamily: SANS, fontSize: 14, fontWeight: 700, cursor: "pointer", transition: `transform ${MT.press}ms` }}>Check</button>
@@ -1175,19 +1251,20 @@ function CalcQuestion({ id, record, onAnswer, index }) {
       </div>
       {tried && !correct && !revealed && (
         <div className="reveal in" style={{ marginTop: 10, display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-          <span style={{ fontFamily: SANS, fontSize: 13, fontWeight: 600, color: C.terraDark }}>Not quite. Try once more.</span>
+          <span style={{ fontFamily: SANS, fontSize: 13, fontWeight: 600, color: "#B3261E" }}>Not quite. Try once more.</span>
           <button className="deany-btn" onClick={reveal} style={{ background: "none", border: "none", color: C.goldDark, fontFamily: SANS, fontSize: 13, fontWeight: 700, cursor: "pointer", textDecoration: "underline" }}>Show working</button>
         </div>
       )}
       {locked && (
-        <div className="reveal in" style={{ marginTop: 11, padding: "10px 12px", borderRadius: 11, background: correct ? C.sageSoft : C.goldSoft }}>
-          <div style={{ fontFamily: SANS, fontSize: 13, fontWeight: 700, color: correct ? C.sageDark : C.goldDark, marginBottom: 3 }}>{correct ? "Correct" : `Answer: £${def.answer.toLocaleString()}`}</div>
+        <AutoScroll className="dq-sheetin" style={{ marginTop: 11, padding: "11px 13px", borderRadius: 11, background: C.white, border: `1px solid ${C.border}`, borderLeft: `4px solid ${correct ? "#3B6D11" : "#DFA228"}`, boxShadow: "0 4px 14px rgba(42,37,32,0.06)" }}>
+          <div style={{ fontFamily: SANS, fontSize: 13, fontWeight: 700, color: correct ? "#3B6D11" : C.goldDark, marginBottom: 3 }}>{correct ? "Correct" : `Answer: £${def.answer.toLocaleString()}`}</div>
           <div style={{ fontFamily: SANS, fontSize: 13.5, lineHeight: 1.5, color: C.muted }}>{def.working}</div>
-        </div>
+        </AutoScroll>
       )}
     </Card>
   );
 }
+
 function ClimbBars({ series }) {
   const max = Math.max(...series.map((s) => s.owe));
   return (
@@ -1329,9 +1406,8 @@ function BeatApply({ answers, onAnswer, confidenceMode }) {
       </Card>
 
       <SectionLabel>{ap.pairTitle}</SectionLabel>
-      <Card style={{ marginBottom: 12 }}><MCQ id="d1" record={answers.d1} onAnswer={onAnswer} confidenceMode={confidenceMode} /></Card>
-      <Card><MCQ id="d2" record={answers.d2} onAnswer={onAnswer} confidenceMode={confidenceMode} /></Card>
-      {pairDone && <div style={{ marginTop: 12 }}><Reveal><Verdict tone="gold" icon={Scale}>{ap.pair.contrast}</Verdict></Reveal></div>}
+      <Card><PairMatch answers={answers} onAnswer={onAnswer} /></Card>
+      {pairDone && <AutoScroll className="dq-sheetin" style={{ marginTop: 12 }}><Verdict tone="gold" icon={Scale}>{ap.pair.contrast}</Verdict></AutoScroll>}
 
       <div style={{ height: 24 }} />
       <SectionLabel>{ap.productsTitle}</SectionLabel>
@@ -1350,6 +1426,119 @@ function BeatApply({ answers, onAnswer, confidenceMode }) {
         })}
       </div>
       <Bridge text={ap.bridge} />
+    </div>
+  );
+}
+
+/* Pair matching for the discriminator pair (spec pair-match grammar).
+   pending_mehdi: card phrasings are compressed from the d1/d2 prompts and
+   the lesson's qard hasan definition. Scoring: a scenario answered on a
+   clean first match records correct; any mismatch involving it records
+   wrong (first attempt stands, matching MCQ scoring). */
+const PAIR_BOARD = {
+  hint: "Match each deal to what it actually is.",
+  left: [
+    { id: "d1",   t: "£1,150 phone price, agreed before the sale" },
+    { id: "d2",   t: "£1,150 to take two extra months on a £1,000 debt" },
+    { id: "qard", t: "£1,000 lent, £1,000 repaid" },
+  ],
+  right: [
+    { id: "d2",   t: "Riba al-nasi'ah - an increase on money owed, for time" },
+    { id: "qard", t: "Qard hasan - a loan repaid exactly" },
+    { id: "d1",   t: "Trade - a price of goods, fixed up front" },
+  ],
+  labels: { d1: "Trade", d2: "Riba al-nasi'ah", qard: "Qard hasan" },
+  reasons: { qard: "Repaid exactly what was lent. No increase, no riba." },
+};
+function PairMatch({ answers, onAnswer }) {
+  const [selL, setSelL] = useState(null);
+  const [selR, setSelR] = useState(null);
+  const [flash, setFlash] = useState({});
+  const [done, setDone] = useState({});
+  const [locked, setLocked] = useState(false);
+  const [solved, setSolved] = useState([]);
+  const [stars, spawn] = useStars();
+  const boardRef = useRef(null);
+  const refs = useRef({});
+  const key = (c, id) => c + ":" + id;
+  const recordMiss = (id) => { if ((id === "d1" || id === "d2") && !answers[id]) onAnswer(id, "mismatched", false); };
+  const tap = (col, id) => {
+    if (locked || done[key(col, id)]) return;
+    snd.tick(); buzz(5);
+    if (col === "L") setSelL(selL === id ? null : id);
+    else setSelR(selR === id ? null : id);
+  };
+  useEffect(() => {
+    if (selL === null || selR === null) return;
+    setLocked(true);
+    const l = selL, r = selR, hit = l === r;
+    if (hit) {
+      setFlash({ [key("L", l)]: "good", [key("R", r)]: "good" });
+      snd.blip(); buzz(10);
+      const ea = refs.current[key("L", l)], eb = refs.current[key("R", r)], bd = boardRef.current;
+      if (ea && eb && bd) {
+        const ra = ea.getBoundingClientRect(), rb2 = eb.getBoundingClientRect(), rB = bd.getBoundingClientRect();
+        spawn((ra.right + rb2.left) / 2 - rB.left, (ra.top + ra.bottom) / 2 - rB.top);
+      }
+      if ((l === "d1" || l === "d2") && !answers[l]) onAnswer(l, "matched", true);
+      setTimeout(() => {
+        setFlash({});
+        setDone(d => ({ ...d, [key("L", l)]: true, [key("R", r)]: true }));
+        setSolved(sv => [...sv, l]);
+        setSelL(null); setSelR(null); setLocked(false);
+      }, MT.correctFlashHold);
+    } else {
+      setFlash({ [key("L", l)]: "bad", [key("R", r)]: "bad" });
+      snd.buzz(); buzz(30);
+      recordMiss(l); recordMiss(r);
+      setTimeout(() => {
+        setFlash({});
+        setSelL(null); setSelR(null); setLocked(false);
+      }, MT.wrongShake);
+    }
+  }, [selL, selR]); // eslint-disable-line react-hooks/exhaustive-deps
+  const stateFor = (col, id) => {
+    const k = key(col, id);
+    if (flash[k]) return flash[k];
+    if (done[k]) return "done";
+    if ((col === "L" ? selL : selR) === id) return "sel";
+    return "idle";
+  };
+  const renderCard = (col, item) => {
+    const st = stateFor(col, item.id);
+    const sideTint = col === "L" && st === "idle"
+      ? { background: "rgba(27,67,50,0.06)", borderColor: "rgba(27,67,50,0.28)", borderBottomColor: "rgba(27,67,50,0.4)", color: C.emerald }
+      : {};
+    return (
+      <button key={item.id} ref={(el) => { refs.current[key(col, item.id)] = el; }}
+        className={"deany-btn dq-press" + (st === "bad" ? " dq-shk" : "")}
+        onClick={() => tap(col, item.id)}
+        style={chunky(st, { width: "100%", minHeight: 62, padding: "11px 11px 9px", fontFamily: SANS, fontSize: 12.5, fontWeight: 600, lineHeight: 1.4, textAlign: "left", ...sideTint })}>
+        {item.t}
+      </button>
+    );
+  };
+  const reasonFor = (id) => (id === "qard" ? PAIR_BOARD.reasons.qard : itemLookup[id].reason);
+  return (
+    <div>
+      <div style={{ fontFamily: SANS, fontSize: 13, fontWeight: 600, color: C.muted, marginBottom: 10 }}>{PAIR_BOARD.hint}</div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 9, marginBottom: 7 }}>
+        <span style={{ justifySelf: "start", fontFamily: SANS, fontSize: 10.5, fontWeight: 800, letterSpacing: 1, textTransform: "uppercase", color: C.emerald, background: "rgba(27,67,50,0.08)", border: "1px solid rgba(27,67,50,0.2)", borderRadius: 999, padding: "3px 10px" }}>The deal</span>
+        <span style={{ justifySelf: "start", fontFamily: SANS, fontSize: 10.5, fontWeight: 800, letterSpacing: 1, textTransform: "uppercase", color: C.goldDark, background: "rgba(240,180,41,0.14)", border: "1px solid rgba(240,180,41,0.4)", borderRadius: 999, padding: "3px 10px" }}>What it is</span>
+      </div>
+      <div ref={boardRef} style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 9, position: "relative" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>{PAIR_BOARD.left.map((p) => renderCard("L", p))}</div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>{PAIR_BOARD.right.map((p) => renderCard("R", p))}</div>
+        {stars.map((s) => <StarSeal key={s.id} x={s.x} y={s.y} />)}
+      </div>
+      {solved.map((id, i) => (
+        <AutoScroll key={id} active={i === solved.length - 1} className="dq-sheetin" style={{ marginTop: 9, padding: "11px 13px", borderRadius: 12, background: C.white, border: `1px solid ${C.border}`, borderLeft: "4px solid #3B6D11", boxShadow: "0 4px 14px rgba(42,37,32,0.06)" }}>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 6, fontFamily: SANS, fontSize: 13, fontWeight: 700, color: "#3B6D11", marginBottom: 3 }}>
+            <Check size={14} />{PAIR_BOARD.labels[id]}
+          </div>
+          <div style={{ fontFamily: SANS, fontSize: 13.5, lineHeight: 1.55, color: C.muted }}>{reasonFor(id)}</div>
+        </AutoScroll>
+      ))}
     </div>
   );
 }
@@ -1488,6 +1677,102 @@ function SmallNote({ icon: Icon, label, body }) {
   );
 }
 
+/* ============================================ presentation engine chrome
+   Implements the Deany Presentation Engine notes as a layer OVER the
+   existing beats. No lesson content lives here - these are the
+   orchestration shell, roadmap, and story rail only. Every beat
+   component and all its content render unchanged inside ChapterFrame. */
+
+// NOTE 11 - persistent roadmap. Six chapters map onto the nine beats.
+const CHAPTERS = [
+  { key: "situation", label: "Situation", beats: ["hook"] },
+  { key: "rule",      label: "Rule",      beats: ["sources"] },
+  { key: "visual",    label: "Visual",    beats: ["models"] },
+  { key: "practice",  label: "Practice",  beats: ["rapidfire", "calculate"] },
+  { key: "reallife",  label: "Real life", beats: ["creditcard", "apply", "alternatives"] },
+  { key: "review",    label: "Review",    beats: ["review"] },
+];
+function chapterIndexForBeat(beatKey) {
+  for (let i = 0; i < CHAPTERS.length; i++) if (CHAPTERS[i].beats.includes(beatKey)) return i;
+  return 0;
+}
+
+function RoadmapHeader({ beatKey, maxBeatReached, beats, onJump }) {
+  const active = chapterIndexForBeat(beatKey);
+  const maxChapter = chapterIndexForBeat(beats[maxBeatReached]);
+  return (
+    <div style={{ display: "flex", gap: 6, marginBottom: 18, overflowX: "auto", paddingBottom: 2, WebkitOverflowScrolling: "touch" }}>
+      {CHAPTERS.map((ch, i) => {
+        const done = i < maxChapter, current = i === active, reachable = i <= maxChapter;
+        return (
+          <button key={ch.key} className="deany-btn" disabled={!reachable}
+            onClick={() => { if (reachable && onJump) { buzz(6); onJump(ch.beats[0]); } }}
+            style={{
+              flex: "0 0 auto", display: "inline-flex", alignItems: "center", gap: 5,
+              padding: "6px 11px", borderRadius: 999, cursor: reachable ? "pointer" : "default",
+              border: `1px solid ${current ? C.gold : done ? "rgba(78,138,108,0.5)" : C.border}`,
+              background: current ? "rgba(240,180,41,0.16)" : done ? "rgba(78,138,108,0.12)" : C.white,
+              color: current ? C.goldDark : done ? "#3B6D11" : C.muted,
+              fontFamily: SANS, fontSize: 11.5, fontWeight: 700, letterSpacing: 0.2,
+              opacity: reachable ? 1 : 0.5, transition: "all .3s ease",
+            }}>
+            {done ? <Check size={11} /> : <span style={{ width: 15, height: 15, borderRadius: 999, display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 9.5, fontWeight: 800, background: current ? C.gold : C.border, color: current ? "#4A2E00" : C.muted }}>{i + 1}</span>}
+            {ch.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+// NOTE 7 - story timeline. The cousin narrative stays visible as a thin
+// rail; the label reflects where in the arc the current chapter sits.
+const STORY_STAGES = [
+  { at: ["hook"], label: "Your cousin asks for a loan" },
+  { at: ["sources"], label: "Allah's guidance on riba" },
+  { at: ["models", "rapidfire", "calculate"], label: "Seeing how it works" },
+  { at: ["creditcard", "apply", "alternatives"], label: "In modern life" },
+  { at: ["review"], label: "Back to the cousin" },
+];
+function storyIndex(beatKey) {
+  for (let i = 0; i < STORY_STAGES.length; i++) if (STORY_STAGES[i].at.includes(beatKey)) return i;
+  return 0;
+}
+function StoryTimeline({ beatKey }) {
+  const idx = storyIndex(beatKey);
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16, padding: "9px 13px", borderRadius: 12, background: "rgba(27,67,50,0.05)", border: "1px solid rgba(27,67,50,0.12)" }}>
+      <span style={{ display: "inline-flex", flexShrink: 0 }}><MessageCircle size={14} color={C.emerald} /></span>
+      <div style={{ display: "flex", alignItems: "center", gap: 6, flex: 1, minWidth: 0 }}>
+        {STORY_STAGES.map((s, i) => (
+          <React.Fragment key={i}>
+            <span style={{ width: 7, height: 7, borderRadius: 999, flexShrink: 0, background: i <= idx ? C.emerald : "rgba(27,67,50,0.2)", transition: "background .3s ease" }} />
+            {i < STORY_STAGES.length - 1 && <span style={{ height: 1, flex: 1, background: i < idx ? C.emerald : "rgba(27,67,50,0.15)", minWidth: 5 }} />}
+          </React.Fragment>
+        ))}
+      </div>
+      <span style={{ fontFamily: SANS, fontSize: 11, fontWeight: 600, color: C.emerald, flexShrink: 0, maxWidth: 148, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{STORY_STAGES[idx].label}</span>
+    </div>
+  );
+}
+
+// NOTE 1,2,9 - chapter frame. One cognitive objective per viewport is
+// expressed by mounting a single beat with a clear kind, keeping the
+// primary element dominant. The frame animates the beat in without
+// growing prior content (each beat replaces the last).
+const BEAT_OBJECTIVE = {
+  hook: "Read", sources: "Read", models: "Observe", rapidfire: "Answer",
+  calculate: "Answer", creditcard: "Answer", apply: "Answer",
+  alternatives: "Read", review: "Reflect",
+};
+function ChapterFrame({ beatKey, children }) {
+  return (
+    <div key={beatKey} className="chapter-in" style={{ minHeight: 300 }}>
+      {children}
+    </div>
+  );
+}
+
 /* ================================================================== root */
 function RibaLessonV5({
   onComplete = () => {},
@@ -1500,7 +1785,17 @@ function RibaLessonV5({
 }) {
   const beats = ["hook", "sources", "models", "rapidfire", "calculate", "creditcard", "apply", "alternatives", "review"];
   const beatLabels = ["Hook", "Sources", "Models", "Rapid fire", "Calculate", "Credit card", "In your life", "Alternatives", "Review"];
-  const [beat, setBeat] = useState(initialState && Number.isInteger(initialState.beat) ? initialState.beat : 0);
+  const [beat, setBeatRaw] = useState(initialState && Number.isInteger(initialState.beat) ? initialState.beat : 0);
+  const [maxBeatReached, setMaxBeatReached] = useState(initialState && Number.isInteger(initialState.beat) ? initialState.beat : 0);
+  const scrollTopSoon = () => { if (typeof window !== "undefined") { try { window.scrollTo({ top: 0, behavior: reducedMotion() ? "auto" : "smooth" }); } catch (e) { window.scrollTo(0, 0); } } };
+  const setBeat = (updater) => setBeatRaw((b) => {
+    const nb = typeof updater === "function" ? updater(b) : updater;
+    setMaxBeatReached((m) => Math.max(m, nb));
+    return nb;
+  });
+  // NOTE 8: viewport only moves on explicit chapter change, never after answers
+  useEffect(() => { scrollTopSoon(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [beat]);
+  const jumpToBeat = (beatKey) => { const i = beats.indexOf(beatKey); if (i >= 0 && i <= maxBeatReached) setBeat(i); };
   const [answers, setAnswers] = useState(initialState && initialState.answers ? initialState.answers : {});
   const record = (id, value, correct, discovery = false, confidence = null) =>
     setAnswers((p) => ({ ...p, [id]: { value, correct, discovery, confidence } }));
@@ -1526,6 +1821,15 @@ function RibaLessonV5({
     return true;
   };
   const nextLabel = () => (beats[beat] === "alternatives" ? "See your results" : "Continue");
+  const advanceHint = () => {
+    const b = beats[beat];
+    if (b === "hook") return "Choose an answer to continue";
+    if (b === "rapidfire") return "Sort each card to continue";
+    if (b === "calculate") return "Answer both to continue";
+    if (b === "creditcard") return "Answer both to continue";
+    if (b === "apply") return "Finish the matches to continue";
+    return "";
+  };
 
   const finish = () => {
     const base = new Date(); base.setDate(base.getDate() + lesson.reviewIntervalDays);
@@ -1542,7 +1846,7 @@ function RibaLessonV5({
   const showFooter = beats[beat] !== "review";
 
   return (
-    <div style={{ minHeight: "100%", position: "relative", background: `radial-gradient(120% 80% at 50% -10%, ${C.creamHi} 0%, ${C.cream} 60%)`, fontFamily: SANS, color: C.text }}>
+    <div style={{ minHeight: "100%", position: "relative", background: "radial-gradient(120% 80% at 50% -10%, #FFFEFB 0%, #F5EEDF 62%)", fontFamily: SANS, color: C.text }}>
       <style>{STYLE}</style>
       <svg aria-hidden="true" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none" }}>
         <defs>
@@ -1554,7 +1858,7 @@ function RibaLessonV5({
         <rect width="100%" height="100%" fill="url(#deanyGeo5)" />
       </svg>
 
-      <div style={{ position: "relative", maxWidth: 480, margin: "0 auto", padding: "16px 16px calc(40px + env(safe-area-inset-bottom))" }}>
+      <div style={{ position: "relative", maxWidth: 480, margin: "0 auto", padding: "16px 16px calc(112px + env(safe-area-inset-bottom))" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
           <button className="deany-btn" onClick={onExit} aria-label="Exit lesson" style={{ border: `1px solid ${C.border}`, background: C.white, borderRadius: 10, width: 38, height: 38, display: "inline-flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: C.muted, flexShrink: 0 }}><ArrowLeft size={18} /></button>
           <div style={{ flex: 1, minWidth: 0 }}>
@@ -1566,21 +1870,19 @@ function RibaLessonV5({
               </div>
             ) : null}
           </div>
-          <span style={{ display: "inline-flex", alignItems: "center", gap: 4, fontFamily: SANS, fontSize: 11.5, fontWeight: 700, color: C.muted, flexShrink: 0 }}>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 4, fontFamily: SANS, fontSize: 11.5, fontWeight: 700, color: C.goldDark, flexShrink: 0, background: "rgba(240,180,41,0.16)", border: "1px solid rgba(240,180,41,0.45)", borderRadius: 999, padding: "4px 10px" }}>
             <Star size={11} color={C.gold} fill={C.gold} />{points}
           </span>
         </div>
-        <div role="progressbar" aria-valuenow={Math.round(pct)} aria-valuemin={0} aria-valuemax={100} aria-label={`Step ${beat + 1} of ${beats.length}: ${beatLabels[beat]}`} style={{ height: 5, borderRadius: 999, background: "rgba(201,169,97,0.18)", overflow: "hidden", marginBottom: 8 }}>
-          <div className="spring" style={{ width: `${pct}%`, height: "100%", background: `linear-gradient(90deg,${C.gold},${C.goldDark})`, borderRadius: 999 }} />
-        </div>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24, gap: 8 }}>
-          <div style={{ display: "flex", gap: 5 }}>
-            {beats.map((b, i) => <div key={b} className="spring" style={{ width: i === beat ? 16 : 7, height: 7, borderRadius: 999, background: i < beat ? C.gold : i === beat ? C.goldDark : C.border }} />)}
-          </div>
-          <div style={{ fontFamily: SANS, fontSize: 11.5, color: C.muted }}>{beatLabels[beat]}</div>
+
+        <RoadmapHeader beatKey={beats[beat]} maxBeatReached={maxBeatReached} beats={beats} onJump={jumpToBeat} />
+        <StoryTimeline beatKey={beats[beat]} />
+
+        <div role="progressbar" aria-valuenow={Math.round(pct)} aria-valuemin={0} aria-valuemax={100} aria-label={`Step ${beat + 1} of ${beats.length}: ${beatLabels[beat]}`} style={{ height: 6, borderRadius: 999, background: "rgba(201,169,97,0.18)", overflow: "hidden", marginBottom: 22 }}>
+          <div style={{ width: `${pct}%`, height: "100%", background: "linear-gradient(90deg,#F0B429,#D08E1C)", borderRadius: 999, boxShadow: "0 0 12px rgba(240,180,41,0.5)", transition: `width ${MT.progressSpring}ms cubic-bezier(0.34,1.4,0.64,1)` }} />
         </div>
 
-        <div key={beat} style={{ animation: "dUp .42s both" }}>
+        <ChapterFrame beatKey={beats[beat]}>
           {beats[beat] === "hook" && <BeatHook answers={answers} onAnswer={record} />}
           {beats[beat] === "sources" && <BeatSources />}
           {beats[beat] === "models" && <BeatModels />}
@@ -1590,15 +1892,20 @@ function RibaLessonV5({
           {beats[beat] === "apply" && <BeatApply answers={answers} onAnswer={record} confidenceMode={confidenceMode} />}
           {beats[beat] === "alternatives" && <BeatAlternatives />}
           {beats[beat] === "review" && <ReviewSummary answers={answers} onAnswer={record} score={score} gateCorrect={gateCorrect} onFinish={finish} streak={streak} confidenceMode={confidenceMode} />}
-        </div>
-
-        {showFooter && (
-          <div style={{ marginTop: 26 }}>
-            <Primary onClick={() => setBeat((b) => Math.min(b + 1, beats.length - 1))} disabled={!canAdvance()}>{nextLabel()}</Primary>
-            {beat > 0 && <button className="deany-btn" onClick={() => setBeat((b) => Math.max(b - 1, 0))} style={{ display: "block", margin: "12px auto 0", background: "none", border: "none", color: C.muted, fontFamily: SANS, fontSize: 14, cursor: "pointer" }}>Back</button>}
-          </div>
-        )}
+        </ChapterFrame>
       </div>
+
+      {showFooter && (
+        <div style={{ position: "fixed", left: 0, right: 0, bottom: 0, zIndex: 30, background: "linear-gradient(to top, #FBF7EE 62%, rgba(251,247,238,0))", padding: "18px 16px calc(16px + env(safe-area-inset-bottom))", pointerEvents: "none" }}>
+          <div style={{ maxWidth: 480, margin: "0 auto", pointerEvents: "auto" }}>
+            {!canAdvance() && (
+              <div style={{ textAlign: "center", fontFamily: SANS, fontSize: 12, color: C.muted, marginBottom: 8, fontWeight: 600 }}>{advanceHint()}</div>
+            )}
+            <Primary onClick={() => setBeat((b) => Math.min(b + 1, beats.length - 1))} disabled={!canAdvance()}>{nextLabel()}</Primary>
+            {beat > 0 && <button className="deany-btn" onClick={() => setBeat((b) => Math.max(b - 1, 0))} style={{ display: "block", margin: "10px auto 0", background: "none", border: "none", color: C.muted, fontFamily: SANS, fontSize: 13.5, cursor: "pointer" }}>Back</button>}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
