@@ -1030,7 +1030,7 @@ function BeatHook({ answers, onAnswer }) {
 }
 
 /* ===================================================== page: 2 sources */
-function AyahCard({ s, focal, translit, idx, playingId, setPlayingId }) {
+function AyahCard({ s, focal, translit, idx, playingId, setPlayingId, onSeen }) {
   const [open, setOpen] = useState(false);
   const isHadith = !!s.grading;
   const drawerWord = isHadith ? "explanation" : "tafsir";
@@ -1063,7 +1063,7 @@ function AyahCard({ s, focal, translit, idx, playingId, setPlayingId }) {
       <p style={{ fontFamily: SERIF, fontSize: focal ? 22 : 18.5, lineHeight: 1.55, color: C.text, margin: 0, textAlign: center ? "center" : "left" }}>{s.meaning || "Licensed translation to be added."}</p>
 
       <div style={{ marginTop: 14, borderTop: `1px solid ${C.border}`, paddingTop: 12 }}>
-        <button className="deany-btn" onClick={() => { buzz(7); setOpen((o) => !o); }} aria-expanded={open}
+        <button className="deany-btn" onClick={() => { buzz(7); setOpen((o) => { const n = !o; if (n && onSeen) onSeen(idx); return n; }); }} aria-expanded={open}
           style={{ display: "inline-flex", alignItems: "center", gap: 7, background: "none", border: "none", padding: 0, color: C.sageDark, fontFamily: SANS, fontSize: 13.5, fontWeight: 700, cursor: "pointer" }}>
           <BookOpen size={15} /> {open ? `Hide ${drawerWord}` : `Read the ${drawerWord}`}
           <ChevronDown size={15} style={{ transform: open ? "rotate(180deg)" : "none", transition: "transform .3s" }} />
@@ -1078,7 +1078,7 @@ function AyahCard({ s, focal, translit, idx, playingId, setPlayingId }) {
     </div>
   );
 }
-function BeatSources() {
+function BeatSources({ onDrawerSeen }) {
   const [playingId, setPlayingId] = useState(null);
   const [translit, setTranslit] = useState(false);
   return (
@@ -1091,9 +1091,9 @@ function BeatSources() {
         </button>
       </div>
       <div style={{ display: "grid", gap: 14, marginBottom: 20 }}>
-        <Reveal><AyahCard s={lesson.sources[0]} idx={0} focal translit={translit} playingId={playingId} setPlayingId={setPlayingId} /></Reveal>
+        <Reveal><AyahCard s={lesson.sources[0]} idx={0} focal translit={translit} playingId={playingId} setPlayingId={setPlayingId} onSeen={onDrawerSeen} /></Reveal>
         {lesson.sources.slice(1).map((s, i) => (
-          <Reveal key={i + 1} delay={(i + 1) * 70}><AyahCard s={s} idx={i + 1} translit={translit} playingId={playingId} setPlayingId={setPlayingId} /></Reveal>
+          <Reveal key={i + 1} delay={(i + 1) * 70}><AyahCard s={s} idx={i + 1} translit={translit} playingId={playingId} setPlayingId={setPlayingId} onSeen={onDrawerSeen} /></Reveal>
         ))}
       </div>
 
@@ -1797,6 +1797,9 @@ function RibaLessonV5({
   useEffect(() => { scrollTopSoon(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [beat]);
   const jumpToBeat = (beatKey) => { const i = beats.indexOf(beatKey); if (i >= 0 && i <= maxBeatReached) setBeat(i); };
   const [answers, setAnswers] = useState(initialState && initialState.answers ? initialState.answers : {});
+  // Collapsible "read the tafsir/explanation" drawers the learner has opened, so
+  // Continue on the sources chapter is gated until they've seen them all.
+  const [seenDrawers, setSeenDrawers] = useState({});
   const record = (id, value, correct, discovery = false, confidence = null) =>
     setAnswers((p) => ({ ...p, [id]: { value, correct, discovery, confidence } }));
 
@@ -1814,6 +1817,7 @@ function RibaLessonV5({
   const canAdvance = () => {
     const b = beats[beat];
     if (b === "hook") return !!answers.hook;
+    if (b === "sources") return Object.keys(seenDrawers).length >= lesson.sources.length;
     if (b === "rapidfire") return rapidDone;
     if (b === "calculate") return calcDone;
     if (b === "creditcard") return ccDone;
@@ -1824,6 +1828,7 @@ function RibaLessonV5({
   const advanceHint = () => {
     const b = beats[beat];
     if (b === "hook") return "Choose an answer to continue";
+    if (b === "sources") return "Open each explanation to continue";
     if (b === "rapidfire") return "Sort each card to continue";
     if (b === "calculate") return "Answer both to continue";
     if (b === "creditcard") return "Answer both to continue";
@@ -1884,7 +1889,7 @@ function RibaLessonV5({
 
         <ChapterFrame beatKey={beats[beat]}>
           {beats[beat] === "hook" && <BeatHook answers={answers} onAnswer={record} />}
-          {beats[beat] === "sources" && <BeatSources />}
+          {beats[beat] === "sources" && <BeatSources onDrawerSeen={(idx) => setSeenDrawers((s) => (s[idx] ? s : { ...s, [idx]: true }))} />}
           {beats[beat] === "models" && <BeatModels />}
           {beats[beat] === "rapidfire" && <RapidFire answers={answers} onAnswer={record} />}
           {beats[beat] === "calculate" && <BeatCalculate answers={answers} onAnswer={record} />}
