@@ -1078,9 +1078,22 @@ function AyahCard({ s, focal, translit, idx, playingId, setPlayingId, onSeen }) 
     </div>
   );
 }
-function BeatSources({ onDrawerSeen }) {
+function BeatSources({ onReachedEnd }) {
   const [playingId, setPlayingId] = useState(null);
   const [translit, setTranslit] = useState(false);
+  // Gate this chapter by reading, not by opening every tafsir: once the learner
+  // scrolls to the end of the verses, Continue unlocks. If it all fits without
+  // scrolling, the sentinel is already visible and it unlocks immediately.
+  const endRef = useRef(null);
+  useEffect(() => {
+    const el = endRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") { if (onReachedEnd) onReachedEnd(); return; }
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting)) { if (onReachedEnd) onReachedEnd(); io.disconnect(); }
+    }, { threshold: 0.1 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [onReachedEnd]);
   return (
     <div>
       <BeatHeading icon={BookOpen} kicker="Anchor in the source" title="What the revelation says" />
@@ -1091,9 +1104,9 @@ function BeatSources({ onDrawerSeen }) {
         </button>
       </div>
       <div style={{ display: "grid", gap: 14, marginBottom: 20 }}>
-        <Reveal><AyahCard s={lesson.sources[0]} idx={0} focal translit={translit} playingId={playingId} setPlayingId={setPlayingId} onSeen={onDrawerSeen} /></Reveal>
+        <Reveal><AyahCard s={lesson.sources[0]} idx={0} focal translit={translit} playingId={playingId} setPlayingId={setPlayingId} /></Reveal>
         {lesson.sources.slice(1).map((s, i) => (
-          <Reveal key={i + 1} delay={(i + 1) * 70}><AyahCard s={s} idx={i + 1} translit={translit} playingId={playingId} setPlayingId={setPlayingId} onSeen={onDrawerSeen} /></Reveal>
+          <Reveal key={i + 1} delay={(i + 1) * 70}><AyahCard s={s} idx={i + 1} translit={translit} playingId={playingId} setPlayingId={setPlayingId} /></Reveal>
         ))}
       </div>
 
@@ -1122,6 +1135,7 @@ function BeatSources({ onDrawerSeen }) {
           </div>
         ))}
       </div>
+      <div ref={endRef} aria-hidden="true" style={{ height: 1 }} />
     </div>
   );
 }
@@ -1797,9 +1811,9 @@ function RibaLessonV5({
   useEffect(() => { scrollTopSoon(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [beat]);
   const jumpToBeat = (beatKey) => { const i = beats.indexOf(beatKey); if (i >= 0 && i <= maxBeatReached) setBeat(i); };
   const [answers, setAnswers] = useState(initialState && initialState.answers ? initialState.answers : {});
-  // Collapsible "read the tafsir/explanation" drawers the learner has opened, so
-  // Continue on the sources chapter is gated until they've seen them all.
-  const [seenDrawers, setSeenDrawers] = useState({});
+  // The sources chapter unlocks Continue once the learner has scrolled to the
+  // end of the verses (not by opening every tafsir).
+  const [sourcesEndSeen, setSourcesEndSeen] = useState(false);
   const record = (id, value, correct, discovery = false, confidence = null) =>
     setAnswers((p) => ({ ...p, [id]: { value, correct, discovery, confidence } }));
 
@@ -1817,7 +1831,7 @@ function RibaLessonV5({
   const canAdvance = () => {
     const b = beats[beat];
     if (b === "hook") return !!answers.hook;
-    if (b === "sources") return Object.keys(seenDrawers).length >= lesson.sources.length;
+    if (b === "sources") return sourcesEndSeen;
     if (b === "rapidfire") return rapidDone;
     if (b === "calculate") return calcDone;
     if (b === "creditcard") return ccDone;
@@ -1828,7 +1842,7 @@ function RibaLessonV5({
   const advanceHint = () => {
     const b = beats[beat];
     if (b === "hook") return "Choose an answer to continue";
-    if (b === "sources") return "Open each explanation to continue";
+    if (b === "sources") return "Scroll through the verses to continue";
     if (b === "rapidfire") return "Sort each card to continue";
     if (b === "calculate") return "Answer both to continue";
     if (b === "creditcard") return "Answer both to continue";
@@ -1889,7 +1903,7 @@ function RibaLessonV5({
 
         <ChapterFrame beatKey={beats[beat]}>
           {beats[beat] === "hook" && <BeatHook answers={answers} onAnswer={record} />}
-          {beats[beat] === "sources" && <BeatSources onDrawerSeen={(idx) => setSeenDrawers((s) => (s[idx] ? s : { ...s, [idx]: true }))} />}
+          {beats[beat] === "sources" && <BeatSources onReachedEnd={() => setSourcesEndSeen(true)} />}
           {beats[beat] === "models" && <BeatModels />}
           {beats[beat] === "rapidfire" && <RapidFire answers={answers} onAnswer={record} />}
           {beats[beat] === "calculate" && <BeatCalculate answers={answers} onAnswer={record} />}
