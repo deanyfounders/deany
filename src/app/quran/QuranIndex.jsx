@@ -36,7 +36,7 @@ export default function QuranIndex({ onOpenSurah }) {
 
       {!FULL_INDEX && (
         <div style={{ background: '#FBF3DF', border: '1px solid #F0DFAE', borderRadius: RADIUS.card, padding: '11px 13px', marginBottom: 12, fontSize: TYPE.meta, lineHeight: 1.55, color: '#8A6410' }}>
-          Preview. The full 114-surah text appears after the verified Tanzil sources are vendored and the build is run. No verse text is shown until then.
+          Preview. These surahs show the full verbatim Arabic and translation. All 114, with surah names, sajdah markers and juz boundaries, appear once the Tanzil metadata file (quran-data.xml) is added and the build is run.
         </div>
       )}
 
