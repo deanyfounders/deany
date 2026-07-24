@@ -3,7 +3,7 @@
 // mushaf (recommended) or the per-ayah cards (kept from v1). Arabic is shown
 // verbatim from the fetched surah JSON; this file decorates, never mutates.
 import React, { useEffect, useRef, useState } from 'react';
-import { ArrowLeft, Play, Bookmark, MoreHorizontal, Type, Settings, ChevronsDown, X, BookOpen } from 'lucide-react';
+import { ArrowLeft, Play, Bookmark, MoreHorizontal, Type, Settings, ChevronsDown, X, BookOpen, Languages, AlignJustify, LayoutList } from 'lucide-react';
 import { D, FONT, RADIUS, TYPE } from '../dashboard/tokens.js';
 import indexData from '../../data/quran-index.json';
 import Attribution from './Attribution.jsx';
@@ -59,9 +59,11 @@ export default function QuranReader({ surah, initialAyah, onBack }) {
     <div style={{ fontFamily: FONT, display: 'flex', flexDirection: 'column', height: '100%', background: D.canvas }}>
       {/* header band: surah name (right), juz (left) */}
       <div style={{ flexShrink: 0, background: D.canvas, borderBottom: `1px solid ${D.border}` }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 12px 6px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '10px 10px 6px' }}>
           <IconBtn label="Back" onClick={onBack}><ArrowLeft size={19} /></IconBtn>
           <div style={{ flex: 1 }} />
+          <IconBtn label={showT ? 'Hide translation' : 'Show translation'} active={showT} onClick={toggleT}><Languages size={18} /></IconBtn>
+          <IconBtn label={layout === 'mushaf' ? 'Switch to cards' : 'Switch to mushaf'} onClick={() => chooseLayout(layout === 'mushaf' ? 'cards' : 'mushaf')}>{layout === 'mushaf' ? <LayoutList size={18} /> : <AlignJustify size={18} />}</IconBtn>
           <IconBtn label="Text size" onClick={bumpSize}><Type size={18} /></IconBtn>
           <IconBtn label="Settings" onClick={() => setSettingsOpen(true)}><Settings size={18} /></IconBtn>
         </div>
@@ -118,7 +120,7 @@ export default function QuranReader({ surah, initialAyah, onBack }) {
       )}
 
       {settingsOpen && (
-        <SettingsSheet showT={showT} onToggleT={toggleT} layout={layout} onLayout={chooseLayout}
+        <SettingsSheet showT={showT} onToggleT={toggleT}
           onOpenWaqf={() => { setSettingsOpen(false); setMarker('waqf'); }} onClose={() => setSettingsOpen(false)} />
       )}
       {marker && <MarkerSheet kind={marker} onClose={() => setMarker(null)} />}
@@ -170,7 +172,7 @@ function CardBlock({ a, arSize, showT, onSave, saved, onSajdah, onMore }) {
   );
 }
 
-function SettingsSheet({ showT, onToggleT, layout, onLayout, onOpenWaqf, onClose }) {
+function SettingsSheet({ showT, onToggleT, onOpenWaqf, onClose }) {
   return (
     <div role="dialog" aria-modal="true" aria-label="Reader settings" onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 60, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', background: 'rgba(27,42,74,0.32)', fontFamily: FONT }}>
       <div className="deany-sheet-in" onClick={(e) => e.stopPropagation()} style={{ background: D.card, borderTopLeftRadius: 22, borderTopRightRadius: 22, maxWidth: 520, width: '100%', margin: '0 auto', padding: '10px 20px calc(env(safe-area-inset-bottom) + 20px)' }}>
@@ -178,18 +180,6 @@ function SettingsSheet({ showT, onToggleT, layout, onLayout, onOpenWaqf, onClose
         <div style={{ display: 'flex', alignItems: 'center', marginBottom: 8 }}>
           <h2 style={{ flex: 1, margin: 0, fontSize: TYPE.cardTitle, fontWeight: 600, color: D.ink }}>Reader settings</h2>
           <button onClick={onClose} aria-label="Close" style={{ width: 34, height: 34, borderRadius: 999, border: 'none', background: 'none', color: D.inkHint, cursor: 'pointer' }}><X size={19} /></button>
-        </div>
-        <div style={{ fontSize: TYPE.hint, fontWeight: 700, letterSpacing: 0.4, textTransform: 'uppercase', color: D.inkHint, margin: '6px 0' }}>Layout</div>
-        <div style={{ display: 'flex', gap: 8, marginBottom: 6 }}>
-          {[['mushaf', 'Mushaf', 'Continuous, recommended'], ['cards', 'Cards', 'One ayah per card']].map(([k, label, hint]) => {
-            const on = layout === k;
-            return (
-              <button key={k} onClick={() => onLayout(k)} style={{ flex: 1, textAlign: 'left', padding: '11px 13px', borderRadius: 12, cursor: 'pointer', border: `1.5px solid ${on ? D.teal : D.border}`, background: on ? '#E9F6F4' : D.card }}>
-                <div style={{ fontSize: TYPE.body, fontWeight: 700, color: on ? D.tealDeep : D.ink }}>{label}</div>
-                <div style={{ fontSize: TYPE.hint, color: D.inkHint, marginTop: 1 }}>{hint}</div>
-              </button>
-            );
-          })}
         </div>
         <Row label="Show translation" hint="Pickthall, English"><Toggle on={showT} onClick={onToggleT} /></Row>
         <button onClick={onOpenWaqf} className="dash-press" style={{ width: '100%', textAlign: 'left', background: D.canvas, border: `1px solid ${D.border}`, borderRadius: 12, padding: '13px 14px', marginTop: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -215,10 +205,10 @@ const Toggle = ({ on, onClick }) => (
     <span style={{ position: 'absolute', top: 3, left: on ? 21 : 3, width: 22, height: 22, borderRadius: '50%', background: '#fff', transition: 'left .2s ease' }} />
   </button>
 );
-function IconBtn({ children, label, onClick, disabled }) {
+function IconBtn({ children, label, onClick, disabled, active }) {
   return (
-    <button onClick={disabled ? undefined : onClick} aria-label={label} disabled={disabled} className={disabled ? '' : 'dash-press'}
-      style={{ width: 36, height: 36, borderRadius: 10, border: 'none', background: 'none', color: disabled ? D.disabled : D.inkSecondary, cursor: disabled ? 'default' : 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{children}</button>
+    <button onClick={disabled ? undefined : onClick} aria-label={label} aria-pressed={active} disabled={disabled} className={disabled ? '' : 'dash-press'}
+      style={{ width: 36, height: 36, borderRadius: 10, border: 'none', background: active ? '#E9F6F4' : 'none', color: disabled ? D.disabled : active ? D.tealDeep : D.inkSecondary, cursor: disabled ? 'default' : 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{children}</button>
   );
 }
 const Centered = ({ children }) => <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', color: D.inkHint, fontSize: TYPE.body, padding: '40px 20px' }}>{children}</div>;

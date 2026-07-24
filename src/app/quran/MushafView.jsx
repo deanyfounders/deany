@@ -32,7 +32,7 @@ export default function MushafView({ ayat, mode, arSize, highlightKey, selectedK
   const srs = srsWords || null;
 
   return (
-    <div ref={scrollRef} style={{ flex: 1, minHeight: 0, overflowY: 'auto', WebkitOverflowScrolling: 'touch', padding: '14px 18px 24px' }}>
+    <div ref={scrollRef} style={{ flex: 1, minHeight: 0, overflowY: 'auto', WebkitOverflowScrolling: 'touch', padding: '10px 12px 24px' }}>
       <div
         className={`mushaf mushaf-${mode}`}
         dir="rtl"
@@ -71,8 +71,9 @@ export default function MushafView({ ayat, mode, arSize, highlightKey, selectedK
               })}
               {' '}
               <span className="marker" aria-label={`Ayah ${a.ayah}`}
-                style={{ color: D.gold, fontSize: '0.9em', padding: '0 2px', whiteSpace: 'nowrap' }}>
-                {'۝'}{toArabicDigits(a.ayah)}
+                style={{ position: 'relative', display: 'inline-block', width: '1.5em', height: '1.5em', verticalAlign: 'middle', margin: '0 2px', lineHeight: 1 }}>
+                <span aria-hidden="true" style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5em', color: D.gold, lineHeight: 1 }}>{'۝'}</span>
+                <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.58em', fontWeight: 700, color: D.navy, fontFamily: FONT }}>{toArabicDigits(a.ayah)}</span>
               </span>
               {a.sajdah && (
                 <span onClick={(e) => { e.stopPropagation(); onSajdah && onSajdah(a); }}
