@@ -32,7 +32,7 @@ export default function MushafView({ ayat, mode, arSize, highlightKey, selectedK
   const srs = srsWords || null;
 
   return (
-    <div ref={scrollRef} style={{ flex: 1, minHeight: 0, overflowY: 'auto', WebkitOverflowScrolling: 'touch', padding: '10px 12px 24px' }}>
+    <div ref={scrollRef} style={{ flex: 1, minHeight: 0, overflowY: 'auto', WebkitOverflowScrolling: 'touch', padding: '6px 12px 28px' }}>
       <div
         className={`mushaf mushaf-${mode}`}
         dir="rtl"
@@ -40,11 +40,12 @@ export default function MushafView({ ayat, mode, arSize, highlightKey, selectedK
         style={{
           fontFamily: "'Scheherazade New','Amiri',serif",
           fontSize: arSize,
-          lineHeight: 2.15,
+          lineHeight: 2.05,
           color: D.navy,
           textAlign: 'justify',
           textAlignLast: 'right',
           WebkitHyphens: 'none',
+          textJustify: 'inter-word',
         }}
       >
         {shown.map((a) => {
@@ -71,9 +72,8 @@ export default function MushafView({ ayat, mode, arSize, highlightKey, selectedK
               })}
               {' '}
               <span className="marker" aria-label={`Ayah ${a.ayah}`}
-                style={{ position: 'relative', display: 'inline-block', width: '1.5em', height: '1.5em', verticalAlign: 'middle', margin: '0 2px', lineHeight: 1 }}>
-                <span aria-hidden="true" style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5em', color: D.gold, lineHeight: 1 }}>{'۝'}</span>
-                <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.58em', fontWeight: 700, color: D.navy, fontFamily: FONT }}>{toArabicDigits(a.ayah)}</span>
+                style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '1.7em', height: '1.7em', margin: '0 3px', verticalAlign: 'middle', borderRadius: '50%', background: 'radial-gradient(circle at 50% 42%, #FCEFC9, #F4DFA0)', border: '1px solid #D6A636', boxShadow: 'inset 0 0 0 2px rgba(255,255,255,0.65), inset 0 0 0 3px rgba(214,166,54,0.45)' }}>
+                <span style={{ fontSize: '0.48em', fontWeight: 700, color: '#8A6410', fontFamily: FONT, lineHeight: 1 }}>{toArabicDigits(a.ayah)}</span>
               </span>
               {a.sajdah && (
                 <span onClick={(e) => { e.stopPropagation(); onSajdah && onSajdah(a); }}

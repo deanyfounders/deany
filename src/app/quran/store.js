@@ -15,8 +15,8 @@ const set = (k, v) => { if (!canLS()) return; try { window.localStorage.setItem(
 export const getShowTranslation = () => get(KEYS.showTranslation, '1') !== '0';
 export const setShowTranslation = (on) => set(KEYS.showTranslation, on ? '1' : '0');
 
-// text size step: 0..4, default 2
-export const getTextSize = () => { const n = parseInt(get(KEYS.textSize, '2'), 10); return Number.isFinite(n) ? Math.max(0, Math.min(4, n)) : 2; };
+// text size step: 0..4, default 1 (moderate — denser mushaf fill)
+export const getTextSize = () => { const n = parseInt(get(KEYS.textSize, '1'), 10); return Number.isFinite(n) ? Math.max(0, Math.min(4, n)) : 1; };
 export const setTextSize = (n) => set(KEYS.textSize, String(Math.max(0, Math.min(4, n))));
 
 export const getLastRead = () => { try { return JSON.parse(get(KEYS.lastRead, 'null')); } catch (_) { return null; } };

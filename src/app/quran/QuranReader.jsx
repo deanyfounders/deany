@@ -13,7 +13,7 @@ import { getShowTranslation, setShowTranslation, getTextSize, setTextSize, setLa
 import fatihaWords from '../../../content/quran-words/fatiha.json';
 
 const SURAHS = indexData.surahs || [];
-const AR_SIZES = [22, 26, 31];
+const AR_SIZES = [24, 27, 30];
 const CHUNK = 20;
 const MODES = [['read', 'Read'], ['learn', 'Learn'], ['assist', 'Assist']];
 // Only surahs with an approved word-data file get word interaction (pilot: Fatiha).
@@ -67,9 +67,16 @@ export default function QuranReader({ surah, initialAyah, onBack }) {
           <IconBtn label="Text size" onClick={bumpSize}><Type size={18} /></IconBtn>
           <IconBtn label="Settings" onClick={() => setSettingsOpen(true)}><Settings size={18} /></IconBtn>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px 8px' }}>
-          <span style={{ fontSize: TYPE.hint, fontWeight: 700, letterSpacing: 0.4, color: D.gold, textTransform: 'uppercase' }}>Juz {meta.juz_start || '-'}</span>
-          <span className="quran-ar" style={{ fontSize: 22, color: D.quran }}>{meta.name_ar || meta.name_tr}</span>
+        <div style={{
+          margin: '2px 12px 10px', borderRadius: 10, padding: '9px 16px',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10,
+          background: 'linear-gradient(180deg, rgba(240,180,41,0.13), rgba(240,180,41,0.05))',
+          borderTop: '2px solid rgba(214,166,54,0.55)', borderBottom: '2px solid rgba(214,166,54,0.55)',
+          borderLeft: '1px solid rgba(214,166,54,0.28)', borderRight: '1px solid rgba(214,166,54,0.28)',
+        }}>
+          <span style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', fontSize: 12.5, color: '#8A6410', whiteSpace: 'nowrap' }}>Juz {meta.juz_start || '-'}</span>
+          <span aria-hidden="true" style={{ flex: 1, textAlign: 'center', color: 'rgba(214,166,54,0.6)', fontSize: 9, letterSpacing: 4, overflow: 'hidden' }}>◈ ◈ ◈</span>
+          <span className="quran-ar" style={{ fontSize: 24, color: D.quran, fontWeight: 500, whiteSpace: 'nowrap' }}>{meta.name_ar || meta.name_tr}</span>
         </div>
         {/* segmented control */}
         <div role="tablist" style={{ display: 'flex', gap: 0, margin: '0 16px 10px', background: D.card, border: `1px solid ${D.border}`, borderRadius: 12, padding: 4 }}>
