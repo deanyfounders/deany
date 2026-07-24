@@ -8,7 +8,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 
 const SRC = 'scripts/source';
-const NEED = ['quran-uthmani.txt', 'quran-simple-clean.txt', 'quran-data.xml', 'pickthall.json'];
+const NEED = ['quran-uthmani.txt', 'quran-data.xml', 'pickthall.json']; // simple-clean optional (search only)
 let failures = 0;
 const fail = (m) => { console.error('  FAIL ' + m); failures++; };
 const ok = (m) => console.log('  ok   ' + m);

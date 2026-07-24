@@ -9,7 +9,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 
 const SRC = 'scripts/source';
-const NEED = ['quran-uthmani.txt', 'quran-simple-clean.txt', 'quran-data.xml', 'pickthall.json'];
+const NEED = ['quran-uthmani.txt', 'quran-data.xml', 'pickthall.json']; // simple-clean is optional (search only)
 
 function die(msg) { console.error('build-quran: ' + msg); process.exit(1); }
 function sha256(buf) { return crypto.createHash('sha256').update(buf).digest('hex'); }
@@ -41,7 +41,7 @@ function parseTanzil(file) {
   return map;
 }
 const uthmani = parseTanzil('quran-uthmani.txt');
-const simple = parseTanzil('quran-simple-clean.txt');
+const simple = fs.existsSync(path.join(SRC, 'quran-simple-clean.txt')) ? parseTanzil('quran-simple-clean.txt') : new Map();
 const pickthall = JSON.parse(fs.readFileSync(path.join(SRC, 'pickthall.json'), 'utf8')); // { "1:1": "..." } or [{key,text}]
 const english = pickthall['1:1'] ? pickthall : Object.fromEntries((pickthall.verses || pickthall).map((v) => [v.key || `${v.surah}:${v.ayah}`, v.text || v.english]));
 
