@@ -4,6 +4,8 @@ const KEYS = {
   textSize: 'deany.quran.textSize',
   lastRead: 'deany.quran.lastRead',
   saved: 'deany.quran.saved',
+  layout: 'deany.quran.layout',   // 'mushaf' (recommended) | 'cards'
+  mode: 'deany.quran.mode',       // 'read' | 'learn' | 'assist'
 };
 
 const canLS = () => typeof window !== 'undefined' && !!window.localStorage;
@@ -19,6 +21,14 @@ export const setTextSize = (n) => set(KEYS.textSize, String(Math.max(0, Math.min
 
 export const getLastRead = () => { try { return JSON.parse(get(KEYS.lastRead, 'null')); } catch (_) { return null; } };
 export const setLastRead = (obj) => set(KEYS.lastRead, JSON.stringify(obj));
+
+// Mushaf layout: 'mushaf' (continuous, recommended) or 'cards' (per-ayah).
+export const getLayout = () => (get(KEYS.layout, 'mushaf') === 'cards' ? 'cards' : 'mushaf');
+export const setLayout = (v) => set(KEYS.layout, v === 'cards' ? 'cards' : 'mushaf');
+
+// Reading mode: read | learn | assist. Default read.
+export const getMode = () => { const m = get(KEYS.mode, 'read'); return ['read', 'learn', 'assist'].includes(m) ? m : 'read'; };
+export const setMode = (m) => set(KEYS.mode, ['read', 'learn', 'assist'].includes(m) ? m : 'read');
 
 export const getSaved = () => { try { const a = JSON.parse(get(KEYS.saved, '[]')); return Array.isArray(a) ? a : []; } catch (_) { return []; } };
 export const toggleSaved = (surah) => {
