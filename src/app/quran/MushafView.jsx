@@ -28,6 +28,9 @@ const AR_DIGITS = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
 const toArabicDigits = (n) => String(n).split('').map((d) => AR_DIGITS[+d] ?? d).join('');
 const MARGIN = 18; // side margin per page (px)
 const BASMALAH_TOKENS = 4; // the opening basmalah is always four words
+// A small gold arabesque lattice, tiled behind the ornamental frames. Inline SVG
+// data-uri so it is fully self-contained (no external fetch under the app CSP).
+const ORNAMENT = "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22'%3E%3Cg fill='none' stroke='%23B0872F' stroke-width='0.7' opacity='0.5'%3E%3Cpath d='M11 1 L21 11 L11 21 L1 11 Z'/%3E%3Cpath d='M11 6 L16 11 L11 16 L6 11 Z'/%3E%3C/g%3E%3C/svg%3E\")";
 
 export default function MushafView({ ayat, mode, arSize, highlightKey, selectedKeys, onTapAyah, onSajdah, onWord, srsWords, surahName }) {
   const viewportRef = useRef(null);
@@ -94,13 +97,13 @@ export default function MushafView({ ayat, mode, arSize, highlightKey, selectedK
     <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', background: D.canvas }}>
       <div ref={viewportRef} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}
         style={{ flex: 1, minHeight: 0, overflow: 'hidden', position: 'relative' }}>
-        <div ref={bookRef} dir="ltr"
+        <div ref={bookRef} dir="rtl"
           style={{
-            position: 'absolute', top: 0, left: MARGIN, height: '100%',
+            position: 'absolute', top: 0, right: MARGIN, height: '100%',
             width: dims.w ? colWidth : '100%', boxSizing: 'border-box', padding: '10px 0',
             columnWidth: dims.w ? `${colWidth}px` : undefined,
             columnGap: `${2 * MARGIN}px`, columnFill: 'auto',
-            transform: `translateX(${-page * dims.w}px)`,
+            transform: `translateX(${page * dims.w}px)`,
             transition: animate ? 'transform .34s cubic-bezier(.4,0,.2,1)' : 'none',
             willChange: 'transform',
           }}>
@@ -111,14 +114,18 @@ export default function MushafView({ ayat, mode, arSize, highlightKey, selectedK
               textAlign: 'justify', textAlignLast: 'right', WebkitHyphens: 'none',
             }}>
             {(surahName || basmalah) && (
-              <div style={{ breakInside: 'avoid', textAlign: 'center', margin: '2px 0 14px' }}>
+              <div style={{ breakInside: 'avoid', textAlign: 'center', margin: '2px 0 16px' }}>
                 {surahName && (
-                  <div className="quran-ar" style={{ display: 'inline-block', padding: '5px 26px', borderRadius: 9, border: '1.5px solid rgba(214,166,54,0.55)', background: 'linear-gradient(180deg, rgba(240,180,41,0.12), rgba(240,180,41,0.04))', color: D.quran, fontSize: '0.78em', lineHeight: 1.5 }}>
-                    {surahName}
+                  <div style={{ display: 'inline-flex', alignItems: 'stretch', borderRadius: 8, overflow: 'hidden', boxShadow: '0 0 0 2px #9E7830, 0 0 0 3px #FBF5E1, 0 0 0 4px rgba(158,120,48,0.45)' }}>
+                    <span aria-hidden="true" style={{ width: 30, backgroundColor: '#FAF1D6', backgroundImage: ORNAMENT }} />
+                    <span className="quran-ar" style={{ display: 'flex', alignItems: 'center', padding: '5px 20px', backgroundColor: '#FBF5E1', color: D.quran, fontSize: '0.8em', lineHeight: 1.4, borderLeft: '1px solid rgba(158,120,48,0.35)', borderRight: '1px solid rgba(158,120,48,0.35)' }}>
+                      {surahName}
+                    </span>
+                    <span aria-hidden="true" style={{ width: 30, backgroundColor: '#FAF1D6', backgroundImage: ORNAMENT }} />
                   </div>
                 )}
                 {basmalah && (
-                  <div className="quran-ar" dir="rtl" style={{ marginTop: 12, color: D.navy, fontSize: '0.9em', textAlign: 'center', textAlignLast: 'center', lineHeight: 1.9 }}>
+                  <div className="quran-ar" dir="rtl" style={{ marginTop: 14, color: D.navy, fontSize: '0.92em', textAlign: 'center', textAlignLast: 'center', lineHeight: 1.9 }}>
                     {basmalah}
                   </div>
                 )}
@@ -171,9 +178,9 @@ export default function MushafView({ ayat, mode, arSize, highlightKey, selectedK
 
       {/* page turner */}
       <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 20, padding: '7px 12px calc(env(safe-area-inset-bottom) + 7px)', background: D.canvas, borderTop: `1px solid ${D.border}` }}>
-        <PageBtn label="Previous page" onClick={prev} disabled={page <= 0}><ChevronLeft size={20} /></PageBtn>
+        <PageBtn label="Next page" onClick={next} disabled={page >= pageCount - 1}><ChevronLeft size={20} /></PageBtn>
         <span style={{ fontSize: TYPE.hint, color: D.inkHint, minWidth: 84, textAlign: 'center', fontVariantNumeric: 'tabular-nums' }}>Page {page + 1} of {pageCount}</span>
-        <PageBtn label="Next page" onClick={next} disabled={page >= pageCount - 1}><ChevronRight size={20} /></PageBtn>
+        <PageBtn label="Previous page" onClick={prev} disabled={page <= 0}><ChevronRight size={20} /></PageBtn>
       </div>
     </div>
   );

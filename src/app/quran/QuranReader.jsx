@@ -14,6 +14,9 @@ import fatihaWords from '../../../content/quran-words/fatiha.json';
 
 const SURAHS = indexData.surahs || [];
 const AR_SIZES = [24, 27, 30];
+// A small gold arabesque lattice tiled behind the header band. Inline SVG data-uri
+// so it is self-contained under the app CSP (no external fetch).
+const ORNAMENT = "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22'%3E%3Cg fill='none' stroke='%23B0872F' stroke-width='0.7' opacity='0.5'%3E%3Cpath d='M11 1 L21 11 L11 21 L1 11 Z'/%3E%3Cpath d='M11 6 L16 11 L11 16 L6 11 Z'/%3E%3C/g%3E%3C/svg%3E\")";
 const CHUNK = 20;
 const MODES = [['read', 'Read'], ['learn', 'Learn'], ['assist', 'Assist']];
 // Only surahs with an approved word-data file get word interaction (pilot: Fatiha).
@@ -67,16 +70,15 @@ export default function QuranReader({ surah, initialAyah, onBack }) {
           <IconBtn label="Text size" onClick={bumpSize}><Type size={18} /></IconBtn>
           <IconBtn label="Settings" onClick={() => setSettingsOpen(true)}><Settings size={18} /></IconBtn>
         </div>
-        <div style={{
-          margin: '2px 12px 10px', borderRadius: 10, padding: '9px 16px',
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10,
-          background: 'linear-gradient(180deg, rgba(240,180,41,0.13), rgba(240,180,41,0.05))',
-          borderTop: '2px solid rgba(214,166,54,0.55)', borderBottom: '2px solid rgba(214,166,54,0.55)',
-          borderLeft: '1px solid rgba(214,166,54,0.28)', borderRight: '1px solid rgba(214,166,54,0.28)',
-        }}>
-          <span style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', fontSize: 12.5, color: '#8A6410', whiteSpace: 'nowrap' }}>Juz {meta.juz_start || '-'}</span>
-          <span aria-hidden="true" style={{ flex: 1, textAlign: 'center', color: 'rgba(214,166,54,0.6)', fontSize: 9, letterSpacing: 4, overflow: 'hidden' }}>◈ ◈ ◈</span>
-          <span className="quran-ar" style={{ fontSize: 24, color: D.quran, fontWeight: 500, whiteSpace: 'nowrap' }}>{meta.name_ar || meta.name_tr}</span>
+        <div style={{ margin: '2px 12px 10px', padding: 2, borderRadius: 11, background: 'linear-gradient(180deg, #CDAE5A, #9E7830)' }}>
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10,
+            padding: '8px 15px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.45)',
+            backgroundColor: '#FAF1D6', backgroundImage: ORNAMENT,
+          }}>
+            <span style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', fontSize: 12.5, color: '#7A5B1E', whiteSpace: 'nowrap' }}>Juz {meta.juz_start || '-'}</span>
+            <span className="quran-ar" style={{ fontSize: 24, color: D.quran, fontWeight: 500, whiteSpace: 'nowrap' }}>{meta.name_ar || meta.name_tr}</span>
+          </div>
         </div>
         {/* segmented control */}
         <div role="tablist" style={{ display: 'flex', gap: 0, margin: '0 16px 10px', background: D.card, border: `1px solid ${D.border}`, borderRadius: 12, padding: 4 }}>
