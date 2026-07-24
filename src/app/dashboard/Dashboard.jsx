@@ -7,6 +7,7 @@ import Home from './screens/Home.jsx';
 import Review from './screens/Review.jsx';
 import Topics from './screens/Topics.jsx';
 import You from './screens/You.jsx';
+import QuranTab from '../quran/QuranTab.jsx';
 import PathLessons from '../home/PathLessons.jsx';
 import { getHomeBadges } from './selectors.js';
 import { subjectOf } from './tokens.js';
@@ -75,6 +76,7 @@ function Inner({ mainTopics = [], modules = {}, completedLessons = {}, onSelectL
       {tab === 'topics' && (
         <Topics state={dash.state} deps={deps} onOpenTopic={setPathTopicId} addTopic={dash.addTopic} pauseTopic={dash.pauseTopic} resumeTopic={dash.resumeTopic} removeTopic={dash.removeTopic} />
       )}
+      {tab === 'quran' && (<QuranTab />)}
       {tab === 'review' && (
         <Review state={dash.state} onGoTab={setTab} onSelectLesson={onSelectLesson} resolveLesson={resolveLesson} />
       )}

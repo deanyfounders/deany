@@ -1,0 +1,10 @@
+{
+  "id": "waqf_marks",
+  "status": "pending_mehdi",
+  "title": "",
+  "intro": "",
+  "marks": [
+    { "glyph": "", "name": "", "recitation_meaning": "" }
+  ],
+  "sources": [{ "type": "quran|hadith|fiqh", "ref": "", "note": "" }]
+}

@@ -1,13 +1,14 @@
 // AppShell - canvas background, scrollable content, fixed bottom NavBar with
 // safe-area handling. All four tabs render inside it.
 import React from 'react';
-import { Home, Compass, RefreshCw, User } from 'lucide-react';
+import { Home, Compass, RefreshCw, User, BookOpen } from 'lucide-react';
 import { D, RADIUS, FONT, TYPE } from './tokens.js';
 import { DashMotion } from './motion.jsx';
 
 const TABS = [
   { id: 'home', label: 'Home', icon: Home },
   { id: 'topics', label: 'Topics', icon: Compass },
+  { id: 'quran', label: "Qur'an", icon: BookOpen },
   { id: 'review', label: 'Review', icon: RefreshCw },
   { id: 'you', label: 'You', icon: User },
 ];
