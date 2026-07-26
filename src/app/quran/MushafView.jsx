@@ -125,7 +125,8 @@ export default function MushafView({ ayat, mode, arSize, highlightKey, selectedK
     const dx = t.clientX - s.x, dy = t.clientY - s.y;
     if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.3) {
       s.swiped = true;
-      if (dx < 0) next(); else prev();
+      // swipe left-to-right (dx > 0) = next page, right-to-left = previous
+      if (dx > 0) next(); else prev();
       window.setTimeout(() => { swipeRef.current.swiped = false; }, 350);
     }
   };
@@ -143,7 +144,7 @@ export default function MushafView({ ayat, mode, arSize, highlightKey, selectedK
     <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', background: D.canvas }}>
       <div ref={viewportRef} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}
         style={{ flex: 1, minHeight: 0, overflow: 'hidden', position: 'relative' }}>
-        <div ref={bookRef} dir="ltr"
+        <div ref={bookRef} dir="rtl"
           style={{
             position: 'absolute', top: 0, right: MARGIN, height: '100%',
             width: dims.w ? colWidth : '100%', boxSizing: 'border-box', padding: '10px 0',
