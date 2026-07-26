@@ -65,6 +65,10 @@ const boundaryResolver = (list) => {
   return (g) => { let v = marks.length ? marks[0].n : 0; for (const m of marks) { if (m.g <= g) v = m.n; else break; } return v; };
 };
 const juzAt = boundaryResolver(juzs);
+// Romanised juz names (the traditional opening-word mnemonics). These are NOT in
+// quran-data.xml, and they are metadata not Arabic scripture, so they live here as
+// a build-time constant; the boundaries themselves come only from the XML.
+const JUZ_NAMES = ['Alif Lam Meem', 'Sayaqool', 'Tilkal Rusulu', 'Lan Tanaloo Albirra', 'Wal Mohsanatu', 'La Yuhibbullah', 'Wa Iza Samiu', 'Wa Lau Annana', 'Qalal Malao', 'Wa Alamoo', 'Yatazeroon', 'Wa Mamin Dabatin', 'Wa Ma Ubrioo', 'Rubama', 'Subhanal Ladhi', 'Qala Alam', 'Iqtaraba Lin-nasi', 'Qadd Aflaha', 'Wa Qalalladhina', 'Aman Khalaqa', 'Utlu Ma Oohiya', 'Wa-Man Yaqnut', 'Wa Mali', 'Fa-man Azlamu', 'Ilayhi Yuraddu', 'Ha Meem', 'Qala Fama Khatbukum', 'Qadd Samiallah', 'Tabarakal Ladhi', 'Amma'];
 const hizbAt = (() => { const r = boundaryResolver(hizbQ); return (g) => Math.ceil(r(g) / 4) || 0; })(); // quarter -> hizb
 const rukuAt = boundaryResolver(rukus);
 const pageAt = boundaryResolver(pages);
@@ -74,7 +78,13 @@ const sajdaKeys = new Set(sajdas.map((s) => `${+s.sura}:${+s.aya}`));
 const outSurahDir = 'public/quran/surah';
 fs.mkdirSync(outSurahDir, { recursive: true });
 fs.mkdirSync('src/data', { recursive: true });
-const index = { _generated: true, surahs: [] };
+// Materialise the 30 juz starts from the XML (ordered), each with a global ordinal
+// so ranges are integer comparisons at runtime - never string-compared keys.
+const juzList = juzs
+  .map((j) => ({ juz: +j.index, surah: +j.sura, ayah: +j.aya }))
+  .sort((a, b) => a.juz - b.juz)
+  .map((j) => ({ ...j, name: JUZ_NAMES[j.juz - 1] || `Juz ${j.juz}`, ordinal: gindex.get(`${j.surah}:${j.ayah}`) }));
+const index = { _generated: true, juz: juzList, surahs: [] };
 let total = 0;
 for (const su of suras) {
   const s = +su.index, count = +su.ayas;
@@ -89,7 +99,9 @@ for (const su of suras) {
     total++;
   }
   fs.writeFileSync(path.join(outSurahDir, `${s}.json`), JSON.stringify({ surah: s, ayat }));
-  index.surahs.push({ surah: s, name_ar: su.name, name_tr: su.tname, name_en: su.ename, ayah_count: count, revelation: su.type, juz_start: juzAt(gindex.get(`${s}:1`)), sajdah_ayat: sajdahAyat });
+  // A surah can span several juz (Al-Baqarah is juz 1-3), so store the range.
+  const juzFrom = juzAt(gindex.get(`${s}:1`)), juzTo = juzAt(gindex.get(`${s}:${count}`));
+  index.surahs.push({ surah: s, name_ar: su.name, name_tr: su.tname, name_en: su.ename, ayah_count: count, revelation: su.type, juz_from: juzFrom, juz_to: juzTo, juz_start: juzFrom, sajdah_ayat: sajdahAyat });
 }
 fs.writeFileSync('src/data/quran-index.json', JSON.stringify(index, null, 2));
 console.log(`build-quran: wrote 114 surah files and index. total ayat = ${total}. sajdah ayat = ${sajdaKeys.size}.`);

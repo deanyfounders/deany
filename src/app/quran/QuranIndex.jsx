@@ -4,12 +4,21 @@ import React, { useMemo, useState } from 'react';
 import { Search, BookOpen, ArrowRight } from 'lucide-react';
 import { D, FONT, RADIUS, TYPE } from '../dashboard/tokens.js';
 import indexData from '../../data/quran-index.json';
-import juzData from '../../data/juz-index.json';
 import { getLastRead, getSaved } from './store.js';
 
 const SURAHS = indexData.surahs || [];
+const JUZ = indexData.juz || [];
 const FULL_INDEX = indexData._generated === true && SURAHS.length === 114;
 const surahOf = (n) => SURAHS.find((x) => x.surah === n);
+// Which juz an ayah key belongs to - numeric tuple comparison against the 30
+// materialised starts (never string-compare keys). "Which juz" is a property of
+// the ayah, so we find the last start at or before it.
+const juzOfKey = (surah, ayah) => {
+  let j = 1;
+  for (const z of JUZ) { if (z.surah < surah || (z.surah === surah && z.ayah <= ayah)) j = z.juz; else break; }
+  return j;
+};
+const juzLabel = (s) => (s.juz_from && s.juz_to && s.juz_to !== s.juz_from) ? `Juz ${s.juz_from}-${s.juz_to}` : `Juz ${s.juz_from || s.juz_start || ''}`;
 
 export default function QuranIndex({ onOpenSurah }) {
   const [q, setQ] = useState('');
@@ -69,7 +78,7 @@ export default function QuranIndex({ onOpenSurah }) {
           <span style={{ width: 38, height: 38, borderRadius: 10, background: D.card, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><BookOpen size={18} color={D.tealDeep} /></span>
           <span style={{ flex: 1, minWidth: 0 }}>
             <span style={{ display: 'block', fontSize: TYPE.hint, fontWeight: 700, letterSpacing: 0.3, textTransform: 'uppercase', color: D.tealDeep }}>Continue where you stopped</span>
-            <span style={{ display: 'block', fontSize: TYPE.body, color: D.ink, marginTop: 1 }}>{lastSurah.name_tr}, ayah {last.ayah || 1}</span>
+            <span style={{ display: 'block', fontSize: TYPE.body, color: D.ink, marginTop: 1 }}>{lastSurah.name_tr}, ayah {last.ayah || 1} · Juz {juzOfKey(last.surah, last.ayah || 1)}</span>
           </span>
           <ArrowRight size={18} color={D.tealDeep} />
         </button>
@@ -98,7 +107,7 @@ function SurahRow({ s, onOpen }) {
       <span style={{ width: 34, height: 34, borderRadius: 9, background: D.canvas, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontFamily: FONT, fontSize: TYPE.meta, fontWeight: 700, color: D.tealDeep }}>{s.surah}</span>
       <span style={{ flex: 1, minWidth: 0 }}>
         <span style={{ display: 'block', fontSize: TYPE.cardTitle, fontWeight: 600, color: D.ink, lineHeight: 1.2 }}>{s.name_tr}</span>
-        <span style={{ display: 'block', fontSize: TYPE.meta, color: D.inkHint, marginTop: 2 }}>{s.name_en} · {s.ayah_count} ayat · {s.revelation}</span>
+        <span style={{ display: 'block', fontSize: TYPE.meta, color: D.inkHint, marginTop: 2 }}>{s.name_en} · {s.ayah_count} ayat · {juzLabel(s)}</span>
       </span>
       {s.name_ar
         ? <span className="quran-ar" style={{ fontSize: 20, color: D.quran, flexShrink: 0 }}>{s.name_ar}</span>
@@ -107,30 +116,27 @@ function SurahRow({ s, onOpen }) {
   );
 }
 
-// Range end of a juz = the ayah just before the next juz starts (last juz ends at
-// the end of the mushaf). Computed from the verbatim boundaries + surah lengths.
-function juzRange(j, next) {
-  const start = `${j.sura}:${j.aya}`;
-  let endSura, endAya;
-  if (!next) { endSura = 114; endAya = (surahOf(114) || {}).ayah_count || 6; }
-  else if (next.aya > 1) { endSura = next.sura; endAya = next.aya - 1; }
-  else { endSura = next.sura - 1; endAya = (surahOf(endSura) || {}).ayah_count || ''; }
-  return { start, end: `${endSura}:${endAya}` };
-}
-
+// The Juz tab lists the 30 juz (not a regrouped surah list). Each row shows the
+// juz number, its name, and where it starts (surah name + ayah); the end is the
+// ayah just before the next juz starts (juz 30 ends at 114:6). Tapping opens the
+// reader at that surah, at the juz's start ayah.
 function JuzList({ onOpenSurah }) {
   return (
     <div style={{ display: 'grid', gap: 8 }}>
-      {juzData.map((j, i) => {
-        const s = surahOf(j.sura);
-        const { start, end } = juzRange(j, juzData[i + 1]);
+      {JUZ.map((j, i) => {
+        const s = surahOf(j.surah);
+        const next = JUZ[i + 1];
+        let endSura, endAya;
+        if (!next) { endSura = 114; endAya = (surahOf(114) || {}).ayah_count || 6; }
+        else if (next.ayah > 1) { endSura = next.surah; endAya = next.ayah - 1; }
+        else { endSura = next.surah - 1; endAya = (surahOf(endSura) || {}).ayah_count || ''; }
         return (
-          <button key={j.juz} onClick={() => onOpenSurah(j.sura, j.aya)} className="dash-press"
+          <button key={j.juz} onClick={() => onOpenSurah(j.surah, j.ayah)} className="dash-press"
             style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 12, background: D.card, border: `1px solid ${D.border}`, borderRadius: RADIUS.card, padding: '12px 14px', cursor: 'pointer' }}>
             <span style={{ width: 34, height: 34, borderRadius: 9, background: '#F7EFD6', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontFamily: FONT, fontSize: TYPE.meta, fontWeight: 700, color: '#8A6410' }}>{j.juz}</span>
             <span style={{ flex: 1, minWidth: 0 }}>
               <span style={{ display: 'block', fontSize: TYPE.cardTitle, fontWeight: 600, color: D.ink, lineHeight: 1.2 }}>Juz {j.juz} · {j.name}</span>
-              <span style={{ display: 'block', fontSize: TYPE.meta, color: D.inkHint, marginTop: 2 }}>{s ? s.name_tr : `Surah ${j.sura}`} · {start} – {end}</span>
+              <span style={{ display: 'block', fontSize: TYPE.meta, color: D.inkHint, marginTop: 2 }}>Starts {s ? s.name_tr : `Surah ${j.surah}`} {j.surah}:{j.ayah} · ends {endSura}:{endAya}</span>
             </span>
             {s && s.name_ar && <span className="quran-ar" style={{ fontSize: 20, color: D.quran, flexShrink: 0 }}>{s.name_ar}</span>}
           </button>

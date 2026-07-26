@@ -3,7 +3,7 @@
 // mushaf (recommended) or the per-ayah cards (kept from v1). Arabic is shown
 // verbatim from the fetched surah JSON; this file decorates, never mutates.
 import React, { useEffect, useRef, useState } from 'react';
-import { ArrowLeft, Play, Bookmark, MoreHorizontal, Type, Settings, ChevronsDown, X, BookOpen, Languages, AlignJustify, LayoutList } from 'lucide-react';
+import { ArrowLeft, Play, Bookmark, MoreHorizontal, Type, Settings, ChevronsDown, X, BookOpen } from 'lucide-react';
 import { D, FONT, RADIUS, TYPE } from '../dashboard/tokens.js';
 import indexData from '../../data/quran-index.json';
 import Attribution from './Attribution.jsx';
@@ -35,12 +35,14 @@ export default function QuranReader({ surah, initialAyah, onBack }) {
   const [saved, setSaved] = useState(isSaved(surah));
   const [tapAyah, setTapAyah] = useState(null);
   const [visible, setVisible] = useState(CHUNK);
+  const [currentJuz, setCurrentJuz] = useState(meta.juz_from || meta.juz_start || 1);
   const sentinelRef = useRef(null);
 
   useEffect(() => {
-    let alive = true; setAyat(null); setVisible(CHUNK); setTapAyah(null);
+    let alive = true; setAyat(null); setVisible(CHUNK); setTapAyah(null); setCurrentJuz(meta.juz_from || meta.juz_start || 1);
     fetch(`/quran/surah/${surah}.json`).then((r) => (r.ok ? r.json() : Promise.reject())).then((d) => { if (alive) setAyat(Array.isArray(d) ? d : (d.ayat || [])); }).catch(() => { if (alive) setAyat([]); });
     return () => { alive = false; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [surah]);
   useEffect(() => { setLastRead({ surah, ayah: initialAyah || 1 }); }, [surah, initialAyah]);
   // cards-mode incremental mount
@@ -60,38 +62,21 @@ export default function QuranReader({ surah, initialAyah, onBack }) {
 
   return (
     <div style={{ fontFamily: FONT, display: 'flex', flexDirection: 'column', height: '100%', background: D.canvas }}>
-      {/* header band: surah name (right), juz (left) */}
-      <div style={{ flexShrink: 0, background: D.canvas, borderBottom: `1px solid ${D.border}` }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '10px 10px 6px' }}>
-          <IconBtn label="Back" onClick={onBack}><ArrowLeft size={19} /></IconBtn>
-          <div style={{ flex: 1 }} />
-          <IconBtn label={showT ? 'Hide translation' : 'Show translation'} active={showT} onClick={toggleT}><Languages size={18} /></IconBtn>
-          <IconBtn label={layout === 'mushaf' ? 'Switch to cards' : 'Switch to mushaf'} onClick={() => chooseLayout(layout === 'mushaf' ? 'cards' : 'mushaf')}>{layout === 'mushaf' ? <LayoutList size={18} /> : <AlignJustify size={18} />}</IconBtn>
-          <IconBtn label="Text size" onClick={bumpSize}><Type size={18} /></IconBtn>
-          <IconBtn label="Settings" onClick={() => setSettingsOpen(true)}><Settings size={18} /></IconBtn>
-        </div>
-        <div style={{ margin: '2px 12px 10px', padding: 2, borderRadius: 11, background: 'linear-gradient(180deg, #CDAE5A, #9E7830)' }}>
+      {/* one compact header row: back | ornate band (live juz + surah) | size | settings */}
+      <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: 6, padding: '7px 10px', background: D.canvas, borderBottom: `1px solid ${D.border}` }}>
+        <IconBtn label="Back" onClick={onBack}><ArrowLeft size={19} /></IconBtn>
+        <div style={{ flex: 1, minWidth: 0, padding: 2, borderRadius: 10, background: 'linear-gradient(180deg, #CDAE5A, #9E7830)' }}>
           <div style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10,
-            padding: '8px 15px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.45)',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8,
+            padding: '5px 13px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.45)',
             backgroundColor: '#FAF1D6', backgroundImage: ORNAMENT,
           }}>
-            <span style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', fontSize: 12.5, color: '#7A5B1E', whiteSpace: 'nowrap' }}>Juz {meta.juz_start || '-'}</span>
-            <span className="quran-ar" style={{ fontSize: 24, color: D.quran, fontWeight: 500, whiteSpace: 'nowrap' }}>{meta.name_ar || meta.name_tr}</span>
+            <span style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', fontSize: 12, color: '#7A5B1E', whiteSpace: 'nowrap' }}>Juz {(layout === 'mushaf' ? currentJuz : (meta.juz_from || meta.juz_start)) || '-'}</span>
+            <span className="quran-ar" style={{ fontSize: 21, color: D.quran, fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{meta.name_ar || meta.name_tr}</span>
           </div>
         </div>
-        {/* segmented control */}
-        <div role="tablist" style={{ display: 'flex', gap: 0, margin: '0 16px 10px', background: D.card, border: `1px solid ${D.border}`, borderRadius: 12, padding: 4 }}>
-          {MODES.map(([k, label]) => {
-            const on = mode === k;
-            return (
-              <button key={k} role="tab" aria-selected={on} onClick={() => chooseMode(k)}
-                style={{ flex: 1, minHeight: 38, border: 'none', borderRadius: 9, cursor: 'pointer', fontFamily: FONT, fontSize: TYPE.body, fontWeight: 600, background: on ? '#E9F6F4' : 'transparent', color: on ? D.tealDeep : D.inkHint }}>
-                {label}
-              </button>
-            );
-          })}
-        </div>
+        <IconBtn label="Text size" onClick={bumpSize}><Type size={18} /></IconBtn>
+        <IconBtn label="Settings" onClick={() => setSettingsOpen(true)}><Settings size={18} /></IconBtn>
       </div>
 
       {/* learn-mode honesty notice (no approved word data yet) */}
@@ -109,7 +94,8 @@ export default function QuranReader({ surah, initialAyah, onBack }) {
         <MushafView ayat={ayat} mode={mode} arSize={arSize}
           surahName={meta.name_ar || meta.name_tr}
           highlightKey={tapAyah?.key}
-          onTapAyah={showT ? (a) => setTapAyah(a) : undefined}
+          onTapAyah={(a) => setTapAyah(a)}
+          onVisibleAyah={(a) => a && a.juz && setCurrentJuz(a.juz)}
           onSajdah={() => setMarker('sajdah')}
           onWord={hasApprovedWords(surah) ? () => {} : undefined} />
       )}
@@ -131,6 +117,7 @@ export default function QuranReader({ surah, initialAyah, onBack }) {
 
       {settingsOpen && (
         <SettingsSheet showT={showT} onToggleT={toggleT}
+          mode={mode} onMode={chooseMode} layout={layout} onLayout={chooseLayout}
           onOpenWaqf={() => { setSettingsOpen(false); setMarker('waqf'); }} onClose={() => setSettingsOpen(false)} />
       )}
       {marker && <MarkerSheet kind={marker} onClose={() => setMarker(null)} />}
@@ -182,7 +169,7 @@ function CardBlock({ a, arSize, showT, onSave, saved, onSajdah, onMore }) {
   );
 }
 
-function SettingsSheet({ showT, onToggleT, onOpenWaqf, onClose }) {
+function SettingsSheet({ showT, onToggleT, mode, onMode, layout, onLayout, onOpenWaqf, onClose }) {
   return (
     <div role="dialog" aria-modal="true" aria-label="Reader settings" onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 60, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', background: 'rgba(27,42,74,0.32)', fontFamily: FONT }}>
       <div className="deany-sheet-in" onClick={(e) => e.stopPropagation()} style={{ background: D.card, borderTopLeftRadius: 22, borderTopRightRadius: 22, maxWidth: 520, width: '100%', margin: '0 auto', padding: '10px 20px calc(env(safe-area-inset-bottom) + 20px)' }}>
@@ -191,7 +178,9 @@ function SettingsSheet({ showT, onToggleT, onOpenWaqf, onClose }) {
           <h2 style={{ flex: 1, margin: 0, fontSize: TYPE.cardTitle, fontWeight: 600, color: D.ink }}>Reader settings</h2>
           <button onClick={onClose} aria-label="Close" style={{ width: 34, height: 34, borderRadius: 999, border: 'none', background: 'none', color: D.inkHint, cursor: 'pointer' }}><X size={19} /></button>
         </div>
-        <Row label="Show translation" hint="Pickthall, English"><Toggle on={showT} onClick={onToggleT} /></Row>
+        <SegRow label="Layout" options={[['mushaf', 'Mushaf'], ['cards', 'Cards']]} value={layout} onChange={onLayout} />
+        <SegRow label="Mode" options={MODES} value={mode} onChange={onMode} />
+        <Row label="Show translation" hint="Pickthall, English · shown under each ayah in Cards"><Toggle on={showT} onClick={onToggleT} /></Row>
         <button onClick={onOpenWaqf} className="dash-press" style={{ width: '100%', textAlign: 'left', background: D.canvas, border: `1px solid ${D.border}`, borderRadius: 12, padding: '13px 14px', marginTop: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10 }}>
           <BookOpen size={16} color={D.tealDeep} /><span style={{ flex: 1, fontSize: TYPE.body, color: D.ink }}>About the symbols in this text</span>
         </button>
@@ -208,6 +197,22 @@ const Row = ({ label, hint, children }) => (
   <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0' }}>
     <div style={{ flex: 1 }}><div style={{ fontSize: TYPE.body, color: D.ink }}>{label}</div>{hint && <div style={{ fontSize: TYPE.hint, color: D.inkHint }}>{hint}</div>}</div>
     {children}
+  </div>
+);
+const SegRow = ({ label, options, value, onChange }) => (
+  <div style={{ padding: '10px 0' }}>
+    <div style={{ fontSize: TYPE.body, color: D.ink, marginBottom: 8 }}>{label}</div>
+    <div role="tablist" style={{ display: 'flex', gap: 0, background: D.canvas, border: `1px solid ${D.border}`, borderRadius: 12, padding: 4 }}>
+      {options.map(([k, lbl]) => {
+        const on = value === k;
+        return (
+          <button key={k} role="tab" aria-selected={on} onClick={() => onChange(k)}
+            style={{ flex: 1, minHeight: 40, border: 'none', borderRadius: 9, cursor: 'pointer', fontFamily: FONT, fontSize: TYPE.body, fontWeight: 600, background: on ? '#E9F6F4' : 'transparent', color: on ? D.tealDeep : D.inkHint }}>
+            {lbl}
+          </button>
+        );
+      })}
+    </div>
   </div>
 );
 const Toggle = ({ on, onClick }) => (

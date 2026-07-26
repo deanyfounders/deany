@@ -32,7 +32,7 @@ const BASMALAH_TOKENS = 4; // the opening basmalah is always four words
 // data-uri so it is fully self-contained (no external fetch under the app CSP).
 const ORNAMENT = "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22'%3E%3Cg fill='none' stroke='%23B0872F' stroke-width='0.7' opacity='0.5'%3E%3Cpath d='M11 1 L21 11 L11 21 L1 11 Z'/%3E%3Cpath d='M11 6 L16 11 L11 16 L6 11 Z'/%3E%3C/g%3E%3C/svg%3E\")";
 
-export default function MushafView({ ayat, mode, arSize, highlightKey, selectedKeys, onTapAyah, onSajdah, onWord, srsWords, surahName }) {
+export default function MushafView({ ayat, mode, arSize, highlightKey, selectedKeys, onTapAyah, onVisibleAyah, onSajdah, onWord, srsWords, surahName }) {
   const viewportRef = useRef(null);
   const bookRef = useRef(null);
   const swipeRef = useRef({ x: 0, y: 0, swiped: false });
@@ -71,6 +71,22 @@ export default function MushafView({ ayat, mode, arSize, highlightKey, selectedK
   const go = (p) => { setAnimate(true); setPage(Math.max(0, Math.min(pageCount - 1, p))); };
   const next = () => go(page + 1);
   const prev = () => go(page - 1);
+
+  // Report the first ayah of the current page so the header can show its live juz.
+  // RTL reading starts at the top-right corner; read whichever ayah is painted
+  // there once the page settles.
+  useEffect(() => {
+    if (!onVisibleAyah || !ayat || !ayat.length || !dims.w) return;
+    const report = () => {
+      const vp = viewportRef.current; if (!vp) return;
+      const r = vp.getBoundingClientRect();
+      const el = document.elementFromPoint(r.right - MARGIN - 6, r.top + 14);
+      const ay = el && el.closest && el.closest('[data-key]');
+      if (ay) { const a = ayat.find((z) => z.key === ay.getAttribute('data-key')); if (a) onVisibleAyah(a); }
+    };
+    const t = window.setTimeout(report, animate ? 380 : 90);
+    return () => window.clearTimeout(t);
+  }, [page, pageCount, ayat, dims.w, animate, onVisibleAyah]);
 
   const onTouchStart = (e) => { const t = e.touches[0]; swipeRef.current = { x: t.clientX, y: t.clientY, swiped: false }; };
   const onTouchEnd = (e) => {

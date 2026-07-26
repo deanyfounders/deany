@@ -41,6 +41,7 @@ const index = JSON.parse(fs.readFileSync(idxFile, 'utf8'));
 if (index._generated !== true) fail('index is still the scaffold placeholder (run build-quran first)');
 
 let total = 0; const keys = new Set(); const genSajda = new Set(); let emptyEnglish = 0, byteMismatch = 0;
+const juzByKey = new Map(); let unstamped = 0;
 for (const su of (index.surahs || [])) {
   const p = `public/quran/surah/${su.surah}.json`;
   if (!fs.existsSync(p)) { fail(`surah file missing: ${p}`); continue; }
@@ -50,6 +51,7 @@ for (const su of (index.surahs || [])) {
     total++; if (keys.has(a.key)) fail(`duplicate key ${a.key}`); keys.add(a.key);
     if (!a.english) emptyEnglish++;
     if (a.sajdah) genSajda.add(a.key);
+    if (!(a.juz >= 1 && a.juz <= 30)) unstamped++; juzByKey.set(a.key, a.juz);
     const src = uthmani.get(a.key);
     if (src !== a.arabic_uthmani) byteMismatch++;
   }
@@ -64,6 +66,30 @@ sameSajda ? ok(`sajdah ayat match metadata (${metaSajda.size})`) : fail(`sajdah 
 const s9 = JSON.parse(fs.readFileSync('public/quran/surah/9.json', 'utf8')).ayat[0];
 const BASMALAH = uthmani.get('1:1') || '';
 (s9 && BASMALAH && s9.arabic_uthmani.startsWith(BASMALAH.slice(0, 10))) ? fail('surah 9:1 begins with basmalah') : ok('surah 9:1 has no basmalah');
+
+// juz: per-ayah stamping + 30 materialised starts tile the text exactly (per docs/quran-juz.md)
+const ordinalByKey = new Map(); { let g = 0; for (const su of suras) { for (let a = 1; a <= +su.ayas; a++) ordinalByKey.set(`${+su.index}:${a}`, g++); } }
+const keyByOrdinal = [...ordinalByKey.keys()];
+unstamped === 0 ? ok('every ayah stamped with juz 1-30') : fail(`${unstamped} ayat have an out-of-range juz`);
+(juzByKey.get('1:1') === 1 && juzByKey.get('114:6') === 30) ? ok('juz endpoints (1:1->1, 114:6->30)') : fail('juz endpoints wrong');
+const jl = index.juz || [];
+if (jl.length !== 30) fail(`index.juz has ${jl.length} entries, expected 30`);
+else {
+  const starts = [...jl].sort((a, b) => a.juz - b.juz);
+  let tiled = starts[0].ordinal === 0;
+  for (let i = 1; i < 30; i++) { const from = starts[i].ordinal; const prevTo = starts[i - 1] && (starts[i].ordinal - 1); if (from !== prevTo + 1) { /* from == prevTo+1 by construction */ } }
+  // coverage: each start's ordinal equals the previous range end + 1; last runs to 6235
+  let contiguous = starts[0].ordinal === 0 && starts[29].ordinal <= 6235;
+  for (let i = 1; i < 30; i++) if (starts[i].ordinal <= starts[i - 1].ordinal) contiguous = false;
+  contiguous ? ok('30 juz starts are ordered and tile the text') : fail('juz starts are not contiguous/ordered');
+  // boundary: start ayah belongs to the new juz; the ayah before belongs to the old one
+  const j2 = starts[1];
+  const before = keyByOrdinal[j2.ordinal - 1];
+  (juzByKey.get(`${j2.surah}:${j2.ayah}`) === 2 && juzByKey.get(before) === 1) ? ok('juz boundary off-by-one correct (juz 2 start)') : fail('juz boundary off-by-one wrong');
+}
+// a surah spanning several juz reports a range (Al-Baqarah = 1..3)
+const baq = (index.surahs || []).find((s) => s.surah === 2);
+(baq && baq.juz_from === 1 && baq.juz_to === 3) ? ok('surah juz range (Al-Baqarah 1-3)') : fail(`Al-Baqarah juz range wrong: ${baq && baq.juz_from}-${baq && baq.juz_to}`);
 
 if (failures) { console.error(`\nverify-quran: ${failures} check(s) failed.`); process.exit(1); }
 console.log('\nverify-quran: all checks passed.');

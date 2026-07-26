@@ -1,5 +1,217 @@
 {
   "_generated": true,
+  "juz": [
+    {
+      "juz": 1,
+      "surah": 1,
+      "ayah": 1,
+      "name": "Alif Lam Meem",
+      "ordinal": 0
+    },
+    {
+      "juz": 2,
+      "surah": 2,
+      "ayah": 142,
+      "name": "Sayaqool",
+      "ordinal": 148
+    },
+    {
+      "juz": 3,
+      "surah": 2,
+      "ayah": 253,
+      "name": "Tilkal Rusulu",
+      "ordinal": 259
+    },
+    {
+      "juz": 4,
+      "surah": 3,
+      "ayah": 93,
+      "name": "Lan Tanaloo Albirra",
+      "ordinal": 385
+    },
+    {
+      "juz": 5,
+      "surah": 4,
+      "ayah": 24,
+      "name": "Wal Mohsanatu",
+      "ordinal": 516
+    },
+    {
+      "juz": 6,
+      "surah": 4,
+      "ayah": 148,
+      "name": "La Yuhibbullah",
+      "ordinal": 640
+    },
+    {
+      "juz": 7,
+      "surah": 5,
+      "ayah": 82,
+      "name": "Wa Iza Samiu",
+      "ordinal": 750
+    },
+    {
+      "juz": 8,
+      "surah": 6,
+      "ayah": 111,
+      "name": "Wa Lau Annana",
+      "ordinal": 899
+    },
+    {
+      "juz": 9,
+      "surah": 7,
+      "ayah": 88,
+      "name": "Qalal Malao",
+      "ordinal": 1041
+    },
+    {
+      "juz": 10,
+      "surah": 8,
+      "ayah": 41,
+      "name": "Wa Alamoo",
+      "ordinal": 1200
+    },
+    {
+      "juz": 11,
+      "surah": 9,
+      "ayah": 93,
+      "name": "Yatazeroon",
+      "ordinal": 1327
+    },
+    {
+      "juz": 12,
+      "surah": 11,
+      "ayah": 6,
+      "name": "Wa Mamin Dabatin",
+      "ordinal": 1478
+    },
+    {
+      "juz": 13,
+      "surah": 12,
+      "ayah": 53,
+      "name": "Wa Ma Ubrioo",
+      "ordinal": 1648
+    },
+    {
+      "juz": 14,
+      "surah": 15,
+      "ayah": 1,
+      "name": "Rubama",
+      "ordinal": 1802
+    },
+    {
+      "juz": 15,
+      "surah": 17,
+      "ayah": 1,
+      "name": "Subhanal Ladhi",
+      "ordinal": 2029
+    },
+    {
+      "juz": 16,
+      "surah": 18,
+      "ayah": 75,
+      "name": "Qala Alam",
+      "ordinal": 2214
+    },
+    {
+      "juz": 17,
+      "surah": 21,
+      "ayah": 1,
+      "name": "Iqtaraba Lin-nasi",
+      "ordinal": 2483
+    },
+    {
+      "juz": 18,
+      "surah": 23,
+      "ayah": 1,
+      "name": "Qadd Aflaha",
+      "ordinal": 2673
+    },
+    {
+      "juz": 19,
+      "surah": 25,
+      "ayah": 21,
+      "name": "Wa Qalalladhina",
+      "ordinal": 2875
+    },
+    {
+      "juz": 20,
+      "surah": 27,
+      "ayah": 56,
+      "name": "Aman Khalaqa",
+      "ordinal": 3214
+    },
+    {
+      "juz": 21,
+      "surah": 29,
+      "ayah": 46,
+      "name": "Utlu Ma Oohiya",
+      "ordinal": 3385
+    },
+    {
+      "juz": 22,
+      "surah": 33,
+      "ayah": 31,
+      "name": "Wa-Man Yaqnut",
+      "ordinal": 3563
+    },
+    {
+      "juz": 23,
+      "surah": 36,
+      "ayah": 28,
+      "name": "Wa Mali",
+      "ordinal": 3732
+    },
+    {
+      "juz": 24,
+      "surah": 39,
+      "ayah": 32,
+      "name": "Fa-man Azlamu",
+      "ordinal": 4089
+    },
+    {
+      "juz": 25,
+      "surah": 41,
+      "ayah": 47,
+      "name": "Ilayhi Yuraddu",
+      "ordinal": 4264
+    },
+    {
+      "juz": 26,
+      "surah": 46,
+      "ayah": 1,
+      "name": "Ha Meem",
+      "ordinal": 4510
+    },
+    {
+      "juz": 27,
+      "surah": 51,
+      "ayah": 31,
+      "name": "Qala Fama Khatbukum",
+      "ordinal": 4705
+    },
+    {
+      "juz": 28,
+      "surah": 58,
+      "ayah": 1,
+      "name": "Qadd Samiallah",
+      "ordinal": 5104
+    },
+    {
+      "juz": 29,
+      "surah": 67,
+      "ayah": 1,
+      "name": "Tabarakal Ladhi",
+      "ordinal": 5241
+    },
+    {
+      "juz": 30,
+      "surah": 78,
+      "ayah": 1,
+      "name": "Amma",
+      "ordinal": 5672
+    }
+  ],
   "surahs": [
     {
       "surah": 1,
@@ -8,6 +220,8 @@
       "name_en": "The Opening",
       "ayah_count": 7,
       "revelation": "Meccan",
+      "juz_from": 1,
+      "juz_to": 1,
       "juz_start": 1,
       "sajdah_ayat": []
     },
@@ -18,6 +232,8 @@
       "name_en": "The Cow",
       "ayah_count": 286,
       "revelation": "Medinan",
+      "juz_from": 1,
+      "juz_to": 3,
       "juz_start": 1,
       "sajdah_ayat": []
     },
@@ -28,6 +244,8 @@
       "name_en": "The Family of Imraan",
       "ayah_count": 200,
       "revelation": "Medinan",
+      "juz_from": 3,
+      "juz_to": 4,
       "juz_start": 3,
       "sajdah_ayat": []
     },
@@ -38,6 +256,8 @@
       "name_en": "The Women",
       "ayah_count": 176,
       "revelation": "Medinan",
+      "juz_from": 4,
+      "juz_to": 6,
       "juz_start": 4,
       "sajdah_ayat": []
     },
@@ -48,6 +268,8 @@
       "name_en": "The Table",
       "ayah_count": 120,
       "revelation": "Medinan",
+      "juz_from": 6,
+      "juz_to": 7,
       "juz_start": 6,
       "sajdah_ayat": []
     },
@@ -58,6 +280,8 @@
       "name_en": "The Cattle",
       "ayah_count": 165,
       "revelation": "Meccan",
+      "juz_from": 7,
+      "juz_to": 8,
       "juz_start": 7,
       "sajdah_ayat": []
     },
@@ -68,6 +292,8 @@
       "name_en": "The Heights",
       "ayah_count": 206,
       "revelation": "Meccan",
+      "juz_from": 8,
+      "juz_to": 9,
       "juz_start": 8,
       "sajdah_ayat": [
         206
@@ -80,6 +306,8 @@
       "name_en": "The Spoils of War",
       "ayah_count": 75,
       "revelation": "Medinan",
+      "juz_from": 9,
+      "juz_to": 10,
       "juz_start": 9,
       "sajdah_ayat": []
     },
@@ -90,6 +318,8 @@
       "name_en": "The Repentance",
       "ayah_count": 129,
       "revelation": "Medinan",
+      "juz_from": 10,
+      "juz_to": 11,
       "juz_start": 10,
       "sajdah_ayat": []
     },
@@ -100,6 +330,8 @@
       "name_en": "Jonas",
       "ayah_count": 109,
       "revelation": "Meccan",
+      "juz_from": 11,
+      "juz_to": 11,
       "juz_start": 11,
       "sajdah_ayat": []
     },
@@ -110,6 +342,8 @@
       "name_en": "Hud",
       "ayah_count": 123,
       "revelation": "Meccan",
+      "juz_from": 11,
+      "juz_to": 12,
       "juz_start": 11,
       "sajdah_ayat": []
     },
@@ -120,6 +354,8 @@
       "name_en": "Joseph",
       "ayah_count": 111,
       "revelation": "Meccan",
+      "juz_from": 12,
+      "juz_to": 13,
       "juz_start": 12,
       "sajdah_ayat": []
     },
@@ -130,6 +366,8 @@
       "name_en": "The Thunder",
       "ayah_count": 43,
       "revelation": "Medinan",
+      "juz_from": 13,
+      "juz_to": 13,
       "juz_start": 13,
       "sajdah_ayat": [
         15
@@ -142,6 +380,8 @@
       "name_en": "Abraham",
       "ayah_count": 52,
       "revelation": "Meccan",
+      "juz_from": 13,
+      "juz_to": 13,
       "juz_start": 13,
       "sajdah_ayat": []
     },
@@ -152,6 +392,8 @@
       "name_en": "The Rock",
       "ayah_count": 99,
       "revelation": "Meccan",
+      "juz_from": 14,
+      "juz_to": 14,
       "juz_start": 14,
       "sajdah_ayat": []
     },
@@ -162,6 +404,8 @@
       "name_en": "The Bee",
       "ayah_count": 128,
       "revelation": "Meccan",
+      "juz_from": 14,
+      "juz_to": 14,
       "juz_start": 14,
       "sajdah_ayat": [
         50
@@ -174,6 +418,8 @@
       "name_en": "The Night Journey",
       "ayah_count": 111,
       "revelation": "Meccan",
+      "juz_from": 15,
+      "juz_to": 15,
       "juz_start": 15,
       "sajdah_ayat": [
         109
@@ -186,6 +432,8 @@
       "name_en": "The Cave",
       "ayah_count": 110,
       "revelation": "Meccan",
+      "juz_from": 15,
+      "juz_to": 16,
       "juz_start": 15,
       "sajdah_ayat": []
     },
@@ -196,6 +444,8 @@
       "name_en": "Mary",
       "ayah_count": 98,
       "revelation": "Meccan",
+      "juz_from": 16,
+      "juz_to": 16,
       "juz_start": 16,
       "sajdah_ayat": [
         58
@@ -208,6 +458,8 @@
       "name_en": "Taa-Haa",
       "ayah_count": 135,
       "revelation": "Meccan",
+      "juz_from": 16,
+      "juz_to": 16,
       "juz_start": 16,
       "sajdah_ayat": []
     },
@@ -218,6 +470,8 @@
       "name_en": "The Prophets",
       "ayah_count": 112,
       "revelation": "Meccan",
+      "juz_from": 17,
+      "juz_to": 17,
       "juz_start": 17,
       "sajdah_ayat": []
     },
@@ -228,6 +482,8 @@
       "name_en": "The Pilgrimage",
       "ayah_count": 78,
       "revelation": "Medinan",
+      "juz_from": 17,
+      "juz_to": 17,
       "juz_start": 17,
       "sajdah_ayat": [
         18,
@@ -241,6 +497,8 @@
       "name_en": "The Believers",
       "ayah_count": 118,
       "revelation": "Meccan",
+      "juz_from": 18,
+      "juz_to": 18,
       "juz_start": 18,
       "sajdah_ayat": []
     },
@@ -251,6 +509,8 @@
       "name_en": "The Light",
       "ayah_count": 64,
       "revelation": "Medinan",
+      "juz_from": 18,
+      "juz_to": 18,
       "juz_start": 18,
       "sajdah_ayat": []
     },
@@ -261,6 +521,8 @@
       "name_en": "The Criterion",
       "ayah_count": 77,
       "revelation": "Meccan",
+      "juz_from": 18,
+      "juz_to": 19,
       "juz_start": 18,
       "sajdah_ayat": [
         60
@@ -273,6 +535,8 @@
       "name_en": "The Poets",
       "ayah_count": 227,
       "revelation": "Meccan",
+      "juz_from": 19,
+      "juz_to": 19,
       "juz_start": 19,
       "sajdah_ayat": []
     },
@@ -283,6 +547,8 @@
       "name_en": "The Ant",
       "ayah_count": 93,
       "revelation": "Meccan",
+      "juz_from": 19,
+      "juz_to": 20,
       "juz_start": 19,
       "sajdah_ayat": [
         26
@@ -295,6 +561,8 @@
       "name_en": "The Stories",
       "ayah_count": 88,
       "revelation": "Meccan",
+      "juz_from": 20,
+      "juz_to": 20,
       "juz_start": 20,
       "sajdah_ayat": []
     },
@@ -305,6 +573,8 @@
       "name_en": "The Spider",
       "ayah_count": 69,
       "revelation": "Meccan",
+      "juz_from": 20,
+      "juz_to": 21,
       "juz_start": 20,
       "sajdah_ayat": []
     },
@@ -315,6 +585,8 @@
       "name_en": "The Romans",
       "ayah_count": 60,
       "revelation": "Meccan",
+      "juz_from": 21,
+      "juz_to": 21,
       "juz_start": 21,
       "sajdah_ayat": []
     },
@@ -325,6 +597,8 @@
       "name_en": "Luqman",
       "ayah_count": 34,
       "revelation": "Meccan",
+      "juz_from": 21,
+      "juz_to": 21,
       "juz_start": 21,
       "sajdah_ayat": []
     },
@@ -335,6 +609,8 @@
       "name_en": "The Prostration",
       "ayah_count": 30,
       "revelation": "Meccan",
+      "juz_from": 21,
+      "juz_to": 21,
       "juz_start": 21,
       "sajdah_ayat": [
         15
@@ -347,6 +623,8 @@
       "name_en": "The Clans",
       "ayah_count": 73,
       "revelation": "Medinan",
+      "juz_from": 21,
+      "juz_to": 22,
       "juz_start": 21,
       "sajdah_ayat": []
     },
@@ -357,6 +635,8 @@
       "name_en": "Sheba",
       "ayah_count": 54,
       "revelation": "Meccan",
+      "juz_from": 22,
+      "juz_to": 22,
       "juz_start": 22,
       "sajdah_ayat": []
     },
@@ -367,6 +647,8 @@
       "name_en": "The Originator",
       "ayah_count": 45,
       "revelation": "Meccan",
+      "juz_from": 22,
+      "juz_to": 22,
       "juz_start": 22,
       "sajdah_ayat": []
     },
@@ -377,6 +659,8 @@
       "name_en": "Yaseen",
       "ayah_count": 83,
       "revelation": "Meccan",
+      "juz_from": 22,
+      "juz_to": 23,
       "juz_start": 22,
       "sajdah_ayat": []
     },
@@ -387,6 +671,8 @@
       "name_en": "Those drawn up in Ranks",
       "ayah_count": 182,
       "revelation": "Meccan",
+      "juz_from": 23,
+      "juz_to": 23,
       "juz_start": 23,
       "sajdah_ayat": []
     },
@@ -397,6 +683,8 @@
       "name_en": "The letter Saad",
       "ayah_count": 88,
       "revelation": "Meccan",
+      "juz_from": 23,
+      "juz_to": 23,
       "juz_start": 23,
       "sajdah_ayat": [
         24
@@ -409,6 +697,8 @@
       "name_en": "The Groups",
       "ayah_count": 75,
       "revelation": "Meccan",
+      "juz_from": 23,
+      "juz_to": 24,
       "juz_start": 23,
       "sajdah_ayat": []
     },
@@ -419,6 +709,8 @@
       "name_en": "The Forgiver",
       "ayah_count": 85,
       "revelation": "Meccan",
+      "juz_from": 24,
+      "juz_to": 24,
       "juz_start": 24,
       "sajdah_ayat": []
     },
@@ -429,6 +721,8 @@
       "name_en": "Explained in detail",
       "ayah_count": 54,
       "revelation": "Meccan",
+      "juz_from": 24,
+      "juz_to": 25,
       "juz_start": 24,
       "sajdah_ayat": [
         38
@@ -441,6 +735,8 @@
       "name_en": "Consultation",
       "ayah_count": 53,
       "revelation": "Meccan",
+      "juz_from": 25,
+      "juz_to": 25,
       "juz_start": 25,
       "sajdah_ayat": []
     },
@@ -451,6 +747,8 @@
       "name_en": "Ornaments of gold",
       "ayah_count": 89,
       "revelation": "Meccan",
+      "juz_from": 25,
+      "juz_to": 25,
       "juz_start": 25,
       "sajdah_ayat": []
     },
@@ -461,6 +759,8 @@
       "name_en": "The Smoke",
       "ayah_count": 59,
       "revelation": "Meccan",
+      "juz_from": 25,
+      "juz_to": 25,
       "juz_start": 25,
       "sajdah_ayat": []
     },
@@ -471,6 +771,8 @@
       "name_en": "Crouching",
       "ayah_count": 37,
       "revelation": "Meccan",
+      "juz_from": 25,
+      "juz_to": 25,
       "juz_start": 25,
       "sajdah_ayat": []
     },
@@ -481,6 +783,8 @@
       "name_en": "The Dunes",
       "ayah_count": 35,
       "revelation": "Meccan",
+      "juz_from": 26,
+      "juz_to": 26,
       "juz_start": 26,
       "sajdah_ayat": []
     },
@@ -491,6 +795,8 @@
       "name_en": "Muhammad",
       "ayah_count": 38,
       "revelation": "Medinan",
+      "juz_from": 26,
+      "juz_to": 26,
       "juz_start": 26,
       "sajdah_ayat": []
     },
@@ -501,6 +807,8 @@
       "name_en": "The Victory",
       "ayah_count": 29,
       "revelation": "Medinan",
+      "juz_from": 26,
+      "juz_to": 26,
       "juz_start": 26,
       "sajdah_ayat": []
     },
@@ -511,6 +819,8 @@
       "name_en": "The Inner Apartments",
       "ayah_count": 18,
       "revelation": "Medinan",
+      "juz_from": 26,
+      "juz_to": 26,
       "juz_start": 26,
       "sajdah_ayat": []
     },
@@ -521,6 +831,8 @@
       "name_en": "The letter Qaaf",
       "ayah_count": 45,
       "revelation": "Meccan",
+      "juz_from": 26,
+      "juz_to": 26,
       "juz_start": 26,
       "sajdah_ayat": []
     },
@@ -531,6 +843,8 @@
       "name_en": "The Winnowing Winds",
       "ayah_count": 60,
       "revelation": "Meccan",
+      "juz_from": 26,
+      "juz_to": 27,
       "juz_start": 26,
       "sajdah_ayat": []
     },
@@ -541,6 +855,8 @@
       "name_en": "The Mount",
       "ayah_count": 49,
       "revelation": "Meccan",
+      "juz_from": 27,
+      "juz_to": 27,
       "juz_start": 27,
       "sajdah_ayat": []
     },
@@ -551,6 +867,8 @@
       "name_en": "The Star",
       "ayah_count": 62,
       "revelation": "Meccan",
+      "juz_from": 27,
+      "juz_to": 27,
       "juz_start": 27,
       "sajdah_ayat": [
         62
@@ -563,6 +881,8 @@
       "name_en": "The Moon",
       "ayah_count": 55,
       "revelation": "Meccan",
+      "juz_from": 27,
+      "juz_to": 27,
       "juz_start": 27,
       "sajdah_ayat": []
     },
@@ -573,6 +893,8 @@
       "name_en": "The Beneficent",
       "ayah_count": 78,
       "revelation": "Medinan",
+      "juz_from": 27,
+      "juz_to": 27,
       "juz_start": 27,
       "sajdah_ayat": []
     },
@@ -583,6 +905,8 @@
       "name_en": "The Inevitable",
       "ayah_count": 96,
       "revelation": "Meccan",
+      "juz_from": 27,
+      "juz_to": 27,
       "juz_start": 27,
       "sajdah_ayat": []
     },
@@ -593,6 +917,8 @@
       "name_en": "The Iron",
       "ayah_count": 29,
       "revelation": "Medinan",
+      "juz_from": 27,
+      "juz_to": 27,
       "juz_start": 27,
       "sajdah_ayat": []
     },
@@ -603,6 +929,8 @@
       "name_en": "The Pleading Woman",
       "ayah_count": 22,
       "revelation": "Medinan",
+      "juz_from": 28,
+      "juz_to": 28,
       "juz_start": 28,
       "sajdah_ayat": []
     },
@@ -613,6 +941,8 @@
       "name_en": "The Exile",
       "ayah_count": 24,
       "revelation": "Medinan",
+      "juz_from": 28,
+      "juz_to": 28,
       "juz_start": 28,
       "sajdah_ayat": []
     },
@@ -623,6 +953,8 @@
       "name_en": "She that is to be examined",
       "ayah_count": 13,
       "revelation": "Medinan",
+      "juz_from": 28,
+      "juz_to": 28,
       "juz_start": 28,
       "sajdah_ayat": []
     },
@@ -633,6 +965,8 @@
       "name_en": "The Ranks",
       "ayah_count": 14,
       "revelation": "Medinan",
+      "juz_from": 28,
+      "juz_to": 28,
       "juz_start": 28,
       "sajdah_ayat": []
     },
@@ -643,6 +977,8 @@
       "name_en": "Friday",
       "ayah_count": 11,
       "revelation": "Medinan",
+      "juz_from": 28,
+      "juz_to": 28,
       "juz_start": 28,
       "sajdah_ayat": []
     },
@@ -653,6 +989,8 @@
       "name_en": "The Hypocrites",
       "ayah_count": 11,
       "revelation": "Medinan",
+      "juz_from": 28,
+      "juz_to": 28,
       "juz_start": 28,
       "sajdah_ayat": []
     },
@@ -663,6 +1001,8 @@
       "name_en": "Mutual Disillusion",
       "ayah_count": 18,
       "revelation": "Medinan",
+      "juz_from": 28,
+      "juz_to": 28,
       "juz_start": 28,
       "sajdah_ayat": []
     },
@@ -673,6 +1013,8 @@
       "name_en": "Divorce",
       "ayah_count": 12,
       "revelation": "Medinan",
+      "juz_from": 28,
+      "juz_to": 28,
       "juz_start": 28,
       "sajdah_ayat": []
     },
@@ -683,6 +1025,8 @@
       "name_en": "The Prohibition",
       "ayah_count": 12,
       "revelation": "Medinan",
+      "juz_from": 28,
+      "juz_to": 28,
       "juz_start": 28,
       "sajdah_ayat": []
     },
@@ -693,6 +1037,8 @@
       "name_en": "The Sovereignty",
       "ayah_count": 30,
       "revelation": "Meccan",
+      "juz_from": 29,
+      "juz_to": 29,
       "juz_start": 29,
       "sajdah_ayat": []
     },
@@ -703,6 +1049,8 @@
       "name_en": "The Pen",
       "ayah_count": 52,
       "revelation": "Meccan",
+      "juz_from": 29,
+      "juz_to": 29,
       "juz_start": 29,
       "sajdah_ayat": []
     },
@@ -713,6 +1061,8 @@
       "name_en": "The Reality",
       "ayah_count": 52,
       "revelation": "Meccan",
+      "juz_from": 29,
+      "juz_to": 29,
       "juz_start": 29,
       "sajdah_ayat": []
     },
@@ -723,6 +1073,8 @@
       "name_en": "The Ascending Stairways",
       "ayah_count": 44,
       "revelation": "Meccan",
+      "juz_from": 29,
+      "juz_to": 29,
       "juz_start": 29,
       "sajdah_ayat": []
     },
@@ -733,6 +1085,8 @@
       "name_en": "Noah",
       "ayah_count": 28,
       "revelation": "Meccan",
+      "juz_from": 29,
+      "juz_to": 29,
       "juz_start": 29,
       "sajdah_ayat": []
     },
@@ -743,6 +1097,8 @@
       "name_en": "The Jinn",
       "ayah_count": 28,
       "revelation": "Meccan",
+      "juz_from": 29,
+      "juz_to": 29,
       "juz_start": 29,
       "sajdah_ayat": []
     },
@@ -753,6 +1109,8 @@
       "name_en": "The Enshrouded One",
       "ayah_count": 20,
       "revelation": "Meccan",
+      "juz_from": 29,
+      "juz_to": 29,
       "juz_start": 29,
       "sajdah_ayat": []
     },
@@ -763,6 +1121,8 @@
       "name_en": "The Cloaked One",
       "ayah_count": 56,
       "revelation": "Meccan",
+      "juz_from": 29,
+      "juz_to": 29,
       "juz_start": 29,
       "sajdah_ayat": []
     },
@@ -773,6 +1133,8 @@
       "name_en": "The Resurrection",
       "ayah_count": 40,
       "revelation": "Meccan",
+      "juz_from": 29,
+      "juz_to": 29,
       "juz_start": 29,
       "sajdah_ayat": []
     },
@@ -783,6 +1145,8 @@
       "name_en": "Man",
       "ayah_count": 31,
       "revelation": "Medinan",
+      "juz_from": 29,
+      "juz_to": 29,
       "juz_start": 29,
       "sajdah_ayat": []
     },
@@ -793,6 +1157,8 @@
       "name_en": "The Emissaries",
       "ayah_count": 50,
       "revelation": "Meccan",
+      "juz_from": 29,
+      "juz_to": 29,
       "juz_start": 29,
       "sajdah_ayat": []
     },
@@ -803,6 +1169,8 @@
       "name_en": "The Announcement",
       "ayah_count": 40,
       "revelation": "Meccan",
+      "juz_from": 30,
+      "juz_to": 30,
       "juz_start": 30,
       "sajdah_ayat": []
     },
@@ -813,6 +1181,8 @@
       "name_en": "Those who drag forth",
       "ayah_count": 46,
       "revelation": "Meccan",
+      "juz_from": 30,
+      "juz_to": 30,
       "juz_start": 30,
       "sajdah_ayat": []
     },
@@ -823,6 +1193,8 @@
       "name_en": "He frowned",
       "ayah_count": 42,
       "revelation": "Meccan",
+      "juz_from": 30,
+      "juz_to": 30,
       "juz_start": 30,
       "sajdah_ayat": []
     },
@@ -833,6 +1205,8 @@
       "name_en": "The Overthrowing",
       "ayah_count": 29,
       "revelation": "Meccan",
+      "juz_from": 30,
+      "juz_to": 30,
       "juz_start": 30,
       "sajdah_ayat": []
     },
@@ -843,6 +1217,8 @@
       "name_en": "The Cleaving",
       "ayah_count": 19,
       "revelation": "Meccan",
+      "juz_from": 30,
+      "juz_to": 30,
       "juz_start": 30,
       "sajdah_ayat": []
     },
@@ -853,6 +1229,8 @@
       "name_en": "Defrauding",
       "ayah_count": 36,
       "revelation": "Meccan",
+      "juz_from": 30,
+      "juz_to": 30,
       "juz_start": 30,
       "sajdah_ayat": []
     },
@@ -863,6 +1241,8 @@
       "name_en": "The Splitting Open",
       "ayah_count": 25,
       "revelation": "Meccan",
+      "juz_from": 30,
+      "juz_to": 30,
       "juz_start": 30,
       "sajdah_ayat": [
         21
@@ -875,6 +1255,8 @@
       "name_en": "The Constellations",
       "ayah_count": 22,
       "revelation": "Meccan",
+      "juz_from": 30,
+      "juz_to": 30,
       "juz_start": 30,
       "sajdah_ayat": []
     },
@@ -885,6 +1267,8 @@
       "name_en": "The Morning Star",
       "ayah_count": 17,
       "revelation": "Meccan",
+      "juz_from": 30,
+      "juz_to": 30,
       "juz_start": 30,
       "sajdah_ayat": []
     },
@@ -895,6 +1279,8 @@
       "name_en": "The Most High",
       "ayah_count": 19,
       "revelation": "Meccan",
+      "juz_from": 30,
+      "juz_to": 30,
       "juz_start": 30,
       "sajdah_ayat": []
     },
@@ -905,6 +1291,8 @@
       "name_en": "The Overwhelming",
       "ayah_count": 26,
       "revelation": "Meccan",
+      "juz_from": 30,
+      "juz_to": 30,
       "juz_start": 30,
       "sajdah_ayat": []
     },
@@ -915,6 +1303,8 @@
       "name_en": "The Dawn",
       "ayah_count": 30,
       "revelation": "Meccan",
+      "juz_from": 30,
+      "juz_to": 30,
       "juz_start": 30,
       "sajdah_ayat": []
     },
@@ -925,6 +1315,8 @@
       "name_en": "The City",
       "ayah_count": 20,
       "revelation": "Meccan",
+      "juz_from": 30,
+      "juz_to": 30,
       "juz_start": 30,
       "sajdah_ayat": []
     },
@@ -935,6 +1327,8 @@
       "name_en": "The Sun",
       "ayah_count": 15,
       "revelation": "Meccan",
+      "juz_from": 30,
+      "juz_to": 30,
       "juz_start": 30,
       "sajdah_ayat": []
     },
@@ -945,6 +1339,8 @@
       "name_en": "The Night",
       "ayah_count": 21,
       "revelation": "Meccan",
+      "juz_from": 30,
+      "juz_to": 30,
       "juz_start": 30,
       "sajdah_ayat": []
     },
@@ -955,6 +1351,8 @@
       "name_en": "The Morning Hours",
       "ayah_count": 11,
       "revelation": "Meccan",
+      "juz_from": 30,
+      "juz_to": 30,
       "juz_start": 30,
       "sajdah_ayat": []
     },
@@ -965,6 +1363,8 @@
       "name_en": "The Consolation",
       "ayah_count": 8,
       "revelation": "Meccan",
+      "juz_from": 30,
+      "juz_to": 30,
       "juz_start": 30,
       "sajdah_ayat": []
     },
@@ -975,6 +1375,8 @@
       "name_en": "The Fig",
       "ayah_count": 8,
       "revelation": "Meccan",
+      "juz_from": 30,
+      "juz_to": 30,
       "juz_start": 30,
       "sajdah_ayat": []
     },
@@ -985,6 +1387,8 @@
       "name_en": "The Clot",
       "ayah_count": 19,
       "revelation": "Meccan",
+      "juz_from": 30,
+      "juz_to": 30,
       "juz_start": 30,
       "sajdah_ayat": [
         19
@@ -997,6 +1401,8 @@
       "name_en": "The Power, Fate",
       "ayah_count": 5,
       "revelation": "Meccan",
+      "juz_from": 30,
+      "juz_to": 30,
       "juz_start": 30,
       "sajdah_ayat": []
     },
@@ -1007,6 +1413,8 @@
       "name_en": "The Evidence",
       "ayah_count": 8,
       "revelation": "Medinan",
+      "juz_from": 30,
+      "juz_to": 30,
       "juz_start": 30,
       "sajdah_ayat": []
     },
@@ -1017,6 +1425,8 @@
       "name_en": "The Earthquake",
       "ayah_count": 8,
       "revelation": "Medinan",
+      "juz_from": 30,
+      "juz_to": 30,
       "juz_start": 30,
       "sajdah_ayat": []
     },
@@ -1027,6 +1437,8 @@
       "name_en": "The Chargers",
       "ayah_count": 11,
       "revelation": "Meccan",
+      "juz_from": 30,
+      "juz_to": 30,
       "juz_start": 30,
       "sajdah_ayat": []
     },
@@ -1037,6 +1449,8 @@
       "name_en": "The Calamity",
       "ayah_count": 11,
       "revelation": "Meccan",
+      "juz_from": 30,
+      "juz_to": 30,
       "juz_start": 30,
       "sajdah_ayat": []
     },
@@ -1047,6 +1461,8 @@
       "name_en": "Competition",
       "ayah_count": 8,
       "revelation": "Meccan",
+      "juz_from": 30,
+      "juz_to": 30,
       "juz_start": 30,
       "sajdah_ayat": []
     },
@@ -1057,6 +1473,8 @@
       "name_en": "The Declining Day, Epoch",
       "ayah_count": 3,
       "revelation": "Meccan",
+      "juz_from": 30,
+      "juz_to": 30,
       "juz_start": 30,
       "sajdah_ayat": []
     },
@@ -1067,6 +1485,8 @@
       "name_en": "The Traducer",
       "ayah_count": 9,
       "revelation": "Meccan",
+      "juz_from": 30,
+      "juz_to": 30,
       "juz_start": 30,
       "sajdah_ayat": []
     },
@@ -1077,6 +1497,8 @@
       "name_en": "The Elephant",
       "ayah_count": 5,
       "revelation": "Meccan",
+      "juz_from": 30,
+      "juz_to": 30,
       "juz_start": 30,
       "sajdah_ayat": []
     },
@@ -1087,6 +1509,8 @@
       "name_en": "Quraysh",
       "ayah_count": 4,
       "revelation": "Meccan",
+      "juz_from": 30,
+      "juz_to": 30,
       "juz_start": 30,
       "sajdah_ayat": []
     },
@@ -1097,6 +1521,8 @@
       "name_en": "Almsgiving",
       "ayah_count": 7,
       "revelation": "Meccan",
+      "juz_from": 30,
+      "juz_to": 30,
       "juz_start": 30,
       "sajdah_ayat": []
     },
@@ -1107,6 +1533,8 @@
       "name_en": "Abundance",
       "ayah_count": 3,
       "revelation": "Meccan",
+      "juz_from": 30,
+      "juz_to": 30,
       "juz_start": 30,
       "sajdah_ayat": []
     },
@@ -1117,6 +1545,8 @@
       "name_en": "The Disbelievers",
       "ayah_count": 6,
       "revelation": "Meccan",
+      "juz_from": 30,
+      "juz_to": 30,
       "juz_start": 30,
       "sajdah_ayat": []
     },
@@ -1127,6 +1557,8 @@
       "name_en": "Divine Support",
       "ayah_count": 3,
       "revelation": "Medinan",
+      "juz_from": 30,
+      "juz_to": 30,
       "juz_start": 30,
       "sajdah_ayat": []
     },
@@ -1137,6 +1569,8 @@
       "name_en": "The Palm Fibre",
       "ayah_count": 5,
       "revelation": "Meccan",
+      "juz_from": 30,
+      "juz_to": 30,
       "juz_start": 30,
       "sajdah_ayat": []
     },
@@ -1147,6 +1581,8 @@
       "name_en": "Sincerity",
       "ayah_count": 4,
       "revelation": "Meccan",
+      "juz_from": 30,
+      "juz_to": 30,
       "juz_start": 30,
       "sajdah_ayat": []
     },
@@ -1157,6 +1593,8 @@
       "name_en": "The Dawn",
       "ayah_count": 5,
       "revelation": "Meccan",
+      "juz_from": 30,
+      "juz_to": 30,
       "juz_start": 30,
       "sajdah_ayat": []
     },
@@ -1167,6 +1605,8 @@
       "name_en": "Mankind",
       "ayah_count": 6,
       "revelation": "Meccan",
+      "juz_from": 30,
+      "juz_to": 30,
       "juz_start": 30,
       "sajdah_ayat": []
     }
