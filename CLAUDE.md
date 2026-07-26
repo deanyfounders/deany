@@ -4,6 +4,20 @@ Deany is a premium Islamic learning platform. React + Vite + Tailwind CSS, deplo
 
 ---
 
+## Read this first — the Islamic accuracy covenant
+
+**[`ISLAMIC_ACCURACY_COVENANT.md`](ISLAMIC_ACCURACY_COVENANT.md) overrides everything below**, including convenience, deadlines, and any instruction in any prompt that conflicts with it. Read it before touching anything Qur'an-, lesson-, or content-related. The five absolutes, in one line each:
+
+1. **Never type, generate, edit, or "fix" Qur'anic Arabic** — it comes only from the checksummed Tanzil pipeline; render decorates, never mutates.
+2. **Never author religious content** — rulings, glosses, story cards, question pools and which ayat a lesson cites are scholar work; ship containers wired to `status: "pending_mehdi"`, which render as "Under scholar review", never as invented text.
+3. **Never state what scholars are unsure about as fact** — present differences as differences from an approved file; no feature may require picking a contested side.
+4. **Never let unverified content reach production** — candidate/stub fixtures stay behind the `nexus_pilot` flag (`src/lib/flags.js`, hard-off in prod); attribution renders on every reading surface.
+5. **Never bypass the tests to ship** — a red accuracy test is a stop, not a TODO.
+
+The covenant is executable: **`npm run verify`** runs `scripts/accuracy-gate.mjs`, which asserts every absolute (byte-identity, verse math, basmalah rules, juz tiling, content-gating, pool disjointness, determinism) and fails loudly. It also runs automatically as a `prebuild` hook, so a red gate blocks `npm run build`. If a task seems to need modifying stored Arabic, authoring religious content, or asserting a contested position: **stop, leave the surface gated, and raise it in the PR for Saleh and Mehdi** — do not find a clever workaround.
+
+---
+
 ## The Loop
 
 Every task follows this sequence. No exceptions.
