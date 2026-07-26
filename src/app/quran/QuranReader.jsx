@@ -93,6 +93,7 @@ export default function QuranReader({ surah, initialAyah, onBack }) {
       {ayat && ayat.length > 0 && layout === 'mushaf' && (
         <MushafView ayat={ayat} mode={mode} arSize={arSize}
           surahName={meta.name_ar || meta.name_tr}
+          initialKey={initialAyah ? `${surah}:${initialAyah}` : null}
           highlightKey={tapAyah?.key}
           onTapAyah={(a) => setTapAyah(a)}
           onVisibleAyah={(a) => a && a.juz && setCurrentJuz(a.juz)}

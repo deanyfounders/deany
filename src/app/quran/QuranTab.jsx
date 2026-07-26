@@ -15,13 +15,16 @@ const QURAN_CSS = `
 
 export default function QuranTab() {
   const [open, setOpen] = useState(null); // { surah, ayah } | null
+  // Held here (not in QuranIndex) so returning from the reader restores the tab
+  // you were on - opening a juz and pressing back lands you back on Juz.
+  const [seg, setSeg] = useState('surah'); // surah | juz | saved
 
   return (
     <>
       <style>{QURAN_CSS}</style>
       {open
         ? <QuranReader surah={open.surah} initialAyah={open.ayah} onBack={() => setOpen(null)} />
-        : <QuranIndex onOpenSurah={(surah, ayah) => setOpen({ surah, ayah })} />}
+        : <QuranIndex seg={seg} onSeg={setSeg} onOpenSurah={(surah, ayah) => setOpen({ surah, ayah })} />}
     </>
   );
 }

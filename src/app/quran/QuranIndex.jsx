@@ -1,7 +1,7 @@
 // Qur'an index (Part C1): search, Surah / Juz / Saved segmented control, a
 // continue-reading banner, and the surah list. Built from the bundled index.
 import React, { useMemo, useState } from 'react';
-import { Search, BookOpen, ArrowRight } from 'lucide-react';
+import { Search, BookOpen, ArrowRight, X } from 'lucide-react';
 import { D, FONT, RADIUS, TYPE } from '../dashboard/tokens.js';
 import indexData from '../../data/quran-index.json';
 import { getLastRead, getSaved } from './store.js';
@@ -20,24 +20,27 @@ const juzOfKey = (surah, ayah) => {
 };
 const juzLabel = (s) => (s.juz_from && s.juz_to && s.juz_to !== s.juz_from) ? `Juz ${s.juz_from}-${s.juz_to}` : `Juz ${s.juz_from || s.juz_start || ''}`;
 
-export default function QuranIndex({ onOpenSurah }) {
+export default function QuranIndex({ onOpenSurah, seg = 'surah', onSeg }) {
   const [q, setQ] = useState('');
-  const [seg, setSeg] = useState('surah'); // surah | juz | saved
+  const setSeg = onSeg || (() => {});
   const last = getLastRead();
   const saved = getSaved();
+  const query = q.trim().toLowerCase();
 
-  const filtered = useMemo(() => {
-    const s = q.trim().toLowerCase();
-    let list = SURAHS;
-    if (seg === 'saved') list = SURAHS.filter((x) => saved.includes(x.surah));
-    if (!s) return list;
-    return list.filter((x) =>
-      x.name_tr.toLowerCase().includes(s) ||
-      x.name_en.toLowerCase().includes(s) ||
-      String(x.surah) === s ||
-      x.key === s || `${x.surah}:`.startsWith(s)
-    );
-  }, [q, seg, saved]);
+  // Tab list (surah/saved), independent of the search box.
+  const tabList = useMemo(() => (seg === 'saved' ? SURAHS.filter((x) => saved.includes(x.surah)) : SURAHS), [seg, saved]);
+
+  // Live search across ALL surahs (name, meaning, number, or a key like 2:255) -
+  // shown as a dropdown of matches the moment you start typing, on any tab.
+  const matches = useMemo(() => {
+    if (!query) return [];
+    return SURAHS.filter((x) =>
+      x.name_tr.toLowerCase().includes(query) ||
+      x.name_en.toLowerCase().includes(query) ||
+      String(x.surah) === query ||
+      x.key === query || `${x.surah}:`.startsWith(query)
+    ).slice(0, 8);
+  }, [query]);
 
   const lastSurah = last && SURAHS.find((x) => x.surah === last.surah);
 
@@ -52,10 +55,31 @@ export default function QuranIndex({ onOpenSurah }) {
       )}
 
       {/* search */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: D.card, border: `1px solid ${D.border}`, borderRadius: RADIUS.pill, padding: '9px 14px', marginBottom: 12 }}>
-        <Search size={16} color={D.inkHint} />
-        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search surah, meaning, or 2:255"
-          style={{ flex: 1, border: 'none', outline: 'none', background: 'none', fontFamily: FONT, fontSize: TYPE.body, color: D.ink }} />
+      <div style={{ position: 'relative', marginBottom: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: D.card, border: `1px solid ${query ? D.tealDeep : D.border}`, borderRadius: query && matches.length ? '22px 22px 0 0' : RADIUS.pill, padding: '9px 14px', transition: 'border-color .15s ease' }}>
+          <Search size={16} color={D.inkHint} />
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search surah, meaning, or 2:255"
+            style={{ flex: 1, border: 'none', outline: 'none', background: 'none', fontFamily: FONT, fontSize: TYPE.body, color: D.ink }} />
+          {q && <button onClick={() => setQ('')} aria-label="Clear search" style={{ border: 'none', background: 'none', color: D.inkHint, cursor: 'pointer', display: 'inline-flex', padding: 2 }}><X size={16} /></button>}
+        </div>
+        {/* live autocomplete dropdown */}
+        {query && (
+          <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 20, background: D.card, border: `1px solid ${D.tealDeep}`, borderTop: 'none', borderRadius: '0 0 16px 16px', boxShadow: '0 12px 28px rgba(27,42,74,0.12)', overflow: 'hidden', maxHeight: 360, overflowY: 'auto' }}>
+            {matches.length === 0 ? (
+              <div style={{ padding: '16px', textAlign: 'center', color: D.inkHint, fontSize: TYPE.meta }}>No surah matches “{q.trim()}”.</div>
+            ) : matches.map((s) => (
+              <button key={s.surah} onClick={() => { setQ(''); onOpenSurah(s.surah); }} className="dash-press"
+                style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 11, background: 'none', border: 'none', borderBottom: `1px solid ${D.border}`, padding: '11px 14px', cursor: 'pointer' }}>
+                <span style={{ width: 28, height: 28, borderRadius: 8, background: D.canvas, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontFamily: FONT, fontSize: TYPE.hint, fontWeight: 700, color: D.tealDeep }}>{s.surah}</span>
+                <span style={{ flex: 1, minWidth: 0 }}>
+                  <span style={{ display: 'block', fontSize: TYPE.body, fontWeight: 600, color: D.ink, lineHeight: 1.2 }}>{s.name_tr}</span>
+                  <span style={{ display: 'block', fontSize: TYPE.hint, color: D.inkHint, marginTop: 1 }}>{s.name_en} · {juzLabel(s)}</span>
+                </span>
+                {s.name_ar && <span className="quran-ar" style={{ fontSize: 18, color: D.quran, flexShrink: 0 }}>{s.name_ar}</span>}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* segmented */}
@@ -88,12 +112,12 @@ export default function QuranIndex({ onOpenSurah }) {
         <JuzList onOpenSurah={onOpenSurah} />
       ) : (
         <div style={{ display: 'grid', gap: 8 }}>
-          {filtered.length === 0 && (
+          {tabList.length === 0 && (
             <div style={{ textAlign: 'center', color: D.inkHint, fontSize: TYPE.body, padding: '24px 0' }}>
-              {seg === 'saved' ? 'No saved surahs yet.' : 'No matches.'}
+              {seg === 'saved' ? 'No saved surahs yet.' : 'No surahs.'}
             </div>
           )}
-          {filtered.map((s) => <SurahRow key={s.surah} s={s} onOpen={() => onOpenSurah(s.surah)} />)}
+          {tabList.map((s) => <SurahRow key={s.surah} s={s} onOpen={() => onOpenSurah(s.surah)} />)}
         </div>
       )}
     </div>

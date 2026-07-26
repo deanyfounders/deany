@@ -1,26 +1,28 @@
 // The mushaf renderer (v3): a paginated BOOK. Continuous, justified, flowing
-// Arabic laid out into fixed pages you swipe through - not a vertical scroll.
+// Arabic laid out into fixed pages you turn with a 3D page-flip - not a scroll.
 // The three modes (read / learn / assist) toggle classes on the SAME tree; the
-// DOM does not remount on mode change. Word spans exist in every mode and only
-// become interactive in learn.
+// DOM does not remount on mode change, and turning modes NEVER changes the page.
 //
 // PAGINATION: the text flows into CSS multi-columns. The .book box is sized to
 // exactly ONE column (colWidth) with column-fill:auto and a fixed height, so the
-// browser fragments the surah into full pages that overflow to the right; we
-// translateX the .book to show one page at a time (the epub.js technique). The
-// .book is dir=ltr so column order + scrollWidth are reliable; the inner .mushaf
-// is dir=rtl so the Arabic composes correctly.
+// browser fragments the surah into full pages that overflow to the left (rtl);
+// we translateX the .book to show one page at a time (the epub.js technique).
 //
-// BASMALAH: every surah except Al-Fatiha (surah 1, where it is the counted ayah
-// 1) and At-Tawbah (surah 9, which has none) stores its opening basmalah as the
-// first four tokens of ayah 1. We lift those four tokens onto a standalone
-// centred line and render ayah 1 from the remainder - this is verbatim source
-// text, only regrouped for display, never generated here.
+// FLIP: turning a page rotates the flip layer 0 -> -90 -> 0 around the vertical
+// axis; the page content is swapped at the edge-on midpoint so it reads as a real
+// page turn. Reduced-motion and browsers without WAAPI fall back to an instant
+// swap. Left control / swipe-left = Next (mushaf reads right-to-left).
+//
+// DEEP LINK: initialKey (e.g. "2:253" for the start of juz 3) opens on the page
+// that actually contains that ayah, not page 1.
+//
+// BASMALAH: every surah except Al-Fatiha (1) and At-Tawbah (9) stores its opening
+// basmalah as the first four tokens of ayah 1; we lift those onto a standalone
+// centred line and render ayah 1 from the remainder - verbatim source, regrouped.
 //
 // ACCURACY: this file decorates, never mutates. Word tokens are arabic_uthmani
-// split on U+0020; the end-of-ayah marker is added from the verse key and never
-// stored. The round-trip test proves join(tokens,' ') is byte-exact.
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+// split on U+0020; the end-of-ayah marker is added from the verse key.
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { D, FONT, TYPE } from '../dashboard/tokens.js';
 
@@ -32,14 +34,20 @@ const BASMALAH_TOKENS = 4; // the opening basmalah is always four words
 // data-uri so it is fully self-contained (no external fetch under the app CSP).
 const ORNAMENT = "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22'%3E%3Cg fill='none' stroke='%23B0872F' stroke-width='0.7' opacity='0.5'%3E%3Cpath d='M11 1 L21 11 L11 21 L1 11 Z'/%3E%3Cpath d='M11 6 L16 11 L11 16 L6 11 Z'/%3E%3C/g%3E%3C/svg%3E\")";
 
-export default function MushafView({ ayat, mode, arSize, highlightKey, selectedKeys, onTapAyah, onVisibleAyah, onSajdah, onWord, srsWords, surahName }) {
+export default function MushafView({ ayat, mode, arSize, highlightKey, selectedKeys, onTapAyah, onVisibleAyah, onSajdah, onWord, srsWords, surahName, initialKey }) {
   const viewportRef = useRef(null);
   const bookRef = useRef(null);
+  const flipRef = useRef(null);
   const swipeRef = useRef({ x: 0, y: 0, swiped: false });
+  const flipAnim = useRef(null);
+  const flipTimer = useRef(null);
+  const reduceRef = useRef(false);
+  const didJumpRef = useRef(false);
   const [dims, setDims] = useState({ w: 0, h: 0 });
   const [page, setPage] = useState(0);
   const [pageCount, setPageCount] = useState(1);
-  const [animate, setAnimate] = useState(false);
+
+  useEffect(() => { reduceRef.current = !!(typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); }, []);
 
   useLayoutEffect(() => {
     const el = viewportRef.current;
@@ -51,8 +59,26 @@ export default function MushafView({ ayat, mode, arSize, highlightKey, selectedK
     return () => ro && ro.disconnect();
   }, []);
 
-  useLayoutEffect(() => { setAnimate(false); setPage(0); }, [ayat, arSize, mode]);
+  // A new surah, or a font-size change, re-paginates -> reset to the first page.
+  // Mode is deliberately NOT here: switching read/learn/assist must keep the page.
+  useLayoutEffect(() => { setPage(0); }, [ayat, arSize]);
+  // Only re-run the deep-link jump when the surah/target actually changes.
+  useEffect(() => { didJumpRef.current = false; }, [ayat, initialKey]);
 
+  // Which page contains a given ayah key. Distance from the book's right edge to
+  // the ayah's right edge is invariant of the current transform, so this works at
+  // any page: page = round(distance / pageWidth).
+  const findPage = useCallback((key) => {
+    const book = bookRef.current;
+    if (!book || !dims.w || !key) return 0;
+    const el = book.querySelector(`[data-key="${key}"]`);
+    if (!el) return 0;
+    const br = book.getBoundingClientRect();
+    const er = el.getBoundingClientRect();
+    return Math.max(0, Math.min(Math.max(0, pageCount - 1), Math.round((br.right - er.right) / dims.w)));
+  }, [dims.w, pageCount]);
+
+  // Recompute page count after layout (and once the Arabic font loads).
   useEffect(() => {
     const el = bookRef.current;
     if (!el || !dims.w) return;
@@ -68,13 +94,33 @@ export default function MushafView({ ayat, mode, arSize, highlightKey, selectedK
     }
   }, [ayat, arSize, mode, dims.w, dims.h]);
 
-  const go = (p) => { setAnimate(true); setPage(Math.max(0, Math.min(pageCount - 1, p))); };
+  // Jump to the deep-linked ayah once, after the surah has paginated.
+  useEffect(() => {
+    if (didJumpRef.current || !dims.w) return;
+    didJumpRef.current = true;
+    if (initialKey) { const t = findPage(initialKey); if (t > 0) setPage(t); }
+  }, [pageCount, dims.w, initialKey, findPage]);
+
+  const go = (p) => {
+    const target = Math.max(0, Math.min(pageCount - 1, p));
+    if (target === page) return;
+    const el = flipRef.current;
+    const dir = target > page ? 1 : -1;
+    if (flipTimer.current) { clearTimeout(flipTimer.current); flipTimer.current = null; }
+    if (flipAnim.current) { try { flipAnim.current.cancel(); } catch (e) {} flipAnim.current = null; }
+    if (!el || !el.animate || reduceRef.current) { setPage(target); return; }
+    flipAnim.current = el.animate(
+      [{ transform: 'rotateY(0deg)', offset: 0 }, { transform: `rotateY(${-90 * dir}deg)`, offset: 0.5 }, { transform: 'rotateY(0deg)', offset: 1 }],
+      { duration: 360, easing: 'ease-in-out' }
+    );
+    flipAnim.current.onfinish = () => { flipAnim.current = null; };
+    flipTimer.current = setTimeout(() => { setPage(target); flipTimer.current = null; }, 180);
+  };
   const next = () => go(page + 1);
   const prev = () => go(page - 1);
+  useEffect(() => () => { if (flipTimer.current) clearTimeout(flipTimer.current); }, []);
 
   // Report the first ayah of the current page so the header can show its live juz.
-  // RTL reading starts at the top-right corner; read whichever ayah is painted
-  // there once the page settles.
   useEffect(() => {
     if (!onVisibleAyah || !ayat || !ayat.length || !dims.w) return;
     const report = () => {
@@ -84,9 +130,9 @@ export default function MushafView({ ayat, mode, arSize, highlightKey, selectedK
       const ay = el && el.closest && el.closest('[data-key]');
       if (ay) { const a = ayat.find((z) => z.key === ay.getAttribute('data-key')); if (a) onVisibleAyah(a); }
     };
-    const t = window.setTimeout(report, animate ? 380 : 90);
+    const t = window.setTimeout(report, 320);
     return () => window.clearTimeout(t);
-  }, [page, pageCount, ayat, dims.w, animate, onVisibleAyah]);
+  }, [page, pageCount, ayat, dims.w, onVisibleAyah]);
 
   const onTouchStart = (e) => { const t = e.touches[0]; swipeRef.current = { x: t.clientX, y: t.clientY, swiped: false }; };
   const onTouchEnd = (e) => {
@@ -103,7 +149,6 @@ export default function MushafView({ ayat, mode, arSize, highlightKey, selectedK
   const srs = srsWords || null;
   const colWidth = Math.max(1, dims.w - 2 * MARGIN);
 
-  // lift the opening basmalah off ayah 1 onto its own line (all surahs but 1 & 9)
   const first = shown[0];
   const splitBasmalah = !!first && first.ayah === 1 && first.surah !== 1 && first.surah !== 9
     && first.arabic_uthmani.split(' ').length > BASMALAH_TOKENS;
@@ -112,87 +157,87 @@ export default function MushafView({ ayat, mode, arSize, highlightKey, selectedK
   return (
     <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', background: D.canvas }}>
       <div ref={viewportRef} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}
-        style={{ flex: 1, minHeight: 0, overflow: 'hidden', position: 'relative' }}>
-        <div ref={bookRef} dir="rtl"
-          style={{
-            position: 'absolute', top: 0, right: MARGIN, height: '100%',
-            width: dims.w ? colWidth : '100%', boxSizing: 'border-box', padding: '10px 0',
-            columnWidth: dims.w ? `${colWidth}px` : undefined,
-            columnGap: `${2 * MARGIN}px`, columnFill: 'auto',
-            transform: `translateX(${page * dims.w}px)`,
-            transition: animate ? 'transform .34s cubic-bezier(.4,0,.2,1)' : 'none',
-            willChange: 'transform',
-          }}>
-          <div className={`mushaf mushaf-${mode}`} dir="rtl"
+        style={{ flex: 1, minHeight: 0, overflow: 'hidden', position: 'relative', perspective: '1700px' }}>
+        <div ref={flipRef} style={{ position: 'absolute', inset: 0, transformStyle: 'preserve-3d', backfaceVisibility: 'hidden', willChange: 'transform' }}>
+          <div ref={bookRef} dir="ltr"
             style={{
-              fontFamily: "'Scheherazade New','Amiri',serif",
-              fontSize: arSize, lineHeight: 2.05, color: D.navy,
-              textAlign: 'justify', textAlignLast: 'right', WebkitHyphens: 'none',
+              position: 'absolute', top: 0, right: MARGIN, height: '100%',
+              width: dims.w ? colWidth : '100%', boxSizing: 'border-box', padding: '10px 0',
+              columnWidth: dims.w ? `${colWidth}px` : undefined,
+              columnGap: `${2 * MARGIN}px`, columnFill: 'auto',
+              transform: `translateX(${page * dims.w}px)`,
             }}>
-            {(surahName || basmalah) && (
-              <div style={{ breakInside: 'avoid', textAlign: 'center', margin: '2px 0 16px' }}>
-                {surahName && (
-                  <div style={{ display: 'inline-flex', alignItems: 'stretch', borderRadius: 8, overflow: 'hidden', boxShadow: '0 0 0 2px #9E7830, 0 0 0 3px #FBF5E1, 0 0 0 4px rgba(158,120,48,0.45)' }}>
-                    <span aria-hidden="true" style={{ width: 30, backgroundColor: '#FAF1D6', backgroundImage: ORNAMENT }} />
-                    <span className="quran-ar" style={{ display: 'flex', alignItems: 'center', padding: '5px 20px', backgroundColor: '#FBF5E1', color: D.quran, fontSize: '0.8em', lineHeight: 1.4, borderLeft: '1px solid rgba(158,120,48,0.35)', borderRight: '1px solid rgba(158,120,48,0.35)' }}>
-                      {surahName}
-                    </span>
-                    <span aria-hidden="true" style={{ width: 30, backgroundColor: '#FAF1D6', backgroundImage: ORNAMENT }} />
-                  </div>
-                )}
-                {basmalah && (
-                  <div className="quran-ar" dir="rtl" style={{ marginTop: 14, color: D.navy, fontSize: '0.92em', textAlign: 'center', textAlignLast: 'center', lineHeight: 1.9 }}>
-                    {basmalah}
-                  </div>
-                )}
-              </div>
-            )}
-            {shown.map((a, idx) => {
-              let tokens = a.arabic_uthmani.split(' ');
-              if (idx === 0 && splitBasmalah) tokens = tokens.slice(BASMALAH_TOKENS);
-              const isHi = highlightKey === a.key;
-              const isSel = selectedKeys && selectedKeys.includes(a.key);
-              const bg = isSel ? 'rgba(240,180,41,0.22)' : isHi ? 'rgba(34,163,154,0.10)' : 'transparent';
-              const tapAyah = (mode === 'read' || mode === 'assist') && onTapAyah
-                ? () => { if (!swipeRef.current.swiped) onTapAyah(a); } : undefined;
-              return (
-                <span key={a.key} className="ayah" data-key={a.key}
-                  onClick={tapAyah}
-                  style={{ background: bg, borderRadius: 6, cursor: tapAyah ? 'pointer' : 'default', transition: 'background .2s ease' }}>
-                  {tokens.map((w, i) => {
-                    const learnable = mode === 'learn' && onWord;
-                    const inSrs = srs && srs.has(`${a.key}:${i}`);
-                    return (
-                      <React.Fragment key={i}>
-                        <span className="w" data-i={i}
-                          onClick={learnable ? (e) => { e.stopPropagation(); onWord(a, i, w); } : undefined}
-                          style={{ cursor: learnable ? 'pointer' : 'inherit', borderBottom: inSrs ? `2px dotted ${D.teal}` : 'none' }}>{w}</span>
-                        {i < tokens.length - 1 ? ' ' : ''}
-                      </React.Fragment>
-                    );
-                  })}
-                  {' '}
-                  <span className="marker" aria-label={`Ayah ${a.ayah}`}
-                    style={{ position: 'relative', display: 'inline-block', width: '1.5em', height: '1.5em', verticalAlign: 'middle', margin: '0 2px', lineHeight: 1 }}>
-                    <span aria-hidden="true" style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5em', color: D.gold, lineHeight: 1 }}>{'۝'}</span>
-                    <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.58em', fontWeight: 700, color: D.navy, fontFamily: FONT }}>{toArabicDigits(a.ayah)}</span>
-                  </span>
-                  {a.sajdah && (
-                    <span onClick={(e) => { e.stopPropagation(); onSajdah && onSajdah(a); }}
-                      role="button" aria-label="Sajdah"
-                      style={{ display: 'inline-flex', alignItems: 'center', gap: 3, margin: '0 4px', padding: '1px 8px', borderRadius: 999, border: '1px solid #F0DFAE', background: '#FBF3DF', color: '#8A6410', fontFamily: FONT, fontSize: TYPE.hint, fontWeight: 700, cursor: 'pointer', verticalAlign: 'middle' }}>
-                      Sajdah
-                    </span>
+            <div className={`mushaf mushaf-${mode}`} dir="rtl"
+              style={{
+                fontFamily: "'Scheherazade New','Amiri',serif",
+                fontSize: arSize, lineHeight: 2.05, color: D.navy,
+                textAlign: 'justify', textAlignLast: 'right', WebkitHyphens: 'none',
+              }}>
+              {(surahName || basmalah) && (
+                <div style={{ breakInside: 'avoid', textAlign: 'center', margin: '2px 0 16px' }}>
+                  {surahName && (
+                    <div style={{ display: 'inline-flex', alignItems: 'stretch', borderRadius: 8, overflow: 'hidden', boxShadow: '0 0 0 2px #9E7830, 0 0 0 3px #FBF5E1, 0 0 0 4px rgba(158,120,48,0.45)' }}>
+                      <span aria-hidden="true" style={{ width: 30, backgroundColor: '#FAF1D6', backgroundImage: ORNAMENT }} />
+                      <span className="quran-ar" style={{ display: 'flex', alignItems: 'center', padding: '5px 20px', backgroundColor: '#FBF5E1', color: D.quran, fontSize: '0.8em', lineHeight: 1.4, borderLeft: '1px solid rgba(158,120,48,0.35)', borderRight: '1px solid rgba(158,120,48,0.35)' }}>
+                        {surahName}
+                      </span>
+                      <span aria-hidden="true" style={{ width: 30, backgroundColor: '#FAF1D6', backgroundImage: ORNAMENT }} />
+                    </div>
                   )}
-                  {' '}
-                </span>
-              );
-            })}
+                  {basmalah && (
+                    <div className="quran-ar" dir="rtl" style={{ marginTop: 14, color: D.navy, fontSize: '0.92em', textAlign: 'center', textAlignLast: 'center', lineHeight: 1.9 }}>
+                      {basmalah}
+                    </div>
+                  )}
+                </div>
+              )}
+              {shown.map((a, idx) => {
+                let tokens = a.arabic_uthmani.split(' ');
+                if (idx === 0 && splitBasmalah) tokens = tokens.slice(BASMALAH_TOKENS);
+                const isHi = highlightKey === a.key;
+                const isSel = selectedKeys && selectedKeys.includes(a.key);
+                const bg = isSel ? 'rgba(240,180,41,0.22)' : isHi ? 'rgba(34,163,154,0.10)' : 'transparent';
+                const tapAyah = (mode === 'read' || mode === 'assist') && onTapAyah
+                  ? () => { if (!swipeRef.current.swiped) onTapAyah(a); } : undefined;
+                return (
+                  <span key={a.key} className="ayah" data-key={a.key}
+                    onClick={tapAyah}
+                    style={{ background: bg, borderRadius: 6, cursor: tapAyah ? 'pointer' : 'default', transition: 'background .2s ease' }}>
+                    {tokens.map((w, i) => {
+                      const learnable = mode === 'learn' && onWord;
+                      const inSrs = srs && srs.has(`${a.key}:${i}`);
+                      return (
+                        <React.Fragment key={i}>
+                          <span className="w" data-i={i}
+                            onClick={learnable ? (e) => { e.stopPropagation(); onWord(a, i, w); } : undefined}
+                            style={{ cursor: learnable ? 'pointer' : 'inherit', borderBottom: inSrs ? `2px dotted ${D.teal}` : 'none' }}>{w}</span>
+                          {i < tokens.length - 1 ? ' ' : ''}
+                        </React.Fragment>
+                      );
+                    })}
+                    {' '}
+                    <span className="marker" aria-label={`Ayah ${a.ayah}`}
+                      style={{ position: 'relative', display: 'inline-block', width: '1.5em', height: '1.5em', verticalAlign: 'middle', margin: '0 2px', lineHeight: 1 }}>
+                      <span aria-hidden="true" style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5em', color: D.gold, lineHeight: 1 }}>{'۝'}</span>
+                      <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.58em', fontWeight: 700, color: D.navy, fontFamily: FONT }}>{toArabicDigits(a.ayah)}</span>
+                    </span>
+                    {a.sajdah && (
+                      <span onClick={(e) => { e.stopPropagation(); onSajdah && onSajdah(a); }}
+                        role="button" aria-label="Sajdah"
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: 3, margin: '0 4px', padding: '1px 8px', borderRadius: 999, border: '1px solid #F0DFAE', background: '#FBF3DF', color: '#8A6410', fontFamily: FONT, fontSize: TYPE.hint, fontWeight: 700, cursor: 'pointer', verticalAlign: 'middle' }}>
+                        Sajdah
+                      </span>
+                    )}
+                    {' '}
+                  </span>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* page turner */}
+      {/* page turner - left is Next (mushaf reads right-to-left) */}
       <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 20, padding: '7px 12px calc(env(safe-area-inset-bottom) + 7px)', background: D.canvas, borderTop: `1px solid ${D.border}` }}>
         <PageBtn label="Next page" onClick={next} disabled={page >= pageCount - 1}><ChevronLeft size={20} /></PageBtn>
         <span style={{ fontSize: TYPE.hint, color: D.inkHint, minWidth: 84, textAlign: 'center', fontVariantNumeric: 'tabular-nums' }}>Page {page + 1} of {pageCount}</span>
