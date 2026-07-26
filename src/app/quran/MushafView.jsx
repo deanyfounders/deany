@@ -1,5 +1,5 @@
 // The mushaf renderer (v3): a paginated BOOK. Continuous, justified, flowing
-// Arabic laid out into fixed pages you turn with a 3D page-flip - not a scroll.
+// Arabic laid out into fixed pages you turn by sliding - not a scroll.
 // The three modes (read / learn / assist) toggle classes on the SAME tree; the
 // DOM does not remount on mode change, and turning modes NEVER changes the page.
 //
@@ -8,10 +8,9 @@
 // browser fragments the surah into full pages that overflow to the left (rtl);
 // we translateX the .book to show one page at a time (the epub.js technique).
 //
-// FLIP: turning a page rotates the flip layer 0 -> -90 -> 0 around the vertical
-// axis; the page content is swapped at the edge-on midpoint so it reads as a real
-// page turn. Reduced-motion and browsers without WAAPI fall back to an instant
-// swap. Left control / swipe-left = Next (mushaf reads right-to-left).
+// PAGE TURN: advancing (next) increases translateX so the book slides right and
+// the next page glides IN FROM THE LEFT - the mushaf reads right-to-left. Left
+// control / swipe-left = Next.
 //
 // DEEP LINK: initialKey (e.g. "2:253" for the start of juz 3) opens on the page
 // that actually contains that ayah, not page 1.
@@ -37,17 +36,12 @@ const ORNAMENT = "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/
 export default function MushafView({ ayat, mode, arSize, highlightKey, selectedKeys, onTapAyah, onVisibleAyah, onSajdah, onWord, srsWords, surahName, initialKey }) {
   const viewportRef = useRef(null);
   const bookRef = useRef(null);
-  const flipRef = useRef(null);
   const swipeRef = useRef({ x: 0, y: 0, swiped: false });
-  const flipAnim = useRef(null);
-  const flipTimer = useRef(null);
-  const reduceRef = useRef(false);
   const didJumpRef = useRef(false);
   const [dims, setDims] = useState({ w: 0, h: 0 });
   const [page, setPage] = useState(0);
   const [pageCount, setPageCount] = useState(1);
-
-  useEffect(() => { reduceRef.current = !!(typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); }, []);
+  const [animate, setAnimate] = useState(false);
 
   useLayoutEffect(() => {
     const el = viewportRef.current;
@@ -61,7 +55,7 @@ export default function MushafView({ ayat, mode, arSize, highlightKey, selectedK
 
   // A new surah, or a font-size change, re-paginates -> reset to the first page.
   // Mode is deliberately NOT here: switching read/learn/assist must keep the page.
-  useLayoutEffect(() => { setPage(0); }, [ayat, arSize]);
+  useLayoutEffect(() => { setAnimate(false); setPage(0); }, [ayat, arSize]);
   // Only re-run the deep-link jump when the surah/target actually changes.
   useEffect(() => { didJumpRef.current = false; }, [ayat, initialKey]);
 
@@ -101,24 +95,15 @@ export default function MushafView({ ayat, mode, arSize, highlightKey, selectedK
     if (initialKey) { const t = findPage(initialKey); if (t > 0) setPage(t); }
   }, [pageCount, dims.w, initialKey, findPage]);
 
+  // Turning a page slides the book: advancing (next) moves it right so the next
+  // page glides IN FROM THE LEFT - the mushaf reads right-to-left.
   const go = (p) => {
     const target = Math.max(0, Math.min(pageCount - 1, p));
     if (target === page) return;
-    const el = flipRef.current;
-    const dir = target > page ? 1 : -1;
-    if (flipTimer.current) { clearTimeout(flipTimer.current); flipTimer.current = null; }
-    if (flipAnim.current) { try { flipAnim.current.cancel(); } catch (e) {} flipAnim.current = null; }
-    if (!el || !el.animate || reduceRef.current) { setPage(target); return; }
-    flipAnim.current = el.animate(
-      [{ transform: 'rotateY(0deg)', offset: 0 }, { transform: `rotateY(${-90 * dir}deg)`, offset: 0.5 }, { transform: 'rotateY(0deg)', offset: 1 }],
-      { duration: 360, easing: 'ease-in-out' }
-    );
-    flipAnim.current.onfinish = () => { flipAnim.current = null; };
-    flipTimer.current = setTimeout(() => { setPage(target); flipTimer.current = null; }, 180);
+    setAnimate(true); setPage(target);
   };
   const next = () => go(page + 1);
   const prev = () => go(page - 1);
-  useEffect(() => () => { if (flipTimer.current) clearTimeout(flipTimer.current); }, []);
 
   // Report the first ayah of the current page so the header can show its live juz.
   useEffect(() => {
@@ -130,9 +115,9 @@ export default function MushafView({ ayat, mode, arSize, highlightKey, selectedK
       const ay = el && el.closest && el.closest('[data-key]');
       if (ay) { const a = ayat.find((z) => z.key === ay.getAttribute('data-key')); if (a) onVisibleAyah(a); }
     };
-    const t = window.setTimeout(report, 320);
+    const t = window.setTimeout(report, animate ? 380 : 90);
     return () => window.clearTimeout(t);
-  }, [page, pageCount, ayat, dims.w, onVisibleAyah]);
+  }, [page, pageCount, ayat, dims.w, animate, onVisibleAyah]);
 
   const onTouchStart = (e) => { const t = e.touches[0]; swipeRef.current = { x: t.clientX, y: t.clientY, swiped: false }; };
   const onTouchEnd = (e) => {
@@ -157,22 +142,23 @@ export default function MushafView({ ayat, mode, arSize, highlightKey, selectedK
   return (
     <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', background: D.canvas }}>
       <div ref={viewportRef} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}
-        style={{ flex: 1, minHeight: 0, overflow: 'hidden', position: 'relative', perspective: '1700px' }}>
-        <div ref={flipRef} style={{ position: 'absolute', inset: 0, transformStyle: 'preserve-3d', backfaceVisibility: 'hidden', willChange: 'transform' }}>
-          <div ref={bookRef} dir="ltr"
+        style={{ flex: 1, minHeight: 0, overflow: 'hidden', position: 'relative' }}>
+        <div ref={bookRef} dir="ltr"
+          style={{
+            position: 'absolute', top: 0, right: MARGIN, height: '100%',
+            width: dims.w ? colWidth : '100%', boxSizing: 'border-box', padding: '10px 0',
+            columnWidth: dims.w ? `${colWidth}px` : undefined,
+            columnGap: `${2 * MARGIN}px`, columnFill: 'auto',
+            transform: `translateX(${page * dims.w}px)`,
+            transition: animate ? 'transform .34s cubic-bezier(.4,0,.2,1)' : 'none',
+            willChange: 'transform',
+          }}>
+          <div className={`mushaf mushaf-${mode}`} dir="rtl"
             style={{
-              position: 'absolute', top: 0, right: MARGIN, height: '100%',
-              width: dims.w ? colWidth : '100%', boxSizing: 'border-box', padding: '10px 0',
-              columnWidth: dims.w ? `${colWidth}px` : undefined,
-              columnGap: `${2 * MARGIN}px`, columnFill: 'auto',
-              transform: `translateX(${page * dims.w}px)`,
+              fontFamily: "'Scheherazade New','Amiri',serif",
+              fontSize: arSize, lineHeight: 2.05, color: D.navy,
+              textAlign: 'justify', textAlignLast: 'right', WebkitHyphens: 'none',
             }}>
-            <div className={`mushaf mushaf-${mode}`} dir="rtl"
-              style={{
-                fontFamily: "'Scheherazade New','Amiri',serif",
-                fontSize: arSize, lineHeight: 2.05, color: D.navy,
-                textAlign: 'justify', textAlignLast: 'right', WebkitHyphens: 'none',
-              }}>
               {(surahName || basmalah) && (
                 <div style={{ breakInside: 'avoid', textAlign: 'center', margin: '2px 0 16px' }}>
                   {surahName && (
@@ -235,8 +221,6 @@ export default function MushafView({ ayat, mode, arSize, highlightKey, selectedK
             </div>
           </div>
         </div>
-      </div>
-
       {/* page turner - left is Next (mushaf reads right-to-left) */}
       <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 20, padding: '7px 12px calc(env(safe-area-inset-bottom) + 7px)', background: D.canvas, borderTop: `1px solid ${D.border}` }}>
         <PageBtn label="Next page" onClick={next} disabled={page >= pageCount - 1}><ChevronLeft size={20} /></PageBtn>
