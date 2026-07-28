@@ -1,0 +1,20 @@
+{
+  "surah": 105,
+  "entries": [
+    {
+      "lesson_id": "hist_b1_l2",
+      "route": "history",
+      "position": 2,
+      "rel": "discussed",
+      "status": "pending_mehdi",
+      "span": "105:1-105:5",
+      "ayat": [
+        "105:1",
+        "105:2",
+        "105:3",
+        "105:4",
+        "105:5"
+      ]
+    }
+  ]
+}

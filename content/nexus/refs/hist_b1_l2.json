@@ -1,0 +1,23 @@
+{
+  "lesson_id": "hist_b1_l2",
+  "route": "history",
+  "position": 2,
+  "refs": [
+    {
+      "source": "quran",
+      "from": "106:1",
+      "to": "106:4",
+      "rel": "discussed",
+      "status": "pending_mehdi",
+      "note": "CANDIDATE - Quraysh trade journeys; Mehdi to confirm"
+    },
+    {
+      "source": "quran",
+      "from": "105:1",
+      "to": "105:5",
+      "rel": "discussed",
+      "status": "pending_mehdi",
+      "note": "CANDIDATE - the Year of the Elephant; Mehdi to confirm"
+    }
+  ]
+}

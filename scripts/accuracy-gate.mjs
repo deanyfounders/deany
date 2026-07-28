@@ -45,7 +45,11 @@ runScript(1, 'Renderer token round-trip is byte-identical', 'scripts/test-mushaf
 // authored prose (empty renders as "under scholar review", never invented text);
 // `approved` files must carry provenance. No free-text may leak into a pending file.
 // ---------------------------------------------------------------------------
-const STRUCTURAL_KEYS = new Set(['id', 'status', 'type', 'school', 'surah', 'ayah', 'key', 'glyph_ref']);
+const STRUCTURAL_KEYS = new Set(['id', 'status', 'type', 'school', 'surah', 'ayah', 'key', 'glyph_ref', 'lesson_id', 'route']);
+// Engineering ref candidates (content/nexus/refs) legitimately carry CANDIDATE
+// notes and rel/status values; they are validated by the nexus compiler, not the
+// scholar "empty prose" rule. Only true scholar containers get the prose scan.
+const isRefCandidate = (f) => /nexus[\\/]refs[\\/]/.test(f);
 const isPlaceholder = (v) => v === '' || (typeof v === 'string' && v.includes('|'));
 // Walk every string leaf; return [{path, key, value}] of authored-looking strings.
 function proseLeaves(node, keyName = '', trail = '$') {
@@ -74,6 +78,7 @@ await check(2, 'Content files are typed and status-gated', () => {
   assert(files.length > 0, 'no content/ files found - the gated container store is missing');
   const bad = [];
   for (const f of files) {
+    if (isRefCandidate(f)) continue; // ref files hold per-ref status; the nexus compiler validates them
     let j; try { j = JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e) { bad.push(`${path.relative(ROOT, f)}: invalid JSON`); continue; }
     if (!['pending_mehdi', 'approved', 'candidate'].includes(j.status)) bad.push(`${path.relative(ROOT, f)}: status must be pending_mehdi|approved|candidate (got ${JSON.stringify(j.status)})`);
   }
@@ -84,6 +89,7 @@ await check(2, 'Content files are typed and status-gated', () => {
 await check(2, 'pending_mehdi files contain no authored text', () => {
   const offenders = [];
   for (const f of contentFiles()) {
+    if (isRefCandidate(f)) continue; // compiler-validated engineering candidates, not scholar prose
     const j = JSON.parse(fs.readFileSync(f, 'utf8'));
     if (j.status !== 'pending_mehdi') continue;
     const leaves = proseLeaves(j).filter((l) => l.value.trim() !== '');
@@ -236,6 +242,12 @@ await check(5, 'Seeded selection is deterministic', async () => {
   assert(a.length === 10 && new Set(a).size === 10, 'shuffle dropped or duplicated items');
   return 'same seed -> same order';
 });
+
+// Nexus (spec v3.2): the compiler validates candidate refs against the dataset,
+// story-card schemas, question-pool disjointness, and regenerates a deterministic
+// refmap; the pure connection-state logic has boundary tests. Both are blocking.
+runScript(5, 'Nexus compiler: refs, story-card schema, pool disjointness, deterministic refmap', 'scripts/nexus-compile.mjs --check');
+runScript(5, 'Nexus connectionState boundary tests', 'src/lib/nexus/connectionState.test.mjs');
 
 // The seeded check is async; give the microtask a tick before we report.
 await Promise.resolve();

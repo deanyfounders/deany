@@ -1,0 +1,29 @@
+{
+  "lesson_id": "fin_l3",
+  "route": "finance",
+  "position": 3,
+  "refs": [
+    {
+      "source": "quran",
+      "key": "2:275",
+      "rel": "proof_text",
+      "status": "pending_mehdi",
+      "note": "CANDIDATE - transcribed from the live lesson DEANY_M1L3 (al-Baqarah 2:275, 'Allah has permitted trade and forbidden riba'); Mehdi confirms rel and scope"
+    },
+    {
+      "source": "quran",
+      "from": "2:278",
+      "to": "2:279",
+      "rel": "proof_text",
+      "status": "pending_mehdi",
+      "note": "CANDIDATE - transcribed from the live lesson DEANY_M1L3 (al-Baqarah 2:278-279); Mehdi confirms rel and scope"
+    },
+    {
+      "source": "quran",
+      "key": "3:130",
+      "rel": "proof_text",
+      "status": "pending_mehdi",
+      "note": "CANDIDATE - transcribed from the live lesson DEANY_M1L3 (Aal Imran 3:130); Mehdi confirms rel and scope. Spec expected 2:282 but the live lesson does not cite it; the lesson wins"
+    }
+  ]
+}

@@ -13,7 +13,8 @@
     "verify": "node scripts/accuracy-gate.mjs",
     "test:accuracy": "node scripts/accuracy-gate.mjs",
     "verify:quran": "node scripts/verify-quran.mjs && node scripts/test-mushaf-roundtrip.mjs",
-    "prebuild": "node scripts/accuracy-gate.mjs"
+    "prebuild": "node scripts/accuracy-gate.mjs",
+    "nexus:compile": "node scripts/nexus-compile.mjs"
   },
   "dependencies": {
     "lucide-react": "^0.263.1",

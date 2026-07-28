@@ -1,0 +1,28 @@
+{
+  "surah": 2,
+  "entries": [
+    {
+      "lesson_id": "fin_l3",
+      "route": "finance",
+      "position": 3,
+      "rel": "proof_text",
+      "status": "pending_mehdi",
+      "span": "2:275",
+      "ayat": [
+        "2:275"
+      ]
+    },
+    {
+      "lesson_id": "fin_l3",
+      "route": "finance",
+      "position": 3,
+      "rel": "proof_text",
+      "status": "pending_mehdi",
+      "span": "2:278-2:279",
+      "ayat": [
+        "2:278",
+        "2:279"
+      ]
+    }
+  ]
+}
