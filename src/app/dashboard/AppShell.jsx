@@ -49,7 +49,9 @@ export default function AppShell({ tab, onTab, reviewDot, children }) {
   return (
     <div style={{ minHeight: '100vh', height: '100dvh', maxHeight: '100dvh', overflow: 'hidden', background: D.canvas, color: D.ink, fontFamily: FONT, display: 'flex', flexDirection: 'column' }}>
       <DashMotion />
-      <div key={tab} className="deany-fade" style={{ flex: 1, minHeight: 0, overflowY: 'auto', WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain', paddingBottom: 'calc(env(safe-area-inset-bottom) + 78px)', maxWidth: 520, margin: '0 auto', width: '100%' }}>
+      {/* overflowX hidden is the prerequisite fix: the page never scrolls sideways;
+          only an intentional carousel track inside a tab may scroll horizontally. */}
+      <div key={tab} className="deany-fade" style={{ flex: 1, minHeight: 0, overflowY: 'auto', overflowX: 'hidden', WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain', paddingBottom: 'calc(env(safe-area-inset-bottom) + 78px)', maxWidth: 520, margin: '0 auto', width: '100%' }}>
         {children}
       </div>
       <NavBar tab={tab} onTab={onTab} reviewDot={reviewDot} />
