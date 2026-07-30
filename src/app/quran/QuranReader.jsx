@@ -11,6 +11,10 @@ import MarkerSheet from './MarkerSheet.jsx';
 import MushafView from './MushafView.jsx';
 import { getShowTranslation, setShowTranslation, getTextSize, setTextSize, setLastRead, isSaved, toggleSaved, getMode, setMode, getLayout, setLayout } from './store.js';
 import fatihaWords from '../../../content/quran-words/fatiha.json';
+import { nexusPilotEnabled, IS_PROD } from '../../lib/flags.js';
+import { loadRefmap, entriesForAyah, paintableKeys, getRouteProgress } from '../../lib/nexus/refmap.js';
+import ConnectionsSheet from './nexus/ConnectionsSheet.jsx';
+import StoryCard from './nexus/StoryCard.jsx';
 
 const SURAHS = indexData.surahs || [];
 const AR_SIZES = [24, 27, 30];
@@ -23,8 +27,9 @@ const MODES = [['read', 'Read'], ['learn', 'Learn'], ['assist', 'Assist']];
 const WORD_DATA = { 1: fatihaWords };
 const hasApprovedWords = (s) => WORD_DATA[s] && WORD_DATA[s].status === 'approved';
 
-export default function QuranReader({ surah, initialAyah, onBack }) {
+export default function QuranReader({ surah, initialAyah, onBack, onOpenLesson }) {
   const meta = SURAHS.find((s) => s.surah === surah) || { surah, name_tr: `Surah ${surah}`, name_en: '', ayah_count: 0 };
+  const nexusOn = nexusPilotEnabled(); // hard-off in prod; dev/opt-in shows pending marked
   const [ayat, setAyat] = useState(null);
   const [showT, setShowT] = useState(getShowTranslation());
   const [size, setSize] = useState(Math.min(getTextSize(), AR_SIZES.length - 1));
@@ -36,14 +41,26 @@ export default function QuranReader({ surah, initialAyah, onBack }) {
   const [tapAyah, setTapAyah] = useState(null);
   const [visible, setVisible] = useState(CHUNK);
   const [currentJuz, setCurrentJuz] = useState(meta.juz_from || meta.juz_start || 1);
+  const [refmapDoc, setRefmapDoc] = useState(null);      // nexus connections for this surah
+  const [nexusAyah, setNexusAyah] = useState(null);      // ayah whose Connections sheet is open
+  const [storyEntity, setStoryEntity] = useState(null);  // {lessonId, route, position} whose card is open
+  const [storyAyahRef, setStoryAyahRef] = useState('');
   const sentinelRef = useRef(null);
 
   useEffect(() => {
     let alive = true; setAyat(null); setVisible(CHUNK); setTapAyah(null); setCurrentJuz(meta.juz_from || meta.juz_start || 1);
+    setNexusAyah(null); setStoryEntity(null);
     fetch(`/quran/surah/${surah}.json`).then((r) => (r.ok ? r.json() : Promise.reject())).then((d) => { if (alive) setAyat(Array.isArray(d) ? d : (d.ayat || [])); }).catch(() => { if (alive) setAyat([]); });
     return () => { alive = false; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [surah]);
+  // Load the nexus refmap for this surah (only when the pilot flag is on).
+  useEffect(() => {
+    if (!nexusOn) { setRefmapDoc(null); return; }
+    let alive = true;
+    loadRefmap(surah).then((doc) => { if (alive) setRefmapDoc(doc); });
+    return () => { alive = false; };
+  }, [surah, nexusOn]);
   useEffect(() => { setLastRead({ surah, ayah: initialAyah || 1 }); }, [surah, initialAyah]);
   // cards-mode incremental mount
   useEffect(() => {
@@ -59,6 +76,13 @@ export default function QuranReader({ surah, initialAyah, onBack }) {
   const bumpSize = () => { const n = (size + 1) % AR_SIZES.length; setSize(n); setTextSize(n); };
   const onSave = () => { toggleSaved(surah); setSaved(isSaved(surah)); };
   const arSize = AR_SIZES[size];
+
+  // Nexus: which ayat paint a dot (approved always; pending only in dev builds),
+  // and the entries visible for a given ayah. Prod + pending => nothing paints.
+  const visibleEntries = (es) => (es || []).filter((e) => e.status === 'approved' || !IS_PROD);
+  const connectedKeys = (nexusOn && refmapDoc) ? paintableKeys(refmapDoc, !IS_PROD) : null;
+  const openConnections = (a) => { setTapAyah(null); setNexusAyah(a); };
+  const tapConnCount = (nexusOn && refmapDoc && tapAyah) ? visibleEntries(entriesForAyah(refmapDoc, tapAyah.key)).length : 0;
 
   return (
     <div style={{ fontFamily: FONT, display: 'flex', flexDirection: 'column', height: '100%', background: D.canvas }}>
@@ -98,6 +122,8 @@ export default function QuranReader({ surah, initialAyah, onBack }) {
           onTapAyah={(a) => setTapAyah(a)}
           onVisibleAyah={(a) => a && a.juz && setCurrentJuz(a.juz)}
           onSajdah={() => setMarker('sajdah')}
+          connectedKeys={mode === 'learn' ? connectedKeys : null}
+          onConnectionTap={(a) => openConnections(a)}
           onWord={hasApprovedWords(surah) ? () => {} : undefined} />
       )}
 
@@ -111,9 +137,26 @@ export default function QuranReader({ surah, initialAyah, onBack }) {
         </div>
       )}
 
-      {/* tap-ayah translation panel (mushaf, read/assist) */}
+      {/* tap-ayah translation panel (mushaf, read/assist). Read mode also shows a
+          quiet Connections row; assist never shows any nexus surface. */}
       {tapAyah && (
-        <TranslationPanel a={tapAyah} onClose={() => setTapAyah(null)} onSave={onSave} saved={saved} onSajdah={() => { setMarker('sajdah'); }} />
+        <TranslationPanel a={tapAyah} onClose={() => setTapAyah(null)} onSave={onSave} saved={saved} onSajdah={() => { setMarker('sajdah'); }}
+          connectionCount={mode === 'read' ? tapConnCount : 0}
+          onOpenConnections={() => openConnections(tapAyah)} />
+      )}
+
+      {/* Connections sheet + story card (Learn dot tap or Read panel row) */}
+      {nexusAyah && (
+        <ConnectionsSheet ayahRef={`${meta.name_tr} ${nexusAyah.key}`}
+          entries={visibleEntries(entriesForAyah(refmapDoc, nexusAyah.key))}
+          routeProgress={getRouteProgress()}
+          onOpenLesson={(lessonId) => { setNexusAyah(null); onOpenLesson && onOpenLesson(lessonId); }}
+          onOpenStory={(entity) => { setStoryAyahRef(nexusAyah ? `${meta.name_tr} ${nexusAyah.key}` : ''); setNexusAyah(null); setStoryEntity(entity); }}
+          onClose={() => setNexusAyah(null)} />
+      )}
+      {storyEntity && (
+        <StoryCard entity={storyEntity} ayahRef={storyAyahRef} routeProgress={getRouteProgress()}
+          onRemind={() => {}} onXp={() => {}} onClose={() => setStoryEntity(null)} />
       )}
 
       {settingsOpen && (
@@ -126,7 +169,7 @@ export default function QuranReader({ surah, initialAyah, onBack }) {
   );
 }
 
-function TranslationPanel({ a, onClose, onSave, saved, onSajdah }) {
+function TranslationPanel({ a, onClose, onSave, saved, onSajdah, connectionCount = 0, onOpenConnections }) {
   return (
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 55, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', background: 'rgba(27,42,74,0.28)' }}>
       <div className="deany-sheet-in" onClick={(e) => e.stopPropagation()} style={{ background: D.card, borderTopLeftRadius: 22, borderTopRightRadius: 22, maxWidth: 520, width: '100%', margin: '0 auto', padding: '10px 20px calc(env(safe-area-inset-bottom) + 20px)' }}>
@@ -141,6 +184,14 @@ function TranslationPanel({ a, onClose, onSave, saved, onSajdah }) {
         <p dir="rtl" className="quran-ar" style={{ fontSize: 24, lineHeight: 2, color: D.navy, margin: '0 0 10px', textAlign: 'right' }}>{a.arabic_uthmani}</p>
         <p style={{ fontSize: TYPE.body, lineHeight: 1.6, color: D.inkSecondary, margin: 0 }}>{a.english}</p>
         <div style={{ fontSize: TYPE.hint, color: D.inkFaint, marginTop: 4 }}>Pickthall</div>
+        {connectionCount > 0 && (
+          <button onClick={onOpenConnections} className="dash-press"
+            style={{ marginTop: 12, width: '100%', display: 'flex', alignItems: 'center', gap: 10, textAlign: 'left', background: '#E9F6F4', border: '1px solid #C9E8E2', borderRadius: RADIUS.card, padding: '11px 14px', cursor: 'pointer' }}>
+            <span style={{ width: 30, height: 30, borderRadius: 8, background: '#fff', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><BookOpen size={16} color={D.tealDeep} /></span>
+            <span style={{ flex: 1, fontSize: TYPE.body, fontWeight: 600, color: D.ink }}>Connections</span>
+            <span style={{ minWidth: 22, height: 22, padding: '0 7px', borderRadius: 999, background: D.tealDeep, color: '#fff', fontSize: TYPE.hint, fontWeight: 700, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>{connectionCount}</span>
+          </button>
+        )}
         <div style={{ marginTop: 12, paddingTop: 10, borderTop: `1px solid ${D.border}` }}><Attribution showTranslation compact /></div>
       </div>
     </div>

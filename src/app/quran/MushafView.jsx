@@ -33,7 +33,7 @@ const BASMALAH_TOKENS = 4; // the opening basmalah is always four words
 // data-uri so it is fully self-contained (no external fetch under the app CSP).
 const ORNAMENT = "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22'%3E%3Cg fill='none' stroke='%23B0872F' stroke-width='0.7' opacity='0.5'%3E%3Cpath d='M11 1 L21 11 L11 21 L1 11 Z'/%3E%3Cpath d='M11 6 L16 11 L11 16 L6 11 Z'/%3E%3C/g%3E%3C/svg%3E\")";
 
-export default function MushafView({ ayat, mode, arSize, highlightKey, selectedKeys, onTapAyah, onVisibleAyah, onSajdah, onWord, srsWords, surahName, initialKey }) {
+export default function MushafView({ ayat, mode, arSize, highlightKey, selectedKeys, onTapAyah, onVisibleAyah, onSajdah, onWord, srsWords, surahName, initialKey, connectedKeys, onConnectionTap }) {
   const viewportRef = useRef(null);
   const bookRef = useRef(null);
   const swipeRef = useRef({ x: 0, y: 0, swiped: false });
@@ -208,6 +208,11 @@ export default function MushafView({ ayat, mode, arSize, highlightKey, selectedK
                       <span aria-hidden="true" style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5em', color: D.gold, lineHeight: 1 }}>{'۝'}</span>
                       <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.58em', fontWeight: 700, color: D.navy, fontFamily: FONT }}>{toArabicDigits(a.ayah)}</span>
                     </span>
+                    {mode === 'learn' && connectedKeys && connectedKeys.has(a.key) && (
+                      <span role="button" aria-label="Connections in DEANY"
+                        onClick={(e) => { e.stopPropagation(); onConnectionTap && onConnectionTap(a); }}
+                        style={{ display: 'inline-block', width: '0.5em', height: '0.5em', margin: '0 3px', verticalAlign: 'middle', borderRadius: '50%', background: D.teal, boxShadow: '0 0 0 3px rgba(34,163,154,0.16)', cursor: 'pointer' }} />
+                    )}
                     {a.sajdah && (
                       <span onClick={(e) => { e.stopPropagation(); onSajdah && onSajdah(a); }}
                         role="button" aria-label="Sajdah"

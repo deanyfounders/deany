@@ -20,6 +20,18 @@ export function entriesForAyah(doc, ayahKey) {
   return ((doc && doc.entries) || []).filter((e) => Array.isArray(e.ayat) && e.ayat.includes(ayahKey));
 }
 
+// The set of ayah keys that should paint a dot. Approved entries always count;
+// pending entries count only when includePending (dev builds show them marked).
+// In prod builds includePending is false, so pending refs paint nothing - the
+// "dots absent in prod builds while pending" rule.
+export function paintableKeys(doc, includePending) {
+  const out = new Set();
+  for (const e of (doc && doc.entries) || []) {
+    if (e.status === 'approved' || includePending) for (const k of e.ayat) out.add(k);
+  }
+  return out;
+}
+
 // Route progress = lessons completed per route, for connectionState. Best-effort
 // from localStorage; defaults to {} (zero progress -> everything AHEAD), which is
 // the pilot's correct initial state while content is pending. Overridable in Stage 3
