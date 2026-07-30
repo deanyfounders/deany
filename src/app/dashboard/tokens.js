@@ -41,7 +41,7 @@ export const RADIUS = { card: 16, hero: 20, pill: 999, tile: 10, btnInCard: 12, 
 // the active page dot. base=fill, deep=hard shadow/filled segments, tint=pill bg,
 // onBase=text on the filled button. Amber needs dark text (fails AA on white).
 export const CAROUSEL_ACCENT = {
-  'islamic-finance': { base: '#F0B429', deep: '#C68F14', tint: '#FAEEDA', onBase: '#3A2704' },
+  'islamic-finance': { base: '#F0B429', deep: '#C08A12', tint: '#FAEEDA', onBase: '#3A2704' },
   'islamic-history': { base: '#D85A30', deep: '#A8411F', tint: '#FAECE7', onBase: '#FFFFFF' },
   'quran-arabic': { base: '#1D9E75', deep: '#14785A', tint: '#E1F5EE', onBase: '#FFFFFF' },
   'add-topic': { base: '#22A39A', deep: '#17827B', tint: '#E1F5EE', onBase: '#FFFFFF' },

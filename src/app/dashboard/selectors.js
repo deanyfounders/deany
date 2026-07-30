@@ -29,7 +29,7 @@ export function buildTopicSlide(topicId, state, deps) {
   const mods = (deps?.modules?.[topicId] || []).filter((m) => (m.lessons || []).length);
   const done = (mod, i) => !!deps?.completedLessons?.[`${mod.id}-lesson-${i}`];
   const levels = mods.map((mod, mi) => {
-    const lessons = (mod.lessons || []).map((l, i) => ({ id: `${mod.id}-lesson-${i}`, title: l.title, index: i + 1, minutes: minutesOf(l.duration), lesson: l, idx: i, mod, done: done(mod, i) }));
+    const lessons = (mod.lessons || []).map((l, i) => ({ id: `${mod.id}-lesson-${i}`, title: l.title, index: i + 1, minutes: minutesOf(l.duration), coins: l.coins ?? 15, lesson: l, idx: i, mod, done: done(mod, i) }));
     return { mod, mi, title: mod.title, lessons, total: lessons.length, complete: lessons.filter((x) => x.done).length };
   });
   const totalDone = levels.reduce((s, l) => s + l.complete, 0);
