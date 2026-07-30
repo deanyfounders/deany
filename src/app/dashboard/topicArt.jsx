@@ -7,6 +7,12 @@
 // another topic's accent. These are engineering placeholders in that exact brief;
 // a commissioned PNG/SVG per topic drops in behind the same <TopicArt> contract.
 import React from 'react';
+import financeArt from '../../assets/topics/islamic-finance.png';
+
+// Commissioned/provided artwork per topic (spec file convention). When present it
+// wins over the SVG placeholder. The PNGs ship on a white background, so they are
+// composited with mix-blend-mode:multiply to sit cleanly on the tinted band.
+const IMAGES = { 'islamic-finance': financeArt };
 
 const INK = '#1B2A4A';   // navy outline
 const CREAM = '#FBFAF6';
@@ -100,6 +106,10 @@ function Add({ base }) {
 const ART = { 'islamic-finance': Finance, 'islamic-history': History, 'quran-arabic': Quran, 'add-topic': Add };
 
 export default function TopicArt({ topic, accent, style }) {
+  const img = IMAGES[topic];
+  if (img) {
+    return <img src={img} alt="" aria-hidden="true" style={{ width: '100%', height: '100%', objectFit: 'contain', mixBlendMode: 'multiply', ...style }} />;
+  }
   const Piece = ART[topic] || Add;
   return (
     <svg viewBox="0 0 300 184" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" aria-hidden="true" style={style}>
