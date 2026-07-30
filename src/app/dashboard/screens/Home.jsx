@@ -18,7 +18,7 @@ const PAIRING = {
   'islamic-finance': 'Grounds everyday money decisions',
   '5-pillars': 'Where most learners begin',
 };
-const BAND = 186; // fixed illustration band height - load-bearing (spec section 2)
+const BAND = 208; // fixed illustration band height - load-bearing (spec section 2)
 
 export default function Home({ name, state, deps, coins, streak, onOpenTopic, onGoTab, onSelectLesson }) {
   const trackRef = useRef(null);
@@ -164,15 +164,17 @@ function Segments({ count, filled, ac }) {
   );
 }
 
-// Illustration band with adjacent-art peeks (26% opacity, 30px outside each edge).
+// Illustration band - a white card that pops off the cream page, with the artwork
+// filling it, plus adjacent-art peeks (26% opacity, 30px outside each edge). White
+// keeps the accent to its four sanctioned places.
 function ArtBand({ topic, accent, prev, next }) {
   const peekAccent = (id) => (id ? carouselAccent(id) : accent);
   return (
-    <div style={{ position: 'relative', height: BAND, marginTop: 12, background: accent.tint, borderRadius: 22, overflow: 'hidden' }}>
-      {prev && <div aria-hidden="true" style={{ position: 'absolute', left: -30, top: 0, bottom: 0, width: 74, opacity: 0.26 }}><TopicArt topic={prev} accent={peekAccent(prev)} /></div>}
-      {next && <div aria-hidden="true" style={{ position: 'absolute', right: -30, top: 0, bottom: 0, width: 74, opacity: 0.26 }}><TopicArt topic={next} accent={peekAccent(next)} /></div>}
-      <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ width: 270 }}><TopicArt topic={topic} accent={accent} /></div>
+    <div style={{ position: 'relative', height: BAND, marginTop: 12, background: D.card, border: '1px solid rgba(27,42,74,0.07)', borderRadius: 24, overflow: 'hidden', boxShadow: '0 6px 20px rgba(27,42,74,0.09)' }}>
+      {prev && <div aria-hidden="true" style={{ position: 'absolute', left: -30, top: 0, bottom: 0, width: 74, opacity: 0.24 }}><TopicArt topic={prev} accent={peekAccent(prev)} /></div>}
+      {next && <div aria-hidden="true" style={{ position: 'absolute', right: -30, top: 0, bottom: 0, width: 74, opacity: 0.24 }}><TopicArt topic={next} accent={peekAccent(next)} /></div>}
+      <div style={{ position: 'absolute', inset: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <TopicArt topic={topic} accent={accent} style={{ maxWidth: '92%' }} />
       </div>
     </div>
   );

@@ -9,9 +9,9 @@
 import React from 'react';
 import financeArt from '../../assets/topics/islamic-finance.png';
 
-// Commissioned/provided artwork per topic (spec file convention). When present it
-// wins over the SVG placeholder. The PNGs ship on a white background, so they are
-// composited with mix-blend-mode:multiply to sit cleanly on the tinted band.
+// Provided artwork per topic (spec file convention). When present it wins over the
+// SVG placeholder. Backgrounds are knocked out to transparent, so they sit cleanly
+// on the white band with no compositing tricks.
 const IMAGES = { 'islamic-finance': financeArt };
 
 const INK = '#1B2A4A';   // navy outline
@@ -108,7 +108,7 @@ const ART = { 'islamic-finance': Finance, 'islamic-history': History, 'quran-ara
 export default function TopicArt({ topic, accent, style }) {
   const img = IMAGES[topic];
   if (img) {
-    return <img src={img} alt="" aria-hidden="true" style={{ width: '100%', height: '100%', objectFit: 'contain', mixBlendMode: 'multiply', ...style }} />;
+    return <img src={img} alt="" aria-hidden="true" style={{ width: '100%', height: '100%', objectFit: 'contain', ...style }} />;
   }
   const Piece = ART[topic] || Add;
   return (
