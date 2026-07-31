@@ -51,7 +51,7 @@ export default function Home({ name, state, deps, coins, streak, onOpenTopic, on
   const activeSlide = active < slides.length ? slides[active] : null; // null = add-topic
 
   return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', fontFamily: 'inherit' }}>
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', fontFamily: 'inherit', background: '#fff' }}>
       <style>{`.deany-carousel::-webkit-scrollbar{display:none}@media (prefers-reduced-motion: reduce){.deany-carousel{scroll-behavior:auto}}@keyframes deanyCardIn{from{opacity:0}to{opacity:1}}`}</style>
 
       {/* TopRow - static: greeting + streak + practice chips */}
@@ -164,17 +164,18 @@ function Segments({ count, filled, ac }) {
   );
 }
 
-// Illustration band - a white card that pops off the cream page, with the artwork
-// filling it, plus adjacent-art peeks (26% opacity, 30px outside each edge). White
-// keeps the accent to its four sanctioned places.
+// Illustration - the artwork sits FLUSH on the white page (no card, no box), the
+// way Brilliant does it; it pops because it is colourful art on clean white. Fixed
+// band height keeps the CTA at a constant y. Adjacent-art peeks (26% opacity, 30px
+// outside each edge) make the carousel discoverable without a tutorial.
 function ArtBand({ topic, accent, prev, next }) {
   const peekAccent = (id) => (id ? carouselAccent(id) : accent);
   return (
-    <div style={{ position: 'relative', height: BAND, marginTop: 12, background: D.card, border: '1px solid rgba(27,42,74,0.07)', borderRadius: 24, overflow: 'hidden', boxShadow: '0 6px 20px rgba(27,42,74,0.09)' }}>
-      {prev && <div aria-hidden="true" style={{ position: 'absolute', left: -30, top: 0, bottom: 0, width: 74, opacity: 0.24 }}><TopicArt topic={prev} accent={peekAccent(prev)} /></div>}
-      {next && <div aria-hidden="true" style={{ position: 'absolute', right: -30, top: 0, bottom: 0, width: 74, opacity: 0.24 }}><TopicArt topic={next} accent={peekAccent(next)} /></div>}
-      <div style={{ position: 'absolute', inset: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <TopicArt topic={topic} accent={accent} style={{ maxWidth: '92%' }} />
+    <div style={{ position: 'relative', height: BAND, marginTop: 12, overflow: 'hidden' }}>
+      {prev && <div aria-hidden="true" style={{ position: 'absolute', left: -30, top: 0, bottom: 0, width: 74, opacity: 0.26 }}><TopicArt topic={prev} accent={peekAccent(prev)} /></div>}
+      {next && <div aria-hidden="true" style={{ position: 'absolute', right: -30, top: 0, bottom: 0, width: 74, opacity: 0.26 }}><TopicArt topic={next} accent={peekAccent(next)} /></div>}
+      <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <TopicArt topic={topic} accent={accent} style={{ maxWidth: '96%' }} />
       </div>
     </div>
   );
