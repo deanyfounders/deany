@@ -1,151 +1,112 @@
-// Home - a horizontal carousel of topics (carousel spec, 30 Jul 2026, supersedes
-// the earlier notes). The top half SWIPES; the bottom half does not. Only the
-// TopicBand is inside the scroll track - the lesson card and CTA are STATIC and
-// swap contents on slide change, so Continue never moves. The full topic list
-// lives only in the Topics tab. Only the track scrolls sideways (the shell is
-// overflow-x hidden), so the two gestures never fight.
-import React, { useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { BookOpen, Plus, Flame, RefreshCw, Lock, Check } from 'lucide-react';
+// Home (deany-home-v1, 31 Jul 2026 - supersedes the carousel). A vertical page:
+// header, ayah strip, a centred "Subjects" heading, a 2x2 boxless subject grid
+// (THE HERO), and a single Personal review guide nudge. No continue/"where you
+// left off" element - resume happens through the in-progress tile and the guide.
+// Nothing scrolls horizontally; the page keeps touch-action: pan-y.
+import React, { useMemo, useState } from 'react';
+import { ChevronRight, Plus, Sparkles } from 'lucide-react';
 import { D, TYPE, subjectOf, carouselAccent } from '../tokens.js';
-import { buildTopicSlide, getActiveTopics, getContinueTarget, getDueReviews } from '../selectors.js';
-import TopicArt from '../topicArt.jsx';
+import { buildTopicSlide, getActiveTopics, getReviewGuide } from '../selectors.js';
 import { getAyahOfTheDay } from '../../../content/ayahOfTheDay.js';
+import financeArt from '../../../assets/topics/islamic-finance.png';
 
 const ALL_TOPICS = ['quran-arabic', 'islamic-history', 'islamic-finance', '5-pillars'];
-const PAIRING = {
-  'quran-arabic': 'The foundation for every topic',
-  'islamic-history': 'Pairs with your Qur’an reading',
-  'islamic-finance': 'Grounds everyday money decisions',
-  '5-pillars': 'Where most learners begin',
+const TILE_IMAGES = { 'islamic-finance': financeArt };
+const ART_ZONE = 106;
+
+const hijri = () => {
+  try {
+    const p = new Intl.DateTimeFormat('en-US-u-ca-islamic-umalqura', { day: 'numeric', month: 'long', year: 'numeric' }).formatToParts(new Date());
+    const get = (t) => (p.find((x) => x.type === t) || {}).value || '';
+    return `${get('day')} ${get('month')} ${get('year')}`;
+  } catch (_) { return new Intl.DateTimeFormat('en-US', { day: 'numeric', month: 'long' }).format(new Date()); }
 };
-const BAND = 208; // fixed illustration band height - load-bearing (spec section 2)
 
 export default function Home({ name, state, deps, coins, streak, onOpenTopic, onGoTab, onSelectLesson }) {
-  const trackRef = useRef(null);
-  const [active, setActive] = useState(0);
   const [ayah] = useState(getAyahOfTheDay);
-
+  const [today] = useState(hijri);
   const topicIds = getActiveTopics(state);
-  const slides = useMemo(() => topicIds.map((id) => ({ ...buildTopicSlide(id, state, deps), name: subjectOf(id).name })), [topicIds.join(','), deps]);
-  const activeTopicId = useMemo(() => { const t = getContinueTarget(state, deps, Date.now()); return t.type === 'lesson' ? t.topicId : (topicIds[0] || null); }, [topicIds.join(','), deps]);
-  const addIndex = slides.length;
-  const zero = slides.length === 0;
-  const due = getDueReviews(state, Date.now()).length;
+  const slides = useMemo(() => topicIds.map((id) => buildTopicSlide(id, state, deps)), [topicIds.join(','), deps]);
+  const guide = useMemo(() => getReviewGuide(state, deps, Date.now()), [state, deps]);
   const available = ALL_TOPICS.filter((id) => !topicIds.includes(id));
+  const empty = topicIds.length === 0;
 
-  useLayoutEffect(() => {
-    const el = trackRef.current; if (!el) return;
-    const i = slides.findIndex((s) => s.id === activeTopicId);
-    if (i > 0) { el.scrollLeft = el.clientWidth * i; setActive(i); }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeTopicId, slides.length]);
-
-  useLayoutEffect(() => {
-    const root = trackRef.current; if (!root) return;
-    const io = new IntersectionObserver((entries) => { const hit = entries.find((e) => e.isIntersecting); if (hit) setActive(Number(hit.target.dataset.index)); }, { root, threshold: 0.6 });
-    root.querySelectorAll('[data-index]').forEach((el) => io.observe(el));
-    return () => io.disconnect();
-  }, [slides.length]);
-
-  const goSlide = (i) => { const el = trackRef.current; if (!el) return; const smooth = !window.matchMedia?.('(prefers-reduced-motion: reduce)').matches; el.scrollTo({ left: el.clientWidth * i, behavior: smooth ? 'smooth' : 'auto' }); };
-  const activeSlide = active < slides.length ? slides[active] : null; // null = add-topic
+  const openTile = (slide) => {
+    const inProgress = slide.slideState === 'in_progress' || slide.slideState === 'level_complete';
+    if (inProgress && slide.current) onSelectLesson(slide.current.lesson, slide.current.idx, slide.current.mod);
+    else onOpenTopic(slide.id);
+  };
 
   return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', fontFamily: 'inherit', background: '#fff' }}>
-      <style>{`.deany-carousel::-webkit-scrollbar{display:none}@media (prefers-reduced-motion: reduce){.deany-carousel{scroll-behavior:auto}}@keyframes deanyCardIn{from{opacity:0}to{opacity:1}}`}</style>
-
-      {/* TopRow - static: greeting + streak + practice chips */}
-      <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: 12, padding: 'calc(env(safe-area-inset-top) + 16px) 16px 0' }}>
-        <div style={{ flex: 1, minWidth: 0, fontSize: 18, fontWeight: 600, color: D.ink, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{name ? `Salam, ${name}` : 'Salam'} <span style={{ fontSize: 16 }}>{'\u{1F44B}'}</span></div>
-        <Chip icon={Flame} value={streak} bg={D.streakPill.bg} border={D.streakPill.border} ink={D.streakPill.ink} />
-        <button onClick={() => onGoTab('review')} className="dash-press" aria-label={`Practice, ${due} due`} style={{ border: 'none', background: 'none', padding: 0, cursor: 'pointer' }}>
-          <Chip icon={RefreshCw} value={due} bg={D.coinsPill.bg} border={D.coinsPill.border} ink={D.coinsPill.ink} />
-        </button>
-      </div>
-
-      {/* CarouselTrack - the only horizontal scroller */}
-      <div ref={trackRef} className="deany-carousel" role="region" aria-roledescription="carousel" aria-label="Your topics. Swipe, or open the Topics tab for the full list."
-        style={{ flexShrink: 0, display: 'flex', overflowX: 'auto', overflowY: 'hidden', scrollSnapType: 'x mandatory', overscrollBehaviorX: 'contain', touchAction: 'pan-x', scrollbarWidth: 'none', marginTop: 8 }}>
-        {slides.map((s, i) => (
-          <section key={s.id} data-index={i} aria-label={`${s.name}, level ${s.level}`} style={{ scrollSnapAlign: 'center', flexShrink: 0, flexBasis: '100%', minWidth: 0 }}>
-            <TopicBand slide={s} prev={topicIds[i - 1] || null} next={topicIds[i + 1] || 'add-topic'} onOpenTopic={onOpenTopic} />
-          </section>
-        ))}
-        <section data-index={addIndex} aria-label="Add a topic" style={{ scrollSnapAlign: 'center', flexShrink: 0, flexBasis: '100%', minWidth: 0 }}>
-          <AddBand available={available} prev={topicIds[topicIds.length - 1] || null} />
-        </section>
-      </div>
-
-      {/* PageDots - static, real buttons */}
-      {!zero && (
-        <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '10px 0 6px' }}>
-          {slides.map((s, i) => (
-            <button key={s.id} onClick={() => goSlide(i)} aria-label={`Go to ${s.name}`} aria-current={active === i}
-              style={{ width: active === i ? 22 : 8, height: 8, borderRadius: 4, border: 'none', padding: 0, cursor: 'pointer', background: active === i ? carouselAccent(s.id).base : D.border, transition: 'width .2s ease, background .2s ease' }} />
-          ))}
-          <button onClick={() => goSlide(addIndex)} aria-label="Add a topic"
-            style={{ width: 16, height: 16, marginLeft: 2, borderRadius: 999, border: `1.5px solid ${active === addIndex ? carouselAccent('add-topic').base : D.inkFaint}`, background: active === addIndex ? carouselAccent('add-topic').base : 'transparent', color: active === addIndex ? '#fff' : D.inkFaint, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
-            <Plus size={11} strokeWidth={2.6} />
-          </button>
+    <div style={{ background: '#fff', minHeight: '100%' }}>
+      {/* Header */}
+      <div style={{ padding: 'calc(env(safe-area-inset-top) + 16px) 16px 0', display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 19, fontWeight: 700, color: D.ink }}>{name ? `Salam, ${name}` : 'Salam'}</div>
+          <div style={{ fontSize: 12, color: '#8A90A0', marginTop: 2 }}>{today}</div>
         </div>
-      )}
-
-      <div style={{ flex: 1, minHeight: 6 }} />
-
-      {/* LessonCard - STATIC, content fades on slide change (spec section 1) */}
-      <div style={{ flexShrink: 0, padding: '0 16px' }}>
-        <div key={active} style={{ animation: 'deanyCardIn 120ms ease both' }}>
-          {activeSlide
-            ? <LessonCard slide={activeSlide} onSelectLesson={onSelectLesson} onOpenTopic={onOpenTopic} />
-            : <AddCard available={available} onGoTab={onGoTab} />}
+        <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: '#F0B429', color: '#3A2704', borderRadius: 999, padding: '5px 11px', fontSize: 13, fontWeight: 700 }}>{'\u{1F525}'} {streak}</span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: '#22A39A', color: '#fff', borderRadius: 999, padding: '5px 11px', fontSize: 13, fontWeight: 700 }}>{'\u{1FA99}'} {coins}</span>
         </div>
       </div>
 
-      {/* AyahStrip - static, taps into the Qur'an tab */}
-      <button onClick={() => onGoTab('quran')} className="dash-press" aria-label={`Ayah of the day, ${ayah.surahName} ${ayah.ref}. Open in the Qur'an tab.`}
-        style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left', background: 'none', border: 'none', padding: '10px 16px 6px', cursor: 'pointer', minHeight: 44, marginTop: 8 }}>
-        <span style={{ width: 26, height: 26, borderRadius: 8, background: D.quran, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><BookOpen size={14} color="#FBFAF6" /></span>
-        <span dir="rtl" className="quran-ar" style={{ flex: 1, minWidth: 0, fontSize: 17, color: D.navy, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{ayah.arabic}</span>
-        <span style={{ fontSize: TYPE.hint, color: D.inkHint, flexShrink: 0 }}>{ayah.ref}</span>
+      {/* Ayah strip */}
+      <button onClick={() => onGoTab('quran')} className="dash-press" aria-label={`Ayah of the day, ${ayah.surahName} ${ayah.ref}`}
+        style={{ display: 'flex', alignItems: 'center', gap: 10, width: 'calc(100% - 32px)', margin: '14px 16px 0', background: '#E4F3ED', border: 'none', borderRadius: 14, padding: '11px 14px', cursor: 'pointer', textAlign: 'left' }}>
+        <span style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: '0.08em', color: '#0B5E48', flexShrink: 0 }}>AYAH</span>
+        <span dir="rtl" lang="ar" className="quran-ar" style={{ flex: 1, minWidth: 0, fontSize: 15, color: D.navy, textAlign: 'right', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{ayah.arabic}</span>
+        <ChevronRight size={16} color="#0B5E48" style={{ flexShrink: 0 }} />
       </button>
+
+      {/* Subjects heading */}
+      <h2 style={{ margin: '20px 18px 6px', fontSize: 19, fontWeight: 700, color: D.ink, textAlign: 'center' }}>{empty ? 'Choose your first subject' : 'Subjects'}</h2>
+
+      {/* Subject grid - the hero */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12, padding: '0 16px' }}>
+        {empty
+          ? available.map((id) => <PickerTile key={id} id={id} onPick={() => onGoTab('topics')} />)
+          : (<>
+            {slides.map((s) => <SubjectTile key={s.id} slide={s} onTap={() => openTile(s)} />)}
+            {topicIds.length < 4 && <AddTile count={available.length} onPress={() => onGoTab('topics')} />}
+          </>)}
+      </div>
+
+      {/* Personal review guide */}
+      {guide && <GuideCard guide={guide} onReview={() => onSelectLesson(guide.resolved.lesson, guide.resolved.idx, guide.resolved.mod)} onMore={() => onGoTab('review')} />}
     </div>
   );
 }
 
-function Chip({ icon: Icon, value, bg, border, ink }) {
-  return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: bg, border: `1px solid ${border}`, color: ink, borderRadius: 999, padding: '4px 10px', fontSize: TYPE.meta, fontWeight: 700, flexShrink: 0 }}>
-      <Icon size={13} strokeWidth={2.4} /> {value}
-    </span>
-  );
-}
+function tilePress(e, down) { e.currentTarget.style.transform = down ? 'scale(0.96)' : ''; }
 
-// ---- swiping band (pill, title, level, segments, art + peek) --------------
-function TopicBand({ slide, prev, next, onOpenTopic }) {
+function SubjectTile({ slide, onTap }) {
   const s = subjectOf(slide.id);
   const ac = carouselAccent(slide.id);
+  const inProgress = slide.slideState === 'in_progress' || slide.slideState === 'level_complete';
+  const untouched = slide.slideState === 'untouched';
+  const label = `${s.name}, ${slide.lessonsComplete} of ${slide.lessonCount} lessons${inProgress ? ', in progress' : untouched ? ', not started' : ', completed'}`;
   return (
-    <div style={{ padding: '2px 16px 0' }}>
-      <button onClick={() => onOpenTopic(slide.id)} style={{ display: 'block', width: '100%', textAlign: 'left', background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
-        <span style={{ display: 'inline-block', padding: '6px 14px', borderRadius: 999, background: ac.tint, color: ac.base, fontSize: 10.5, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase' }}>{s.name}</span>
-        <h1 style={{ margin: '10px 0 0', fontSize: 28, fontWeight: 800, letterSpacing: '-0.02em', color: D.ink, lineHeight: 1.16, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', height: `${Math.round(28 * 1.16 * 2)}px` }}>{slide.moduleTitle || s.name}</h1>
-        <div style={{ marginTop: 10, fontSize: 13.5, fontWeight: 800, letterSpacing: '0.1em', color: ac.base }}>LEVEL {slide.level}</div>
-        <Segments count={slide.lessonCount} filled={slide.lessonsComplete} ac={ac} />
-      </button>
-      <ArtBand topic={slide.id} accent={ac} prev={prev} next={next} />
-    </div>
+    <button onClick={onTap} aria-label={label} className="dash-press"
+      style={{ minWidth: 0, background: 'none', border: 'none', padding: '8px 6px 10px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', transition: 'transform 80ms ease', WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}
+      onPointerDown={(e) => tilePress(e, true)} onPointerUp={(e) => tilePress(e, false)} onPointerLeave={(e) => tilePress(e, false)}>
+      <div style={{ position: 'relative', height: ART_ZONE, width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        {inProgress && <span style={{ position: 'absolute', top: 0, background: '#F0B429', color: '#3A2704', borderRadius: 999, padding: '3px 10px', fontSize: 9.5, fontWeight: 700, letterSpacing: '0.02em' }}>IN PROGRESS</span>}
+        <TileArt id={slide.id} ac={ac} initial={(s.short || s.name)[0]} />
+      </div>
+      <div style={{ fontSize: 15.5, fontWeight: 700, color: D.ink, marginTop: 6, textAlign: 'center' }}>{s.name}</div>
+      <Segments count={slide.lessonCount} filled={slide.lessonsComplete} ac={ac} />
+      <div style={{ fontSize: 11, color: '#8A90A0', marginTop: 5 }}>{untouched ? 'Not started' : `${slide.lessonsComplete} of ${slide.lessonCount} lessons`}</div>
+    </button>
   );
 }
 
-function AddBand({ available, prev }) {
-  const ac = carouselAccent('add-topic');
+function TileArt({ id, ac, initial }) {
+  const img = TILE_IMAGES[id];
+  if (img) return <img src={img} alt="" aria-hidden="true" style={{ maxHeight: ART_ZONE, maxWidth: 148, objectFit: 'contain' }} />;
   return (
-    <div style={{ padding: '2px 16px 0' }}>
-      <span style={{ display: 'inline-block', padding: '6px 14px', borderRadius: 999, background: ac.tint, color: ac.base, fontSize: 10.5, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase' }}>{available.length} topic{available.length === 1 ? '' : 's'} available</span>
-      <h1 style={{ margin: '10px 0 0', fontSize: 28, fontWeight: 800, letterSpacing: '-0.02em', color: D.ink, lineHeight: 1.16, height: `${Math.round(28 * 1.16 * 2)}px`, display: 'flex', alignItems: 'flex-start' }}>Add a topic</h1>
-      <div style={{ marginTop: 10, fontSize: 13.5, fontWeight: 800, letterSpacing: '0.1em', color: ac.base }}>{' '}</div>
-      <div style={{ marginTop: 6, height: 4 }} />
-      <ArtBand topic="add-topic" accent={ac} prev={prev} next={null} />
+    <div style={{ width: 100, height: 100, borderRadius: '50%', background: ac.tint, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <span style={{ fontSize: 40, fontWeight: 800, color: ac.deep }}>{initial}</span>
     </div>
   );
 }
@@ -153,140 +114,62 @@ function AddBand({ available, prev }) {
 function Segments({ count, filled, ac }) {
   if (count > 8) {
     const pct = count ? Math.round((filled / count) * 100) : 0;
-    return <div style={{ marginTop: 8, height: 4, borderRadius: 2, background: ac.tint, overflow: 'hidden' }}><div style={{ width: `${pct}%`, height: '100%', background: ac.deep, borderRadius: 2 }} /></div>;
+    return <div style={{ marginTop: 8, width: 84, height: 3.5, borderRadius: 2, background: '#EDEBE4', overflow: 'hidden' }}><div style={{ width: `${pct}%`, height: '100%', background: ac.base, borderRadius: 2 }} /></div>;
   }
   return (
-    <div style={{ marginTop: 8, display: 'flex', gap: 5 }}>
+    <div style={{ marginTop: 8, display: 'flex', gap: 3 }}>
       {Array.from({ length: Math.max(count, 1) }).map((_, i) => (
-        <div key={i} style={{ flex: 1, maxWidth: 24, height: 4, borderRadius: 2, background: i < filled ? ac.deep : ac.tint }} />
+        <div key={i} style={{ width: 15, height: 3.5, borderRadius: 2, background: i < filled ? ac.base : '#EDEBE4' }} />
       ))}
     </div>
   );
 }
 
-// Illustration - the artwork sits FLUSH on the white page (no card, no box), the
-// way Brilliant does it; it pops because it is colourful art on clean white. Fixed
-// band height keeps the CTA at a constant y. Adjacent-art peeks (26% opacity, 30px
-// outside each edge) make the carousel discoverable without a tutorial.
-function ArtBand({ topic, accent, prev, next }) {
-  const peekAccent = (id) => (id ? carouselAccent(id) : accent);
+function AddTile({ count, onPress }) {
   return (
-    <div style={{ position: 'relative', height: BAND, marginTop: 12, overflow: 'hidden' }}>
-      {prev && <div aria-hidden="true" style={{ position: 'absolute', left: -30, top: 0, bottom: 0, width: 74, opacity: 0.26 }}><TopicArt topic={prev} accent={peekAccent(prev)} /></div>}
-      {next && <div aria-hidden="true" style={{ position: 'absolute', right: -30, top: 0, bottom: 0, width: 74, opacity: 0.26 }}><TopicArt topic={next} accent={peekAccent(next)} /></div>}
-      <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <TopicArt topic={topic} accent={accent} style={{ maxWidth: '96%' }} />
+    <button onClick={onPress} aria-label={`Add subject, ${count} available`} className="dash-press"
+      style={{ minWidth: 0, background: 'none', border: 'none', padding: '8px 6px 10px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', transition: 'transform 80ms ease', touchAction: 'manipulation' }}
+      onPointerDown={(e) => tilePress(e, true)} onPointerUp={(e) => tilePress(e, false)} onPointerLeave={(e) => tilePress(e, false)}>
+      <div style={{ height: ART_ZONE, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: 100, height: 100, borderRadius: '50%', border: '1.5px dashed #D3D6CE', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Plus size={30} color="#B7BBB0" strokeWidth={2} /></div>
       </div>
-    </div>
+      <div style={{ fontSize: 15.5, fontWeight: 700, color: D.ink, marginTop: 6 }}>Add subject</div>
+      <div style={{ fontSize: 11, color: '#8A90A0', marginTop: 5 }}>{count} available</div>
+    </button>
   );
 }
 
-// ---- static lesson card (content swaps per active slide) ------------------
-const ROWS_H = 138; // fixed scroll-area height so the CTA lands at a constant y
-
-function LessonCard({ slide, onSelectLesson, onOpenTopic }) {
-  const ac = carouselAccent(slide.id);
-  const st = slide.slideState;
-  const kicker = st === 'in_progress' ? `LESSON ${slide.current?.index || 1} OF ${slide.lessonCount}`
-    : st === 'untouched' ? 'STARTS WITH'
-      : st === 'level_complete' ? `LEVEL ${Math.max(slide.level - 1, 1)} COMPLETE`
-        : 'COMPLETED';
-  const cta = st === 'complete' ? 'Review this topic' : st === 'untouched' ? 'Start' : st === 'level_complete' ? `Begin level ${slide.level}` : 'Continue';
-  const complete = st === 'complete';
-  const onCta = () => { if (complete) return onOpenTopic(slide.id); const l = slide.current; if (l && onSelectLesson) onSelectLesson(l.lesson, l.idx, l.mod); };
-  const lessons = slide.levelLessons || [];
-  const openLesson = (l) => { if (l.state !== 'locked' && onSelectLesson) onSelectLesson(l.lesson, l.idx, l.mod); };
-
+function PickerTile({ id, onPick }) {
+  const s = subjectOf(id); const ac = carouselAccent(id);
   return (
-    <div style={cardStyle}>
+    <button onClick={onPick} aria-label={`Start ${s.name}`} className="dash-press"
+      style={{ minWidth: 0, background: 'none', border: 'none', padding: '8px 6px 10px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', transition: 'transform 80ms ease', touchAction: 'manipulation' }}
+      onPointerDown={(e) => tilePress(e, true)} onPointerUp={(e) => tilePress(e, false)} onPointerLeave={(e) => tilePress(e, false)}>
+      <div style={{ height: ART_ZONE, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><TileArt id={id} ac={ac} initial={(s.short || s.name)[0]} /></div>
+      <div style={{ fontSize: 15.5, fontWeight: 700, color: D.ink, marginTop: 6, textAlign: 'center' }}>{s.name}</div>
+      <div style={{ fontSize: 11, color: '#8A90A0', marginTop: 5 }}>Tap to start</div>
+    </button>
+  );
+}
+
+function GuideCard({ guide, onReview, onMore }) {
+  return (
+    <div style={{ background: '#E9F6F1', borderRadius: 16, padding: '14px 16px', margin: '22px 16px 0' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-        <span style={{ flex: 1, minWidth: 0, fontSize: 10, fontWeight: 800, letterSpacing: '0.1em', color: D.inkHint }}>{kicker}</span>
-        <button onClick={() => onOpenTopic(slide.id)} className="dash-press" style={{ border: 'none', background: 'none', color: ac.base, fontSize: 12, fontWeight: 800, cursor: 'pointer', padding: 0, flexShrink: 0 }}>View all lessons</button>
+        <span style={{ width: 26, height: 26, borderRadius: '50%', background: '#22A39A', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Sparkles size={14} color="#fff" /></span>
+        <span style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: '0.09em', color: '#0B5E48' }}>PERSONAL REVIEW GUIDE</span>
       </div>
-      <div style={{ height: ROWS_H, overflowY: 'auto', WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain', touchAction: 'pan-y', margin: '0 -4px', padding: '0 4px' }}>
-        {lessons.map((l) => <LessonRow key={l.id} lesson={l} ac={ac} onOpen={() => openLesson(l)} />)}
+      <p style={{ margin: '0 0 12px', fontSize: 14, lineHeight: 1.5, color: D.navy }}><b>{guide.name}</b>{guide.tail}</p>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <button onClick={onReview} className="dash-press"
+          style={{ border: 'none', borderRadius: 999, background: '#22A39A', color: '#fff', fontFamily: 'inherit', fontSize: 13, fontWeight: 700, cursor: 'pointer', padding: '9px 16px', boxShadow: '0 3px 0 #17827B', transition: 'transform 75ms ease, box-shadow 75ms ease' }}
+          onPointerDown={(e) => { e.currentTarget.style.transform = 'translateY(3px)'; e.currentTarget.style.boxShadow = 'none'; }}
+          onPointerUp={(e) => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '0 3px 0 #17827B'; }}
+          onPointerLeave={(e) => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '0 3px 0 #17827B'; }}>
+          Review now · {guide.minutes} min
+        </button>
+        {guide.more > 0 && <button onClick={onMore} style={{ border: 'none', background: 'none', color: '#5F8F82', fontSize: 11.5, fontWeight: 600, cursor: 'pointer' }}>+{guide.more} more suggestion{guide.more === 1 ? '' : 's'}</button>}
       </div>
-      <PressCTA ac={ac} onClick={onCta}>{cta}</PressCTA>
     </div>
-  );
-}
-
-function AddCard({ available, onGoTab }) {
-  const ac = carouselAccent('add-topic');
-  const capped = available.length <= 1; // three active topics -> only one slot-ish left
-  return (
-    <div style={cardStyle}>
-      <div style={{ marginBottom: 8, fontSize: 10, fontWeight: 800, letterSpacing: '0.1em', color: D.inkHint }}>{capped ? 'ONE AT A TIME' : 'SUGGESTED FOR YOU'}</div>
-      <div style={{ height: ROWS_H, display: 'flex', flexDirection: 'column', gap: 10, justifyContent: 'center' }}>
-        {capped
-          ? <div style={{ fontSize: TYPE.body, color: D.inkSecondary, lineHeight: 1.5 }}>You have three topics going. Finish one before adding a fourth - it keeps you moving.</div>
-          : available.slice(0, 3).map((id) => (
-            <div key={id} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span style={{ width: 10, height: 10, borderRadius: 999, background: subjectOf(id).accent, flexShrink: 0 }} />
-              <span style={{ flex: 1, minWidth: 0 }}>
-                <span style={{ display: 'block', fontSize: TYPE.body, fontWeight: 700, color: D.ink }}>{subjectOf(id).name}</span>
-                <span style={{ display: 'block', fontSize: TYPE.hint, color: D.inkHint }}>{PAIRING[id]}</span>
-              </span>
-            </div>
-          ))}
-      </div>
-      <PressCTA ac={ac} onClick={() => onGoTab('topics')}>Browse all topics</PressCTA>
-    </div>
-  );
-}
-
-const cardStyle = { background: D.card, border: '1px solid rgba(27,42,74,0.11)', borderRadius: 22, boxShadow: '0 2px 12px rgba(27,42,74,0.06)', padding: '16px 16px 18px' };
-
-function LessonRow({ lesson, ac, onOpen }) {
-  const st = lesson.state; // done | current | locked
-  const locked = st === 'locked';
-  return (
-    <button onClick={locked ? undefined : onOpen} disabled={locked} className={locked ? '' : 'dash-press'}
-      style={{ display: 'flex', alignItems: 'center', gap: 12, width: '100%', textAlign: 'left', background: 'none', border: 'none', borderRadius: 10, padding: '6px 2px', cursor: locked ? 'default' : 'pointer' }}>
-      <Node state={st} ac={ac} />
-      <span style={{ flex: 1, minWidth: 0 }}>
-        <span style={{ display: 'block', fontSize: 16, fontWeight: st === 'current' ? 800 : locked ? 400 : 600, color: locked ? D.inkHint : D.ink, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{lesson.title}</span>
-        <span style={{ display: 'block', fontSize: 12, color: D.inkHint, marginTop: 1 }}>{lesson.minutes} min</span>
-      </span>
-      {st === 'current'
-        ? <span style={{ flexShrink: 0, fontSize: 12, fontWeight: 800, color: ac.base, background: ac.tint, borderRadius: 999, padding: '3px 9px' }}>+{lesson.coins}</span>
-        : st === 'done'
-          ? <Check size={17} color="#1D9E75" strokeWidth={2.6} style={{ flexShrink: 0 }} />
-          : <Lock size={16} color={D.inkFaint} style={{ flexShrink: 0 }} />}
-    </button>
-  );
-}
-
-// current: amber ellipse + white inner + green teardrop pin. done: filled accent
-// ellipse + white check. locked: greys, no pin.
-function Node({ state, ac }) {
-  const locked = state === 'locked';
-  const done = state === 'done';
-  const outer = locked ? '#D7D3CA' : done ? ac.base : ac.base;
-  const inner = locked ? '#EFECE4' : done ? ac.deep : '#FFFFFF';
-  const edge = locked ? '#C4BFB4' : ac.deep;
-  return (
-    <svg width="48" height="34" viewBox="0 0 48 34" style={{ flexShrink: 0 }} aria-hidden="true">
-      <ellipse cx="24" cy="21" rx="24" ry="13" fill={outer} />
-      <ellipse cx="24" cy="21" rx="18" ry="10" fill={inner} stroke={edge} strokeWidth="1.5" />
-      {done && <path d="M18 21 l4 4 8 -9" fill="none" stroke="#fff" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />}
-      {state === 'current' && <path d="M24 2 c-6 0 -10 4 -10 9 c0 5 10 12 10 12 c0 0 10 -7 10 -12 c0 -5 -4 -9 -10 -9 z" fill="#1D9E75" stroke="#14785A" strokeWidth="1.5" />}
-      {state === 'current' && <circle cx="24" cy="11" r="3.4" fill="#fff" />}
-    </svg>
-  );
-}
-
-// CTA with the glossy pressable treatment (spec section 5).
-function PressCTA({ ac, onClick, children }) {
-  const rest = `inset 0 2px 0 rgba(255,255,255,0.60), inset 0 -3px 0 rgba(0,0,0,0.08), 0 5px 0 ${ac.deep}, 0 8px 14px ${ac.deep}38`;
-  const down = 'inset 0 2px 0 rgba(255,255,255,0.6)';
-  const reset = (e) => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = rest; };
-  return (
-    <button onClick={onClick}
-      style={{ width: '100%', marginTop: 14, border: 'none', borderRadius: 999, background: ac.base, color: ac.onBase, fontFamily: 'inherit', fontSize: 18, fontWeight: 800, cursor: 'pointer', padding: '15px 0', boxShadow: rest, transition: 'transform 75ms ease, box-shadow 75ms ease' }}
-      onPointerDown={(e) => { e.currentTarget.style.transform = 'translateY(5px)'; e.currentTarget.style.boxShadow = down; }}
-      onPointerUp={reset} onPointerLeave={reset}>
-      {children}
-    </button>
   );
 }

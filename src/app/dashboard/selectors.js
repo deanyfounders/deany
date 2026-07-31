@@ -92,6 +92,39 @@ export function getHomeBadges(state, now) {
   return { reviewDot: getDueReviews(state, now).length > 0 };
 }
 
+// Resolve a review item back to its lesson (name + launch coordinates).
+function resolveReview(item, deps) {
+  for (const mod of (deps?.modules?.[item.topicId] || [])) {
+    const lessons = mod.lessons || [];
+    for (let i = 0; i < lessons.length; i++) {
+      if (`${mod.id}-lesson-${i}` === item.lessonId) return { lesson: lessons[i], idx: i, mod, name: lessons[i].title };
+    }
+  }
+  return null;
+}
+
+// The personal review guide (deany-home-v1 section 5). DETERMINISTIC, no LLM:
+// take the oldest due review item, name it, and count the rest. Returns null when
+// nothing is due, so the card hides (a guide that always speaks is nagging).
+// Extends cleanly to ayah-memorisation / missed-question / vocab priorities once
+// those tables exist; today the review queue holds lesson (concept) items.
+export function getReviewGuide(state, deps, now) {
+  const due = getDueReviews(state, now); // already sorted oldest due first
+  if (!due.length) return null;
+  const first = due[0];
+  const r = resolveReview(first, deps);
+  if (!r) return null;
+  return {
+    subjectId: first.topicId,
+    name: r.name,
+    tail: ' is due for review. Two minutes keeps it fresh.',
+    minutes: 2,
+    more: Math.min(due.length - 1, 9),
+    item: first,
+    resolved: r,
+  };
+}
+
 // Deterministic - the only place that decides what the hero shows.
 export function getContinueTarget(state, deps, now) {
   if (getDueReviews(state, now).length >= 5) return { type: 'review' };

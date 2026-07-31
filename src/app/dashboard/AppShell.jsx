@@ -13,45 +13,41 @@ const TABS = [
   { id: 'you', label: 'You', icon: User },
 ];
 
+// Floating pill nav (deany-home-v1 section 6): white, full radius, hairline border,
+// soft shadow, sitting above the safe-area inset.
 export function NavBar({ tab, onTab, reviewDot }) {
   return (
-    <nav style={{
-      position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 40, background: D.card,
-      borderTop: `1px solid ${D.border}`, display: 'flex',
-      padding: `6px 0 calc(env(safe-area-inset-bottom) + 6px)`, maxWidth: 520, margin: '0 auto',
-    }}>
-      {TABS.map(t => {
-        const active = tab === t.id;
-        const showDot = t.id === 'review' && reviewDot;
-        return (
-          <button key={t.id} onClick={() => onTab(t.id)} aria-label={t.label} aria-current={active} className="dash-press" style={{
-            flex: 1, display: 'flex', justifyContent: 'center', padding: '5px 0', background: 'none', border: 'none', cursor: 'pointer', minHeight: 48,
-            transition: 'transform .12s ease', WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation',
-          }}>
-            <span style={{
-              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: active ? '6px 14px' : '6px 8px',
-              background: active ? '#E9F6F4' : 'transparent', borderRadius: 14, color: active ? D.tealDeep : D.inkFaint, transition: 'background .15s ease',
+    <nav aria-label="Primary" style={{ position: 'fixed', left: 0, right: 0, bottom: 'calc(env(safe-area-inset-bottom) + 14px)', zIndex: 40, display: 'flex', justifyContent: 'center', pointerEvents: 'none' }}>
+      <div style={{ pointerEvents: 'auto', display: 'flex', gap: 2, background: '#fff', borderRadius: 999, border: '0.5px solid rgba(27,42,74,0.10)', boxShadow: '0 4px 14px rgba(27,42,74,0.08)', padding: '6px 8px', maxWidth: 'calc(100vw - 32px)' }}>
+        {TABS.map(t => {
+          const active = tab === t.id;
+          const showDot = t.id === 'review' && reviewDot;
+          return (
+            <button key={t.id} onClick={() => onTab(t.id)} aria-label={t.label} aria-current={active} className="dash-press" style={{
+              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, minHeight: 44, padding: active ? '6px 13px' : '6px 11px',
+              borderRadius: 999, border: 'none', cursor: 'pointer', background: active ? '#E4F3ED' : 'transparent', color: active ? '#0B5E48' : '#9AA0AE',
+              transition: 'background .15s ease', WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation',
             }}>
               <span style={{ position: 'relative', display: 'inline-flex' }}>
-                {React.createElement(t.icon, { size: 21, strokeWidth: active ? 2.3 : 2 })}
-                {showDot && <span className="dash-dot" style={{ position: 'absolute', top: -2, right: -3, width: 8, height: 8, borderRadius: '50%', background: D.history, border: `1.5px solid ${D.card}` }} />}
+                {React.createElement(t.icon, { size: 20, strokeWidth: active ? 2.4 : 2 })}
+                {showDot && <span className="dash-dot" style={{ position: 'absolute', top: -2, right: -3, width: 8, height: 8, borderRadius: '50%', background: D.teal, border: '1.5px solid #fff' }} />}
               </span>
-              <span style={{ fontSize: TYPE.hint, fontWeight: active ? 500 : 400 }}>{t.label}</span>
-            </span>
-          </button>
-        );
-      })}
+              <span style={{ fontSize: 10, fontWeight: active ? 700 : 500 }}>{t.label}</span>
+            </button>
+          );
+        })}
+      </div>
     </nav>
   );
 }
 
 export default function AppShell({ tab, onTab, reviewDot, children }) {
   return (
-    <div style={{ minHeight: '100vh', height: '100dvh', maxHeight: '100dvh', overflow: 'hidden', background: D.canvas, color: D.ink, fontFamily: FONT, display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', height: '100dvh', maxHeight: '100dvh', overflow: 'hidden', background: '#fff', color: D.ink, fontFamily: FONT, display: 'flex', flexDirection: 'column' }}>
       <DashMotion />
-      {/* overflowX hidden is the prerequisite fix: the page never scrolls sideways;
-          only an intentional carousel track inside a tab may scroll horizontally. */}
-      <div key={tab} className="deany-fade" style={{ flex: 1, minHeight: 0, overflowY: 'auto', overflowX: 'hidden', WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain', paddingBottom: 'calc(env(safe-area-inset-bottom) + 78px)', maxWidth: 520, margin: '0 auto', width: '100%' }}>
+      {/* overflowX hidden is the prerequisite fix: the page never scrolls sideways.
+          Bottom padding clears the floating nav pill (nav height + inset + gap). */}
+      <div key={tab} className="deany-fade" style={{ flex: 1, minHeight: 0, overflowY: 'auto', overflowX: 'hidden', WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain', touchAction: 'pan-y', paddingBottom: 'calc(env(safe-area-inset-bottom) + 96px)', maxWidth: 520, margin: '0 auto', width: '100%' }}>
         {children}
       </div>
       <NavBar tab={tab} onTab={onTab} reviewDot={reviewDot} />
