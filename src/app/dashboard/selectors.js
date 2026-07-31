@@ -54,6 +54,9 @@ export function buildTopicSlide(topicId, state, deps) {
   if (slideState === 'untouched') rows = (cur ? cur.lessons.slice(0, 2) : []);
 
   const levelObj = cur || levels[0] || { mi: 0, title: '', lessons: [], total: 0, complete: 0 };
+  // Every lesson of the current level, tagged with its state for the scrollable list.
+  const firstIncIdx = levelObj.lessons.findIndex((x) => !x.done);
+  const levelLessons = levelObj.lessons.map((x, i) => ({ ...x, state: x.done ? 'done' : (i === firstIncIdx ? 'current' : 'locked') }));
   return {
     id: topicId,
     level: levelObj.mi + 1,
@@ -61,7 +64,7 @@ export function buildTopicSlide(topicId, state, deps) {
     lessonCount: levelObj.total,
     lessonsComplete: levelObj.complete,
     totalDone, total,
-    slideState, current, next, rows,
+    slideState, current, next, rows, levelLessons,
   };
 }
 

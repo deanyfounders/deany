@@ -5,7 +5,7 @@
 // lives only in the Topics tab. Only the track scrolls sideways (the shell is
 // overflow-x hidden), so the two gestures never fight.
 import React, { useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { BookOpen, Plus, Flame, RefreshCw, Lock } from 'lucide-react';
+import { BookOpen, Plus, Flame, RefreshCw, Lock, Check } from 'lucide-react';
 import { D, TYPE, subjectOf, carouselAccent } from '../tokens.js';
 import { buildTopicSlide, getActiveTopics, getContinueTarget, getDueReviews } from '../selectors.js';
 import TopicArt from '../topicArt.jsx';
@@ -182,6 +182,8 @@ function ArtBand({ topic, accent, prev, next }) {
 }
 
 // ---- static lesson card (content swaps per active slide) ------------------
+const ROWS_H = 138; // fixed scroll-area height so the CTA lands at a constant y
+
 function LessonCard({ slide, onSelectLesson, onOpenTopic }) {
   const ac = carouselAccent(slide.id);
   const st = slide.slideState;
@@ -192,14 +194,17 @@ function LessonCard({ slide, onSelectLesson, onOpenTopic }) {
   const cta = st === 'complete' ? 'Review this topic' : st === 'untouched' ? 'Start' : st === 'level_complete' ? `Begin level ${slide.level}` : 'Continue';
   const complete = st === 'complete';
   const onCta = () => { if (complete) return onOpenTopic(slide.id); const l = slide.current; if (l && onSelectLesson) onSelectLesson(l.lesson, l.idx, l.mod); };
+  const lessons = slide.levelLessons || [];
+  const openLesson = (l) => { if (l.state !== 'locked' && onSelectLesson) onSelectLesson(l.lesson, l.idx, l.mod); };
 
   return (
     <div style={cardStyle}>
-      <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.1em', color: D.inkHint }}>{kicker}</div>
-      <div style={{ minHeight: 96, marginTop: 10, display: 'flex', flexDirection: 'column', gap: 12, justifyContent: complete ? 'center' : 'flex-start' }}>
-        {complete
-          ? <div style={{ fontSize: TYPE.body, color: D.inkSecondary, lineHeight: 1.5 }}>You have finished every lesson here. Revisit any lesson any time.</div>
-          : (slide.rows || []).map((r, i) => <LessonRow key={r.id} lesson={r} locked={i > 0} ac={ac} />)}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+        <span style={{ flex: 1, minWidth: 0, fontSize: 10, fontWeight: 800, letterSpacing: '0.1em', color: D.inkHint }}>{kicker}</span>
+        <button onClick={() => onOpenTopic(slide.id)} className="dash-press" style={{ border: 'none', background: 'none', color: ac.base, fontSize: 12, fontWeight: 800, cursor: 'pointer', padding: 0, flexShrink: 0 }}>View all lessons</button>
+      </div>
+      <div style={{ height: ROWS_H, overflowY: 'auto', WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain', touchAction: 'pan-y', margin: '0 -4px', padding: '0 4px' }}>
+        {lessons.map((l) => <LessonRow key={l.id} lesson={l} ac={ac} onOpen={() => openLesson(l)} />)}
       </div>
       <PressCTA ac={ac} onClick={onCta}>{cta}</PressCTA>
     </div>
@@ -211,8 +216,8 @@ function AddCard({ available, onGoTab }) {
   const capped = available.length <= 1; // three active topics -> only one slot-ish left
   return (
     <div style={cardStyle}>
-      <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.1em', color: D.inkHint }}>{capped ? 'ONE AT A TIME' : 'SUGGESTED FOR YOU'}</div>
-      <div style={{ minHeight: 96, marginTop: 10, display: 'flex', flexDirection: 'column', gap: 10, justifyContent: 'center' }}>
+      <div style={{ marginBottom: 8, fontSize: 10, fontWeight: 800, letterSpacing: '0.1em', color: D.inkHint }}>{capped ? 'ONE AT A TIME' : 'SUGGESTED FOR YOU'}</div>
+      <div style={{ height: ROWS_H, display: 'flex', flexDirection: 'column', gap: 10, justifyContent: 'center' }}>
         {capped
           ? <div style={{ fontSize: TYPE.body, color: D.inkSecondary, lineHeight: 1.5 }}>You have three topics going. Finish one before adding a fourth - it keeps you moving.</div>
           : available.slice(0, 3).map((id) => (
@@ -232,32 +237,41 @@ function AddCard({ available, onGoTab }) {
 
 const cardStyle = { background: D.card, border: '1px solid rgba(27,42,74,0.11)', borderRadius: 22, boxShadow: '0 2px 12px rgba(27,42,74,0.06)', padding: '16px 16px 18px' };
 
-function LessonRow({ lesson, locked, ac }) {
+function LessonRow({ lesson, ac, onOpen }) {
+  const st = lesson.state; // done | current | locked
+  const locked = st === 'locked';
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-      <Node locked={locked} ac={ac} />
+    <button onClick={locked ? undefined : onOpen} disabled={locked} className={locked ? '' : 'dash-press'}
+      style={{ display: 'flex', alignItems: 'center', gap: 12, width: '100%', textAlign: 'left', background: 'none', border: 'none', borderRadius: 10, padding: '6px 2px', cursor: locked ? 'default' : 'pointer' }}>
+      <Node state={st} ac={ac} />
       <span style={{ flex: 1, minWidth: 0 }}>
-        <span style={{ display: 'block', fontSize: 16, fontWeight: locked ? 400 : 800, color: locked ? D.inkHint : D.ink, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{lesson.title}</span>
+        <span style={{ display: 'block', fontSize: 16, fontWeight: st === 'current' ? 800 : locked ? 400 : 600, color: locked ? D.inkHint : D.ink, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{lesson.title}</span>
         <span style={{ display: 'block', fontSize: 12, color: D.inkHint, marginTop: 1 }}>{lesson.minutes} min</span>
       </span>
-      {locked
-        ? <Lock size={16} color={D.inkFaint} style={{ flexShrink: 0 }} />
-        : <span style={{ flexShrink: 0, fontSize: 12, fontWeight: 800, color: ac.base, background: ac.tint, borderRadius: 999, padding: '3px 9px' }}>+{lesson.coins}</span>}
-    </div>
+      {st === 'current'
+        ? <span style={{ flexShrink: 0, fontSize: 12, fontWeight: 800, color: ac.base, background: ac.tint, borderRadius: 999, padding: '3px 9px' }}>+{lesson.coins}</span>
+        : st === 'done'
+          ? <Check size={17} color="#1D9E75" strokeWidth={2.6} style={{ flexShrink: 0 }} />
+          : <Lock size={16} color={D.inkFaint} style={{ flexShrink: 0 }} />}
+    </button>
   );
 }
 
-// Current node: amber ellipse + white inner + green teardrop pin. Locked: greys, no pin.
-function Node({ locked, ac }) {
-  const outer = locked ? '#D7D3CA' : ac.base;
-  const inner = locked ? '#EFECE4' : '#FFFFFF';
+// current: amber ellipse + white inner + green teardrop pin. done: filled accent
+// ellipse + white check. locked: greys, no pin.
+function Node({ state, ac }) {
+  const locked = state === 'locked';
+  const done = state === 'done';
+  const outer = locked ? '#D7D3CA' : done ? ac.base : ac.base;
+  const inner = locked ? '#EFECE4' : done ? ac.deep : '#FFFFFF';
   const edge = locked ? '#C4BFB4' : ac.deep;
   return (
     <svg width="48" height="34" viewBox="0 0 48 34" style={{ flexShrink: 0 }} aria-hidden="true">
       <ellipse cx="24" cy="21" rx="24" ry="13" fill={outer} />
       <ellipse cx="24" cy="21" rx="18" ry="10" fill={inner} stroke={edge} strokeWidth="1.5" />
-      {!locked && <path d="M24 2 c-6 0 -10 4 -10 9 c0 5 10 12 10 12 c0 0 10 -7 10 -12 c0 -5 -4 -9 -10 -9 z" fill="#1D9E75" stroke="#14785A" strokeWidth="1.5" />}
-      {!locked && <circle cx="24" cy="11" r="3.4" fill="#fff" />}
+      {done && <path d="M18 21 l4 4 8 -9" fill="none" stroke="#fff" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />}
+      {state === 'current' && <path d="M24 2 c-6 0 -10 4 -10 9 c0 5 10 12 10 12 c0 0 10 -7 10 -12 c0 -5 -4 -9 -10 -9 z" fill="#1D9E75" stroke="#14785A" strokeWidth="1.5" />}
+      {state === 'current' && <circle cx="24" cy="11" r="3.4" fill="#fff" />}
     </svg>
   );
 }
