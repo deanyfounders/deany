@@ -20,7 +20,7 @@ export default function AyahCard() {
   const toggle = () => { const next = !expanded; setExpanded(next); if (!next) setTafsir(false); };
 
   return (
-    <div style={{ position: 'relative', overflow: 'hidden', background: D.card, border: `1px solid ${D.border}`, borderRadius: RADIUS.card }}>
+    <div style={{ position: 'relative', overflow: 'hidden', background: '#EDF4EF', border: '1px solid #CBE0D3', borderRadius: RADIUS.card }}>
       {expanded && (
         <svg width="90" height="90" viewBox="0 0 90 90" aria-hidden="true" style={{ position: 'absolute', bottom: -10, right: -8, opacity: 0.06, pointerEvents: 'none' }}>
           <g transform="translate(45 45) rotate(45)" fill="none" stroke={MUSHAF} strokeWidth="1.5">
@@ -39,8 +39,8 @@ export default function AyahCard() {
           <BookOpen size={17} color="#FBFAF6" strokeWidth={1.9} />
         </span>
         <span style={{ flex: 1, minWidth: 0 }}>
-          <span style={{ display: 'block', fontSize: TYPE.body, fontWeight: 500, color: D.ink }}>Ayah of the day</span>
-          <span style={{ display: 'block', fontSize: TYPE.hint, color: D.inkHint, marginTop: 1 }}>{ayah.surahName} · {ayah.ref}</span>
+          <span style={{ display: 'block', fontSize: TYPE.body, fontWeight: 600, color: '#123F30' }}>Ayah of the day</span>
+          <span style={{ display: 'block', fontSize: TYPE.hint, color: '#4A6B5C', marginTop: 1 }}>{ayah.surahName} · {ayah.ref}</span>
         </span>
         {expanded && <span onClick={(e) => { e.stopPropagation(); }} style={{ padding: 6, color: D.inkFaint }} aria-label="Share"><Share2 size={17} /></span>}
         <ChevronDown size={19} color={D.inkFaint} style={{ flexShrink: 0, transform: expanded ? 'rotate(180deg)' : 'none', transition: 'transform .2s ease' }} />
@@ -53,7 +53,7 @@ export default function AyahCard() {
           <div style={{ fontSize: TYPE.meta, color: D.inkSecondary, lineHeight: 1.55, fontStyle: 'italic' }}>"{ayah.translation}"</div>
 
           {/* Tafsir toggle */}
-          <div style={{ borderTop: `1px solid ${D.border}`, marginTop: 14 }}>
+          <div style={{ borderTop: '1px solid #CBE0D3', marginTop: 14 }}>
             <button onClick={() => setTafsir(t => !t)} style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', background: 'none', border: 'none', padding: '12px 0 0', cursor: 'pointer', minHeight: 40, WebkitTapHighlightColor: 'transparent' }}>
               <Lightbulb size={16} color={MUSHAF} />
               <span style={{ flex: 1, textAlign: 'left', fontSize: TYPE.body, fontWeight: 500, color: MUSHAF }}>Tafsir</span>
