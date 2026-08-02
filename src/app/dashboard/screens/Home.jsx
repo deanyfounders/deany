@@ -4,10 +4,11 @@
 // left off" element - resume happens through the in-progress tile and the guide.
 // Nothing scrolls horizontally; the page keeps touch-action: pan-y.
 import React, { useMemo, useState } from 'react';
-import { ChevronDown, ChevronUp, Plus, Sparkles, Volume2 } from 'lucide-react';
+import { ChevronDown, ChevronUp, Plus, Volume2 } from 'lucide-react';
 import { D, TYPE, subjectOf, carouselAccent } from '../tokens.js';
-import { buildTopicSlide, getActiveTopics, getReviewGuide } from '../selectors.js';
+import { buildTopicSlide, getActiveTopics, guideSuggestion, resolveGuideRoute } from '../selectors.js';
 import { getAyahOfTheDay } from '../../../content/ayahOfTheDay.js';
+import PersonalReviewGuide from '../PersonalReviewGuide.jsx';
 import financeArt from '../../../assets/topics/islamic-finance.png';
 
 const ALL_TOPICS = ['quran-arabic', 'islamic-history', 'islamic-finance', '5-pillars'];
@@ -27,7 +28,9 @@ export default function Home({ name, state, deps, coins, streak, onOpenTopic, on
   const [today] = useState(hijri);
   const topicIds = getActiveTopics(state);
   const slides = useMemo(() => topicIds.map((id) => buildTopicSlide(id, state, deps)), [topicIds.join(','), deps]);
-  const guide = useMemo(() => getReviewGuide(state, deps, Date.now()), [state, deps]);
+  // The card reads only from this async thunk; a real selector swaps in here.
+  const getSuggestion = useMemo(() => () => Promise.resolve(guideSuggestion(state, deps, Date.now())), [state, deps]);
+  const onGuideNavigate = (route) => { const r = resolveGuideRoute(state, deps, route); if (r) onSelectLesson(r.lesson, r.idx, r.mod); else onGoTab('review'); };
   const available = ALL_TOPICS.filter((id) => !topicIds.includes(id));
   const empty = topicIds.length === 0;
 
@@ -67,8 +70,8 @@ export default function Home({ name, state, deps, coins, streak, onOpenTopic, on
           </>)}
       </div>
 
-      {/* Personal review guide */}
-      {guide && <GuideCard guide={guide} onReview={() => onSelectLesson(guide.resolved.lesson, guide.resolved.idx, guide.resolved.mod)} onMore={() => onGoTab('review')} />}
+      {/* Personal review guide - renders nothing when no suggestion is due */}
+      <PersonalReviewGuide getSuggestion={getSuggestion} onNavigate={onGuideNavigate} onMore={() => onGoTab('review')} />
     </div>
   );
 }
@@ -179,24 +182,3 @@ function PickerTile({ id, onPick }) {
   );
 }
 
-function GuideCard({ guide, onReview, onMore }) {
-  return (
-    <div style={{ background: '#E9F6F1', borderRadius: 16, padding: '14px 16px', margin: '22px 16px 0' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-        <span style={{ width: 26, height: 26, borderRadius: '50%', background: '#22A39A', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Sparkles size={14} color="#fff" /></span>
-        <span style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: '0.09em', color: '#0B5E48' }}>PERSONAL REVIEW GUIDE</span>
-      </div>
-      <p style={{ margin: '0 0 12px', fontSize: 14, lineHeight: 1.5, color: D.navy }}><b>{guide.name}</b>{guide.tail}</p>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-        <button onClick={onReview} className="dash-press"
-          style={{ border: 'none', borderRadius: 999, background: '#22A39A', color: '#fff', fontFamily: 'inherit', fontSize: 13, fontWeight: 700, cursor: 'pointer', padding: '9px 16px', boxShadow: '0 3px 0 #17827B', transition: 'transform 75ms ease, box-shadow 75ms ease' }}
-          onPointerDown={(e) => { e.currentTarget.style.transform = 'translateY(3px)'; e.currentTarget.style.boxShadow = 'none'; }}
-          onPointerUp={(e) => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '0 3px 0 #17827B'; }}
-          onPointerLeave={(e) => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '0 3px 0 #17827B'; }}>
-          Review now · {guide.minutes} min
-        </button>
-        {guide.more > 0 && <button onClick={onMore} style={{ border: 'none', background: 'none', color: '#5F8F82', fontSize: 11.5, fontWeight: 600, cursor: 'pointer' }}>+{guide.more} more suggestion{guide.more === 1 ? '' : 's'}</button>}
-      </div>
-    </div>
-  );
-}

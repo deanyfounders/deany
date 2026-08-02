@@ -125,6 +125,33 @@ export function getReviewGuide(state, deps, now) {
   };
 }
 
+const escapeHtml = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+// The GuideSuggestion interface (claude-code-task-review-guide.md): a pre-rendered
+// suggestion, or null when nothing is due. Deterministic; the message already wraps
+// the subject in <b>. The PersonalReviewGuide card reads ONLY this shape, so a
+// richer selector (ayah-memorisation / missed-question ranking) drops in here later
+// without touching the component.
+export function guideSuggestion(state, deps, now) {
+  const g = getReviewGuide(state, deps, now);
+  if (!g) return null;
+  return {
+    kind: 'concept',
+    message: `<b>${escapeHtml(g.name)}</b>${g.tail}`,
+    ctaLabel: `Review now · ${g.minutes} min`,
+    route: `review:${g.item.id}`,
+    queueCount: g.more,
+  };
+}
+
+// Resolve a guide route (`review:<itemId>`) back to a launchable lesson.
+export function resolveGuideRoute(state, deps, route) {
+  if (typeof route !== 'string' || !route.startsWith('review:')) return null;
+  const id = route.slice('review:'.length);
+  const item = (state.review?.items || []).find((i) => i.id === id);
+  return item ? resolveReview(item, deps) : null;
+}
+
 // Deterministic - the only place that decides what the hero shows.
 export function getContinueTarget(state, deps, now) {
   if (getDueReviews(state, now).length >= 5) return { type: 'review' };
