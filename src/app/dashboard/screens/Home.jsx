@@ -14,9 +14,10 @@ import PersonalReviewGuide from '../PersonalReviewGuide.jsx';
 import financeArt from '../../../assets/topics/islamic-finance.png';
 import pillarsArt from '../../../assets/topics/5-pillars.png';
 import historyArt from '../../../assets/topics/islamic-history.png';
+import quranArt from '../../../assets/topics/quran-arabic.png';
 
 const ALL_TOPICS = ['quran-arabic', 'islamic-history', 'islamic-finance', '5-pillars'];
-const TILE_IMAGES = { 'islamic-finance': financeArt, '5-pillars': pillarsArt, 'islamic-history': historyArt };
+const TILE_IMAGES = { 'islamic-finance': financeArt, '5-pillars': pillarsArt, 'islamic-history': historyArt, 'quran-arabic': quranArt };
 const ART_ZONE = 106;
 
 // v1 mock (claude-code-task-review-guide.md): shipped so the card is visible before
