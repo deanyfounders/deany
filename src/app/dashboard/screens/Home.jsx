@@ -15,6 +15,17 @@ const ALL_TOPICS = ['quran-arabic', 'islamic-history', 'islamic-finance', '5-pil
 const TILE_IMAGES = { 'islamic-finance': financeArt };
 const ART_ZONE = 106;
 
+// v1 mock (claude-code-task-review-guide.md): shipped so the card is visible before
+// the real SRS tables exist. The real selector (guideSuggestion) wins whenever the
+// user has a genuinely due item; this is only the fallback so Home isn't empty.
+const MOCK_GUIDE = {
+  kind: 'ayah_memorisation',
+  message: 'Time to revisit <b>Ayat al-Kursi</b>. You memorised it 3 days ago and it is due today.',
+  ctaLabel: 'Review now · 2 min',
+  route: 'review:mock',
+  queueCount: 2,
+};
+
 const hijri = () => {
   try {
     const p = new Intl.DateTimeFormat('en-US-u-ca-islamic-umalqura', { day: 'numeric', month: 'long', year: 'numeric' }).formatToParts(new Date());
@@ -29,7 +40,7 @@ export default function Home({ name, state, deps, coins, streak, onOpenTopic, on
   const topicIds = getActiveTopics(state);
   const slides = useMemo(() => topicIds.map((id) => buildTopicSlide(id, state, deps)), [topicIds.join(','), deps]);
   // The card reads only from this async thunk; a real selector swaps in here.
-  const getSuggestion = useMemo(() => () => Promise.resolve(guideSuggestion(state, deps, Date.now())), [state, deps]);
+  const getSuggestion = useMemo(() => () => Promise.resolve(guideSuggestion(state, deps, Date.now()) || MOCK_GUIDE), [state, deps]);
   const onGuideNavigate = (route) => { const r = resolveGuideRoute(state, deps, route); if (r) onSelectLesson(r.lesson, r.idx, r.mod); else onGoTab('review'); };
   const available = ALL_TOPICS.filter((id) => !topicIds.includes(id));
   const empty = topicIds.length === 0;
