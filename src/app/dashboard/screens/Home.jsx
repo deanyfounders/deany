@@ -17,6 +17,14 @@ import historyArt from '../../../assets/topics/islamic-history.png';
 import quranArt from '../../../assets/topics/quran-arabic.png';
 
 const ALL_TOPICS = ['quran-arabic', 'islamic-history', 'islamic-finance', '5-pillars'];
+// Progress-segment colour per subject, matched to the main colour of its tile art.
+const TILE_ACCENT = {
+  'islamic-finance': '#E0A11B', // gold - coins and scale beam
+  '5-pillars': '#1F7F7F',       // teal - pillars and prayer mat
+  'islamic-history': '#CF6A33', // orange - the old map
+  'quran-arabic': '#4B3C8E',    // indigo - the mushaf and mihrab
+};
+const tileAccent = (id) => TILE_ACCENT[id] || carouselAccent(id).base;
 const TILE_IMAGES = { 'islamic-finance': financeArt, '5-pillars': pillarsArt, 'islamic-history': historyArt, 'quran-arabic': quranArt };
 const ART_ZONE = 106;
 
@@ -153,7 +161,7 @@ function SubjectTile({ slide, onTap, onRemove }) {
           <TileArt id={slide.id} ac={ac} initial={(s.short || s.name)[0]} />
         </div>
         <div style={{ fontSize: 15.5, fontWeight: 700, color: D.ink, marginTop: 6, textAlign: 'center' }}>{s.name}</div>
-        <Segments count={slide.lessonCount} filled={slide.lessonsComplete} ac={ac} />
+        <Segments count={slide.lessonCount} filled={slide.lessonsComplete} accent={tileAccent(slide.id)} />
         <div style={{ fontSize: 11, color: '#8A90A0', marginTop: 5 }}>{untouched ? 'Not started' : `${slide.lessonsComplete} of ${slide.lessonCount} lessons`}</div>
       </button>
 
@@ -226,16 +234,19 @@ function TileArt({ id, ac, initial }) {
   );
 }
 
-function Segments({ count, filled, ac }) {
+// Progress segments outlined in the subject's picture colour; completed ones fill
+// solid, the rest are just the outline (fainter).
+function Segments({ count, filled, accent }) {
   if (count > 8) {
     const pct = count ? Math.round((filled / count) * 100) : 0;
-    return <div style={{ marginTop: 8, width: 84, height: 3.5, borderRadius: 2, background: '#EDEBE4', overflow: 'hidden' }}><div style={{ width: `${pct}%`, height: '100%', background: ac.base, borderRadius: 2 }} /></div>;
+    return <div style={{ marginTop: 8, width: 84, height: 5, borderRadius: 3, border: `1.5px solid ${accent}`, boxSizing: 'border-box', overflow: 'hidden', opacity: pct > 0 ? 1 : 0.45 }}><div style={{ width: `${pct}%`, height: '100%', background: accent }} /></div>;
   }
   return (
     <div style={{ marginTop: 8, display: 'flex', gap: 3 }}>
-      {Array.from({ length: Math.max(count, 1) }).map((_, i) => (
-        <div key={i} style={{ width: 15, height: 3.5, borderRadius: 2, background: i < filled ? ac.base : '#EDEBE4' }} />
-      ))}
+      {Array.from({ length: Math.max(count, 1) }).map((_, i) => {
+        const on = i < filled;
+        return <div key={i} style={{ width: 16, height: 5, borderRadius: 3, boxSizing: 'border-box', border: `1.5px solid ${accent}`, background: on ? accent : 'transparent', opacity: on ? 1 : 0.4 }} />;
+      })}
     </div>
   );
 }
