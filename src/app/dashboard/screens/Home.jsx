@@ -25,6 +25,13 @@ const TILE_ACCENT = {
   'quran-arabic': '#4B3C8E',    // indigo - the mushaf and mihrab
 };
 const tileAccent = (id) => TILE_ACCENT[id] || carouselAccent(id).base;
+// Emoji shown in the add-subject picker circles.
+const SUBJECT_EMOJI = {
+  'islamic-finance': '\u{1F4B0}', // money bag
+  '5-pillars': '\u{1F54C}',       // mosque
+  'quran-arabic': '\u{1F4D6}',    // open book
+  'islamic-history': '\u{1F4DC}', // scroll
+};
 const TILE_IMAGES = { 'islamic-finance': financeArt, '5-pillars': pillarsArt, 'islamic-history': historyArt, 'quran-arabic': quranArt };
 const ART_ZONE = 106;
 
@@ -208,7 +215,9 @@ function AddSheet({ available, onAdd, onClose }) {
             <button key={id} onClick={() => onAdd(id)} className="dash-press"
               style={{ display: 'flex', alignItems: 'center', gap: 12, width: '100%', background: 'none', border: 'none', borderTop: '1px solid #F0EEE9', padding: '12px 2px', cursor: 'pointer', textAlign: 'left', minHeight: 56, WebkitTapHighlightColor: 'transparent' }}>
               <span style={{ width: 42, height: 42, borderRadius: '50%', background: ac.tint, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <span style={{ fontSize: 18, fontWeight: 800, color: ac.deep }}>{(s.short || s.name)[0]}</span>
+                {SUBJECT_EMOJI[id]
+                  ? <span style={{ fontSize: 21, lineHeight: 1 }} aria-hidden="true">{SUBJECT_EMOJI[id]}</span>
+                  : <span style={{ fontSize: 18, fontWeight: 800, color: ac.deep }}>{(s.short || s.name)[0]}</span>}
               </span>
               <span style={{ flex: 1, minWidth: 0 }}>
                 <span style={{ display: 'block', fontSize: 15, fontWeight: 700, color: D.ink }}>{s.name}</span>
