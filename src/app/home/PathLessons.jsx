@@ -1,13 +1,17 @@
 // A single path's lessons, shown as the website's clean lesson timeline
 // (spine + node + card) rather than a zigzag road. Done = check, next-up =
 // gold play, the rest are numbered and tappable.
-import React, { useMemo } from 'react';
-import { Check, Play, ChevronLeft, Clock } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { Check, Play, ChevronLeft, Clock, ArrowRight } from 'lucide-react';
 import { TOKENS } from '../shared/AppScreen.jsx';
+import RootWordsModule from '../quran/corewords/RootWordsModule.jsx';
 
 const serif = 'Georgia, serif';
 
 export default function PathLessons({ topic, modules, completedLessons, accent = TOKENS.teal, level, onSelectLesson, onBack }) {
+  const [coreWords, setCoreWords] = useState(false);
+  const showCoreWords = topic.id === 'quran-arabic';
   const { sections, currentKey, done, total } = useMemo(() => {
     const mods = (modules[topic.id] || []).filter(m => (m.lessons || []).length);
     const flat = [];
@@ -45,6 +49,23 @@ export default function PathLessons({ topic, modules, completedLessons, accent =
         </div>
       </div>
 
+      {/* Quranic Core Words - memorisation and tafsir study tool, at the top */}
+      {showCoreWords && (
+        <div style={{ padding: '4px 20px 2px' }}>
+          <button onClick={() => setCoreWords(true)} className="dash-press"
+            style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 12, background: '#EDEAFA', border: '1px solid #D9D3F2', borderRadius: 14, padding: '13px 15px', cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}>
+            <span style={{ width: 38, height: 38, borderRadius: 10, background: '#2A2264', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <span style={{ fontFamily: "'Scheherazade New','Amiri',serif", fontSize: 20, color: '#fff', lineHeight: 1 }}>{'ق'}</span>
+            </span>
+            <span style={{ flex: 1, minWidth: 0 }}>
+              <span style={{ display: 'block', fontSize: 11, fontWeight: 700, letterSpacing: 0.3, textTransform: 'uppercase', color: '#5B4FA0' }}>Memorisation and tafsir</span>
+              <span style={{ display: 'block', fontSize: 14, fontWeight: 600, color: '#2A2264', marginTop: 1 }}>Quranic Core Words</span>
+            </span>
+            <ArrowRight size={18} color="#5B4FA0" />
+          </button>
+        </div>
+      )}
+
       {/* Timeline */}
       <div style={{ padding: '10px 20px 8px' }}>
         {sections.map((sec, si) => (
@@ -58,6 +79,14 @@ export default function PathLessons({ topic, modules, completedLessons, accent =
           </div>
         ))}
       </div>
+
+      {/* Full-screen takeover, portaled to body so it covers the app nav pill */}
+      {coreWords && typeof document !== 'undefined' && createPortal(
+        <div style={{ position: 'fixed', inset: 0, zIndex: 1000, background: '#F4F2FA' }}>
+          <RootWordsModule onExit={() => setCoreWords(false)} />
+        </div>,
+        document.body
+      )}
     </div>
   );
 }

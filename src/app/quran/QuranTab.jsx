@@ -2,10 +2,8 @@
 // and the shared bottom-sheet animation. Reading is unscored - no XP/coins/streak
 // events originate here.
 import React, { useState } from 'react';
-import { createPortal } from 'react-dom';
 import QuranIndex from './QuranIndex.jsx';
 import QuranReader from './QuranReader.jsx';
-import RootWordsModule from './corewords/RootWordsModule.jsx';
 
 const QURAN_CSS = `
 @import url('https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;500;700&display=swap');
@@ -20,22 +18,13 @@ export default function QuranTab() {
   // Held here (not in QuranIndex) so returning from the reader restores the tab
   // you were on - opening a juz and pressing back lands you back on Juz.
   const [seg, setSeg] = useState('surah'); // surah | juz | saved
-  const [coreWords, setCoreWords] = useState(false);
 
   return (
     <>
       <style>{QURAN_CSS}</style>
       {open
         ? <QuranReader surah={open.surah} initialAyah={open.ayah} onBack={() => setOpen(null)} />
-        : <QuranIndex seg={seg} onSeg={setSeg} onOpenSurah={(surah, ayah) => setOpen({ surah, ayah })} onOpenCoreWords={() => setCoreWords(true)} />}
-
-      {/* Full-screen takeover, portaled to body so it covers the app nav pill */}
-      {coreWords && typeof document !== 'undefined' && createPortal(
-        <div style={{ position: 'fixed', inset: 0, zIndex: 1000, background: '#F4F2FA' }}>
-          <RootWordsModule onExit={() => setCoreWords(false)} />
-        </div>,
-        document.body
-      )}
+        : <QuranIndex seg={seg} onSeg={setSeg} onOpenSurah={(surah, ayah) => setOpen({ surah, ayah })} />}
     </>
   );
 }

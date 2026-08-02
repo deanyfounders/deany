@@ -20,7 +20,7 @@ const juzOfKey = (surah, ayah) => {
 };
 const juzLabel = (s) => (s.juz_from && s.juz_to && s.juz_to !== s.juz_from) ? `Juz ${s.juz_from}-${s.juz_to}` : `Juz ${s.juz_from || s.juz_start || ''}`;
 
-export default function QuranIndex({ onOpenSurah, seg = 'surah', onSeg, onOpenCoreWords }) {
+export default function QuranIndex({ onOpenSurah, seg = 'surah', onSeg }) {
   const [q, setQ] = useState('');
   const setSeg = onSeg || (() => {});
   const last = getLastRead();
@@ -81,21 +81,6 @@ export default function QuranIndex({ onOpenSurah, seg = 'surah', onSeg, onOpenCo
           </div>
         )}
       </div>
-
-      {/* Quranic Core Words - memorisation and tafsir study tool */}
-      {onOpenCoreWords && (
-        <button onClick={onOpenCoreWords} className="dash-press"
-          style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 12, background: '#EDEAFA', border: '1px solid #D9D3F2', borderRadius: RADIUS.card, padding: '13px 15px', marginBottom: 14, cursor: 'pointer' }}>
-          <span style={{ width: 38, height: 38, borderRadius: 10, background: '#2A2264', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }} className="quran-ar">
-            <span style={{ fontSize: 20, color: '#fff', lineHeight: 1 }}>{'ق'}</span>
-          </span>
-          <span style={{ flex: 1, minWidth: 0 }}>
-            <span style={{ display: 'block', fontSize: TYPE.hint, fontWeight: 700, letterSpacing: 0.3, textTransform: 'uppercase', color: '#5B4FA0' }}>Memorisation and tafsir</span>
-            <span style={{ display: 'block', fontSize: TYPE.body, fontWeight: 600, color: '#2A2264', marginTop: 1 }}>Quranic Core Words</span>
-          </span>
-          <ArrowRight size={18} color="#5B4FA0" />
-        </button>
-      )}
 
       {/* segmented */}
       <div role="tablist" style={{ display: 'flex', gap: 0, background: D.card, border: `1px solid ${D.border}`, borderRadius: 12, padding: 4, marginBottom: 14 }}>
