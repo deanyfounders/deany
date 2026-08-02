@@ -4,6 +4,7 @@
 // left off" element - resume happens through the in-progress tile and the guide.
 // Nothing scrolls horizontally; the page keeps touch-action: pan-y.
 import React, { useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { ChevronDown, ChevronUp, Plus, Volume2, MoreVertical, Trash2, X } from 'lucide-react';
 import { D, TYPE, subjectOf, carouselAccent } from '../tokens.js';
 import { buildTopicSlide, getActiveTopics, guideSuggestion, resolveGuideRoute } from '../selectors.js';
@@ -175,12 +176,15 @@ function SubjectTile({ slide, onTap, onRemove }) {
 
 // Bottom-sheet picker: adds a subject straight into the grid. Lists only the
 // subjects the user hasn't added yet; empties out (and closes) as they're added.
+// PORTALED to document.body so it renders above the floating nav pill and the
+// home indicator - never trapped in the scroll wrapper's stacking context.
 function AddSheet({ available, onAdd, onClose }) {
+  if (typeof document === 'undefined') return null;
   const reduce = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  return (
-    <div role="dialog" aria-modal="true" aria-label="Add a subject" style={{ position: 'fixed', inset: 0, zIndex: 60, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
+  const sheet = (
+    <div role="dialog" aria-modal="true" aria-label="Add a subject" style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
       <div onClick={onClose} style={{ position: 'absolute', inset: 0, background: 'rgba(15,26,42,0.34)', animation: reduce ? 'none' : 'deanyFade 160ms ease-out' }} />
-      <div style={{ position: 'relative', background: '#fff', borderTopLeftRadius: 22, borderTopRightRadius: 22, padding: '10px 16px calc(env(safe-area-inset-bottom) + 20px)', maxWidth: 520, margin: '0 auto', width: '100%', boxShadow: '0 -10px 40px rgba(15,26,42,0.18)', animation: reduce ? 'none' : 'deanySheetUp 240ms cubic-bezier(0.22,1,0.36,1)' }}>
+      <div style={{ position: 'relative', background: '#fff', borderTopLeftRadius: 22, borderTopRightRadius: 22, padding: '10px 16px calc(env(safe-area-inset-bottom) + 28px)', maxWidth: 520, margin: '0 auto', width: '100%', maxHeight: '80vh', overflowY: 'auto', boxShadow: '0 -10px 40px rgba(15,26,42,0.18)', animation: reduce ? 'none' : 'deanySheetUp 240ms cubic-bezier(0.22,1,0.36,1)' }}>
         <style>{'@keyframes deanySheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}@keyframes deanyFade{from{opacity:0}to{opacity:1}}'}</style>
         <div style={{ width: 38, height: 4, borderRadius: 2, background: '#E2E0DA', margin: '2px auto 12px' }} />
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
@@ -206,6 +210,7 @@ function AddSheet({ available, onAdd, onClose }) {
       </div>
     </div>
   );
+  return createPortal(sheet, document.body);
 }
 
 function TileArt({ id, ac, initial }) {
