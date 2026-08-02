@@ -3,6 +3,7 @@
 // and the full-tafsir link. Arabic ink is navy. Collapsed by default every
 // open (no persisted state). Quran typography matches the lesson screens.
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { BookOpen, ChevronDown, Share2, Lightbulb } from 'lucide-react';
 import { D, RADIUS, TYPE } from './tokens.js';
 import { getAyahOfTheDay } from '../../content/ayahOfTheDay.js';
@@ -68,17 +69,18 @@ export default function AyahCard() {
         </div>
       </div>
 
-      {/* Full tafsir sheet */}
-      {sheet && (
+      {/* Full tafsir sheet - portaled to body so the floating nav pill never covers it */}
+      {sheet && typeof document !== 'undefined' && createPortal(
         <>
-          <div onClick={() => setSheet(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(15,42,52,0.28)', zIndex: 60 }} />
-          <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 61, background: D.card, borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: '20px 20px calc(env(safe-area-inset-bottom) + 20px)', maxWidth: 520, margin: '0 auto', maxHeight: '80vh', overflowY: 'auto' }}>
+          <div onClick={() => setSheet(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(15,42,52,0.28)', zIndex: 1000 }} />
+          <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 1001, background: D.card, borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: '20px 20px calc(env(safe-area-inset-bottom) + 28px)', maxWidth: 520, margin: '0 auto', maxHeight: '80vh', overflowY: 'auto' }}>
             <div style={{ fontSize: TYPE.hint, color: MUSHAF, fontWeight: 500, marginBottom: 4 }}>{ayah.surahName} · {ayah.ref}</div>
             <div dir="rtl" style={{ fontFamily: ARABIC, fontSize: 22, lineHeight: 1.85, color: D.navy, textAlign: 'right', margin: '6px 0 12px' }}>{ayah.arabic}</div>
             <div style={{ fontSize: TYPE.body, color: D.inkSecondary, lineHeight: 1.6, marginBottom: 14 }}>{ayah.tafsirFull}</div>
             <div style={{ fontSize: TYPE.hint, color: D.inkFaint }}>{ayah.source}</div>
           </div>
-        </>
+        </>,
+        document.body
       )}
     </div>
   );

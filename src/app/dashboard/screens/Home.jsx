@@ -1,15 +1,15 @@
 // Home (deany-home-v1, 31 Jul 2026 - supersedes the carousel). A vertical page:
-// header, ayah strip, a centred "Subjects" heading, a 2x2 boxless subject grid
+// header, ayah of the day card, a centred "Subjects" heading, a 2x2 boxless grid
 // (THE HERO), and a single Personal review guide nudge. No continue/"where you
 // left off" element - resume happens through the in-progress tile and the guide.
 // Nothing scrolls horizontally; the page keeps touch-action: pan-y.
 import React, { useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { ChevronDown, ChevronUp, Plus, Volume2, MoreVertical, Trash2, X } from 'lucide-react';
+import { Plus, MoreVertical, Trash2, X } from 'lucide-react';
 import { D, TYPE, subjectOf, carouselAccent } from '../tokens.js';
 import { buildTopicSlide, getActiveTopics, guideSuggestion, resolveGuideRoute } from '../selectors.js';
 import { catalogById } from '../catalog.js';
-import { getAyahOfTheDay } from '../../../content/ayahOfTheDay.js';
+import AyahCard from '../AyahCard.jsx';
 import PersonalReviewGuide from '../PersonalReviewGuide.jsx';
 import financeArt from '../../../assets/topics/islamic-finance.png';
 import pillarsArt from '../../../assets/topics/5-pillars.png';
@@ -55,7 +55,6 @@ const hijri = () => {
 };
 
 export default function Home({ name, state, deps, coins, streak, onOpenTopic, onGoTab, onSelectLesson, addTopic, removeTopic }) {
-  const [ayah] = useState(getAyahOfTheDay);
   const [today] = useState(hijri);
   const [showAdd, setShowAdd] = useState(false);
   const topicIds = getActiveTopics(state);
@@ -86,8 +85,10 @@ export default function Home({ name, state, deps, coins, streak, onOpenTopic, on
         </div>
       </div>
 
-      {/* Ayah strip - collapsible, expands in place */}
-      <AyahStrip ayah={ayah} onOpenReader={() => onGoTab('quran')} />
+      {/* Ayah of the day - the pre-renovation card (expands to Arabic + tafsir) */}
+      <div style={{ margin: '14px 16px 0' }}>
+        <AyahCard />
+      </div>
 
       {/* Subjects heading */}
       <h2 style={{ margin: '20px 18px 6px', fontSize: 19, fontWeight: 700, color: D.ink, textAlign: 'center' }}>{empty ? 'Choose your first subject' : 'Subjects'}</h2>
@@ -118,38 +119,6 @@ export default function Home({ name, state, deps, coins, streak, onOpenTopic, on
 }
 
 function tilePress(e, down) { e.currentTarget.style.transform = down ? 'scale(0.96)' : ''; }
-
-// Ayah strip - collapsed one-line by default; taps expand it in place to the full
-// block (large Arabic, translation, reference, actions). Per-session only, always
-// loads collapsed. Height animates via grid-template-rows; reduced-motion snaps.
-function AyahStrip({ ayah, onOpenReader }) {
-  const [expanded, setExpanded] = useState(false);
-  const reduce = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  return (
-    <div style={{ margin: '14px 16px 0', background: '#E4F3ED', borderRadius: 14, padding: '11px 14px' }}>
-      <button onClick={() => setExpanded((e) => !e)} aria-expanded={expanded} aria-label="Ayah of the day"
-        style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', background: 'none', border: 'none', padding: 0, cursor: 'pointer', textAlign: 'left' }}>
-        <span style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: '0.08em', color: '#0B5E48', flexShrink: 0, whiteSpace: 'nowrap' }}>{expanded ? 'AYAH OF THE DAY' : 'AYAH'}</span>
-        {expanded
-          ? <span style={{ flex: 1 }} />
-          : <span dir="rtl" lang="ar" className="quran-ar" style={{ flex: 1, minWidth: 0, fontSize: 15, color: D.navy, textAlign: 'right', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{ayah.arabic}</span>}
-        {expanded ? <ChevronUp size={16} color="#0B5E48" style={{ flexShrink: 0 }} /> : <ChevronDown size={16} color="#0B5E48" style={{ flexShrink: 0 }} />}
-      </button>
-      <div style={{ display: 'grid', gridTemplateRows: expanded ? '1fr' : '0fr', transition: reduce ? 'none' : 'grid-template-rows 180ms ease-out' }}>
-        <div style={{ overflow: 'hidden' }}>
-          <div dir="rtl" lang="ar" className="quran-ar" style={{ fontSize: 20, lineHeight: 1.9, color: D.navy, textAlign: 'right', marginTop: 8 }}>{ayah.arabic}</div>
-          <div style={{ fontSize: 13, lineHeight: 1.5, color: D.inkSecondary, marginTop: 6 }}>{ayah.translation}</div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 10 }}>
-            <span style={{ flex: 1, minWidth: 0, fontSize: 12, color: '#5F8F82' }}>{ayah.surahName} {ayah.ref}</span>
-            <button onClick={onOpenReader} aria-label="Listen" style={{ border: 'none', background: 'none', color: '#0B5E48', fontSize: 12, fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4, padding: 0 }}><Volume2 size={14} /> Listen</button>
-            <span style={{ color: '#0B5E48', fontSize: 12 }}>·</span>
-            <button onClick={onOpenReader} style={{ border: 'none', background: 'none', color: '#0B5E48', fontSize: 12, fontWeight: 700, cursor: 'pointer', padding: 0 }}>Read in context</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function SubjectTile({ slide, onTap, onRemove }) {
   const s = subjectOf(slide.id);
