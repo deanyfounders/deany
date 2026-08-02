@@ -1,0 +1,532 @@
+{
+  "roots": [
+    {
+      "id": "awdh",
+      "letters": "عوذ",
+      "translit": "ʿ-w-dh",
+      "gloss": "to seek refuge",
+      "words": [
+        {
+          "ar": "أَعُوذُ",
+          "translit": "a‘ūdhu",
+          "gloss": "I seek refuge",
+          "ref": "Isti‘ādhah",
+          "pattern": "Form I, imperfect, 1st person"
+        }
+      ]
+    },
+    {
+      "id": "rjm",
+      "letters": "رجم",
+      "translit": "r-j-m",
+      "gloss": "to stone, cast out",
+      "words": [
+        {
+          "ar": "رَجِيم",
+          "translit": "rajīm",
+          "gloss": "accursed, cast out",
+          "ref": "Isti‘ādhah",
+          "pattern": "فَعِيل - intensive adjective"
+        }
+      ]
+    },
+    {
+      "id": "smw",
+      "letters": "سمو",
+      "translit": "s-m-w",
+      "gloss": "to be exalted, named",
+      "words": [
+        {
+          "ar": "اسْم",
+          "translit": "ism",
+          "gloss": "name",
+          "ref": "1:1",
+          "pattern": "noun, base form"
+        }
+      ]
+    },
+    {
+      "id": "rhm",
+      "letters": "رحم",
+      "translit": "r-ḥ-m",
+      "gloss": "mercy",
+      "words": [
+        {
+          "ar": "الرَّحْمَٰن",
+          "translit": "ar-Raḥmān",
+          "gloss": "the Most Gracious",
+          "ref": "1:1",
+          "pattern": "فَعْلَان - all-encompassing intensive"
+        },
+        {
+          "ar": "الرَّحِيم",
+          "translit": "ar-Raḥīm",
+          "gloss": "the Most Merciful",
+          "ref": "1:3",
+          "pattern": "فَعِيل - constant, repeated"
+        }
+      ]
+    },
+    {
+      "id": "hmd",
+      "letters": "حمد",
+      "translit": "ḥ-m-d",
+      "gloss": "praise",
+      "words": [
+        {
+          "ar": "الْحَمْد",
+          "translit": "al-ḥamd",
+          "gloss": "the praise",
+          "ref": "1:2",
+          "pattern": "noun, base form"
+        }
+      ]
+    },
+    {
+      "id": "rbb",
+      "letters": "ربب",
+      "translit": "r-b-b",
+      "gloss": "lord, nurturer",
+      "words": [
+        {
+          "ar": "رَبّ",
+          "translit": "rabb",
+          "gloss": "Lord, Sustainer",
+          "ref": "1:2",
+          "pattern": "noun, base form"
+        }
+      ]
+    },
+    {
+      "id": "alm",
+      "letters": "علم",
+      "translit": "ʿ-l-m",
+      "gloss": "to know",
+      "words": [
+        {
+          "ar": "الْعَالَمِين",
+          "translit": "al-‘ālamīn",
+          "gloss": "the worlds",
+          "ref": "1:2",
+          "pattern": "فَاعِل, plural"
+        }
+      ]
+    },
+    {
+      "id": "mlk",
+      "letters": "ملك",
+      "translit": "m-l-k",
+      "gloss": "to own, rule",
+      "words": [
+        {
+          "ar": "مَالِك",
+          "translit": "mālik",
+          "gloss": "Owner, Master, King",
+          "ref": "1:4",
+          "pattern": "فَاعِل - active participle"
+        }
+      ]
+    },
+    {
+      "id": "ywm",
+      "letters": "يوم",
+      "translit": "y-w-m",
+      "gloss": "day",
+      "words": [
+        {
+          "ar": "يَوْم",
+          "translit": "yawm",
+          "gloss": "day",
+          "ref": "1:4",
+          "pattern": "noun, base form"
+        }
+      ]
+    },
+    {
+      "id": "dyn",
+      "letters": "دين",
+      "translit": "d-y-n",
+      "gloss": "judgment, religion",
+      "words": [
+        {
+          "ar": "الدِّين",
+          "translit": "ad-dīn",
+          "gloss": "judgment, religion",
+          "ref": "1:4",
+          "pattern": "noun, base form"
+        }
+      ]
+    },
+    {
+      "id": "awn",
+      "letters": "عون",
+      "translit": "ʿ-w-n",
+      "gloss": "help",
+      "words": [
+        {
+          "ar": "نَسْتَعِين",
+          "translit": "nasta‘īn",
+          "gloss": "we seek help",
+          "ref": "1:5",
+          "pattern": "Form X, imperfect, plural"
+        }
+      ]
+    },
+    {
+      "id": "hdy",
+      "letters": "هدي",
+      "translit": "h-d-y",
+      "gloss": "to guide",
+      "words": [
+        {
+          "ar": "اهْدِنَا",
+          "translit": "ihdinā",
+          "gloss": "guide us",
+          "ref": "1:6",
+          "pattern": "Form I, imperative"
+        },
+        {
+          "ar": "هُدًى",
+          "translit": "hudan",
+          "gloss": "guidance",
+          "ref": "2:2",
+          "pattern": "noun, base form"
+        }
+      ]
+    },
+    {
+      "id": "srt",
+      "letters": "صرط",
+      "translit": "ṣ-r-ṭ",
+      "gloss": "path",
+      "words": [
+        {
+          "ar": "الصِّرَاط",
+          "translit": "aṣ-ṣirāṭ",
+          "gloss": "the path",
+          "ref": "1:6",
+          "pattern": "noun, base form"
+        }
+      ]
+    },
+    {
+      "id": "qwm",
+      "letters": "قوم",
+      "translit": "q-w-m",
+      "gloss": "to stand, rise",
+      "words": [
+        {
+          "ar": "الْمُسْتَقِيم",
+          "translit": "al-mustaqīm",
+          "gloss": "straight, upright",
+          "ref": "1:6",
+          "pattern": "Form X, active participle"
+        },
+        {
+          "ar": "يُقِيمُون",
+          "translit": "yuqīmūn",
+          "gloss": "they establish",
+          "ref": "2:3",
+          "pattern": "Form IV, imperfect, plural"
+        }
+      ]
+    },
+    {
+      "id": "nam",
+      "letters": "نعم",
+      "translit": "n-ʿ-m",
+      "gloss": "favor, blessing",
+      "words": [
+        {
+          "ar": "أَنْعَمْتَ",
+          "translit": "an‘amta",
+          "gloss": "You have favored",
+          "ref": "1:7",
+          "pattern": "Form IV, perfect, 2nd person"
+        }
+      ]
+    },
+    {
+      "id": "ghdb",
+      "letters": "غضب",
+      "translit": "gh-ḍ-b",
+      "gloss": "anger",
+      "words": [
+        {
+          "ar": "الْمَغْضُوب",
+          "translit": "al-maghdūb",
+          "gloss": "those who earned wrath",
+          "ref": "1:7",
+          "pattern": "مَفْعُول - passive participle"
+        }
+      ]
+    },
+    {
+      "id": "dll",
+      "letters": "ضلل",
+      "translit": "ḍ-l-l",
+      "gloss": "to go astray",
+      "words": [
+        {
+          "ar": "الضَّالِّين",
+          "translit": "aḍ-ḍāllīn",
+          "gloss": "those who go astray",
+          "ref": "1:7",
+          "pattern": "فَاعِل, plural"
+        }
+      ]
+    },
+    {
+      "id": "ghyr",
+      "letters": "غير",
+      "translit": "gh-y-r",
+      "gloss": "other, change",
+      "words": [
+        {
+          "ar": "غَيْر",
+          "translit": "ghayr",
+          "gloss": "other than",
+          "ref": "1:7",
+          "pattern": "noun, base form"
+        }
+      ]
+    },
+    {
+      "id": "ryb",
+      "letters": "ريب",
+      "translit": "r-y-b",
+      "gloss": "doubt",
+      "words": [
+        {
+          "ar": "رَيْب",
+          "translit": "rayb",
+          "gloss": "doubt",
+          "ref": "2:2",
+          "pattern": "noun, base form"
+        }
+      ]
+    },
+    {
+      "id": "wqy",
+      "letters": "وقي",
+      "translit": "w-q-y",
+      "gloss": "to guard, protect",
+      "words": [
+        {
+          "ar": "الْمُتَّقِين",
+          "translit": "al-muttaqīn",
+          "gloss": "those who guard against evil",
+          "ref": "2:2",
+          "pattern": "Form VIII, active participle, plural"
+        }
+      ]
+    },
+    {
+      "id": "amn",
+      "letters": "أمن",
+      "translit": "a-m-n",
+      "gloss": "safety, belief",
+      "words": [
+        {
+          "ar": "يُؤْمِنُون",
+          "translit": "yu’minūn",
+          "gloss": "they believe",
+          "ref": "2:3",
+          "pattern": "Form IV, imperfect, plural"
+        }
+      ]
+    },
+    {
+      "id": "ghyb",
+      "letters": "غيب",
+      "translit": "gh-y-b",
+      "gloss": "unseen",
+      "words": [
+        {
+          "ar": "الْغَيْب",
+          "translit": "al-ghayb",
+          "gloss": "the unseen",
+          "ref": "2:3",
+          "pattern": "noun, base form"
+        }
+      ]
+    },
+    {
+      "id": "slw",
+      "letters": "صلو",
+      "translit": "ṣ-l-w",
+      "gloss": "prayer",
+      "words": [
+        {
+          "ar": "الصَّلَاة",
+          "translit": "aṣ-ṣalāh",
+          "gloss": "the prayer",
+          "ref": "2:3",
+          "pattern": "noun, base form"
+        }
+      ]
+    },
+    {
+      "id": "rzq",
+      "letters": "رزق",
+      "translit": "r-z-q",
+      "gloss": "provision",
+      "words": [
+        {
+          "ar": "رَزَقْنَا",
+          "translit": "razaqnā",
+          "gloss": "We have provided",
+          "ref": "2:3",
+          "pattern": "Form I, perfect, 1st person plural"
+        }
+      ]
+    },
+    {
+      "id": "nfq",
+      "letters": "نفق",
+      "translit": "n-f-q",
+      "gloss": "to spend",
+      "words": [
+        {
+          "ar": "يُنْفِقُون",
+          "translit": "yunfiqūn",
+          "gloss": "they spend",
+          "ref": "2:3",
+          "pattern": "Form IV, imperfect, plural"
+        }
+      ]
+    },
+    {
+      "id": "nzl",
+      "letters": "نزل",
+      "translit": "n-z-l",
+      "gloss": "to descend",
+      "words": [
+        {
+          "ar": "أُنْزِل",
+          "translit": "unzila",
+          "gloss": "was revealed, sent down",
+          "ref": "2:4",
+          "pattern": "Form IV, passive perfect"
+        }
+      ]
+    },
+    {
+      "id": "qbl",
+      "letters": "قبل",
+      "translit": "q-b-l",
+      "gloss": "before, front",
+      "words": [
+        {
+          "ar": "قَبْلِك",
+          "translit": "qablika",
+          "gloss": "before you",
+          "ref": "2:4",
+          "pattern": "noun + pronoun suffix"
+        }
+      ]
+    },
+    {
+      "id": "akhr",
+      "letters": "أخر",
+      "translit": "a-kh-r",
+      "gloss": "last, later",
+      "words": [
+        {
+          "ar": "الْآخِرَة",
+          "translit": "al-ākhirah",
+          "gloss": "the Hereafter",
+          "ref": "2:4",
+          "pattern": "noun, feminine"
+        }
+      ]
+    },
+    {
+      "id": "yqn",
+      "letters": "يقن",
+      "translit": "y-q-n",
+      "gloss": "certainty",
+      "words": [
+        {
+          "ar": "يُوقِنُون",
+          "translit": "yūqinūn",
+          "gloss": "they are certain",
+          "ref": "2:4",
+          "pattern": "Form IV, imperfect, plural"
+        }
+      ]
+    }
+  ],
+  "particles": [
+    {
+      "ar": "بِ",
+      "translit": "bi",
+      "gloss": "with, by, in"
+    },
+    {
+      "ar": "مِنْ",
+      "translit": "min",
+      "gloss": "from, of"
+    },
+    {
+      "ar": "لِ",
+      "translit": "li",
+      "gloss": "for, because of"
+    },
+    {
+      "ar": "إِيَّاكَ",
+      "translit": "iyyāka",
+      "gloss": "Thee alone"
+    },
+    {
+      "ar": "وَ",
+      "translit": "wa",
+      "gloss": "and"
+    },
+    {
+      "ar": "نَا",
+      "translit": "nā",
+      "gloss": "us, our"
+    },
+    {
+      "ar": "الَّذِينَ",
+      "translit": "alladhīna",
+      "gloss": "those who"
+    },
+    {
+      "ar": "عَلَيْهِمْ",
+      "translit": "‘alayhim",
+      "gloss": "upon them"
+    },
+    {
+      "ar": "لَا",
+      "translit": "lā",
+      "gloss": "not, no"
+    },
+    {
+      "ar": "ذَلِكَ",
+      "translit": "dhālika",
+      "gloss": "this, that"
+    },
+    {
+      "ar": "فِي",
+      "translit": "fī",
+      "gloss": "in, within"
+    },
+    {
+      "ar": "مِمَّا",
+      "translit": "mimmā",
+      "gloss": "from that which"
+    },
+    {
+      "ar": "هُمْ",
+      "translit": "hum",
+      "gloss": "they, them"
+    },
+    {
+      "ar": "مَا",
+      "translit": "mā",
+      "gloss": "what, that which"
+    }
+  ]
+}
