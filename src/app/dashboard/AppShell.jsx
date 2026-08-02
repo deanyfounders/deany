@@ -14,13 +14,13 @@ const TABS = [
 ];
 
 // Floating pill nav (deany-home-v1 section 6): white, full radius, hairline border,
-// soft shadow, above the safe-area inset. It sits IN the flex flow (a bottom bar
-// that visually floats) rather than position:fixed, so scrollable content can never
-// slide underneath it - the overlap bug fixed for good, on every device height.
+// soft shadow, above the safe-area inset. It floats (position:fixed), but the shell
+// root reserves NAV_RESERVE at the bottom so the scroll area ends above the pill and
+// content can never slide under it - no overlap on any device height.
 export function NavBar({ tab, onTab, reviewDot }) {
   return (
-    <nav aria-label="Primary" style={{ flexShrink: 0, display: 'flex', justifyContent: 'center', padding: '6px 16px calc(env(safe-area-inset-bottom) + 12px)', maxWidth: 520, margin: '0 auto', width: '100%' }}>
-      <div style={{ display: 'flex', gap: 2, background: '#fff', borderRadius: 999, border: '0.5px solid rgba(27,42,74,0.10)', boxShadow: '0 4px 14px rgba(27,42,74,0.08)', padding: '6px 8px', maxWidth: '100%' }}>
+    <nav aria-label="Primary" style={{ position: 'fixed', left: 0, right: 0, bottom: 'calc(env(safe-area-inset-bottom) + 14px)', zIndex: 40, display: 'flex', justifyContent: 'center', pointerEvents: 'none' }}>
+      <div style={{ pointerEvents: 'auto', display: 'flex', gap: 2, background: '#fff', borderRadius: 999, border: '0.5px solid rgba(27,42,74,0.10)', boxShadow: '0 4px 14px rgba(27,42,74,0.08)', padding: '6px 8px', maxWidth: 'calc(100vw - 32px)' }}>
         {TABS.map(t => {
           const active = tab === t.id;
           const showDot = t.id === 'review' && reviewDot;
@@ -44,12 +44,16 @@ export function NavBar({ tab, onTab, reviewDot }) {
 }
 
 export default function AppShell({ tab, onTab, reviewDot, children }) {
+  // Reserve the floating nav's footprint (bottom offset 14 + pill ~60 + gap) plus the
+  // safe-area inset on the ROOT. The scroll area (flex:1) fills the remaining box and
+  // therefore ENDS above the nav on every device, so content is clipped at the nav's
+  // top edge and can never slide under it - the iPhone 12 overlap, fixed structurally,
+  // while the nav keeps floating exactly as before on taller iPhones.
   return (
-    <div style={{ minHeight: '100vh', height: '100dvh', maxHeight: '100dvh', overflow: 'hidden', background: '#fff', color: D.ink, fontFamily: FONT, display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', height: '100dvh', maxHeight: '100dvh', overflow: 'hidden', background: '#fff', color: D.ink, fontFamily: FONT, display: 'flex', flexDirection: 'column', paddingBottom: 'calc(env(safe-area-inset-bottom) + 88px)' }}>
       <DashMotion />
-      {/* overflowX hidden is the prerequisite fix: the page never scrolls sideways.
-          The nav is a flex sibling below, so content ends above it - no overlap. */}
-      <div key={tab} className="deany-fade" style={{ flex: 1, minHeight: 0, overflowY: 'auto', overflowX: 'hidden', WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain', touchAction: 'pan-y', paddingBottom: 12, maxWidth: 520, margin: '0 auto', width: '100%' }}>
+      {/* overflowX hidden is the prerequisite fix: the page never scrolls sideways. */}
+      <div key={tab} className="deany-fade" style={{ flex: 1, minHeight: 0, overflowY: 'auto', overflowX: 'hidden', WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain', touchAction: 'pan-y', paddingBottom: 4, maxWidth: 520, margin: '0 auto', width: '100%' }}>
         {children}
       </div>
       <NavBar tab={tab} onTab={onTab} reviewDot={reviewDot} />
