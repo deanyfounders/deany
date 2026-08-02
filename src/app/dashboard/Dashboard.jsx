@@ -71,7 +71,7 @@ function Inner({ mainTopics = [], modules = {}, completedLessons = {}, onSelectL
     <AppShell tab={tab} onTab={setTab} reviewDot={badges.reviewDot}>
       {tab === 'home' && (
         <Home name={name} state={dash.state} deps={deps} coins={dash.state.coins || coins} streak={dailyStreak || dash.state.streak?.count || 0}
-          onOpenTopic={setPathTopicId} onGoTab={setTab} onSelectLesson={onSelectLesson} />
+          onOpenTopic={setPathTopicId} onGoTab={setTab} onSelectLesson={onSelectLesson} addTopic={dash.addTopic} removeTopic={dash.removeTopic} />
       )}
       {tab === 'topics' && (
         <Topics state={dash.state} deps={deps} onOpenTopic={setPathTopicId} addTopic={dash.addTopic} pauseTopic={dash.pauseTopic} resumeTopic={dash.resumeTopic} removeTopic={dash.removeTopic} />

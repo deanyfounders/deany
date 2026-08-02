@@ -4,9 +4,10 @@
 // left off" element - resume happens through the in-progress tile and the guide.
 // Nothing scrolls horizontally; the page keeps touch-action: pan-y.
 import React, { useMemo, useState } from 'react';
-import { ChevronDown, ChevronUp, Plus, Volume2 } from 'lucide-react';
+import { ChevronDown, ChevronUp, Plus, Volume2, MoreVertical, Trash2, X } from 'lucide-react';
 import { D, TYPE, subjectOf, carouselAccent } from '../tokens.js';
 import { buildTopicSlide, getActiveTopics, guideSuggestion, resolveGuideRoute } from '../selectors.js';
+import { catalogById } from '../catalog.js';
 import { getAyahOfTheDay } from '../../../content/ayahOfTheDay.js';
 import PersonalReviewGuide from '../PersonalReviewGuide.jsx';
 import financeArt from '../../../assets/topics/islamic-finance.png';
@@ -34,9 +35,10 @@ const hijri = () => {
   } catch (_) { return new Intl.DateTimeFormat('en-US', { day: 'numeric', month: 'long' }).format(new Date()); }
 };
 
-export default function Home({ name, state, deps, coins, streak, onOpenTopic, onGoTab, onSelectLesson }) {
+export default function Home({ name, state, deps, coins, streak, onOpenTopic, onGoTab, onSelectLesson, addTopic, removeTopic }) {
   const [ayah] = useState(getAyahOfTheDay);
   const [today] = useState(hijri);
+  const [showAdd, setShowAdd] = useState(false);
   const topicIds = getActiveTopics(state);
   const slides = useMemo(() => topicIds.map((id) => buildTopicSlide(id, state, deps)), [topicIds.join(','), deps]);
   // The card reads only from this async thunk; a real selector swaps in here.
@@ -74,15 +76,24 @@ export default function Home({ name, state, deps, coins, streak, onOpenTopic, on
       {/* Subject grid - the hero */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12, padding: '0 16px' }}>
         {empty
-          ? available.map((id) => <PickerTile key={id} id={id} onPick={() => onGoTab('topics')} />)
+          ? available.map((id) => <PickerTile key={id} id={id} onPick={() => addTopic && addTopic(id)} />)
           : (<>
-            {slides.map((s) => <SubjectTile key={s.id} slide={s} onTap={() => openTile(s)} />)}
-            {topicIds.length < 4 && <AddTile count={available.length} onPress={() => onGoTab('topics')} />}
+            {slides.map((s) => <SubjectTile key={s.id} slide={s} onTap={() => openTile(s)} onRemove={() => removeTopic && removeTopic(s.id)} />)}
+            {topicIds.length < 4 && available.length > 0 && <AddTile count={available.length} onPress={() => setShowAdd(true)} />}
           </>)}
       </div>
 
       {/* Personal review guide - renders nothing when no suggestion is due */}
       <PersonalReviewGuide getSuggestion={getSuggestion} onNavigate={onGuideNavigate} onMore={() => onGoTab('review')} />
+
+      {/* Add-a-subject picker - adds directly to the grid, no tab hop */}
+      {showAdd && (
+        <AddSheet
+          available={available}
+          onAdd={(id) => { addTopic && addTopic(id); if (available.length <= 1) setShowAdd(false); }}
+          onClose={() => setShowAdd(false)}
+        />
+      )}
     </div>
   );
 }
@@ -121,24 +132,79 @@ function AyahStrip({ ayah, onOpenReader }) {
   );
 }
 
-function SubjectTile({ slide, onTap }) {
+function SubjectTile({ slide, onTap, onRemove }) {
   const s = subjectOf(slide.id);
   const ac = carouselAccent(slide.id);
+  const [menu, setMenu] = useState(false);
   const inProgress = slide.slideState === 'in_progress' || slide.slideState === 'level_complete';
   const untouched = slide.slideState === 'untouched';
   const label = `${s.name}, ${slide.lessonsComplete} of ${slide.lessonCount} lessons${inProgress ? ', in progress' : untouched ? ', not started' : ', completed'}`;
   return (
-    <button onClick={onTap} aria-label={label} className="dash-press"
-      style={{ minWidth: 0, background: 'none', border: 'none', padding: '8px 6px 10px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', transition: 'transform 80ms ease', WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}
-      onPointerDown={(e) => tilePress(e, true)} onPointerUp={(e) => tilePress(e, false)} onPointerLeave={(e) => tilePress(e, false)}>
-      <div style={{ position: 'relative', height: ART_ZONE, width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        {inProgress && <span style={{ position: 'absolute', top: 0, background: '#F0B429', color: '#3A2704', borderRadius: 999, padding: '3px 10px', fontSize: 9.5, fontWeight: 700, letterSpacing: '0.02em' }}>IN PROGRESS</span>}
-        <TileArt id={slide.id} ac={ac} initial={(s.short || s.name)[0]} />
+    <div style={{ position: 'relative', minWidth: 0 }}>
+      <button onClick={onTap} aria-label={label} className="dash-press"
+        style={{ width: '100%', minWidth: 0, background: 'none', border: 'none', padding: '8px 6px 10px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', transition: 'transform 80ms ease', WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}
+        onPointerDown={(e) => tilePress(e, true)} onPointerUp={(e) => tilePress(e, false)} onPointerLeave={(e) => tilePress(e, false)}>
+        <div style={{ position: 'relative', height: ART_ZONE, width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          {inProgress && <span style={{ position: 'absolute', top: 0, background: '#F0B429', color: '#3A2704', borderRadius: 999, padding: '3px 10px', fontSize: 9.5, fontWeight: 700, letterSpacing: '0.02em' }}>IN PROGRESS</span>}
+          <TileArt id={slide.id} ac={ac} initial={(s.short || s.name)[0]} />
+        </div>
+        <div style={{ fontSize: 15.5, fontWeight: 700, color: D.ink, marginTop: 6, textAlign: 'center' }}>{s.name}</div>
+        <Segments count={slide.lessonCount} filled={slide.lessonsComplete} ac={ac} />
+        <div style={{ fontSize: 11, color: '#8A90A0', marginTop: 5 }}>{untouched ? 'Not started' : `${slide.lessonsComplete} of ${slide.lessonCount} lessons`}</div>
+      </button>
+
+      {/* Overflow menu - remove subject (progress is kept, it can be re-added) */}
+      <button onClick={(e) => { e.stopPropagation(); setMenu((m) => !m); }} aria-label={`${s.name} options`} aria-haspopup="menu" aria-expanded={menu}
+        style={{ position: 'absolute', top: 2, right: 0, background: 'none', border: 'none', padding: 6, lineHeight: 0, cursor: 'pointer', color: '#B7BBB0', borderRadius: 999, WebkitTapHighlightColor: 'transparent' }}>
+        <MoreVertical size={17} />
+      </button>
+      {menu && (
+        <>
+          <div onClick={() => setMenu(false)} style={{ position: 'fixed', inset: 0, zIndex: 40 }} />
+          <div role="menu" style={{ position: 'absolute', top: 28, right: 0, zIndex: 41, background: '#fff', border: '1px solid #ECE9E3', borderRadius: 12, minWidth: 162, overflow: 'hidden', boxShadow: '0 10px 30px rgba(15,26,42,0.16)' }}>
+            <button role="menuitem" onClick={() => { setMenu(false); onRemove && onRemove(); }}
+              style={{ display: 'flex', alignItems: 'center', gap: 9, width: '100%', textAlign: 'left', background: 'none', border: 'none', padding: '12px 13px', fontSize: 14, fontWeight: 600, color: '#B04A2C', cursor: 'pointer', minHeight: 44, WebkitTapHighlightColor: 'transparent' }}>
+              <Trash2 size={15} color="#B04A2C" /> Remove subject
+            </button>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+// Bottom-sheet picker: adds a subject straight into the grid. Lists only the
+// subjects the user hasn't added yet; empties out (and closes) as they're added.
+function AddSheet({ available, onAdd, onClose }) {
+  const reduce = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  return (
+    <div role="dialog" aria-modal="true" aria-label="Add a subject" style={{ position: 'fixed', inset: 0, zIndex: 60, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
+      <div onClick={onClose} style={{ position: 'absolute', inset: 0, background: 'rgba(15,26,42,0.34)', animation: reduce ? 'none' : 'deanyFade 160ms ease-out' }} />
+      <div style={{ position: 'relative', background: '#fff', borderTopLeftRadius: 22, borderTopRightRadius: 22, padding: '10px 16px calc(env(safe-area-inset-bottom) + 20px)', maxWidth: 520, margin: '0 auto', width: '100%', boxShadow: '0 -10px 40px rgba(15,26,42,0.18)', animation: reduce ? 'none' : 'deanySheetUp 240ms cubic-bezier(0.22,1,0.36,1)' }}>
+        <style>{'@keyframes deanySheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}@keyframes deanyFade{from{opacity:0}to{opacity:1}}'}</style>
+        <div style={{ width: 38, height: 4, borderRadius: 2, background: '#E2E0DA', margin: '2px auto 12px' }} />
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+          <span style={{ fontSize: 17, fontWeight: 700, color: D.ink }}>Add a subject</span>
+          <button onClick={onClose} aria-label="Close" style={{ border: 'none', background: '#F2F1EC', borderRadius: '50%', width: 30, height: 30, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}><X size={16} color="#7A8090" /></button>
+        </div>
+        {available.map((id) => {
+          const s = subjectOf(id); const ac = carouselAccent(id); const cat = catalogById(id) || {};
+          return (
+            <button key={id} onClick={() => onAdd(id)} className="dash-press"
+              style={{ display: 'flex', alignItems: 'center', gap: 12, width: '100%', background: 'none', border: 'none', borderTop: '1px solid #F0EEE9', padding: '12px 2px', cursor: 'pointer', textAlign: 'left', minHeight: 56, WebkitTapHighlightColor: 'transparent' }}>
+              <span style={{ width: 42, height: 42, borderRadius: '50%', background: ac.tint, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <span style={{ fontSize: 18, fontWeight: 800, color: ac.deep }}>{(s.short || s.name)[0]}</span>
+              </span>
+              <span style={{ flex: 1, minWidth: 0 }}>
+                <span style={{ display: 'block', fontSize: 15, fontWeight: 700, color: D.ink }}>{s.name}</span>
+                <span style={{ display: 'block', fontSize: 12, color: '#8A90A0', marginTop: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{cat.desc}</span>
+              </span>
+              <span style={{ flexShrink: 0, display: 'inline-flex', alignItems: 'center', gap: 4, color: '#0B5E48', fontSize: 13, fontWeight: 700 }}><Plus size={16} /> Add</span>
+            </button>
+          );
+        })}
       </div>
-      <div style={{ fontSize: 15.5, fontWeight: 700, color: D.ink, marginTop: 6, textAlign: 'center' }}>{s.name}</div>
-      <Segments count={slide.lessonCount} filled={slide.lessonsComplete} ac={ac} />
-      <div style={{ fontSize: 11, color: '#8A90A0', marginTop: 5 }}>{untouched ? 'Not started' : `${slide.lessonsComplete} of ${slide.lessonCount} lessons`}</div>
-    </button>
+    </div>
   );
 }
 
