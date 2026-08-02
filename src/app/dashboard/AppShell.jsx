@@ -1,5 +1,5 @@
-// AppShell - canvas background, scrollable content, fixed bottom NavBar with
-// safe-area handling. All four tabs render inside it.
+// AppShell - canvas background, scrollable content, flush bottom NavBar in normal
+// flex flow (never floating) with safe-area handling. All tabs render inside it.
 import React from 'react';
 import { Home, Compass, RefreshCw, User, BookOpen } from 'lucide-react';
 import { D, RADIUS, FONT, TYPE } from './tokens.js';
@@ -13,14 +13,15 @@ const TABS = [
   { id: 'you', label: 'You', icon: User },
 ];
 
-// Floating pill nav (deany-home-v1 section 6): white, full radius, hairline border,
-// soft shadow, above the safe-area inset. It floats (position:fixed), but the shell
-// root reserves NAV_RESERVE at the bottom so the scroll area ends above the pill and
-// content can never slide under it - no overlap on any device height.
+// Flush bottom nav: a full-width bar in normal flex flow (NOT floating) - squared
+// corners, a 1px top hairline, no shadow, no side margins. It sits below the scroll
+// area as a flex sibling, so page content ends above it and can never hide behind
+// it. The safe-area inset is padded INSIDE the bar so the tap targets clear the
+// iPhone home indicator. Icons, labels, active state and behaviour are unchanged.
 export function NavBar({ tab, onTab, reviewDot }) {
   return (
-    <nav aria-label="Primary" style={{ position: 'fixed', left: 0, right: 0, bottom: 'calc(env(safe-area-inset-bottom) + 14px)', zIndex: 40, display: 'flex', justifyContent: 'center', pointerEvents: 'none' }}>
-      <div style={{ pointerEvents: 'auto', display: 'flex', gap: 2, background: '#fff', borderRadius: 999, border: '0.5px solid rgba(27,42,74,0.10)', boxShadow: '0 4px 14px rgba(27,42,74,0.08)', padding: '6px 8px', maxWidth: 'calc(100vw - 32px)' }}>
+    <nav aria-label="Primary" style={{ flexShrink: 0, background: '#fff', borderTop: '1px solid rgba(27,42,74,0.10)', paddingBottom: 'env(safe-area-inset-bottom)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'stretch', gap: 2, maxWidth: 520, margin: '0 auto', padding: '6px 6px' }}>
         {TABS.map(t => {
           const active = tab === t.id;
           const showDot = t.id === 'review' && reviewDot;
@@ -44,16 +45,14 @@ export function NavBar({ tab, onTab, reviewDot }) {
 }
 
 export default function AppShell({ tab, onTab, reviewDot, children }) {
-  // Reserve the floating nav's footprint (bottom offset 14 + pill ~60 + gap) plus the
-  // safe-area inset on the ROOT. The scroll area (flex:1) fills the remaining box and
-  // therefore ENDS above the nav on every device, so content is clipped at the nav's
-  // top edge and can never slide under it - the iPhone 12 overlap, fixed structurally,
-  // while the nav keeps floating exactly as before on taller iPhones.
+  // Flex column: scroll area (flex:1) + nav (flex-shrink:0) below it. The nav takes
+  // real flow space, so the scroll area ends at the nav's top edge - content can
+  // never slide under the bar, on any device height. No root reserve needed.
   return (
-    <div style={{ minHeight: '100vh', height: '100dvh', maxHeight: '100dvh', overflow: 'hidden', background: '#fff', color: D.ink, fontFamily: FONT, display: 'flex', flexDirection: 'column', paddingBottom: 'calc(env(safe-area-inset-bottom) + 88px)' }}>
+    <div style={{ minHeight: '100vh', height: '100dvh', maxHeight: '100dvh', overflow: 'hidden', background: '#fff', color: D.ink, fontFamily: FONT, display: 'flex', flexDirection: 'column' }}>
       <DashMotion />
       {/* overflowX hidden is the prerequisite fix: the page never scrolls sideways. */}
-      <div key={tab} className="deany-fade" style={{ flex: 1, minHeight: 0, overflowY: 'auto', overflowX: 'hidden', WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain', touchAction: 'pan-y', paddingBottom: 4, maxWidth: 520, margin: '0 auto', width: '100%' }}>
+      <div key={tab} className="deany-fade" style={{ flex: 1, minHeight: 0, overflowY: 'auto', overflowX: 'hidden', WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain', touchAction: 'pan-y', paddingBottom: 8, maxWidth: 520, margin: '0 auto', width: '100%' }}>
         {children}
       </div>
       <NavBar tab={tab} onTab={onTab} reviewDot={reviewDot} />
