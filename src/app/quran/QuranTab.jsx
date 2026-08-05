@@ -1,7 +1,7 @@
 // Qur'an tab: index <-> reader, plus the Scheherazade New webfont for Arabic
 // and the shared bottom-sheet animation. Reading is unscored - no XP/coins/streak
 // events originate here.
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import QuranIndex from './QuranIndex.jsx';
 import QuranReader from './QuranReader.jsx';
 
@@ -13,11 +13,17 @@ const QURAN_CSS = `
 @media (prefers-reduced-motion: reduce){ .deany-sheet-in { animation: none } }
 `;
 
-export default function QuranTab() {
+export default function QuranTab({ initialOpen, onConsumed }) {
   const [open, setOpen] = useState(null); // { surah, ayah } | null
   // Held here (not in QuranIndex) so returning from the reader restores the tab
   // you were on - opening a juz and pressing back lands you back on Juz.
   const [seg, setSeg] = useState('surah'); // surah | juz | saved
+
+  // Deep-link: the dashboard can request an ayah (e.g. "read it in the mushaf").
+  // Consume it once so navigating away and back does not force the reader open.
+  useEffect(() => {
+    if (initialOpen && initialOpen.surah) { setOpen({ surah: initialOpen.surah, ayah: initialOpen.ayah }); onConsumed && onConsumed(); }
+  }, [initialOpen, onConsumed]);
 
   return (
     <>

@@ -137,10 +137,14 @@ export default function RootWordsModule({ srsAdapter, onExit } = {}) {
     const e = entry(id);
     return e.stage > 0 && e.stage < 9 && e.dueAt <= Date.now();
   }
-  function setStage(id, newStage) {
+  function setStage(id, newStage, missed) {
     const hrs = INTERVAL_HOURS[newStage];
     const dueAt = hrs === null ? Infinity : Date.now() + hoursToMs(hrs);
-    setProgress((prev) => ({ ...prev, [id]: { stage: newStage, dueAt } }));
+    // Track misses so the dashboard can surface the learner's weakest words.
+    setProgress((prev) => {
+      const prevEntry = prev[id] || {};
+      return { ...prev, [id]: { stage: newStage, dueAt, miss: (prevEntry.miss || 0) + (missed ? 1 : 0) } };
+    });
   }
 
   const dueCount = useMemo(() => flatWords.filter((w) => isDue(w.id)).length, [flatWords, progress]);
@@ -706,7 +710,7 @@ function ReviewTab({ flatWords, rootById, entry, isDue, setStage }) {
   const onWrong = Math.max(stage - 2, 1);
 
   function grade(ok) {
-    setStage(w.id, ok ? onCorrect : onWrong);
+    setStage(w.id, ok ? onCorrect : onWrong, !ok);
     if (ok) setCorrect((c) => c + 1);
     setIdx((i) => i + 1);
     setRevealed(false);

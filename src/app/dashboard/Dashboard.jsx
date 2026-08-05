@@ -1,6 +1,7 @@
 // Dashboard - the four-tab app shell. Wraps the store, resolves the active
 // tab, and hands topic taps to the existing per-subject lesson path.
 import React, { useState, useMemo, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { DashboardProvider, useDashboard } from './state.jsx';
 import AppShell from './AppShell.jsx';
 import Home from './screens/Home.jsx';
@@ -8,6 +9,7 @@ import Review from './screens/Review.jsx';
 import Topics from './screens/Topics.jsx';
 import You from './screens/You.jsx';
 import QuranTab from '../quran/QuranTab.jsx';
+import RootWordsModule from '../quran/corewords/RootWordsModule.jsx';
 import PathLessons from '../home/PathLessons.jsx';
 import { getHomeBadges } from './selectors.js';
 import { subjectOf } from './tokens.js';
@@ -20,6 +22,8 @@ function Inner({ mainTopics = [], modules = {}, completedLessons = {}, onSelectL
   const dash = useDashboard();
   const [tab, setTab] = useState('home');
   const [pathTopicId, setPathTopicId] = useState(null);
+  const [coreWordsOpen, setCoreWordsOpen] = useState(false);
+  const [quranInitial, setQuranInitial] = useState(null); // { surah, ayah } | null
   const deps = useMemo(() => ({ modules, completedLessons }), [modules, completedLessons]);
 
   // Name rule: use it if 2+ chars; else the email local-part capitalized; else null.
@@ -71,18 +75,28 @@ function Inner({ mainTopics = [], modules = {}, completedLessons = {}, onSelectL
     <AppShell tab={tab} onTab={setTab} reviewDot={badges.reviewDot}>
       {tab === 'home' && (
         <Home name={name} state={dash.state} deps={deps} coins={dash.state.coins || coins} streak={dailyStreak || dash.state.streak?.count || 0}
-          onOpenTopic={setPathTopicId} onGoTab={setTab} onSelectLesson={onSelectLesson} addTopic={dash.addTopic} removeTopic={dash.removeTopic} />
+          onOpenTopic={setPathTopicId} onGoTab={setTab}
+          onOpenCoreWords={() => setCoreWordsOpen(true)}
+          onOpenAyah={(surah, ayah) => { setQuranInitial({ surah, ayah }); setTab('quran'); }} />
       )}
       {tab === 'topics' && (
         <Topics state={dash.state} deps={deps} onOpenTopic={setPathTopicId} addTopic={dash.addTopic} pauseTopic={dash.pauseTopic} resumeTopic={dash.resumeTopic} removeTopic={dash.removeTopic} />
       )}
-      {tab === 'quran' && (<QuranTab />)}
+      {tab === 'quran' && (<QuranTab initialOpen={quranInitial} onConsumed={() => setQuranInitial(null)} />)}
       {tab === 'review' && (
         <Review state={dash.state} onGoTab={setTab} onSelectLesson={onSelectLesson} resolveLesson={resolveLesson} />
       )}
       {tab === 'you' && (
         <You name={name} guest={guest} state={dash.state} completedLessons={completedLessons} xp={xp}
           onSignOut={appState?.signOut} onCreateAccount={appState?.signOut} setDailyMinutes={dash.setDailyMinutes} />
+      )}
+
+      {/* Quranic Core Words full-screen, portaled to body so it covers the nav */}
+      {coreWordsOpen && typeof document !== 'undefined' && createPortal(
+        <div style={{ position: 'fixed', inset: 0, zIndex: 1000, background: '#F4F2FA' }}>
+          <RootWordsModule onExit={() => setCoreWordsOpen(false)} />
+        </div>,
+        document.body
       )}
     </AppShell>
   );

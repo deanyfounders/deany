@@ -2,6 +2,7 @@
 // (progress, next lesson) come from the content layer passed in as `deps`:
 //   deps = { modules: { [topicId]: Module[] }, completedLessons: {} }
 import { INTERVALS } from './srs.js';
+import { vocabStats } from './vocab.js';
 
 const DAY = 86400000;
 
@@ -142,6 +143,41 @@ export function guideSuggestion(state, deps, now) {
     route: `review:${g.item.id}`,
     queueCount: g.more,
   };
+}
+
+// "Your plan for today" (dashboard redesign): built from real SRS state - the oldest
+// due memorisation/lesson review leads, then the next new-vocab batch, each with a
+// real minute estimate. Returns { steps, totalMin }; steps is empty when nothing is
+// due and every word is already started (the card then shows a caught-up state).
+export function buildTodayPlan(state, deps, vocabProgress, now) {
+  const steps = [];
+  const due = getDueReviews(state, now); // oldest due first
+  if (due.length) {
+    const item = due[0];
+    const r = resolveReview(item, deps);
+    if (r) {
+      const daysAgo = INTERVALS[item.intervalIndex] || 1;
+      const verb = item.intervalIndex === 0 ? 'Learned' : 'Reviewed';
+      steps.push({
+        kind: 'review',
+        title: `Review ${r.name}`,
+        sub: `${verb} ${daysAgo} day${daysAgo === 1 ? '' : 's'} ago · due today`,
+        minutes: 2,
+        route: 'review',
+      });
+    }
+  }
+  const vs = vocabStats(vocabProgress || {});
+  if (vs.nextBatch > 0) {
+    steps.push({
+      kind: 'vocab',
+      title: `Root words · ${vs.nextBatch} new`,
+      sub: 'Quran and Arabic · continues module 1',
+      minutes: vs.nextBatch,
+      route: 'corewords',
+    });
+  }
+  return { steps, totalMin: steps.reduce((s, x) => s + x.minutes, 0) };
 }
 
 // Resolve a guide route (`review:<itemId>`) back to a launchable lesson.
