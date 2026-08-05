@@ -157,9 +157,11 @@ function TodayDeck({ slides }) {
   };
   return (
     <>
+      {/* Each slide is a full viewport wide with the gutter INSIDE it, so the next
+          card sits a whole screen away - no peek, one card at a time. */}
       <div ref={ref} onScroll={onScroll} className="deck-scroll"
-        style={{ display: 'flex', gap: 12, overflowX: 'auto', scrollSnapType: 'x mandatory', padding: '4px 20px 18px', scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}>
-        {slides.map((s, i) => <div key={i} style={{ flex: '0 0 84%', scrollSnapAlign: 'center' }}>{s}</div>)}
+        style={{ display: 'flex', overflowX: 'auto', scrollSnapType: 'x mandatory', padding: '4px 0 18px', scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}>
+        {slides.map((s, i) => <div key={i} style={{ flex: '0 0 100%', scrollSnapAlign: 'center', padding: '0 20px', boxSizing: 'border-box' }}>{s}</div>)}
       </div>
       {slides.length > 1 && (
         <div style={{ display: 'flex', gap: 6, justifyContent: 'center', margin: '-6px 0 4px' }}>
@@ -172,7 +174,9 @@ function TodayDeck({ slides }) {
   );
 }
 
-const cardBase = { background: D.card, borderRadius: 20, padding: 18, boxShadow: '0 16px 36px rgba(15,110,86,0.16)' };
+// Every deck card fills the slide so all cards are the same height; actions pin to
+// the bottom (marginTop:auto) so the buttons line up across cards.
+const cardBase = { background: D.card, borderRadius: 20, padding: 18, boxShadow: '0 16px 36px rgba(15,110,86,0.16)', width: '100%', height: '100%', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' };
 const cardHead = { display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 14 };
 const goldBtn = { background: D.gold, color: D.navy, border: 'none', borderRadius: 24, padding: '12px 22px', fontFamily: 'inherit', fontSize: 14, fontWeight: 800, boxShadow: `0 2px 0 ${D.streakPill.ink}`, cursor: 'pointer' };
 const tealBtn = { background: D.teal, color: '#fff', border: 'none', borderRadius: 24, padding: '12px 22px', fontFamily: 'inherit', fontSize: 14, fontWeight: 800, boxShadow: `0 2px 0 ${D.tealDeep}`, cursor: 'pointer' };
@@ -200,7 +204,7 @@ function PlanCard({ plan, onStart, onChange }) {
           <div style={{ fontSize: 11, fontWeight: 700, color: D.tealDeep, background: D.coinsPill.bg, borderRadius: 14, padding: '3px 9px', alignSelf: 'flex-start' }}>{s.minutes} min</div>
         </div>
       ))}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 14 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 'auto', paddingTop: 14 }}>
         <button onClick={onStart} style={goldBtn}>{steps.length ? "Start today's plan" : 'Go to review'}</button>
         {steps.length > 0 && <button onClick={onChange} style={{ ...linkBtn, fontSize: 12, fontWeight: 600, color: D.inkSecondary }}>Change plan</button>}
       </div>
@@ -225,7 +229,7 @@ function SharpenCard({ words, onRetry }) {
           </div>
         ))}
       </div>
-      <div style={{ marginTop: 14 }}>
+      <div style={{ marginTop: 'auto', paddingTop: 14 }}>
         <button onClick={onRetry} style={tealBtn}>Retry these {words.length}</button>
       </div>
     </div>
@@ -242,7 +246,7 @@ function UnderstandCard({ data, onRead }) {
       </div>
       <div dir="rtl" style={{ fontFamily: ARABIC, fontSize: 21, lineHeight: 1.75, textAlign: 'right', color: D.navy, marginBottom: 8 }}>{data.arabic}</div>
       <p style={{ fontSize: 13, lineHeight: 1.5, color: D.inkSecondary, margin: 0 }}>Every word in this ayah is now in your deck. {data.surahName || 'Al-Baqarah'} {data.surah}:{data.ayah}, read it cold.</p>
-      <div style={{ marginTop: 14 }}>
+      <div style={{ marginTop: 'auto', paddingTop: 14 }}>
         <button onClick={onRead} style={tealBtn}>Read it in the mushaf</button>
       </div>
     </div>
