@@ -1,410 +1,330 @@
-// Home (dashboard redesign, benchmark-driven). Layers, top to bottom:
-//   hero band (salam + hijri + streak/coins) -> ayah-of-the-day ritual card that
-//   overlaps the band -> the Today deck (a horizontal scroll-snap carousel: the
-//   personalised plan leads, then vocab-sharpen and just-unlocked-ayah suggestions
-//   peek from the right) -> a compact subjects library row -> the weekly streak
-//   strip -> the time-aware Jumu'ah card. Every card is wired to real state; every
-//   colour is a brand token from tokens.js. No Qur'anic Arabic is authored here -
-//   the ayah bank and the verified /quran verse source provide it; this decorates.
-import React, { useMemo, useState, useEffect, useRef } from 'react';
-import { createPortal } from 'react-dom';
-import { D, FONT, subjectOf } from '../tokens.js';
-import { getActiveTopics, topicProgress, buildTodayPlan } from '../selectors.js';
+// Home - editorial dashboard (deany_dashboard_spec.md; the HTML is the pixel
+// reference). One card vocabulary, chunky 4px bottom borders, spring entrance.
+// The mock's CSS is ported into a scoped stylesheet (.ed) driven by the shared E
+// tokens; every visible value is wired to real state or a live service. No Qur'anic
+// Arabic is authored here - the verse comes from the ayah source and the bismillah
+// from the verified /quran source; this decorates only.
+import React, { useState, useEffect, useMemo } from 'react';
+import { E, FONT_LATIN, FONT_SERIF, FONT_AR, subjectOf } from '../tokens.js';
+import { getActiveTopics, topicProgress, getContinueTarget, getDueReviews } from '../selectors.js';
+import { catalogById } from '../catalog.js';
 import { getAyahOfTheDay } from '../../../content/ayahOfTheDay.js';
-import { readVocab, missedWords, nextUnderstoodAyah, nearestAyahProgress, demoMissedWords, markAyahShown } from '../vocab.js';
-import indexData from '../../../data/quran-index.json';
-import { IS_PROD } from '../../../lib/flags.js';
+import { useNisab } from '../services/nisab.js';
+import { usePrayerTimes } from '../services/prayerTimes.js';
 import jumuah from '../../../../content/dashboard/jumuah.json';
+import zakatMethodology from '../../../../content/dashboard/zakat-methodology.json';
+import pillarsArt from '../../../assets/topics/5-pillars.png';
+import financeArt from '../../../assets/topics/islamic-finance.png';
+import quranArt from '../../../assets/topics/quran-arabic.png';
+import historyArt from '../../../assets/topics/islamic-history.png';
 
-const ARABIC = "'Scheherazade New','Amiri',serif";
 const SALAM = 'السلام عليكم'; // greeting, not Qur'anic verse text
-const SUBJECT_EMOJI = { 'islamic-finance': '\u{1F4B0}', '5-pillars': '\u{1F54C}', 'quran-arabic': '\u{1F4D6}', 'islamic-history': '\u{1F4DC}' };
+const minsOf = (d) => { const n = parseInt(String(d || '').replace(/[^0-9]/g, ''), 10); return Number.isFinite(n) && n > 0 ? n : 5; };
 
-const hijri = () => {
-  try {
-    const p = new Intl.DateTimeFormat('en-US-u-ca-islamic-umalqura', { day: 'numeric', month: 'long', year: 'numeric' }).formatToParts(new Date());
-    const get = (t) => (p.find((x) => x.type === t) || {}).value || '';
-    return `${get('day')} ${get('month')} ${get('year')}`;
-  } catch (_) { return new Intl.DateTimeFormat('en-US', { day: 'numeric', month: 'long' }).format(new Date()); }
+// Path identity (spec section 4): tile tint, badge fill, bar + percent colour, art.
+const PATHS = [
+  { id: '5-pillars', tile: E.tealTint, badge: E.teal, badgeInk: '#fff', bar: E.teal, pct: E.tealDark, art: pillarsArt },
+  { id: 'islamic-finance', tile: E.goldTint, badge: E.gold, badgeInk: E.ink, bar: E.gold, pct: E.goldDark, art: financeArt },
+  { id: 'quran-arabic', tile: E.quranTint, badge: E.navy, badgeInk: '#fff', bar: E.navy, pct: E.navy, art: quranArt },
+  { id: 'islamic-history', tile: E.historyTint, badge: E.history, badgeInk: '#fff', bar: E.history, pct: E.history, art: historyArt },
+];
+const DIFF = (tier) => (tier >= 3 ? 'Advanced' : tier === 2 ? 'Intermediate' : 'Beginner');
+
+const hijriParts = (date) => {
+  const p = new Intl.DateTimeFormat('en-US-u-ca-islamic-umalqura', { day: 'numeric', month: 'long', year: 'numeric' }).formatToParts(date);
+  const g = (t) => (p.find((x) => x.type === t) || {}).value || '';
+  return { day: parseInt(g('day'), 10) || 1, month: g('month'), year: g('year') };
+};
+const hijriMonthLen = (date) => { // advance to month rollover; last day seen = length
+  const cur = hijriParts(date).month; let d = new Date(date), last = hijriParts(d).day;
+  for (let i = 0; i < 32; i++) { const n = new Date(d); n.setDate(n.getDate() + 1); const hp = hijriParts(n); if (hp.month !== cur) break; last = hp.day; d = n; }
+  return last;
 };
 const weekday = () => { try { return new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(new Date()); } catch (_) { return ''; } };
+const daysToFriday = () => (5 - new Date().getDay() + 7) % 7;
 
-const surahName = (n) => { const s = (indexData.surahs || []).find((x) => x.surah === n); return s ? s.name_tr : ''; };
-const parseRef = (ref) => { const [s, a] = String(ref).split(':'); return { surah: parseInt(s, 10), ayah: parseInt(a, 10) }; };
-// dev/demo: fully populate the deck for review. Off in production unless ?demo=1.
-const demoMode = () => { if (!IS_PROD) return true; try { return typeof window !== 'undefined' && /[?&]demo=1/.test(window.location.search); } catch (_) { return false; } };
-// Placeholder plan (mock content) - used only in demo when the real plan is thin.
-const DEMO_PLAN = { totalMin: 26, steps: [
-  { kind: 'review', title: 'Review Ayat al-Kursi', sub: 'Memorised 3 days ago · due today', minutes: 2 },
-  { kind: 'vocab', title: 'Root words · 5 new', sub: 'Quran and Arabic · continues module 1', minutes: 5 },
-  { kind: 'lesson', title: 'Islamic finance · lesson 3', sub: 'Riba, the fixed increase', minutes: 6 },
-  { kind: 'lesson', title: 'Islamic history · lesson 2', sub: 'The people of the peninsula', minutes: 5 },
-  { kind: 'memorisation', title: 'Quran memorisation', sub: 'Continue Surah al-Fatihah', minutes: 8 },
-] };
+const ED_CSS = `
+.ed{
+  --bg:${E.bg}; --inset:${E.inset}; --white:${E.card}; --line:${E.line};
+  --ink:${E.ink}; --soft:${E.soft}; --faint:${E.faint};
+  --gold:${E.gold}; --gold-dark:${E.goldDark}; --gold-tint:${E.goldTint};
+  --teal:${E.teal}; --teal-dark:${E.tealDark}; --teal-tint:${E.tealTint};
+  --navy:${E.navy}; --history:${E.history};
+  font-family:${FONT_LATIN}; background:${E.bg}; color:var(--ink); padding:0 18px; min-height:100%;
+}
+.ed .card{ background:var(--white); border:2px solid var(--line); border-bottom-width:4px; border-radius:16px; padding:16px; margin-bottom:14px; transition:transform 0.12s ease; }
+.ed .card:active{ transform:scale(0.982); }
+.ed .lbl{ font-size:9.5px; font-weight:800; letter-spacing:0.16em; text-transform:uppercase; color:var(--soft); }
+.ed .lbl.gold{ color:var(--gold-dark); } .ed .lbl.teal{ color:var(--teal-dark); }
+.ed .head{ text-align:center; padding:52px 0 20px; }
+.ed .head .salam{ font-family:${FONT_AR}; font-size:18px; color:var(--gold-dark); }
+.ed .head h1{ font-family:${FONT_SERIF}; font-size:28px; font-weight:600; margin:2px 0 3px; }
+.ed .head .date{ font-size:12px; color:var(--faint); }
+.ed .cont{ display:flex; align-items:center; gap:12px; }
+.ed .cont .mid{ flex:1; min-width:0; }
+.ed .cont h2{ font-family:${FONT_SERIF}; font-size:17px; font-weight:600; margin-top:5px; }
+.ed .cont .meta{ font-size:11px; margin-top:3px; }
+.ed .btn{ background:var(--gold); color:var(--ink); border:none; border-radius:14px; padding:12px 20px; font-family:inherit; font-size:13.5px; font-weight:800; cursor:pointer; box-shadow:0 4px 0 ${E.goldEdge}; transition:transform 0.1s; white-space:nowrap; }
+.ed .btn:active{ transform:translateY(3px); box-shadow:0 1px 0 ${E.goldEdge}; }
+.ed .verse{ text-align:center; }
+.ed .verse .ar{ font-family:${FONT_AR}; font-size:26px; line-height:1.9; direction:rtl; margin:12px 0 10px; color:var(--ink); }
+.ed .verse .plbl{ display:inline-block; background:var(--teal-tint); color:var(--teal-dark); padding:5px 13px; border-radius:14px; font-size:9.5px; font-weight:800; letter-spacing:0.16em; text-transform:uppercase; }
+.ed .verse .tr{ font-size:13px; line-height:1.6; color:var(--soft); font-style:italic; }
+.ed .verse .ref{ font-size:10.5px; color:var(--faint); margin-top:8px; letter-spacing:0.06em; }
+.ed .verse .chips{ display:flex; gap:8px; justify-content:center; margin-top:14px; padding-top:14px; border-top:1px solid var(--line); }
+.ed .chip{ display:flex; align-items:center; gap:6px; border:1px solid rgba(27,42,74,0.08); background:var(--white); border-radius:18px; padding:9px 15px; font-size:12px; font-weight:800; cursor:pointer; color:var(--ink); box-shadow:0 3px 0 rgba(27,42,74,0.15); transition:transform 0.1s; }
+.ed .chip:active{ transform:translateY(2px); box-shadow:0 1px 0 rgba(27,42,74,0.15); }
+.ed .sect{ text-align:center; margin:22px 0 12px; }
+.ed .sect h3{ font-family:${FONT_SERIF}; font-size:17px; font-weight:600; }
+.ed .paths{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.ed .path{ padding:14px; margin-bottom:0; }
+.ed .path .top{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px; }
+.ed .badge{ font-size:9px; font-weight:800; letter-spacing:0.06em; text-transform:uppercase; border:none; border-radius:12px; padding:4px 10px; box-shadow:0 2px 0 rgba(27,42,74,0.18); }
+.ed .ptile{ width:48px; height:48px; border-radius:15px; display:flex; align-items:center; justify-content:center; border:1px solid rgba(27,42,74,0.08); box-shadow:0 3px 0 rgba(27,42,74,0.12); overflow:hidden; }
+.ed .ptile img{ width:40px; height:40px; object-fit:contain; }
+.ed .path h4{ font-size:13.5px; font-weight:800; }
+.ed .path p{ font-size:10.5px; color:var(--faint); margin-top:2px; line-height:1.4; }
+.ed .bar{ height:7px; background:#F1EFE9; border-radius:2px; margin-top:11px; overflow:hidden; }
+.ed .bar i{ display:block; height:100%; background:var(--gold); border-radius:4px; position:relative; overflow:hidden; }
+.ed .bar i::after{ content:''; position:absolute; top:1.5px; left:3px; right:3px; height:2px; border-radius:2px; background:rgba(255,255,255,0.45); }
+.ed .pct{ font-size:9.5px; color:var(--faint); text-align:right; margin-top:4px; }
+.ed .xp-row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.ed .ring-card{ text-align:center; padding:16px 12px; margin-bottom:0; }
+.ed .ring{ position:relative; width:84px; height:84px; margin:6px auto 8px; }
+.ed .ring svg{ transform:rotate(-90deg); }
+.ed .ring svg circle:last-child{ filter:drop-shadow(0 0 5px rgba(240,180,41,0.55)); }
+.ed .ring .n{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.ed .ring .n b{ font-size:18px; font-weight:800; }
+.ed .ring .n small{ font-size:8.5px; color:var(--faint); text-transform:uppercase; letter-spacing:0.08em; }
+.ed .ring-card p{ font-size:10.5px; color:var(--faint); line-height:1.45; }
+.ed .nudge{ padding:14px; margin-bottom:0; display:flex; flex-direction:column; justify-content:center; }
+.ed .nudge b{ font-size:13px; font-weight:800; }
+.ed .nudge small{ font-size:10.5px; color:var(--faint); margin-top:3px; }
+.ed .nudge .xp{ background:var(--gold); color:var(--ink); border-radius:10px; padding:5px 10px; display:inline-block; width:fit-content; font-size:12px; font-weight:800; margin-top:8px; border:1px solid rgba(138,94,16,0.35); }
+.ed .chall{ color:#fff; display:flex; align-items:center; gap:12px; }
+.ed .chall .mid{ flex:1; min-width:0; }
+.ed .chall .lbl{ color:#9FB0D6; display:flex; align-items:center; gap:6px; }
+.ed .chall b{ font-size:13.5px; font-weight:700; display:block; margin-top:4px; line-height:1.4; }
+.ed .chall small{ font-size:10.5px; color:#9FB0D6; display:block; margin-top:3px; }
+.ed .chall .xp{ background:var(--gold); color:var(--ink); font-size:11px; font-weight:800; border-radius:10px; padding:6px 10px; white-space:nowrap; }
+.ed .zk p.help{ font-size:11.5px; color:var(--soft); line-height:1.55; margin:8px 0 12px; }
+.ed .zk .field{ display:flex; align-items:center; gap:8px; border:1px solid var(--line); border-radius:10px; padding:11px 12px; background:var(--inset); }
+.ed .zk .field span{ color:var(--faint); font-weight:700; }
+.ed .zk input{ border:none; background:none; outline:none; font-family:inherit; font-size:14px; flex:1; color:var(--ink); min-width:0; }
+.ed .zk .grid3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-top:12px; }
+.ed .zk .cell{ background:var(--inset); border:1px solid var(--line); border-radius:10px; padding:10px; text-align:center; }
+.ed .zk .cell small{ font-size:8.5px; color:var(--faint); text-transform:uppercase; letter-spacing:0.08em; display:block; }
+.ed .zk .cell b{ font-size:14px; font-weight:800; display:block; margin-top:3px; }
+.ed .zk .cell i{ font-style:normal; font-size:8.5px; color:var(--faint); }
+.ed .trio{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.ed .pt{ padding:14px; margin-bottom:0; }
+.ed .pt .row{ display:flex; justify-content:space-between; font-size:11.5px; padding:5px 6px; border-radius:7px; }
+.ed .pt .row span:last-child{ font-weight:700; }
+.ed .pt .row.next{ background:var(--gold); color:var(--ink); font-weight:800; }
+.ed .month{ padding:14px; margin-bottom:0; }
+.ed .month b{ font-family:${FONT_SERIF}; font-size:15px; font-weight:600; display:block; margin-top:6px; }
+.ed .month small{ font-size:10.5px; color:var(--faint); }
+.ed .bismillah{ text-align:center; font-family:${FONT_AR}; font-size:19px; color:var(--gold-dark); padding:22px 0 26px; opacity:0.85; }
+@keyframes edRise{ from{ opacity:0; transform:translateY(14px) scale(0.97);} to{ opacity:1; transform:none;} }
+.ed .head, .ed .card, .ed .sect, .ed .paths, .ed .xp-row, .ed .trio, .ed .bismillah{ animation:edRise 0.5s cubic-bezier(0.34,1.56,0.64,1) both; }
+.ed .card.cont{ animation-delay:0.05s; } .ed .sect{ animation-delay:0.1s; } .ed .paths{ animation-delay:0.12s; }
+.ed .xp-row{ animation-delay:0.18s; } .ed .trio{ animation-delay:0.24s; }
+@media (prefers-reduced-motion: reduce){ .ed .head,.ed .card,.ed .sect,.ed .paths,.ed .xp-row,.ed .trio,.ed .bismillah,.ed .btn,.ed .chip{ animation:none !important; transition:none !important; } }
+`;
 
-export default function Home({ name, state, deps, coins, streak, onGoTab, onOpenTopic, onOpenCoreWords, onOpenAyah }) {
+export default function Home({ name, state, deps, coins, streak, onGoTab, onOpenTopic, onOpenAyah, onSelectLesson }) {
   const [ayah] = useState(getAyahOfTheDay);
-  const [today] = useState(hijri);
-  const [dow] = useState(() => weekday());
-  const [tafsir, setTafsir] = useState(false);
-  const [demo] = useState(demoMode);
-  const vocab = useMemo(() => readVocab(), []);
+  const [dateLine] = useState(() => { const h = hijriParts(new Date()); return `${weekday()} · ${h.day} ${h.month} ${h.year}`; });
+  const [bismillah, setBismillah] = useState('');
+  const [portfolio, setPortfolio] = useState('');
 
-  // CARD 1 - plan from real SRS. In demo, use the mock plan when the real one is thin.
-  const realPlan = useMemo(() => buildTodayPlan(state, deps, vocab, Date.now()), [state, deps, vocab]);
-  const plan = demo ? DEMO_PLAN : realPlan;
-
-  // CARD 2 - most-missed vocab. Empty state keeps the card, drops the button.
-  const missed = useMemo(() => missedWords(vocab, 3), [vocab]);
-  const sharpen = demo ? { words: demoMissedWords() } : { words: missed };
-
-  // CARD 3 - unlocked ayah. Coverage is computed from word ids; the verse text is
-  // loaded from the VERIFIED /quran source (never assembled from words). When no ayah
-  // is covered yet, the card shows nearest-to-complete progress instead of hiding.
-  const cand = useMemo(() => nextUnderstoodAyah(vocab), [vocab]);
-  const [understood, setUnderstood] = useState(null);
+  // Bismillah from the verified /quran source (surah 1, ayah 1) - never typed here.
   useEffect(() => {
-    if (!cand) { setUnderstood(null); return; }
     let alive = true;
-    fetch(`/quran/surah/${cand.surah}.json`)
-      .then((r) => (r.ok ? r.json() : Promise.reject()))
-      .then((d) => {
-        const ayat = Array.isArray(d) ? d : (d.ayat || []);
-        const a = ayat[cand.ayah - 1];
-        const text = a && (a.arabic_uthmani || a.arabic);
-        if (alive && text) { setUnderstood({ ...cand, arabic: text }); markAyahShown(cand.ref); }
-      })
-      .catch(() => { /* no verified text -> fall back to progress state, card stays */ });
+    fetch('/quran/surah/1.json').then((r) => (r.ok ? r.json() : Promise.reject())).then((d) => {
+      const ayat = Array.isArray(d) ? d : (d.ayat || []); const a = ayat[0];
+      if (alive && a) setBismillah(a.arabic_uthmani || a.arabic || '');
+    }).catch(() => {});
     return () => { alive = false; };
-  }, [cand]);
+  }, []);
 
-  let unlock;
-  if (demo) { const p = parseRef(ayah.ref); unlock = { mode: 'ayah', arabic: ayah.arabic, surah: p.surah, ayah: p.ayah, ref: `${ayah.surahName} ${ayah.ref}` }; }
-  else if (understood) unlock = { mode: 'ayah', arabic: understood.arabic, surah: understood.surah, ayah: understood.ayah, ref: `${surahName(understood.surah)} ${understood.surah}:${understood.ayah}` };
-  else if (cand) unlock = { mode: 'loading' };
-  else { const n = nearestAyahProgress(vocab); unlock = { mode: 'progress', learned: n ? n.learned : 0, total: n ? n.total : 0 }; }
+  const nisab = useNisab();
+  const prayer = usePrayerTimes();
 
-  const route = (r) => { if (r === 'corewords') onOpenCoreWords && onOpenCoreWords(); else onGoTab && onGoTab('review'); };
-  const startPlan = () => { const first = plan.steps[0]; route(first ? first.route : 'review'); };
+  // Continue-learning target (real current lesson, else first lesson of a path).
+  const ct = useMemo(() => getContinueTarget(state, deps, Date.now()), [state, deps]);
+  const contId = ct.type === 'lesson' ? ct.topicId : (getActiveTopics(state)[0] || PATHS[0].id);
+  const cprog = contId ? topicProgress(contId, deps) : null;
+  const cnext = cprog && cprog.next;
+  const cStarted = cprog && cprog.done > 0;
 
-  // The deck is ALWAYS exactly three cards, in this order: plan, sharpen, unlock.
-  const slides = [
-    <PlanCard key="plan" plan={plan} onStart={startPlan} onChange={() => onGoTab && onGoTab('review')} />,
-    <SharpenCard key="sharpen" data={sharpen} onRetry={() => onOpenCoreWords && onOpenCoreWords()} />,
-    <UnderstandCard key="unlock" data={unlock} onRead={() => unlock.mode === 'ayah' && onOpenAyah && onOpenAyah(unlock.surah, unlock.ayah)} />,
-  ];
+  const hp = hijriParts(new Date());
+  const monthLen = useMemo(() => hijriMonthLen(new Date()), []);
+  const due = getDueReviews(state, Date.now());
 
-  const topicIds = getActiveTopics(state);
+  // XP ring from the real daily-study goal (minutes the user set / did today).
+  const earned = state.goal?.minutesToday || 0;
+  const goal = state.goal?.dailyMinutes || 5;
+  const CIRC = 207; // 2*pi*33
+  const ringOffset = CIRC * (1 - Math.min(1, goal ? earned / goal : 0));
+
+  // Challenge from a real signal: any study today keeps the streak alive.
+  const challDone = earned > 0 ? 1 : 0;
+
+  const zPortfolio = parseFloat(portfolio) || 0;
+  const zDue = nisab.nisab && zPortfolio >= nisab.nisab ? zPortfolio * 0.025 : 0;
+  const fmt$ = (n) => '$' + Number(n).toLocaleString('en-US', { maximumFractionDigits: 2 });
+
+  const nextLesson = () => { if (cnext) onSelectLesson && onSelectLesson(cnext.lesson, cnext.idx, cnext.mod); else if (contId) onOpenTopic && onOpenTopic(contId); };
+  const openReader = () => { const [s, a] = String(ayah.ref).split(':'); onOpenAyah && onOpenAyah(parseInt(s, 10), parseInt(a, 10)); };
+
+  const zakatApproved = zakatMethodology.status === 'approved' && (zakatMethodology.help || '').trim();
+  const comingApproved = jumuah.status === 'approved' && (jumuah.body || '').trim();
 
   return (
-    <div style={{ fontFamily: FONT, background: D.canvas, minHeight: '100%' }}>
-      <style>{'.deck-scroll::-webkit-scrollbar{display:none}.card-scroll::-webkit-scrollbar{display:none}'}</style>
+    <div className="ed">
+      <style>{ED_CSS}</style>
 
-      <Hero streak={streak} coins={coins} date={`${today} · ${dow}`} />
+      {/* 1. Header */}
+      <div className="head">
+        <div className="salam" dir="rtl">{SALAM}</div>
+        <h1>Hello {name || 'friend'}</h1>
+        <div className="date">{dateLine}</div>
+      </div>
 
-      {/* Ayah ritual card, overlapping the band */}
-      <div style={{ padding: '0 20px', marginTop: -30, position: 'relative' }}>
-        <div style={{ background: D.card, borderRadius: 18, padding: '16px 18px 14px', boxShadow: '0 8px 20px rgba(15,110,86,0.10)' }}>
-          <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase', color: D.tealDeep, marginBottom: 8 }}>Ayah of the day</div>
-          <div dir="rtl" style={{ fontFamily: ARABIC, fontSize: 24, lineHeight: 1.75, textAlign: 'right', color: D.navy }}>{ayah.arabic}</div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8, fontSize: 12, color: D.inkSecondary }}>
-            <span>{ayah.surahName} · {ayah.ref}</span>
-            <button onClick={() => setTafsir(true)} style={{ ...linkBtn, color: D.tealDeep }}>Read tafsir</button>
+      {/* 2. Continue learning */}
+      <div className="card cont" style={{ background: E.contGrad, borderColor: E.contBorder, borderBottomColor: E.contBottom, color: '#fff' }}>
+        <div className="mid">
+          <div className="lbl" style={{ color: '#BFF0E8' }}>{cStarted ? 'Continue learning' : 'Start learning'} · {subjectOf(contId).name}</div>
+          <h2 style={{ color: '#fff' }}>{cnext ? `Lesson ${cnext.idx + 1}: ${cnext.lesson.title}` : 'All lessons complete'}</h2>
+          {cprog && <div className="meta" style={{ color: '#BFF0E8' }}>{cprog.done} of {cprog.total} lessons · {minsOf(cnext && cnext.lesson.duration)} min</div>}
+        </div>
+        <button className="btn" onClick={nextLesson}>{cStarted ? 'Resume' : 'Start'}</button>
+      </div>
+
+      {/* 3. Today's verse */}
+      <div className="card verse">
+        <div className="plbl">Today's verse</div>
+        <div className="ar">{ayah.arabic}</div>
+        <div className="tr">"{ayah.translation}"</div>
+        <div className="ref">{ayah.surahName} {ayah.ref}</div>
+        <div className="chips">
+          <div className="chip" onClick={openReader} style={{ background: E.teal, borderColor: E.teal, color: '#fff' }}>
+            <svg width="10" height="11" viewBox="0 0 11 12" fill="none" aria-hidden="true"><path d="M1.5 1.5 L10 6 L1.5 10.5 Z" fill="#fff" /></svg>
+            Recite
           </div>
+          <div className="chip" onClick={openReader} style={{ background: E.goldTint, borderColor: '#F0D089', color: E.goldDark }}>Tafseer</div>
         </div>
       </div>
 
-      <SectionLabel>Today</SectionLabel>
-      <TodayDeck slides={slides} />
-
-      <SectionLabel>Subjects</SectionLabel>
-      <div style={{ display: 'flex', gap: 10, padding: '0 20px 8px' }}>
-        {topicIds.slice(0, 3).map((id) => <SubjectTile key={id} id={id} prog={topicProgress(id, deps)} onTap={() => onOpenTopic && onOpenTopic(id)} />)}
-        {topicIds.length < 4 && <AddTile available={4 - topicIds.length} onTap={() => onGoTab && onGoTab('topics')} />}
-      </div>
-
-      <WeekStrip streak={streak} />
-
-      <JumuahCard onOpen={() => onOpenAyah && onOpenAyah(jumuah.surah, 1)} />
-
-      {tafsir && <TafsirSheet ayah={ayah} onClose={() => setTafsir(false)} />}
-    </div>
-  );
-}
-
-/* ---------- hero ---------- */
-function Hero({ streak, coins, date }) {
-  return (
-    <div style={{ position: 'relative', background: `linear-gradient(170deg, ${D.tealDeep}, ${D.teal})`, color: '#fff', padding: 'calc(env(safe-area-inset-top) + 30px) 20px 46px', overflow: 'hidden' }}>
-      <svg width="100%" height="100%" aria-hidden="true" style={{ position: 'absolute', inset: 0, opacity: 0.07, pointerEvents: 'none' }}>
-        <defs>
-          <pattern id="girih" width="56" height="56" patternUnits="userSpaceOnUse">
-            <g fill="none" stroke="#FFFFFF" strokeWidth="1">
-              <path d="M28 2 L54 28 L28 54 L2 28 Z" />
-              <path d="M28 12 L44 28 L28 44 L12 28 Z" />
-              <circle cx="28" cy="28" r="4" />
-            </g>
-          </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill="url(#girih)" />
-      </svg>
-      <div style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <div>
-          <div dir="rtl" style={{ fontFamily: ARABIC, fontSize: 34, lineHeight: 1.25 }}>{SALAM}</div>
-          <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.72)', marginTop: 4 }}>{date}</div>
-        </div>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <span style={heroChip}>{'\u{1F525}'} {streak}</span>
-          <span style={heroChip}>{'\u{1FA99}'} {coins}</span>
-        </div>
-      </div>
-    </div>
-  );
-}
-const heroChip = { display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,0.10)', border: '1px solid rgba(255,255,255,0.14)', borderRadius: 20, padding: '6px 12px', fontSize: 13, fontWeight: 700, color: '#fff' };
-
-function SectionLabel({ children }) {
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '0 20px', margin: '26px 0 12px' }}>
-      <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.14em', textTransform: 'uppercase', color: D.inkSecondary }}>{children}</span>
-      <span style={{ flex: 1, height: 1, background: D.border }} />
-    </div>
-  );
-}
-
-/* ---------- the Today deck: scroll-snap carousel + synced dots ---------- */
-function TodayDeck({ slides }) {
-  const ref = useRef(null);
-  const [active, setActive] = useState(0);
-  // Active dot = the slide whose centre is nearest the deck's centre.
-  const recompute = () => {
-    const el = ref.current; if (!el) return;
-    const center = el.scrollLeft + el.clientWidth / 2;
-    let best = 0, bestDist = Infinity;
-    for (let i = 0; i < el.children.length; i++) {
-      const c = el.children[i];
-      const dist = Math.abs((c.offsetLeft + c.offsetWidth / 2) - center);
-      if (dist < bestDist) { bestDist = dist; best = i; }
-    }
-    setActive(best);
-  };
-  // IntersectionObserver drives the dots reliably on any scroll (incl. snap and
-  // programmatic); onScroll gives an instant update on top of it.
-  useEffect(() => {
-    const el = ref.current;
-    if (!el || typeof IntersectionObserver === 'undefined') return;
-    const io = new IntersectionObserver(() => recompute(), { root: el, threshold: [0.25, 0.5, 0.75] });
-    Array.from(el.children).forEach((c) => io.observe(c));
-    return () => io.disconnect();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [slides.length]);
-  const onScroll = recompute;
-  return (
-    <>
-      {/* 84% slides so the next card always peeks from the right (the carousel cue). */}
-      <div ref={ref} onScroll={onScroll} className="deck-scroll"
-        style={{ display: 'flex', gap: 12, overflowX: 'auto', scrollSnapType: 'x mandatory', padding: '4px 20px 18px', scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}>
-        {slides.map((s, i) => <div key={i} style={{ flex: '0 0 84%', scrollSnapAlign: 'center' }}>{s}</div>)}
-      </div>
-      <div style={{ display: 'flex', gap: 6, justifyContent: 'center', margin: '-6px 0 4px' }}>
-        {slides.map((_, i) => (
-          <i key={i} style={{ width: i === active ? 18 : 6, height: 6, borderRadius: i === active ? 4 : '50%', background: i === active ? D.gold : D.border, transition: 'all 0.2s' }} />
-        ))}
-      </div>
-    </>
-  );
-}
-
-// Fixed-height cards (all the same size). Header and footer stay put; the body
-// between them scrolls when the content (plan steps / vocab rows) overflows.
-const cardBase = { background: D.card, borderRadius: 20, padding: 18, boxShadow: '0 16px 36px rgba(15,110,86,0.16)', width: '100%', height: 340, display: 'flex', flexDirection: 'column', boxSizing: 'border-box' };
-const cardHead = { display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 12, flexShrink: 0 };
-const scrollBody = { flex: 1, minHeight: 0, overflowY: 'auto', overscrollBehavior: 'contain', scrollbarWidth: 'none' };
-const cardFoot = { flexShrink: 0, paddingTop: 12 };
-const goldBtn = { background: D.gold, color: D.navy, border: 'none', borderRadius: 24, padding: '12px 22px', fontFamily: 'inherit', fontSize: 14, fontWeight: 800, boxShadow: `0 2px 0 ${D.streakPill.ink}`, cursor: 'pointer' };
-const tealBtn = { background: D.teal, color: '#fff', border: 'none', borderRadius: 24, padding: '12px 22px', fontFamily: 'inherit', fontSize: 14, fontWeight: 800, boxShadow: `0 2px 0 ${D.tealDeep}`, cursor: 'pointer' };
-const linkBtn = { background: 'none', border: 'none', padding: 0, fontFamily: 'inherit', cursor: 'pointer', fontWeight: 700 };
-
-/* ---------- plan card (real SRS plan) ---------- */
-function PlanCard({ plan, onStart, onChange }) {
-  const steps = plan.steps;
-  return (
-    <div style={{ ...cardBase, borderTop: `3px solid ${D.gold}` }}>
-      <div style={cardHead}>
-        <b style={{ fontSize: 16, fontWeight: 800 }}>Your plan for today</b>
-        <span style={{ fontSize: 12, color: D.inkSecondary, fontWeight: 600 }}>{steps.length ? `${plan.totalMin} min total` : 'all clear'}</span>
-      </div>
-      <div className="card-scroll" style={scrollBody}>
-        {steps.length === 0 ? (
-          <p style={{ fontSize: 13.5, lineHeight: 1.5, color: D.inkSecondary, margin: '2px 0 6px' }}>Nothing is due and every word is on schedule. Come back later, or explore a subject below.</p>
-        ) : steps.map((s, i) => (
-          <div key={i} style={{ display: 'flex', gap: 12, position: 'relative', paddingBottom: i === steps.length - 1 ? 2 : 16 }}>
-            {i < steps.length - 1 && <div style={{ position: 'absolute', left: 12, top: 26, bottom: -2, width: 2, background: D.border }} />}
-            <div style={{ width: 26, height: 26, borderRadius: '50%', flexShrink: 0, zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 800, color: i === 0 ? D.navy : '#fff', background: i === 0 ? D.gold : D.teal }}>{i + 1}</div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <b style={{ fontSize: 14, display: 'block' }}>{s.title}</b>
-              <small style={{ fontSize: 12, color: D.inkSecondary }}>{s.sub}</small>
+      {/* 4. Learning paths */}
+      <div className="sect"><h3>Learning paths</h3></div>
+      <div className="paths">
+        {PATHS.map((p) => {
+          const s = subjectOf(p.id);
+          const prog = topicProgress(p.id, deps);
+          const tier = (state.topics?.[p.id]?.tier) || 1;
+          const started = prog.done > 0;
+          return (
+            <div className="card path" key={p.id} onClick={() => onOpenTopic && onOpenTopic(p.id)}>
+              <div className="top">
+                <span className="ptile" style={{ background: p.tile }}><img src={p.art} alt="" aria-hidden="true" /></span>
+                <span className="badge" style={{ background: p.badge, color: p.badgeInk }}>{DIFF(tier)}</span>
+              </div>
+              <h4>{s.name}</h4>
+              <p>{(catalogById(p.id) || {}).desc || `${prog.total} lesson${prog.total === 1 ? '' : 's'}`}</p>
+              <div className="bar"><i style={{ width: `${prog.pct}%`, background: p.bar }} /></div>
+              {started
+                ? <div className="pct" style={{ color: p.pct }}>{prog.pct}%</div>
+                : <div className="pct" style={{ color: p.pct }}>{prog.next ? `Start with ${prog.next.lesson.title}` : 'Not started'}</div>}
             </div>
-            <div style={{ fontSize: 11, fontWeight: 700, color: D.tealDeep, background: D.coinsPill.bg, borderRadius: 14, padding: '3px 9px', alignSelf: 'flex-start', flexShrink: 0 }}>{s.minutes} min</div>
+          );
+        })}
+      </div>
+
+      <div style={{ height: 14 }} />
+
+      {/* 5. XP row */}
+      <div className="xp-row">
+        <div className="card ring-card">
+          <div className="ring">
+            <svg width="84" height="84" viewBox="0 0 76 76">
+              <circle cx="38" cy="38" r="33" fill="none" stroke="#F1EFE9" strokeWidth="9" />
+              <circle cx="38" cy="38" r="33" fill="none" stroke={E.gold} strokeWidth="9" strokeLinecap="round" strokeDasharray={CIRC} strokeDashoffset={ringOffset} />
+            </svg>
+            <div className="n"><b>{earned}</b><small>of {goal} min</small></div>
           </div>
-        ))}
+          <p>Your first lesson today fills this ring</p>
+        </div>
+        <div className="card nudge">
+          <b>One lesson</b>
+          <small>{minsOf(cnext && cnext.lesson.duration)} min · next up in {subjectOf(contId).short || subjectOf(contId).name}</small>
+          <span className="xp">+{(cnext && cnext.lesson.coins) || 10} XP</span>
+          {due.length > 0 && <small style={{ marginTop: 6, color: '#C9B98A' }}>Review deck adds {due.length} more</small>}
+        </div>
       </div>
-      <div style={{ ...cardFoot, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <button onClick={onStart} style={goldBtn}>{steps.length ? "Start today's plan" : 'Go to review'}</button>
-        {steps.length > 0 && <button onClick={onChange} style={{ ...linkBtn, fontSize: 12, fontWeight: 600, color: D.inkSecondary }}>Change plan</button>}
-      </div>
-    </div>
-  );
-}
 
-/* ---------- CARD 2: sharpen these words (real most-missed vocab) ----------
-   Always rendered. Empty state keeps the card and drops the button. */
-function missLabel(n) { return n === 1 ? 'missed once' : n === 2 ? 'missed twice' : `missed ${n} times`; }
-function SharpenCard({ data, onRetry }) {
-  const words = (data && data.words) || [];
-  const empty = words.length === 0;
-  return (
-    <div style={{ ...cardBase, borderTop: `3px solid ${D.history}` }}>
-      <div style={cardHead}>
-        <b style={{ fontSize: 16, fontWeight: 800 }}>Sharpen these words</b>
-        <span style={{ fontSize: 12, color: D.inkSecondary, fontWeight: 600 }}>2 min</span>
-      </div>
-      <div className="card-scroll" style={scrollBody}>
-        {empty ? (
-          <p style={{ fontSize: 13.5, lineHeight: 1.5, color: D.inkSecondary, margin: '2px 0 0' }}>Nothing slipping right now. Miss a word in reviews and it will show up here for a quick retry.</p>
-        ) : words.map((w, i) => (
-          <div key={w.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '8px 0', borderBottom: i === words.length - 1 ? 'none' : `1px solid ${D.border}` }}>
-            <span dir="rtl" style={{ fontFamily: ARABIC, fontSize: 22, color: D.navy }}>{w.ar}</span>
-            <small style={{ fontSize: 11, color: D.inkSecondary }}>{w.note || missLabel(w.miss)}</small>
+      <div style={{ height: 14 }} />
+
+      {/* 6. Today's challenge */}
+      <div className="card chall" style={{ background: E.challGrad, borderColor: E.challBorder, borderBottomColor: E.challBottom }}>
+        <div className="mid">
+          <div className="lbl">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill={E.gold} aria-hidden="true"><path d="M12 2 L14.8 8.6 L22 9.3 L16.5 14 L18.2 21 L12 17.2 L5.8 21 L7.5 14 L2 9.3 L9.2 8.6 Z" /></svg>
+            Today's challenge
           </div>
-        ))}
-      </div>
-      {!empty && (
-        <div style={cardFoot}>
-          <button onClick={onRetry} style={tealBtn}>Retry these {words.length}</button>
+          <b>Complete a lesson today to keep your streak alive</b>
+          <div style={{ height: 7, background: 'rgba(255,255,255,0.15)', borderRadius: 4, marginTop: 9, overflow: 'hidden' }}>
+            <div style={{ width: `${challDone * 100}%`, height: '100%', background: E.gold, borderRadius: 4 }} />
+          </div>
+          <small>{challDone} of 1 done{streak ? ` · ${streak} day streak` : ''}</small>
         </div>
-      )}
-    </div>
-  );
-}
+        <span className="xp">+15 XP</span>
+      </div>
 
-/* ---------- CARD 3: you can now understand this (real coverage + verified verse) ----------
-   Always rendered. mode 'ayah' shows the unlocked verse; 'progress' shows the
-   nearest-to-complete ayah; 'loading' bridges the verified verse fetch. */
-function UnderstandCard({ data, onRead }) {
-  const mode = (data && data.mode) || 'progress';
-  return (
-    <div style={{ ...cardBase, borderTop: `3px solid ${D.teal}` }}>
-      <div style={cardHead}>
-        <b style={{ fontSize: 16, fontWeight: 800 }}>You can now understand this</b>
-        <span style={{ fontSize: 12, color: D.inkSecondary, fontWeight: 600 }}>{mode === 'ayah' ? 'unlocked' : 'locked'}</span>
-      </div>
-      <div className="card-scroll" style={scrollBody}>
-        {mode === 'ayah' ? (
-          <>
-            <div dir="rtl" style={{ fontFamily: ARABIC, fontSize: 21, lineHeight: 1.75, textAlign: 'right', color: D.navy, marginBottom: 8 }}>{data.arabic}</div>
-            <p style={{ fontSize: 13, lineHeight: 1.5, color: D.inkSecondary, margin: 0 }}>Every word in this ayah is in your deck. {data.ref}, read it cold.</p>
-          </>
-        ) : mode === 'loading' ? (
-          <p style={{ fontSize: 13.5, lineHeight: 1.5, color: D.inkSecondary, margin: '2px 0 0' }}>Preparing your unlocked ayah…</p>
-        ) : (
-          <p style={{ fontSize: 13.5, lineHeight: 1.5, color: D.inkSecondary, margin: '2px 0 0' }}>{data.learned} of {data.total} words until your first ayah unlocks. Keep learning root words and the first ayah you fully know appears here.</p>
-        )}
-      </div>
-      {mode === 'ayah' && (
-        <div style={cardFoot}>
-          <button onClick={onRead} style={tealBtn}>Read it in the mushaf</button>
+      {/* 7. Zakat calculator */}
+      <div className="card zk">
+        <div className="lbl gold">Zakat calculator · Stocks</div>
+        <p className="help">{zakatApproved ? zakatMethodology.help : 'Methodology under scholar review.'}</p>
+        <div className="field">
+          <span>$</span>
+          <input type="number" inputMode="decimal" placeholder="0.00" aria-label="Portfolio value" value={portfolio} onChange={(e) => setPortfolio(e.target.value)} />
         </div>
-      )}
-    </div>
-  );
-}
-
-/* ---------- compact subjects row ---------- */
-function SubjectTile({ id, prog, onTap }) {
-  const s = subjectOf(id);
-  const started = prog.done > 0;
-  return (
-    <button onClick={onTap} className="dash-press" style={{ flex: 1, minWidth: 0, background: D.card, border: `1px solid ${D.border}`, borderRadius: 16, padding: '12px 6px 10px', textAlign: 'center', boxShadow: '0 3px 10px rgba(15,110,86,0.05)', cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}>
-      <span style={{ width: 44, height: 44, margin: '0 auto 8px', borderRadius: 14, background: s.tint, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 }}>{SUBJECT_EMOJI[id] || (s.short || s.name)[0]}</span>
-      <b style={{ fontSize: 11.5, fontWeight: 700, display: 'block', lineHeight: 1.3, color: D.ink }}>{s.short || s.name}</b>
-      <small style={{ fontSize: 10, color: D.inkSecondary }}>
-        {started ? <><span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: D.gold, marginRight: 3 }} />In progress</> : `${prog.total} lesson${prog.total === 1 ? '' : 's'}`}
-      </small>
-    </button>
-  );
-}
-function AddTile({ available, onTap }) {
-  return (
-    <button onClick={onTap} className="dash-press" aria-label="Add subject" style={{ flex: 1, minWidth: 0, background: D.card, border: `1px solid ${D.border}`, borderRadius: 16, padding: '12px 6px 10px', textAlign: 'center', boxShadow: '0 3px 10px rgba(15,110,86,0.05)', cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}>
-      <span style={{ width: 44, height: 44, margin: '0 auto 8px', borderRadius: 14, border: `1.5px dashed ${D.disabled}`, color: D.inkHint, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>+</span>
-      <b style={{ fontSize: 11.5, fontWeight: 600, display: 'block', lineHeight: 1.3, color: D.inkSecondary }}>Add</b>
-      <small style={{ fontSize: 10, color: D.inkSecondary }}>{available} available</small>
-    </button>
-  );
-}
-
-/* ---------- weekly streak strip (derived from streak count + today) ---------- */
-const WK = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
-function WeekStrip({ streak }) {
-  const todayDow = new Date().getDay();
-  const on = new Set();
-  for (let k = 0; k < Math.min(streak, 7); k++) on.add((todayDow - k + 7) % 7);
-  return (
-    <div style={{ padding: '20px 20px 0' }}>
-      <div style={{ background: D.coinsPill.bg, borderRadius: 16, padding: '14px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <small style={{ fontSize: 12, color: D.tealDeep, fontWeight: 600 }}>{streak} day streak · keep it going</small>
-        <div style={{ display: 'flex', gap: 6 }}>
-          {WK.map((d, i) => (
-            <span key={i} style={{ width: 22, height: 22, borderRadius: '50%', fontSize: 10, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', color: on.has(i) ? '#fff' : D.inkSecondary, background: on.has(i) ? D.teal : '#fff' }}>{d}</span>
-          ))}
+        <div className="grid3">
+          <div className="cell"><small>Portfolio</small><b>{fmt$(zPortfolio)}</b></div>
+          <div className="cell" style={{ background: E.tealTint }}><small style={{ color: E.tealDark }}>Zakat due</small><b style={{ color: E.tealDark }}>{fmt$(zDue)}</b></div>
+          <div className="cell" style={{ background: E.goldTint }}><small style={{ color: E.goldDark }}>Nisab</small><b style={{ color: E.goldDark }}>{nisab.nisab ? fmt$(nisab.nisab) : (nisab.loading ? '…' : '—')}</b><i>live gold rate</i></div>
         </div>
       </div>
-    </div>
-  );
-}
 
-/* ---------- Jumu'ah card ----------
-   The religious claim lives in content/dashboard/jumuah.json, tagged
-   status:'pending_mehdi'. Per the accuracy covenant a pending container carries no
-   authored text, so until Mehdi approves it the card renders "Under scholar review"
-   in place of the body. When he sets status:'approved' with a verified `body`, that
-   text renders. Only non-religious UI chrome (eyebrow, icon, CTA) is in the code. */
-const daysToFriday = () => { const d = (5 - new Date().getDay() + 7) % 7; return d; };
-function JumuahCard({ onOpen }) {
-  const approved = jumuah.status === 'approved' && (jumuah.body || '').trim();
-  const dLeft = daysToFriday();
-  const when = dLeft === 0 ? 'today' : dLeft === 1 ? 'tomorrow' : `in ${dLeft} days`;
-  return (
-    <div style={{ padding: '14px 20px 28px' }}>
-      <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: 16, padding: '14px 16px', display: 'flex', gap: 14, alignItems: 'center', boxShadow: '0 3px 10px rgba(15,110,86,0.05)' }}>
-        <div style={{ width: 44, height: 44, borderRadius: 14, background: D.streakPill.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 22 }}>{'\u{1F54C}'}</div>
-        <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase', color: D.streakPill.ink, marginBottom: 3 }}>Jumu'ah · {when}</div>
-          {approved
-            ? <div style={{ fontSize: 13.5, lineHeight: 1.45, color: D.ink }}>{jumuah.body}</div>
-            : <div style={{ fontSize: 12.5, lineHeight: 1.45, color: D.inkHint, fontStyle: 'italic' }}>Friday reminder · under scholar review</div>}
+      {/* 8. Footer trio */}
+      <div className="trio">
+        <div className="card pt">
+          <div className="lbl teal" style={{ marginBottom: 8 }}>Prayer times{prayer.city ? ` · ${prayer.city}` : ''}</div>
+          {prayer.status === 'ok' && prayer.times
+            ? ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'].map((nm) => (
+                <div className={`row${prayer.next === nm ? ' next' : ''}`} key={nm}><span>{nm}{prayer.next === nm ? ' · next' : ''}</span><span>{prayer.times[nm]}</span></div>
+              ))
+            : <div className="row"><span style={{ color: E.faint }}>{prayer.status === 'loading' ? 'Finding your times…' : 'Enable location for prayer times'}</span></div>}
         </div>
-        <button onClick={onOpen} style={{ ...linkBtn, fontSize: 12, fontWeight: 700, color: D.tealDeep, whiteSpace: 'nowrap' }}>Open →</button>
+        <div>
+          <div className="card month" style={{ marginBottom: 12 }}>
+            <div className="lbl gold">This month</div>
+            <b>{hp.month} {hp.year}</b>
+            <small>Day {hp.day} of {monthLen}</small>
+            <div className="bar" style={{ marginTop: 9 }}><i style={{ width: `${Math.round((hp.day / monthLen) * 100)}%` }} /></div>
+          </div>
+          <div className="card month">
+            <div className="lbl">Coming up</div>
+            <b style={{ fontSize: 13 }}>Jumu'ah in {daysToFriday()} day{daysToFriday() === 1 ? '' : 's'}</b>
+            <small>{comingApproved ? jumuah.body : 'Friday reminder under scholar review'}</small>
+          </div>
+        </div>
       </div>
-    </div>
-  );
-}
 
-/* ---------- tafsir sheet (portaled over the nav) ---------- */
-function TafsirSheet({ ayah, onClose }) {
-  if (typeof document === 'undefined') return null;
-  return createPortal(
-    <div role="dialog" aria-modal="true" aria-label="Tafsir" style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
-      <div onClick={onClose} style={{ position: 'absolute', inset: 0, background: 'rgba(15,42,52,0.28)' }} />
-      <div style={{ position: 'relative', background: D.card, borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: '18px 20px calc(env(safe-area-inset-bottom) + 24px)', maxWidth: 520, margin: '0 auto', width: '100%', maxHeight: '82vh', overflowY: 'auto', boxShadow: '0 -10px 40px rgba(15,26,42,0.18)' }}>
-        <div style={{ width: 38, height: 4, borderRadius: 2, background: D.border, margin: '0 auto 14px' }} />
-        <div style={{ fontSize: 11, fontWeight: 700, color: D.tealDeep, marginBottom: 6 }}>{ayah.surahName} · {ayah.ref}</div>
-        <div dir="rtl" style={{ fontFamily: ARABIC, fontSize: 23, lineHeight: 1.85, textAlign: 'right', color: D.navy, marginBottom: 12 }}>{ayah.arabic}</div>
-        <p style={{ fontSize: 14, lineHeight: 1.6, color: D.inkSecondary, margin: '0 0 14px' }}>{ayah.tafsirFull || ayah.tafsirLine}</p>
-        <div style={{ fontSize: 12, color: D.inkHint }}>{ayah.source}</div>
-      </div>
-    </div>,
-    document.body
+      {/* 9. Bismillah */}
+      {bismillah && <div className="bismillah" dir="rtl">{bismillah}</div>}
+      <div style={{ height: 20 }} />
+    </div>
   );
 }

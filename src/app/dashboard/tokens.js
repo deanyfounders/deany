@@ -49,3 +49,18 @@ export const CAROUSEL_ACCENT = {
 export const carouselAccent = (id) => CAROUSEL_ACCENT[id] || CAROUSEL_ACCENT['add-topic'];
 export const FONT = '"Source Sans 3", system-ui, -apple-system, sans-serif';
 export const TYPE = { screenTitle: 18, cardTitle: 17, sectionHeading: 15, body: 13, meta: 12, hint: 11, bigNumber: 20, dueHeadline: 24 };
+
+// Editorial dashboard theme (deany_dashboard_spec.md section 1). Shared constants;
+// the ONLY shipped page background is pure white. Exported for later reuse.
+export const E = {
+  bg: '#FFFFFF', card: '#FFFFFF', inset: '#F6F6F4', line: '#E3E0D8',
+  ink: '#1B2A4A', soft: '#6E7385', faint: '#9CA0AE',
+  teal: '#22A39A', tealDark: '#0F6E56', tealTint: '#D9F1EB',
+  gold: '#F0B429', goldDark: '#8A5E10', goldTint: '#FCEBC9', goldEdge: '#C98F17',
+  navy: '#1B2A4A', history: '#E06A45', historyTint: '#FCE7DE', quranTint: '#E2E6F2',
+  contGrad: 'linear-gradient(135deg,#27B5A8,#189287)', contBorder: '#178E85', contBottom: '#0F6E56',
+  challGrad: 'linear-gradient(135deg,#22335C,#16223F)', challBorder: '#2A3B66', challBottom: '#101A31',
+};
+export const FONT_LATIN = "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif";
+export const FONT_SERIF = "'Lora', Georgia, serif";
+export const FONT_AR = "'Scheherazade New', 'Amiri', serif";

@@ -6,6 +6,7 @@
 import { useEffect } from 'react';
 
 const CSS = `
+@import url('https://fonts.googleapis.com/css2?family=Lora:wght@500;600;700&family=Scheherazade+New:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 html.deany-app-mode, body.deany-app-mode {
   overscroll-behavior: none;
   -webkit-tap-highlight-color: transparent;

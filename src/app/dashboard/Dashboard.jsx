@@ -75,7 +75,7 @@ function Inner({ mainTopics = [], modules = {}, completedLessons = {}, onSelectL
     <AppShell tab={tab} onTab={setTab} reviewDot={badges.reviewDot}>
       {tab === 'home' && (
         <Home name={name} state={dash.state} deps={deps} coins={dash.state.coins || coins} streak={dailyStreak || dash.state.streak?.count || 0}
-          onOpenTopic={setPathTopicId} onGoTab={setTab}
+          onOpenTopic={setPathTopicId} onGoTab={setTab} onSelectLesson={onSelectLesson}
           onOpenCoreWords={() => setCoreWordsOpen(true)}
           onOpenAyah={(surah, ayah) => { setQuranInitial({ surah, ayah }); setTab('quran'); }} />
       )}
