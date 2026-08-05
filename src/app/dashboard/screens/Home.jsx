@@ -11,7 +11,9 @@ import { createPortal } from 'react-dom';
 import { D, FONT, subjectOf } from '../tokens.js';
 import { getActiveTopics, topicProgress, buildTodayPlan } from '../selectors.js';
 import { getAyahOfTheDay } from '../../../content/ayahOfTheDay.js';
-import { readVocab, missedWords, nextUnderstoodAyah, markAyahShown } from '../vocab.js';
+import { readVocab, missedWords, nextUnderstoodAyah, nearestAyahProgress, demoMissedWords, markAyahShown } from '../vocab.js';
+import indexData from '../../../data/quran-index.json';
+import { IS_PROD } from '../../../lib/flags.js';
 import jumuah from '../../../../content/dashboard/jumuah.json';
 
 const ARABIC = "'Scheherazade New','Amiri',serif";
@@ -27,21 +29,38 @@ const hijri = () => {
 };
 const weekday = () => { try { return new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(new Date()); } catch (_) { return ''; } };
 
+const surahName = (n) => { const s = (indexData.surahs || []).find((x) => x.surah === n); return s ? s.name_tr : ''; };
+const parseRef = (ref) => { const [s, a] = String(ref).split(':'); return { surah: parseInt(s, 10), ayah: parseInt(a, 10) }; };
+// dev/demo: fully populate the deck for review. Off in production unless ?demo=1.
+const demoMode = () => { if (!IS_PROD) return true; try { return typeof window !== 'undefined' && /[?&]demo=1/.test(window.location.search); } catch (_) { return false; } };
+// Placeholder plan (mock content) - used only in demo when the real plan is thin.
+const DEMO_PLAN = { totalMin: 7, steps: [
+  { kind: 'review', title: 'Review Ayat al-Kursi', sub: 'Memorised 3 days ago · due today', minutes: 2 },
+  { kind: 'vocab', title: 'Root words · 5 new', sub: 'Quran and Arabic · continues module 1', minutes: 5 },
+] };
+
 export default function Home({ name, state, deps, coins, streak, onGoTab, onOpenTopic, onOpenCoreWords, onOpenAyah }) {
   const [ayah] = useState(getAyahOfTheDay);
   const [today] = useState(hijri);
   const [dow] = useState(() => weekday());
   const [tafsir, setTafsir] = useState(false);
+  const [demo] = useState(demoMode);
   const vocab = useMemo(() => readVocab(), []);
 
-  const plan = useMemo(() => buildTodayPlan(state, deps, vocab, Date.now()), [state, deps, vocab]);
-  const missed = useMemo(() => missedWords(vocab, 3), [vocab]);
+  // CARD 1 - plan from real SRS. In demo, use the mock plan when the real one is thin.
+  const realPlan = useMemo(() => buildTodayPlan(state, deps, vocab, Date.now()), [state, deps, vocab]);
+  const plan = demo && realPlan.steps.length < 2 ? DEMO_PLAN : realPlan;
 
-  // "You can now understand this": pick a fully-covered, not-yet-shown ayah, then
-  // load its verse text from the VERIFIED /quran source (never assembled from words).
+  // CARD 2 - most-missed vocab. Empty state keeps the card, drops the button.
+  const missed = useMemo(() => missedWords(vocab, 3), [vocab]);
+  const sharpen = demo ? { words: demoMissedWords() } : { words: missed };
+
+  // CARD 3 - unlocked ayah. Coverage is computed from word ids; the verse text is
+  // loaded from the VERIFIED /quran source (never assembled from words). When no ayah
+  // is covered yet, the card shows nearest-to-complete progress instead of hiding.
+  const cand = useMemo(() => nextUnderstoodAyah(vocab), [vocab]);
   const [understood, setUnderstood] = useState(null);
   useEffect(() => {
-    const cand = nextUnderstoodAyah(vocab);
     if (!cand) { setUnderstood(null); return; }
     let alive = true;
     fetch(`/quran/surah/${cand.surah}.json`)
@@ -52,21 +71,25 @@ export default function Home({ name, state, deps, coins, streak, onGoTab, onOpen
         const text = a && (a.arabic_uthmani || a.arabic);
         if (alive && text) { setUnderstood({ ...cand, arabic: text }); markAyahShown(cand.ref); }
       })
-      .catch(() => { /* no verified text -> card stays hidden */ });
+      .catch(() => { /* no verified text -> fall back to progress state, card stays */ });
     return () => { alive = false; };
-  }, [vocab]);
+  }, [cand]);
 
-  const startPlan = () => { const first = plan.steps[0]; if (!first) { onGoTab && onGoTab('review'); return; } route(first.route); };
-  const route = (r) => {
-    if (r === 'corewords') onOpenCoreWords && onOpenCoreWords();
-    else if (r === 'review') onGoTab && onGoTab('review');
-    else onGoTab && onGoTab('review');
-  };
+  let unlock;
+  if (demo) { const p = parseRef(ayah.ref); unlock = { mode: 'ayah', arabic: ayah.arabic, surah: p.surah, ayah: p.ayah, ref: `${ayah.surahName} ${ayah.ref}` }; }
+  else if (understood) unlock = { mode: 'ayah', arabic: understood.arabic, surah: understood.surah, ayah: understood.ayah, ref: `${surahName(understood.surah)} ${understood.surah}:${understood.ayah}` };
+  else if (cand) unlock = { mode: 'loading' };
+  else { const n = nearestAyahProgress(vocab); unlock = { mode: 'progress', learned: n ? n.learned : 0, total: n ? n.total : 0 }; }
 
-  // Deck slides: the plan always leads; the others appear only when real.
-  const slides = [<PlanCard key="plan" plan={plan} onStart={startPlan} onChange={() => onGoTab && onGoTab('review')} />];
-  if (missed.length) slides.push(<SharpenCard key="sharpen" words={missed} onRetry={() => onOpenCoreWords && onOpenCoreWords()} />);
-  if (understood) slides.push(<UnderstandCard key="understand" data={understood} onRead={() => onOpenAyah && onOpenAyah(understood.surah, understood.ayah)} />);
+  const route = (r) => { if (r === 'corewords') onOpenCoreWords && onOpenCoreWords(); else onGoTab && onGoTab('review'); };
+  const startPlan = () => { const first = plan.steps[0]; route(first ? first.route : 'review'); };
+
+  // The deck is ALWAYS exactly three cards, in this order: plan, sharpen, unlock.
+  const slides = [
+    <PlanCard key="plan" plan={plan} onStart={startPlan} onChange={() => onGoTab && onGoTab('review')} />,
+    <SharpenCard key="sharpen" data={sharpen} onRetry={() => onOpenCoreWords && onOpenCoreWords()} />,
+    <UnderstandCard key="unlock" data={unlock} onRead={() => unlock.mode === 'ayah' && onOpenAyah && onOpenAyah(unlock.surah, unlock.ayah)} />,
+  ];
 
   const topicIds = getActiveTopics(state);
 
@@ -150,26 +173,41 @@ function SectionLabel({ children }) {
 function TodayDeck({ slides }) {
   const ref = useRef(null);
   const [active, setActive] = useState(0);
-  const onScroll = () => {
+  // Active dot = the slide whose centre is nearest the deck's centre.
+  const recompute = () => {
     const el = ref.current; if (!el) return;
-    const i = Math.round(el.scrollLeft / (el.scrollWidth / slides.length));
-    setActive(Math.max(0, Math.min(slides.length - 1, i)));
+    const center = el.scrollLeft + el.clientWidth / 2;
+    let best = 0, bestDist = Infinity;
+    for (let i = 0; i < el.children.length; i++) {
+      const c = el.children[i];
+      const dist = Math.abs((c.offsetLeft + c.offsetWidth / 2) - center);
+      if (dist < bestDist) { bestDist = dist; best = i; }
+    }
+    setActive(best);
   };
+  // IntersectionObserver drives the dots reliably on any scroll (incl. snap and
+  // programmatic); onScroll gives an instant update on top of it.
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof IntersectionObserver === 'undefined') return;
+    const io = new IntersectionObserver(() => recompute(), { root: el, threshold: [0.25, 0.5, 0.75] });
+    Array.from(el.children).forEach((c) => io.observe(c));
+    return () => io.disconnect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slides.length]);
+  const onScroll = recompute;
   return (
     <>
-      {/* Each slide is a full viewport wide with the gutter INSIDE it, so the next
-          card sits a whole screen away - no peek, one card at a time. */}
+      {/* 84% slides so the next card always peeks from the right (the carousel cue). */}
       <div ref={ref} onScroll={onScroll} className="deck-scroll"
-        style={{ display: 'flex', overflowX: 'auto', scrollSnapType: 'x mandatory', padding: '4px 0 18px', scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}>
-        {slides.map((s, i) => <div key={i} style={{ flex: '0 0 100%', scrollSnapAlign: 'center', padding: '0 20px', boxSizing: 'border-box' }}>{s}</div>)}
+        style={{ display: 'flex', gap: 12, overflowX: 'auto', scrollSnapType: 'x mandatory', padding: '4px 20px 18px', scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}>
+        {slides.map((s, i) => <div key={i} style={{ flex: '0 0 84%', scrollSnapAlign: 'center' }}>{s}</div>)}
       </div>
-      {slides.length > 1 && (
-        <div style={{ display: 'flex', gap: 6, justifyContent: 'center', margin: '-6px 0 4px' }}>
-          {slides.map((_, i) => (
-            <i key={i} style={{ width: i === active ? 18 : 6, height: 6, borderRadius: i === active ? 4 : '50%', background: i === active ? D.gold : D.border, transition: 'all 0.2s' }} />
-          ))}
-        </div>
-      )}
+      <div style={{ display: 'flex', gap: 6, justifyContent: 'center', margin: '-6px 0 4px' }}>
+        {slides.map((_, i) => (
+          <i key={i} style={{ width: i === active ? 18 : 6, height: 6, borderRadius: i === active ? 4 : '50%', background: i === active ? D.gold : D.border, transition: 'all 0.2s' }} />
+        ))}
+      </div>
     </>
   );
 }
@@ -212,43 +250,63 @@ function PlanCard({ plan, onStart, onChange }) {
   );
 }
 
-/* ---------- sharpen these words (real most-missed vocab) ---------- */
+/* ---------- CARD 2: sharpen these words (real most-missed vocab) ----------
+   Always rendered. Empty state keeps the card and drops the button. */
 function missLabel(n) { return n === 1 ? 'missed once' : n === 2 ? 'missed twice' : `missed ${n} times`; }
-function SharpenCard({ words, onRetry }) {
+function SharpenCard({ data, onRetry }) {
+  const words = (data && data.words) || [];
+  const empty = words.length === 0;
   return (
     <div style={{ ...cardBase, borderTop: `3px solid ${D.history}` }}>
       <div style={cardHead}>
         <b style={{ fontSize: 16, fontWeight: 800 }}>Sharpen these words</b>
-        <span style={{ fontSize: 12, color: D.inkSecondary, fontWeight: 600 }}>{words.length} min</span>
+        <span style={{ fontSize: 12, color: D.inkSecondary, fontWeight: 600 }}>2 min</span>
       </div>
-      <div>
-        {words.map((w) => (
-          <div key={w.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '8px 0', borderBottom: `1px solid ${D.border}` }}>
-            <span dir="rtl" style={{ fontFamily: ARABIC, fontSize: 22, color: D.navy }}>{w.ar}</span>
-            <small style={{ fontSize: 11, color: D.inkSecondary }}>{missLabel(w.miss)}</small>
+      {empty ? (
+        <p style={{ fontSize: 13.5, lineHeight: 1.5, color: D.inkSecondary, margin: '2px 0 0' }}>Nothing slipping right now. Miss a word in reviews and it will show up here for a quick retry.</p>
+      ) : (
+        <>
+          <div>
+            {words.map((w, i) => (
+              <div key={w.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '8px 0', borderBottom: i === words.length - 1 ? 'none' : `1px solid ${D.border}` }}>
+                <span dir="rtl" style={{ fontFamily: ARABIC, fontSize: 22, color: D.navy }}>{w.ar}</span>
+                <small style={{ fontSize: 11, color: D.inkSecondary }}>{w.note || missLabel(w.miss)}</small>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-      <div style={{ marginTop: 'auto', paddingTop: 14 }}>
-        <button onClick={onRetry} style={tealBtn}>Retry these {words.length}</button>
-      </div>
+          <div style={{ marginTop: 'auto', paddingTop: 14 }}>
+            <button onClick={onRetry} style={tealBtn}>Retry these {words.length}</button>
+          </div>
+        </>
+      )}
     </div>
   );
 }
 
-/* ---------- you can now understand this (real coverage + verified verse) ---------- */
+/* ---------- CARD 3: you can now understand this (real coverage + verified verse) ----------
+   Always rendered. mode 'ayah' shows the unlocked verse; 'progress' shows the
+   nearest-to-complete ayah; 'loading' bridges the verified verse fetch. */
 function UnderstandCard({ data, onRead }) {
+  const mode = (data && data.mode) || 'progress';
   return (
     <div style={{ ...cardBase, borderTop: `3px solid ${D.teal}` }}>
       <div style={cardHead}>
         <b style={{ fontSize: 16, fontWeight: 800 }}>You can now understand this</b>
-        <span style={{ fontSize: 12, color: D.inkSecondary, fontWeight: 600 }}>unlocked</span>
+        <span style={{ fontSize: 12, color: D.inkSecondary, fontWeight: 600 }}>{mode === 'ayah' ? 'unlocked' : 'locked'}</span>
       </div>
-      <div dir="rtl" style={{ fontFamily: ARABIC, fontSize: 21, lineHeight: 1.75, textAlign: 'right', color: D.navy, marginBottom: 8 }}>{data.arabic}</div>
-      <p style={{ fontSize: 13, lineHeight: 1.5, color: D.inkSecondary, margin: 0 }}>Every word in this ayah is now in your deck. {data.surahName || 'Al-Baqarah'} {data.surah}:{data.ayah}, read it cold.</p>
-      <div style={{ marginTop: 'auto', paddingTop: 14 }}>
-        <button onClick={onRead} style={tealBtn}>Read it in the mushaf</button>
-      </div>
+      {mode === 'ayah' ? (
+        <>
+          <div dir="rtl" style={{ fontFamily: ARABIC, fontSize: 21, lineHeight: 1.75, textAlign: 'right', color: D.navy, marginBottom: 8 }}>{data.arabic}</div>
+          <p style={{ fontSize: 13, lineHeight: 1.5, color: D.inkSecondary, margin: 0 }}>Every word in this ayah is in your deck. {data.ref}, read it cold.</p>
+          <div style={{ marginTop: 'auto', paddingTop: 14 }}>
+            <button onClick={onRead} style={tealBtn}>Read it in the mushaf</button>
+          </div>
+        </>
+      ) : mode === 'loading' ? (
+        <p style={{ fontSize: 13.5, lineHeight: 1.5, color: D.inkSecondary, margin: '2px 0 0' }}>Preparing your unlocked ayah…</p>
+      ) : (
+        <p style={{ fontSize: 13.5, lineHeight: 1.5, color: D.inkSecondary, margin: '2px 0 0' }}>{data.learned} of {data.total} words until your first ayah unlocks. Keep learning root words and the first ayah you fully know appears here.</p>
+      )}
     </div>
   );
 }

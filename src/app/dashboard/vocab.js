@@ -89,3 +89,30 @@ export function nextUnderstoodAyah(progress) {
   const [surah, ayah] = ref.split(':').map(Number);
   return { ref, surah, ayah, wordCount: AYAH_WORDS[ref].length };
 }
+
+// The ayah closest to full word coverage but not yet complete - drives the unlock
+// card's empty state ("X of Y words until your first ayah unlocks").
+export function nearestAyahProgress(progress) {
+  const learned = learnedIdSet(progress);
+  let best = null;
+  for (const ref of Object.keys(AYAH_WORDS)) {
+    const ids = AYAH_WORDS[ref];
+    const have = ids.filter((id) => learned.has(id)).length;
+    if (have >= ids.length) continue; // fully covered - not "nearest to unlock"
+    if (!best || have > best.learned || (have === best.learned && ids.length < best.total)) best = { ref, learned: have, total: ids.length };
+  }
+  if (!best) { // nothing started: target the shortest ayah
+    for (const ref of Object.keys(AYAH_WORDS)) {
+      const t = AYAH_WORDS[ref].length;
+      if (!best || t < best.total) best = { ref, learned: 0, total: t };
+    }
+  }
+  return best; // { ref, learned, total } or null if there is no ayah data
+}
+
+// Demo/dev placeholder for the sharpen card: three real vocab words (from the
+// vendored data, never typed here) with mock miss notes so the deck is reviewable.
+export function demoMissedWords() {
+  const notes = ['missed twice this week', 'missed once', 'missed once'];
+  return VOCAB_WORDS.slice(0, 3).map((w, i) => ({ ...w, miss: i === 0 ? 2 : 1, note: notes[i] }));
+}
