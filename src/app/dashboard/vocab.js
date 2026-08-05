@@ -110,9 +110,11 @@ export function nearestAyahProgress(progress) {
   return best; // { ref, learned, total } or null if there is no ayah data
 }
 
-// Demo/dev placeholder for the sharpen card: three real vocab words (from the
-// vendored data, never typed here) with mock miss notes so the deck is reviewable.
+// Demo/dev placeholder for the sharpen card: real vocab words (from the vendored
+// data, never typed here) with mock miss notes so the deck is reviewable. Enough
+// rows that the card body scrolls.
 export function demoMissedWords() {
-  const notes = ['missed twice this week', 'missed once', 'missed once'];
-  return VOCAB_WORDS.slice(0, 3).map((w, i) => ({ ...w, miss: i === 0 ? 2 : 1, note: notes[i] }));
+  const misses = [2, 1, 1, 2, 1, 3];
+  const notes = ['missed twice this week', 'missed once', 'missed once', 'missed twice this week', 'missed once', 'missed 3 times this week'];
+  return VOCAB_WORDS.slice(0, 6).map((w, i) => ({ ...w, miss: misses[i], note: notes[i] }));
 }

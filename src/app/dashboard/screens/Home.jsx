@@ -34,9 +34,12 @@ const parseRef = (ref) => { const [s, a] = String(ref).split(':'); return { sura
 // dev/demo: fully populate the deck for review. Off in production unless ?demo=1.
 const demoMode = () => { if (!IS_PROD) return true; try { return typeof window !== 'undefined' && /[?&]demo=1/.test(window.location.search); } catch (_) { return false; } };
 // Placeholder plan (mock content) - used only in demo when the real plan is thin.
-const DEMO_PLAN = { totalMin: 7, steps: [
+const DEMO_PLAN = { totalMin: 26, steps: [
   { kind: 'review', title: 'Review Ayat al-Kursi', sub: 'Memorised 3 days ago · due today', minutes: 2 },
   { kind: 'vocab', title: 'Root words · 5 new', sub: 'Quran and Arabic · continues module 1', minutes: 5 },
+  { kind: 'lesson', title: 'Islamic finance · lesson 3', sub: 'Riba, the fixed increase', minutes: 6 },
+  { kind: 'lesson', title: 'Islamic history · lesson 2', sub: 'The people of the peninsula', minutes: 5 },
+  { kind: 'memorisation', title: 'Quran memorisation', sub: 'Continue Surah al-Fatihah', minutes: 8 },
 ] };
 
 export default function Home({ name, state, deps, coins, streak, onGoTab, onOpenTopic, onOpenCoreWords, onOpenAyah }) {
@@ -49,7 +52,7 @@ export default function Home({ name, state, deps, coins, streak, onGoTab, onOpen
 
   // CARD 1 - plan from real SRS. In demo, use the mock plan when the real one is thin.
   const realPlan = useMemo(() => buildTodayPlan(state, deps, vocab, Date.now()), [state, deps, vocab]);
-  const plan = demo && realPlan.steps.length < 2 ? DEMO_PLAN : realPlan;
+  const plan = demo ? DEMO_PLAN : realPlan;
 
   // CARD 2 - most-missed vocab. Empty state keeps the card, drops the button.
   const missed = useMemo(() => missedWords(vocab, 3), [vocab]);
@@ -95,7 +98,7 @@ export default function Home({ name, state, deps, coins, streak, onGoTab, onOpen
 
   return (
     <div style={{ fontFamily: FONT, background: D.canvas, minHeight: '100%' }}>
-      <style>{'.deck-scroll::-webkit-scrollbar{display:none}'}</style>
+      <style>{'.deck-scroll::-webkit-scrollbar{display:none}.card-scroll::-webkit-scrollbar{display:none}'}</style>
 
       <Hero streak={streak} coins={coins} date={`${today} · ${dow}`} />
 
@@ -212,10 +215,12 @@ function TodayDeck({ slides }) {
   );
 }
 
-// Every deck card fills the slide so all cards are the same height; actions pin to
-// the bottom (marginTop:auto) so the buttons line up across cards.
-const cardBase = { background: D.card, borderRadius: 20, padding: 18, boxShadow: '0 16px 36px rgba(15,110,86,0.16)', width: '100%', height: '100%', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' };
-const cardHead = { display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 14 };
+// Fixed-height cards (all the same size). Header and footer stay put; the body
+// between them scrolls when the content (plan steps / vocab rows) overflows.
+const cardBase = { background: D.card, borderRadius: 20, padding: 18, boxShadow: '0 16px 36px rgba(15,110,86,0.16)', width: '100%', height: 340, display: 'flex', flexDirection: 'column', boxSizing: 'border-box' };
+const cardHead = { display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 12, flexShrink: 0 };
+const scrollBody = { flex: 1, minHeight: 0, overflowY: 'auto', overscrollBehavior: 'contain', scrollbarWidth: 'none' };
+const cardFoot = { flexShrink: 0, paddingTop: 12 };
 const goldBtn = { background: D.gold, color: D.navy, border: 'none', borderRadius: 24, padding: '12px 22px', fontFamily: 'inherit', fontSize: 14, fontWeight: 800, boxShadow: `0 2px 0 ${D.streakPill.ink}`, cursor: 'pointer' };
 const tealBtn = { background: D.teal, color: '#fff', border: 'none', borderRadius: 24, padding: '12px 22px', fontFamily: 'inherit', fontSize: 14, fontWeight: 800, boxShadow: `0 2px 0 ${D.tealDeep}`, cursor: 'pointer' };
 const linkBtn = { background: 'none', border: 'none', padding: 0, fontFamily: 'inherit', cursor: 'pointer', fontWeight: 700 };
@@ -229,20 +234,22 @@ function PlanCard({ plan, onStart, onChange }) {
         <b style={{ fontSize: 16, fontWeight: 800 }}>Your plan for today</b>
         <span style={{ fontSize: 12, color: D.inkSecondary, fontWeight: 600 }}>{steps.length ? `${plan.totalMin} min total` : 'all clear'}</span>
       </div>
-      {steps.length === 0 ? (
-        <p style={{ fontSize: 13.5, lineHeight: 1.5, color: D.inkSecondary, margin: '2px 0 6px' }}>Nothing is due and every word is on schedule. Come back later, or explore a subject below.</p>
-      ) : steps.map((s, i) => (
-        <div key={i} style={{ display: 'flex', gap: 12, position: 'relative', paddingBottom: i === steps.length - 1 ? 4 : 16 }}>
-          {i < steps.length - 1 && <div style={{ position: 'absolute', left: 12, top: 26, bottom: -2, width: 2, background: D.border }} />}
-          <div style={{ width: 26, height: 26, borderRadius: '50%', flexShrink: 0, zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 800, color: i === 0 ? D.navy : '#fff', background: i === 0 ? D.gold : D.teal }}>{i + 1}</div>
-          <div style={{ flex: 1 }}>
-            <b style={{ fontSize: 14, display: 'block' }}>{s.title}</b>
-            <small style={{ fontSize: 12, color: D.inkSecondary }}>{s.sub}</small>
+      <div className="card-scroll" style={scrollBody}>
+        {steps.length === 0 ? (
+          <p style={{ fontSize: 13.5, lineHeight: 1.5, color: D.inkSecondary, margin: '2px 0 6px' }}>Nothing is due and every word is on schedule. Come back later, or explore a subject below.</p>
+        ) : steps.map((s, i) => (
+          <div key={i} style={{ display: 'flex', gap: 12, position: 'relative', paddingBottom: i === steps.length - 1 ? 2 : 16 }}>
+            {i < steps.length - 1 && <div style={{ position: 'absolute', left: 12, top: 26, bottom: -2, width: 2, background: D.border }} />}
+            <div style={{ width: 26, height: 26, borderRadius: '50%', flexShrink: 0, zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 800, color: i === 0 ? D.navy : '#fff', background: i === 0 ? D.gold : D.teal }}>{i + 1}</div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <b style={{ fontSize: 14, display: 'block' }}>{s.title}</b>
+              <small style={{ fontSize: 12, color: D.inkSecondary }}>{s.sub}</small>
+            </div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: D.tealDeep, background: D.coinsPill.bg, borderRadius: 14, padding: '3px 9px', alignSelf: 'flex-start', flexShrink: 0 }}>{s.minutes} min</div>
           </div>
-          <div style={{ fontSize: 11, fontWeight: 700, color: D.tealDeep, background: D.coinsPill.bg, borderRadius: 14, padding: '3px 9px', alignSelf: 'flex-start' }}>{s.minutes} min</div>
-        </div>
-      ))}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 'auto', paddingTop: 14 }}>
+        ))}
+      </div>
+      <div style={{ ...cardFoot, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <button onClick={onStart} style={goldBtn}>{steps.length ? "Start today's plan" : 'Go to review'}</button>
         {steps.length > 0 && <button onClick={onChange} style={{ ...linkBtn, fontSize: 12, fontWeight: 600, color: D.inkSecondary }}>Change plan</button>}
       </div>
@@ -262,22 +269,20 @@ function SharpenCard({ data, onRetry }) {
         <b style={{ fontSize: 16, fontWeight: 800 }}>Sharpen these words</b>
         <span style={{ fontSize: 12, color: D.inkSecondary, fontWeight: 600 }}>2 min</span>
       </div>
-      {empty ? (
-        <p style={{ fontSize: 13.5, lineHeight: 1.5, color: D.inkSecondary, margin: '2px 0 0' }}>Nothing slipping right now. Miss a word in reviews and it will show up here for a quick retry.</p>
-      ) : (
-        <>
-          <div>
-            {words.map((w, i) => (
-              <div key={w.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '8px 0', borderBottom: i === words.length - 1 ? 'none' : `1px solid ${D.border}` }}>
-                <span dir="rtl" style={{ fontFamily: ARABIC, fontSize: 22, color: D.navy }}>{w.ar}</span>
-                <small style={{ fontSize: 11, color: D.inkSecondary }}>{w.note || missLabel(w.miss)}</small>
-              </div>
-            ))}
+      <div className="card-scroll" style={scrollBody}>
+        {empty ? (
+          <p style={{ fontSize: 13.5, lineHeight: 1.5, color: D.inkSecondary, margin: '2px 0 0' }}>Nothing slipping right now. Miss a word in reviews and it will show up here for a quick retry.</p>
+        ) : words.map((w, i) => (
+          <div key={w.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '8px 0', borderBottom: i === words.length - 1 ? 'none' : `1px solid ${D.border}` }}>
+            <span dir="rtl" style={{ fontFamily: ARABIC, fontSize: 22, color: D.navy }}>{w.ar}</span>
+            <small style={{ fontSize: 11, color: D.inkSecondary }}>{w.note || missLabel(w.miss)}</small>
           </div>
-          <div style={{ marginTop: 'auto', paddingTop: 14 }}>
-            <button onClick={onRetry} style={tealBtn}>Retry these {words.length}</button>
-          </div>
-        </>
+        ))}
+      </div>
+      {!empty && (
+        <div style={cardFoot}>
+          <button onClick={onRetry} style={tealBtn}>Retry these {words.length}</button>
+        </div>
       )}
     </div>
   );
@@ -294,18 +299,22 @@ function UnderstandCard({ data, onRead }) {
         <b style={{ fontSize: 16, fontWeight: 800 }}>You can now understand this</b>
         <span style={{ fontSize: 12, color: D.inkSecondary, fontWeight: 600 }}>{mode === 'ayah' ? 'unlocked' : 'locked'}</span>
       </div>
-      {mode === 'ayah' ? (
-        <>
-          <div dir="rtl" style={{ fontFamily: ARABIC, fontSize: 21, lineHeight: 1.75, textAlign: 'right', color: D.navy, marginBottom: 8 }}>{data.arabic}</div>
-          <p style={{ fontSize: 13, lineHeight: 1.5, color: D.inkSecondary, margin: 0 }}>Every word in this ayah is in your deck. {data.ref}, read it cold.</p>
-          <div style={{ marginTop: 'auto', paddingTop: 14 }}>
-            <button onClick={onRead} style={tealBtn}>Read it in the mushaf</button>
-          </div>
-        </>
-      ) : mode === 'loading' ? (
-        <p style={{ fontSize: 13.5, lineHeight: 1.5, color: D.inkSecondary, margin: '2px 0 0' }}>Preparing your unlocked ayah…</p>
-      ) : (
-        <p style={{ fontSize: 13.5, lineHeight: 1.5, color: D.inkSecondary, margin: '2px 0 0' }}>{data.learned} of {data.total} words until your first ayah unlocks. Keep learning root words and the first ayah you fully know appears here.</p>
+      <div className="card-scroll" style={scrollBody}>
+        {mode === 'ayah' ? (
+          <>
+            <div dir="rtl" style={{ fontFamily: ARABIC, fontSize: 21, lineHeight: 1.75, textAlign: 'right', color: D.navy, marginBottom: 8 }}>{data.arabic}</div>
+            <p style={{ fontSize: 13, lineHeight: 1.5, color: D.inkSecondary, margin: 0 }}>Every word in this ayah is in your deck. {data.ref}, read it cold.</p>
+          </>
+        ) : mode === 'loading' ? (
+          <p style={{ fontSize: 13.5, lineHeight: 1.5, color: D.inkSecondary, margin: '2px 0 0' }}>Preparing your unlocked ayah…</p>
+        ) : (
+          <p style={{ fontSize: 13.5, lineHeight: 1.5, color: D.inkSecondary, margin: '2px 0 0' }}>{data.learned} of {data.total} words until your first ayah unlocks. Keep learning root words and the first ayah you fully know appears here.</p>
+        )}
+      </div>
+      {mode === 'ayah' && (
+        <div style={cardFoot}>
+          <button onClick={onRead} style={tealBtn}>Read it in the mushaf</button>
+        </div>
       )}
     </div>
   );

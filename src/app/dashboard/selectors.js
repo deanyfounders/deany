@@ -3,6 +3,7 @@
 //   deps = { modules: { [topicId]: Module[] }, completedLessons: {} }
 import { INTERVALS } from './srs.js';
 import { vocabStats } from './vocab.js';
+import { subjectOf } from './tokens.js';
 
 const DAY = 86400000;
 
@@ -175,6 +176,22 @@ export function buildTodayPlan(state, deps, vocabProgress, now) {
       sub: 'Quran and Arabic · continues module 1',
       minutes: vs.nextBatch,
       route: 'corewords',
+    });
+  }
+  // The next incomplete lesson of each active subject (e.g. Islamic finance lesson 3,
+  // Islamic history lesson 2), so the plan is the whole day, not just review + vocab.
+  for (const id of getActiveTopics(state)) {
+    const prog = topicProgress(id, deps);
+    if (!prog.next) continue;
+    const s = subjectOf(id);
+    steps.push({
+      kind: 'lesson',
+      title: `${s.name} · lesson ${prog.next.idx + 1}`,
+      sub: prog.next.lesson.title || 'Continue where you left off',
+      minutes: minutesOf(prog.next.lesson.duration),
+      route: 'lesson',
+      topicId: id,
+      lesson: prog.next.lesson, idx: prog.next.idx, mod: prog.next.mod,
     });
   }
   return { steps, totalMin: steps.reduce((s, x) => s + x.minutes, 0) };
