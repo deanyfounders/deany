@@ -710,6 +710,7 @@ function ReviewTab({ flatWords, rootById, entry, isDue, setStage }) {
   const onWrong = Math.max(stage - 2, 1);
 
   function grade(ok) {
+    try { const l = JSON.parse(window.localStorage.getItem('deany.reviewlog.v1') || '[]'); l.push({ id: w.id, type: 'root_words', result: ok ? 'pass' : 'fail', ts: Date.now() }); window.localStorage.setItem('deany.reviewlog.v1', JSON.stringify(l.slice(-3000))); } catch (_) {}
     setStage(w.id, ok ? onCorrect : onWrong, !ok);
     if (ok) setCorrect((c) => c + 1);
     setIdx((i) => i + 1);

@@ -84,7 +84,8 @@ function Inner({ mainTopics = [], modules = {}, completedLessons = {}, onSelectL
       )}
       {tab === 'quran' && (<QuranTab initialOpen={quranInitial} onConsumed={() => setQuranInitial(null)} />)}
       {tab === 'review' && (
-        <Review state={dash.state} onGoTab={setTab} onSelectLesson={onSelectLesson} resolveLesson={resolveLesson} />
+        <Review name={name} streak={dailyStreak || dash.state.streak?.count || 0} coins={dash.state.coins || coins} state={dash.state} deps={deps}
+          onGoTab={setTab} onSelectLesson={onSelectLesson} resolveLesson={resolveLesson} onOpenCoreWords={() => setCoreWordsOpen(true)} />
       )}
       {tab === 'you' && (
         <You name={name} guest={guest} state={dash.state} completedLessons={completedLessons} xp={xp}

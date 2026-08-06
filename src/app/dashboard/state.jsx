@@ -4,6 +4,7 @@
 // migration runs once.
 import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
 import { enqueue, passItem, failItem } from './srs.js';
+import { logReview } from './review/analytics.js';
 
 const KEY = 'deany.state.v1';
 const ONB = 'deany_app_state';
@@ -77,7 +78,7 @@ export function DashboardProvider({ children }) {
     pauseTopic: (id) => patch(p => ({ topics: { ...p.topics, [id]: { ...p.topics[id], active: false } } })),
     resumeTopic: (id) => patch(p => ({ topics: { ...p.topics, [id]: { ...p.topics[id], active: true } } })),
     removeTopic: (id) => patch(p => { const topics = { ...p.topics }; delete topics[id]; return { topics }; }),
-    gradeReview: (id, passed) => patch(p => ({ review: { items: p.review.items.map(it => it.id === id ? (passed ? passItem(it, Date.now()) : failItem(it, Date.now())) : it) } })),
+    gradeReview: (id, passed) => { logReview(id, 'concept', passed); return patch(p => ({ review: { items: p.review.items.map(it => it.id === id ? (passed ? passItem(it, Date.now()) : failItem(it, Date.now())) : it) } })); },
     // Seed the review queue from lessons already completed (due now). Idempotent.
     ensureReviews: (pairs) => patch(p => {
       const existing = new Set(p.review.items.map(i => i.id));
