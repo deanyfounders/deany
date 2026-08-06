@@ -10,6 +10,7 @@ import Topics from './screens/Topics.jsx';
 import You from './screens/You.jsx';
 import QuranTab from '../quran/QuranTab.jsx';
 import RootWordsModule from '../quran/corewords/RootWordsModule.jsx';
+import ToolScreen from './tools/Tools.jsx';
 import PathLessons from '../home/PathLessons.jsx';
 import { getHomeBadges } from './selectors.js';
 import { subjectOf } from './tokens.js';
@@ -24,6 +25,7 @@ function Inner({ mainTopics = [], modules = {}, completedLessons = {}, onSelectL
   const [pathTopicId, setPathTopicId] = useState(null);
   const [coreWordsOpen, setCoreWordsOpen] = useState(false);
   const [quranInitial, setQuranInitial] = useState(null); // { surah, ayah } | null
+  const [toolOpen, setToolOpen] = useState(null); // 'zakat' | 'qibla' | 'tasbih' | 'hijri' | null
   const deps = useMemo(() => ({ modules, completedLessons }), [modules, completedLessons]);
 
   // Name rule: use it if 2+ chars; else the email local-part capitalized; else null.
@@ -59,6 +61,15 @@ function Inner({ mainTopics = [], modules = {}, completedLessons = {}, onSelectL
 
   const badges = getHomeBadges(dash.state, Date.now());
 
+  // Tool screens: full-screen takeover with a back button (like the lesson path).
+  if (toolOpen) {
+    return (
+      <div style={{ height: '100dvh', maxHeight: '100dvh', overflowY: 'auto', WebkitOverflowScrolling: 'touch', background: '#fff' }}>
+        <ToolScreen tool={toolOpen} onBack={() => setToolOpen(null)} />
+      </div>
+    );
+  }
+
   // Per-subject lesson path (reuses the existing timeline)
   if (pathTopicId) {
     const topic = mainTopics.find(t => t.id === pathTopicId) || { id: pathTopicId, title: subjectOf(pathTopicId).name };
@@ -76,7 +87,7 @@ function Inner({ mainTopics = [], modules = {}, completedLessons = {}, onSelectL
       {tab === 'home' && (
         <Home name={name} state={dash.state} deps={deps} coins={dash.state.coins || coins} streak={dailyStreak || dash.state.streak?.count || 0}
           onOpenTopic={setPathTopicId} onGoTab={setTab} onSelectLesson={onSelectLesson}
-          onOpenCoreWords={() => setCoreWordsOpen(true)}
+          onOpenCoreWords={() => setCoreWordsOpen(true)} onOpenTool={setToolOpen}
           onOpenAyah={(surah, ayah) => { setQuranInitial({ surah, ayah }); setTab('quran'); }} />
       )}
       {tab === 'topics' && (

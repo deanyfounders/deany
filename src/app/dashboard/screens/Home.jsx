@@ -9,10 +9,8 @@ import { E, FONT_LATIN, FONT_SERIF, FONT_AR, subjectOf } from '../tokens.js';
 import { getActiveTopics, topicProgress, getContinueTarget, getDueReviews } from '../selectors.js';
 import { catalogById } from '../catalog.js';
 import { getAyahOfTheDay } from '../../../content/ayahOfTheDay.js';
-import { useNisab } from '../services/nisab.js';
 import { usePrayerTimes } from '../services/prayerTimes.js';
 import jumuah from '../../../../content/dashboard/jumuah.json';
-import zakatMethodology from '../../../../content/dashboard/zakat-methodology.json';
 import pillarsArt from '../../../assets/topics/5-pillars.png';
 import financeArt from '../../../assets/topics/islamic-finance.png';
 import quranArt from '../../../assets/topics/quran-arabic.png';
@@ -29,6 +27,21 @@ const PATHS = [
   { id: 'islamic-history', tile: E.historyTint, badge: E.history, badgeInk: '#fff', bar: E.history, pct: E.history, art: historyArt },
 ];
 const DIFF = (tier) => (tier >= 3 ? 'Advanced' : tier === 2 ? 'Intermediate' : 'Beginner');
+
+// Tools launcher (spec section 8). Each opens its own screen; none render inline.
+const TOOLS = [
+  { id: 'zakat', name: 'Zakat calculator', sub: 'Cash, gold, stocks', tile: E.goldTint },
+  { id: 'qibla', name: 'Qibla finder', sub: 'Direction from here', tile: E.tealTint },
+  { id: 'tasbih', name: 'Tasbih counter', sub: 'Dhikr with haptics', tile: E.historyTint },
+  { id: 'hijri', name: 'Hijri converter', sub: 'Dates both ways', tile: E.quranTint },
+];
+function ToolIcon({ id }) {
+  const c = { width: 20, height: 20, viewBox: '0 0 24 24', fill: 'none', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round', 'aria-hidden': true };
+  if (id === 'zakat') return <svg {...c} stroke={E.goldDark}><rect x="5" y="3" width="14" height="18" rx="2" /><path d="M8 7 H16 M8 12 H10 M8 16 H10 M14 12 H16 M14 16 H16" /></svg>;
+  if (id === 'qibla') return <svg {...c} stroke={E.tealDark}><circle cx="12" cy="12" r="9" /><path d="M15.5 8.5 L13.5 13.5 L8.5 15.5 L10.5 10.5 Z" /></svg>;
+  if (id === 'tasbih') return <svg {...c} stroke={E.history}><circle cx="12" cy="5" r="1.6" /><circle cx="6.5" cy="9" r="1.6" /><circle cx="17.5" cy="9" r="1.6" /><circle cx="5" cy="15" r="1.6" /><circle cx="19" cy="15" r="1.6" /><circle cx="12" cy="19.5" r="2.2" /></svg>;
+  return <svg {...c} stroke={E.navy}><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M3 10 H21 M8 3 V7 M16 3 V7" /><path d="M15 14.5 A2.6 2.6 0 1 1 12.4 12 A2.1 2.1 0 0 0 15 14.5 Z" /></svg>;
+}
 
 const hijriParts = (date) => {
   const p = new Intl.DateTimeFormat('en-US-u-ca-islamic-umalqura', { day: 'numeric', month: 'long', year: 'numeric' }).formatToParts(date);
@@ -115,15 +128,12 @@ const ED_CSS = `
 .ed .chall b{ font-size:13.5px; font-weight:700; display:block; margin-top:4px; line-height:1.4; }
 .ed .chall small{ font-size:10.5px; color:#9FB0D6; display:block; margin-top:3px; }
 .ed .chall .xp{ background:var(--gold); color:var(--ink); font-size:11px; font-weight:800; border-radius:10px; padding:6px 10px; white-space:nowrap; }
-.ed .zk p.help{ font-size:11.5px; color:var(--soft); line-height:1.55; margin:8px 0 12px; }
-.ed .zk .field{ display:flex; align-items:center; gap:8px; border:1px solid var(--line); border-radius:10px; padding:11px 12px; background:var(--inset); }
-.ed .zk .field span{ color:var(--faint); font-weight:700; }
-.ed .zk input{ border:none; background:none; outline:none; font-family:inherit; font-size:14px; flex:1; color:var(--ink); min-width:0; }
-.ed .zk .grid3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-top:12px; }
-.ed .zk .cell{ background:var(--inset); border:1px solid var(--line); border-radius:10px; padding:10px; text-align:center; }
-.ed .zk .cell small{ font-size:8.5px; color:var(--faint); text-transform:uppercase; letter-spacing:0.08em; display:block; }
-.ed .zk .cell b{ font-size:14px; font-weight:800; display:block; margin-top:3px; }
-.ed .zk .cell i{ font-style:normal; font-size:8.5px; color:var(--faint); }
+.ed .tools-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px; }
+.ed .tool{ display:flex; align-items:center; gap:10px; padding:11px 12px; background:var(--white); border:1px solid var(--line); border-radius:13px; box-shadow:0 3px 0 rgba(27,42,74,0.08); cursor:pointer; transition:transform 0.1s; font-family:inherit; text-align:left; }
+.ed .tool:active{ transform:translateY(2px); box-shadow:0 1px 0 rgba(27,42,74,0.08); }
+.ed .tool .ttile{ width:38px; height:38px; border-radius:12px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border:1px solid rgba(27,42,74,0.08); }
+.ed .tool b{ font-size:12px; font-weight:800; display:block; line-height:1.25; color:var(--ink); }
+.ed .tool small{ font-size:9.5px; color:var(--faint); }
 .ed .trio{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
 .ed .pt{ padding:14px; margin-bottom:0; }
 .ed .pt .row{ display:flex; justify-content:space-between; font-size:11.5px; padding:5px 6px; border-radius:7px; }
@@ -140,11 +150,10 @@ const ED_CSS = `
 @media (prefers-reduced-motion: reduce){ .ed .wash,.ed .card,.ed .sect,.ed .paths,.ed .xp-row,.ed .trio,.ed .bismillah,.ed .btn,.ed .chip{ animation:none !important; transition:none !important; } }
 `;
 
-export default function Home({ name, state, deps, coins, streak, onGoTab, onOpenTopic, onOpenAyah, onSelectLesson }) {
+export default function Home({ name, state, deps, coins, streak, onGoTab, onOpenTopic, onOpenAyah, onSelectLesson, onOpenTool }) {
   const [ayah] = useState(getAyahOfTheDay);
   const [dateLine] = useState(() => { const h = hijriParts(new Date()); return `${weekday()} · ${h.day} ${h.month} ${h.year}`; });
   const [bismillah, setBismillah] = useState('');
-  const [portfolio, setPortfolio] = useState('');
 
   // Bismillah from the verified /quran source (surah 1, ayah 1) - never typed here.
   useEffect(() => {
@@ -156,7 +165,6 @@ export default function Home({ name, state, deps, coins, streak, onGoTab, onOpen
     return () => { alive = false; };
   }, []);
 
-  const nisab = useNisab();
   const prayer = usePrayerTimes();
 
   // Continue-learning target (real current lesson, else first lesson of a path).
@@ -179,14 +187,9 @@ export default function Home({ name, state, deps, coins, streak, onGoTab, onOpen
   // Challenge from a real signal: any study today keeps the streak alive.
   const challDone = earned > 0 ? 1 : 0;
 
-  const zPortfolio = parseFloat(portfolio) || 0;
-  const zDue = nisab.nisab && zPortfolio >= nisab.nisab ? zPortfolio * 0.025 : 0;
-  const fmt$ = (n) => '$' + Number(n).toLocaleString('en-US', { maximumFractionDigits: 2 });
-
   const nextLesson = () => { if (cnext) onSelectLesson && onSelectLesson(cnext.lesson, cnext.idx, cnext.mod); else if (contId) onOpenTopic && onOpenTopic(contId); };
   const openReader = () => { const [s, a] = String(ayah.ref).split(':'); onOpenAyah && onOpenAyah(parseInt(s, 10), parseInt(a, 10)); };
 
-  const zakatApproved = zakatMethodology.status === 'approved' && (zakatMethodology.help || '').trim();
   const comingApproved = jumuah.status === 'approved' && (jumuah.body || '').trim();
 
   return (
@@ -306,18 +309,16 @@ export default function Home({ name, state, deps, coins, streak, onGoTab, onOpen
         <span className="xp">+15 XP</span>
       </div>
 
-      {/* 7. Zakat calculator */}
-      <div className="card zk">
-        <div className="lbl gold">Zakat calculator · Stocks</div>
-        <p className="help">{zakatApproved ? zakatMethodology.help : 'Methodology under scholar review.'}</p>
-        <div className="field">
-          <span>$</span>
-          <input type="number" inputMode="decimal" placeholder="0.00" aria-label="Portfolio value" value={portfolio} onChange={(e) => setPortfolio(e.target.value)} />
-        </div>
-        <div className="grid3">
-          <div className="cell"><small>Portfolio</small><b>{fmt$(zPortfolio)}</b></div>
-          <div className="cell" style={{ background: E.tealTint }}><small style={{ color: E.tealDark }}>Zakat due</small><b style={{ color: E.tealDark }}>{fmt$(zDue)}</b></div>
-          <div className="cell" style={{ background: E.goldTint }}><small style={{ color: E.goldDark }}>Nisab</small><b style={{ color: E.goldDark }}>{nisab.nisab ? fmt$(nisab.nisab) : (nisab.loading ? '…' : '—')}</b><i>live gold rate</i></div>
+      {/* 8. Tools - a 2x2 launcher; each opens its own tool screen, none inline */}
+      <div className="card">
+        <div className="lbl gold">Tools</div>
+        <div className="tools-grid">
+          {TOOLS.map((t) => (
+            <button key={t.id} className="tool" onClick={() => onOpenTool && onOpenTool(t.id)}>
+              <span className="ttile" style={{ background: t.tile }}><ToolIcon id={t.id} /></span>
+              <div><b>{t.name}</b><small>{t.sub}</small></div>
+            </button>
+          ))}
         </div>
       </div>
 
