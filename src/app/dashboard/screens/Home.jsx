@@ -56,7 +56,15 @@ const ED_CSS = `
 .ed .card:active{ transform:scale(0.982); }
 .ed .lbl{ font-size:9.5px; font-weight:800; letter-spacing:0.16em; text-transform:uppercase; color:var(--soft); }
 .ed .lbl.gold{ color:var(--gold-dark); } .ed .lbl.teal{ color:var(--teal-dark); }
-.ed .head{ text-align:center; padding:52px 0 20px; }
+.ed .wash{ margin:0 -18px; padding:calc(env(safe-area-inset-top) + 14px) 18px 0; background:radial-gradient(120% 90% at 85% -10%, rgba(240,180,41,0.16), rgba(240,180,41,0) 55%), linear-gradient(180deg, #E2F3EE 0%, rgba(226,243,238,0.55) 55%, rgba(255,255,255,0) 100%); }
+.ed .topbar{ display:flex; align-items:center; justify-content:space-between; }
+.ed .avatar{ width:36px; height:36px; border-radius:50%; background:#fff; border:1px solid rgba(27,42,74,0.08); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; color:var(--teal-dark); cursor:pointer; padding:0; overflow:hidden; }
+.ed .avatar img{ width:100%; height:100%; object-fit:cover; }
+.ed .schips{ display:flex; gap:8px; }
+.ed .schip{ display:flex; align-items:center; gap:6px; border-radius:16px; padding:6px 11px; font-size:12px; font-weight:800; box-shadow:0 2px 0 rgba(27,42,74,0.10); border:1px solid transparent; cursor:pointer; font-family:inherit; }
+.ed .schip.streak{ background:var(--gold-tint); border-color:#F0D089; color:var(--gold-dark); }
+.ed .schip.coin{ background:#fff; border-color:rgba(27,42,74,0.08); color:var(--ink); }
+.ed .head{ text-align:center; padding:18px 0 20px; }
 .ed .head .salam{ font-family:${FONT_AR}; font-size:18px; color:var(--gold-dark); }
 .ed .head h1{ font-family:${FONT_SERIF}; font-size:28px; font-weight:600; margin:2px 0 3px; }
 .ed .head .date{ font-size:12px; color:var(--faint); }
@@ -126,10 +134,10 @@ const ED_CSS = `
 .ed .month small{ font-size:10.5px; color:var(--faint); }
 .ed .bismillah{ text-align:center; font-family:${FONT_AR}; font-size:19px; color:var(--gold-dark); padding:22px 0 26px; opacity:0.85; }
 @keyframes edRise{ from{ opacity:0; transform:translateY(14px) scale(0.97);} to{ opacity:1; transform:none;} }
-.ed .head, .ed .card, .ed .sect, .ed .paths, .ed .xp-row, .ed .trio, .ed .bismillah{ animation:edRise 0.5s cubic-bezier(0.34,1.56,0.64,1) both; }
+.ed .wash, .ed .card, .ed .sect, .ed .paths, .ed .xp-row, .ed .trio, .ed .bismillah{ animation:edRise 0.5s cubic-bezier(0.34,1.56,0.64,1) both; }
 .ed .card.cont{ animation-delay:0.05s; } .ed .sect{ animation-delay:0.1s; } .ed .paths{ animation-delay:0.12s; }
 .ed .xp-row{ animation-delay:0.18s; } .ed .trio{ animation-delay:0.24s; }
-@media (prefers-reduced-motion: reduce){ .ed .head,.ed .card,.ed .sect,.ed .paths,.ed .xp-row,.ed .trio,.ed .bismillah,.ed .btn,.ed .chip{ animation:none !important; transition:none !important; } }
+@media (prefers-reduced-motion: reduce){ .ed .wash,.ed .card,.ed .sect,.ed .paths,.ed .xp-row,.ed .trio,.ed .bismillah,.ed .btn,.ed .chip{ animation:none !important; transition:none !important; } }
 `;
 
 export default function Home({ name, state, deps, coins, streak, onGoTab, onOpenTopic, onOpenAyah, onSelectLesson }) {
@@ -185,11 +193,27 @@ export default function Home({ name, state, deps, coins, streak, onGoTab, onOpen
     <div className="ed">
       <style>{ED_CSS}</style>
 
-      {/* 1. Header */}
-      <div className="head">
-        <div className="salam" dir="rtl">{SALAM}</div>
-        <h1>Hello {name || 'friend'}</h1>
-        <div className="date">{dateLine}</div>
+      {/* 1. Top area - the wash: full-bleed gradient with the top bar + greeting */}
+      <div className="wash">
+        <div className="topbar">
+          <button className="avatar" aria-label="Your profile" onClick={() => onGoTab && onGoTab('you')}>{(name || '?').trim().charAt(0).toUpperCase() || '?'}</button>
+          <div className="schips">
+            <button className="schip streak" aria-label={`${streak} day streak`} onClick={() => onGoTab && onGoTab('you')}>
+              <svg width="13" height="15" viewBox="0 0 13 15" fill="none" aria-hidden="true"><path d="M6.5 1C7.5 3.2 10.8 4.6 10.8 8.4c0 2.9-1.9 5.1-4.3 5.1S2.2 11.3 2.2 8.4C2.2 6.7 3 5.5 3.9 4.5c0 1.1.5 1.9 1.3 2.2C4.7 4.5 5.6 2.4 6.5 1Z" fill={E.gold} /></svg>
+              {streak}
+            </button>
+            <button className="schip coin" aria-label={`${coins} coins`} onClick={() => onGoTab && onGoTab('you')}>
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="5.6" stroke={E.gold} strokeWidth="1.6" /><circle cx="7" cy="7" r="2.4" fill={E.gold} /></svg>
+              {coins}
+            </button>
+          </div>
+        </div>
+        {/* 2. Header (centered, inside the wash) */}
+        <div className="head">
+          <div className="salam" dir="rtl">{SALAM}</div>
+          <h1>Hello {name || 'friend'}</h1>
+          <div className="date">{dateLine}</div>
+        </div>
       </div>
 
       {/* 2. Continue learning */}
