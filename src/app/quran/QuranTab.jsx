@@ -1,11 +1,11 @@
-// Qur'an tab: index <-> reader, plus the Scheherazade New webfont for Arabic
-// and the shared bottom-sheet animation. Reading is unscored - no XP/coins/streak
-// events originate here.
-import React, { useState, useEffect } from 'react';
+// Qur'an tab: the surah/juz/saved index. The reader itself is a dashboard OVERLAY
+// (see Dashboard + nav.js) so it can be opened from any origin and back returns to
+// that origin, not this tab. This tab keeps only its own index state (the segment),
+// which survives while the reader overlay is up. Reading is unscored.
+import React, { useState } from 'react';
 import QuranIndex from './QuranIndex.jsx';
-import QuranReader from './QuranReader.jsx';
 
-const QURAN_CSS = `
+export const QURAN_CSS = `
 @import url('https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;500;700&display=swap');
 .quran-ar { font-family: 'Scheherazade New','Amiri',serif; }
 @keyframes deanySheetUp { from { transform: translateY(16px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
@@ -13,24 +13,13 @@ const QURAN_CSS = `
 @media (prefers-reduced-motion: reduce){ .deany-sheet-in { animation: none } }
 `;
 
-export default function QuranTab({ initialOpen, onConsumed }) {
-  const [open, setOpen] = useState(null); // { surah, ayah } | null
-  // Held here (not in QuranIndex) so returning from the reader restores the tab
-  // you were on - opening a juz and pressing back lands you back on Juz.
-  const [seg, setSeg] = useState('surah'); // surah | juz | saved
-
-  // Deep-link: the dashboard can request an ayah (e.g. "read it in the mushaf").
-  // Consume it once so navigating away and back does not force the reader open.
-  useEffect(() => {
-    if (initialOpen && initialOpen.surah) { setOpen({ surah: initialOpen.surah, ayah: initialOpen.ayah }); onConsumed && onConsumed(); }
-  }, [initialOpen, onConsumed]);
-
+export default function QuranTab({ onOpenReader }) {
+  // Held here so returning from the reader restores the tab you were on (surah/juz/saved).
+  const [seg, setSeg] = useState('surah');
   return (
     <>
       <style>{QURAN_CSS}</style>
-      {open
-        ? <QuranReader surah={open.surah} initialAyah={open.ayah} onBack={() => setOpen(null)} />
-        : <QuranIndex seg={seg} onSeg={setSeg} onOpenSurah={(surah, ayah) => setOpen({ surah, ayah })} />}
+      <QuranIndex seg={seg} onSeg={setSeg} onOpenSurah={(surah, ayah) => onOpenReader && onOpenReader(surah, ayah)} />
     </>
   );
 }

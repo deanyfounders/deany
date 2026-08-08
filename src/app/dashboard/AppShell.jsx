@@ -41,12 +41,23 @@ export function NavBar({ tab, onTab, reviewDot }) {
   );
 }
 
-export default function AppShell({ tab, onTab, reviewDot, children }) {
+// `overlay` renders on top of the active tab's scroll area (nav stays visible), and
+// the tab stays mounted underneath so its scroll/state survive a back (nav spec rule
+// 7). `scrollKey` keys the scroll area so a tab switch re-triggers the fade, but an
+// overlay opening does not remount the tab beneath it.
+export default function AppShell({ tab, onTab, reviewDot, children, overlay, scrollKey }) {
   return (
     <div style={{ minHeight: '100vh', height: '100dvh', maxHeight: '100dvh', overflow: 'hidden', background: '#fff', color: E.ink, display: 'flex', flexDirection: 'column' }}>
       <DashMotion />
-      <div key={tab} className="deany-fade" style={{ flex: 1, minHeight: 0, overflowY: 'auto', overflowX: 'hidden', WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain', touchAction: 'pan-y', maxWidth: 520, margin: '0 auto', width: '100%' }}>
-        {children}
+      <div style={{ position: 'relative', flex: 1, minHeight: 0 }}>
+        <div key={scrollKey || tab} className="deany-fade" style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, maxWidth: 520, margin: '0 auto', overflowY: 'auto', overflowX: 'hidden', WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain', touchAction: 'pan-y' }}>
+          {children}
+        </div>
+        {overlay && (
+          <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, maxWidth: 520, margin: '0 auto', background: '#fff' }}>
+            {overlay}
+          </div>
+        )}
       </div>
       <NavBar tab={tab} onTab={onTab} reviewDot={reviewDot} />
     </div>

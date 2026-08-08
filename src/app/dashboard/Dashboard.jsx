@@ -1,6 +1,9 @@
-// Dashboard - the four-tab app shell. Wraps the store, resolves the active
-// tab, and hands topic taps to the existing per-subject lesson path.
-import React, { useState, useMemo, useEffect } from 'react';
+// Dashboard - the four-tab app shell on the shared navigation model (nav.js).
+// The active tab is always mounted; deep content (reader / subject path / tool /
+// core words) is pushed as an OVERLAY that records its origin tab, so back returns
+// to exactly where the user came from (nav spec rules 1-8). One goBack for every
+// back control; the browser/hardware back maps to it through nav.js history.
+import React, { useMemo, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { DashboardProvider, useDashboard } from './state.jsx';
 import AppShell from './AppShell.jsx';
@@ -8,12 +11,14 @@ import Home from './screens/Home.jsx';
 import Review from './screens/Review.jsx';
 import Topics from './screens/Topics.jsx';
 import You from './screens/You.jsx';
-import QuranTab from '../quran/QuranTab.jsx';
+import QuranTab, { QURAN_CSS } from '../quran/QuranTab.jsx';
+import QuranReader from '../quran/QuranReader.jsx';
 import RootWordsModule from '../quran/corewords/RootWordsModule.jsx';
 import ToolScreen from './tools/Tools.jsx';
 import PathLessons from '../home/PathLessons.jsx';
 import { getHomeBadges } from './selectors.js';
 import { subjectOf } from './tokens.js';
+import { useDashNav } from './nav.js';
 
 export default function Dashboard(props) {
   return <DashboardProvider><Inner {...props} /></DashboardProvider>;
@@ -21,11 +26,7 @@ export default function Dashboard(props) {
 
 function Inner({ mainTopics = [], modules = {}, completedLessons = {}, onSelectLesson, appState, xp = 0, coins = 0, dailyStreak = 0 }) {
   const dash = useDashboard();
-  const [tab, setTab] = useState('home');
-  const [pathTopicId, setPathTopicId] = useState(null);
-  const [coreWordsOpen, setCoreWordsOpen] = useState(false);
-  const [quranInitial, setQuranInitial] = useState(null); // { surah, ayah } | null
-  const [toolOpen, setToolOpen] = useState(null); // 'zakat' | 'qibla' | 'tasbih' | 'hijri' | null
+  const nav = useDashNav('home');
   const deps = useMemo(() => ({ modules, completedLessons }), [modules, completedLessons]);
 
   // Name rule: use it if 2+ chars; else the email local-part capitalized; else null.
@@ -48,7 +49,6 @@ function Inner({ mainTopics = [], modules = {}, completedLessons = {}, onSelectL
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [completedCount]);
 
-  // Resolve a review item back to a launchable lesson.
   const resolveLesson = (item) => {
     for (const mod of (modules[item.topicId] || [])) {
       const lessons = mod.lessons || [];
@@ -60,56 +60,65 @@ function Inner({ mainTopics = [], modules = {}, completedLessons = {}, onSelectL
   };
 
   const badges = getHomeBadges(dash.state, Date.now());
+  const streak = dailyStreak || dash.state.streak?.count || 0;
+  const cn = dash.state.coins || coins;
 
-  // Tool screens: full-screen takeover with a back button (like the lesson path).
-  if (toolOpen) {
-    return (
-      <div style={{ height: '100dvh', maxHeight: '100dvh', overflowY: 'auto', WebkitOverflowScrolling: 'touch', background: '#fff' }}>
-        <ToolScreen tool={toolOpen} onBack={() => setToolOpen(null)} />
-      </div>
-    );
-  }
+  // The single set of content openers - every call site routes through the model.
+  const openReader = (surah, ayah) => nav.open({ type: 'reader', surah, ayah });
+  const openPath = (topicId) => nav.open({ type: 'path', topicId });
+  const openTool = (tool) => nav.open({ type: 'tool', tool });
+  const openCore = () => nav.open({ type: 'corewords' });
 
-  // Per-subject lesson path (reuses the existing timeline)
-  if (pathTopicId) {
-    const topic = mainTopics.find(t => t.id === pathTopicId) || { id: pathTopicId, title: subjectOf(pathTopicId).name };
-    return (
-      <PathLessons
-        topic={topic} modules={modules} completedLessons={completedLessons}
-        accent={subjectOf(pathTopicId).accent} level={dash.state.topics[pathTopicId]?.level}
-        onSelectLesson={onSelectLesson} onBack={() => setPathTopicId(null)}
-      />
+  const tab = nav.activeTab;
+  const tabContent =
+    tab === 'home' ? (
+      <Home name={name} state={dash.state} deps={deps} coins={cn} streak={streak}
+        onOpenTopic={openPath} onGoTab={nav.onTapTab} onSelectLesson={onSelectLesson}
+        onOpenCoreWords={openCore} onOpenTool={openTool} onOpenAyah={openReader} />
+    ) : tab === 'topics' ? (
+      <Topics state={dash.state} deps={deps} onOpenTopic={openPath} addTopic={dash.addTopic} pauseTopic={dash.pauseTopic} resumeTopic={dash.resumeTopic} removeTopic={dash.removeTopic} />
+    ) : tab === 'quran' ? (
+      <QuranTab onOpenReader={openReader} />
+    ) : tab === 'review' ? (
+      <Review name={name} streak={streak} coins={cn} state={dash.state} deps={deps}
+        onGoTab={nav.onTapTab} onSelectLesson={onSelectLesson} resolveLesson={resolveLesson} onOpenCoreWords={openCore} />
+    ) : (
+      <You name={name} guest={guest} state={dash.state} completedLessons={completedLessons} xp={xp}
+        onSignOut={appState?.signOut} onCreateAccount={appState?.signOut} setDailyMinutes={dash.setDailyMinutes} />
     );
-  }
+
+  const top = nav.top;
+  const readerTop = top && top.type === 'reader' ? top : null;
+  const fullTop = top && top.type !== 'reader' ? top : null;
+
+  // Reader overlay: sits over the active tab (nav still visible, Qur'an highlighted).
+  const readerOverlay = readerTop ? (
+    <><style>{QURAN_CSS}</style><QuranReader surah={readerTop.surah} initialAyah={readerTop.ayah} onBack={nav.goBack} /></>
+  ) : null;
 
   return (
-    <AppShell tab={tab} onTab={setTab} reviewDot={badges.reviewDot}>
-      {tab === 'home' && (
-        <Home name={name} state={dash.state} deps={deps} coins={dash.state.coins || coins} streak={dailyStreak || dash.state.streak?.count || 0}
-          onOpenTopic={setPathTopicId} onGoTab={setTab} onSelectLesson={onSelectLesson}
-          onOpenCoreWords={() => setCoreWordsOpen(true)} onOpenTool={setToolOpen}
-          onOpenAyah={(surah, ayah) => { setQuranInitial({ surah, ayah }); setTab('quran'); }} />
-      )}
-      {tab === 'topics' && (
-        <Topics state={dash.state} deps={deps} onOpenTopic={setPathTopicId} addTopic={dash.addTopic} pauseTopic={dash.pauseTopic} resumeTopic={dash.resumeTopic} removeTopic={dash.removeTopic} />
-      )}
-      {tab === 'quran' && (<QuranTab initialOpen={quranInitial} onConsumed={() => setQuranInitial(null)} />)}
-      {tab === 'review' && (
-        <Review name={name} streak={dailyStreak || dash.state.streak?.count || 0} coins={dash.state.coins || coins} state={dash.state} deps={deps}
-          onGoTab={setTab} onSelectLesson={onSelectLesson} resolveLesson={resolveLesson} onOpenCoreWords={() => setCoreWordsOpen(true)} />
-      )}
-      {tab === 'you' && (
-        <You name={name} guest={guest} state={dash.state} completedLessons={completedLessons} xp={xp}
-          onSignOut={appState?.signOut} onCreateAccount={appState?.signOut} setDailyMinutes={dash.setDailyMinutes} />
-      )}
+    <>
+      <AppShell tab={nav.highlightTab} onTab={nav.onTapTab} reviewDot={badges.reviewDot} scrollKey={tab} overlay={readerOverlay}>
+        {tabContent}
+      </AppShell>
 
-      {/* Quranic Core Words full-screen, portaled to body so it covers the nav */}
-      {coreWordsOpen && typeof document !== 'undefined' && createPortal(
-        <div style={{ position: 'fixed', inset: 0, zIndex: 1000, background: '#F4F2FA' }}>
-          <RootWordsModule onExit={() => setCoreWordsOpen(false)} />
+      {/* Full-screen overlays (path / tool / core words) cover the whole screen but
+          leave the dashboard mounted underneath, so back restores its scroll. */}
+      {fullTop && typeof document !== 'undefined' && createPortal(
+        <div style={{ position: 'fixed', inset: 0, zIndex: 1000, background: fullTop.type === 'corewords' ? '#F4F2FA' : '#fff', overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
+          {fullTop.type === 'path' && (
+            <PathLessons
+              topic={mainTopics.find(t => t.id === fullTop.topicId) || { id: fullTop.topicId, title: subjectOf(fullTop.topicId).name }}
+              modules={modules} completedLessons={completedLessons}
+              accent={subjectOf(fullTop.topicId).accent} level={dash.state.topics[fullTop.topicId]?.level}
+              onSelectLesson={onSelectLesson} onBack={nav.goBack}
+            />
+          )}
+          {fullTop.type === 'tool' && <ToolScreen tool={fullTop.tool} onBack={nav.goBack} />}
+          {fullTop.type === 'corewords' && <RootWordsModule onExit={nav.goBack} />}
         </div>,
         document.body
       )}
-    </AppShell>
+    </>
   );
 }
