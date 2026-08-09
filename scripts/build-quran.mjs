@@ -69,7 +69,8 @@ const juzAt = boundaryResolver(juzs);
 // quran-data.xml, and they are metadata not Arabic scripture, so they live here as
 // a build-time constant; the boundaries themselves come only from the XML.
 const JUZ_NAMES = ['Alif Lam Meem', 'Sayaqool', 'Tilkal Rusulu', 'Lan Tanaloo Albirra', 'Wal Mohsanatu', 'La Yuhibbullah', 'Wa Iza Samiu', 'Wa Lau Annana', 'Qalal Malao', 'Wa Alamoo', 'Yatazeroon', 'Wa Mamin Dabatin', 'Wa Ma Ubrioo', 'Rubama', 'Subhanal Ladhi', 'Qala Alam', 'Iqtaraba Lin-nasi', 'Qadd Aflaha', 'Wa Qalalladhina', 'Aman Khalaqa', 'Utlu Ma Oohiya', 'Wa-Man Yaqnut', 'Wa Mali', 'Fa-man Azlamu', 'Ilayhi Yuraddu', 'Ha Meem', 'Qala Fama Khatbukum', 'Qadd Samiallah', 'Tabarakal Ladhi', 'Amma'];
-const hizbAt = (() => { const r = boundaryResolver(hizbQ); return (g) => Math.ceil(r(g) / 4) || 0; })(); // quarter -> hizb
+const quarterAt = boundaryResolver(hizbQ); // rub al-hizb, 1..240
+const hizbAt = (g) => Math.ceil(quarterAt(g) / 4) || 0; // quarter -> hizb, 1..60
 const rukuAt = boundaryResolver(rukus);
 const pageAt = boundaryResolver(pages);
 const sajdaKeys = new Set(sajdas.map((s) => `${+s.sura}:${+s.aya}`));
@@ -80,11 +81,20 @@ fs.mkdirSync(outSurahDir, { recursive: true });
 fs.mkdirSync('src/data', { recursive: true });
 // Materialise the 30 juz starts from the XML (ordered), each with a global ordinal
 // so ranges are integer comparisons at runtime - never string-compared keys.
-const juzList = juzs
+const juzStarts = juzs
   .map((j) => ({ juz: +j.index, surah: +j.sura, ayah: +j.aya }))
   .sort((a, b) => a.juz - b.juz)
-  .map((j) => ({ ...j, name: JUZ_NAMES[j.juz - 1] || `Juz ${j.juz}`, ordinal: gindex.get(`${j.surah}:${j.ayah}`) }));
-const index = { _generated: true, juz: juzList, surahs: [] };
+  .map((j) => ({ ...j, startG: gindex.get(`${j.surah}:${j.ayah}`) }));
+// Each juz carries its end ref, ayah count and start page so the reader/index never
+// re-derive boundaries. End = the ayah before the next juz start (114:6 for juz 30).
+const juzList = juzStarts.map((j, i) => {
+  const nextG = i + 1 < juzStarts.length ? juzStarts[i + 1].startG : order.length; // exclusive
+  const [es, ea] = order[nextG - 1].split(':').map(Number);
+  return { juz: j.juz, surah: j.surah, ayah: j.ayah, name: JUZ_NAMES[j.juz - 1] || `Juz ${j.juz}`, ordinal: j.startG, endSurah: es, endAyah: ea, ayat: nextG - j.startG, page: pageAt(j.startG) };
+});
+// Page starts (604) so "go to page N" resolves to a ref without fetching a surah.
+const pageList = pages.map((p) => ({ page: +p.index, surah: +p.sura, ayah: +p.aya })).sort((a, b) => a.page - b.page);
+const index = { _generated: true, juz: juzList, pages: pageList, surahs: [] };
 let total = 0;
 for (const su of suras) {
   const s = +su.index, count = +su.ayas;
@@ -95,7 +105,7 @@ for (const su of suras) {
     const sm = simple.get(key); const en = english[key];
     if (!en) die(`missing English for ${key}`);
     const isSajdah = sajdaKeys.has(key); if (isSajdah) sajdahAyat.push(a);
-    ayat.push({ surah: s, ayah: a, key, arabic_uthmani: ar, arabic_simple: sm ?? '', english: en, ...(isSajdah ? { sajdah: true } : {}), juz: juzAt(g), hizb: hizbAt(g), ruku: rukuAt(g), page: pageAt(g) });
+    ayat.push({ surah: s, ayah: a, key, arabic_uthmani: ar, arabic_simple: sm ?? '', english: en, ...(isSajdah ? { sajdah: true } : {}), juz: juzAt(g), hizb: hizbAt(g), rub: quarterAt(g), ruku: rukuAt(g), page: pageAt(g) });
     total++;
   }
   fs.writeFileSync(path.join(outSurahDir, `${s}.json`), JSON.stringify({ surah: s, ayat }));

@@ -129,9 +129,18 @@ export default function QuranReader({ surah, initialAyah, onBack, onOpenLesson }
 
       {ayat && ayat.length > 0 && layout === 'cards' && (
         <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', WebkitOverflowScrolling: 'touch', padding: '10px 16px' }}>
-          {ayat.slice(0, visible).map((a) => (
-            <CardBlock key={a.key} a={a} arSize={arSize} showT={showT} onSave={onSave} saved={saved} onSajdah={() => setMarker('sajdah')} onMore={() => setMarker('audio-repeat')} />
-          ))}
+          {ayat.slice(0, visible).map((a, i) => {
+            const prev = i > 0 ? ayat[i - 1] : null;
+            const juzStart = prev && a.juz !== prev.juz;
+            const rubStart = prev && !juzStart && a.rub !== prev.rub; // a juz start is also a rub start; show the divider there, the octagram elsewhere
+            return (
+              <React.Fragment key={a.key}>
+                {juzStart && <JuzBegins juz={a.juz} />}
+                {rubStart && <RubMark />}
+                <CardBlock a={a} arSize={arSize} showT={showT} onSave={onSave} saved={saved} onSajdah={() => setMarker('sajdah')} onMore={() => setMarker('audio-repeat')} />
+              </React.Fragment>
+            );
+          })}
           {visible < ayat.length && <div ref={sentinelRef} style={{ height: 1 }} />}
           <div style={{ marginTop: 20, paddingTop: 14, borderTop: `1px solid ${D.border}` }}><Attribution showTranslation={showT} /></div>
         </div>
@@ -217,6 +226,26 @@ function CardBlock({ a, arSize, showT, onSave, saved, onSajdah, onMore }) {
           <div style={{ fontSize: TYPE.hint, color: D.inkFaint, marginTop: 3 }}>Pickthall</div>
         </div>
       )}
+    </div>
+  );
+}
+
+// Inline juz boundary (spec UI 4): a labelled divider at the exact ayah where a new
+// juz begins. Its octagram is the same rub glyph used below.
+function JuzBegins({ juz }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '10px 0 6px' }}>
+      <span style={{ flex: 1, height: 1, background: D.border }} />
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: TYPE.hint, fontWeight: 700, color: '#8A6410', background: '#FBF3DF', border: '1px solid #F0DFAE', borderRadius: 999, padding: '4px 12px', fontFamily: FONT }}>{'۞'} Juz {juz} begins</span>
+      <span style={{ flex: 1, height: 1, background: D.border }} />
+    </div>
+  );
+}
+// Rub al-hizb octagram at a quarter boundary, positioned from the per-ayah rub data.
+function RubMark() {
+  return (
+    <div style={{ textAlign: 'center', margin: '4px 0 2px', lineHeight: 1 }} aria-label="Rub al-hizb">
+      <span className="quran-ar" style={{ fontSize: 22, color: D.gold }}>{'۞'}</span>
     </div>
   );
 }
