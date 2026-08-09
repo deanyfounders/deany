@@ -29,19 +29,13 @@ const PATHS = [
 const DIFF = (tier) => (tier >= 3 ? 'Advanced' : tier === 2 ? 'Intermediate' : 'Beginner');
 
 // Tools launcher (spec section 8). Each opens its own screen; none render inline.
+// Tools use real Apple emoji glyphs (rendered by the OS), not custom SVGs.
 const TOOLS = [
-  { id: 'zakat', name: 'Zakat calculator', sub: 'Cash, gold, stocks', tile: E.goldTint },
-  { id: 'qibla', name: 'Qibla finder', sub: 'Direction from here', tile: E.tealTint },
-  { id: 'tasbih', name: 'Tasbih counter', sub: 'Dhikr with haptics', tile: E.historyTint },
-  { id: 'hijri', name: 'Hijri converter', sub: 'Dates both ways', tile: E.quranTint },
+  { id: 'zakat', name: 'Zakat calculator', sub: 'Cash, gold, stocks', tile: E.goldTint, emoji: '🔢' },
+  { id: 'qibla', name: 'Qibla finder', sub: 'Direction from here', tile: E.tealTint, emoji: '🧭' },
+  { id: 'tasbih', name: 'Tasbih counter', sub: 'Dhikr with haptics', tile: E.historyTint, emoji: '📿' },
+  { id: 'hijri', name: 'Hijri converter', sub: 'Dates both ways', tile: E.quranTint, emoji: '📅' },
 ];
-function ToolIcon({ id }) {
-  const c = { width: 20, height: 20, viewBox: '0 0 24 24', fill: 'none', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round', 'aria-hidden': true };
-  if (id === 'zakat') return <svg {...c} stroke={E.goldDark}><rect x="5" y="3" width="14" height="18" rx="2" /><path d="M8 7 H16 M8 12 H10 M8 16 H10 M14 12 H16 M14 16 H16" /></svg>;
-  if (id === 'qibla') return <svg {...c} stroke={E.tealDark}><circle cx="12" cy="12" r="9" /><path d="M15.5 8.5 L13.5 13.5 L8.5 15.5 L10.5 10.5 Z" /></svg>;
-  if (id === 'tasbih') return <svg {...c} stroke={E.history}><circle cx="12" cy="5" r="1.6" /><circle cx="6.5" cy="9" r="1.6" /><circle cx="17.5" cy="9" r="1.6" /><circle cx="5" cy="15" r="1.6" /><circle cx="19" cy="15" r="1.6" /><circle cx="12" cy="19.5" r="2.2" /></svg>;
-  return <svg {...c} stroke={E.navy}><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M3 10 H21 M8 3 V7 M16 3 V7" /><path d="M15 14.5 A2.6 2.6 0 1 1 12.4 12 A2.1 2.1 0 0 0 15 14.5 Z" /></svg>;
-}
 
 const hijriParts = (date) => {
   const p = new Intl.DateTimeFormat('en-US-u-ca-islamic-umalqura', { day: 'numeric', month: 'long', year: 'numeric' }).formatToParts(date);
@@ -322,7 +316,7 @@ export default function Home({ name, state, deps, coins, streak, onGoTab, onOpen
         <div className="tools-grid">
           {TOOLS.map((t) => (
             <button key={t.id} className="tool" onClick={() => onOpenTool && onOpenTool(t.id)}>
-              <span className="ttile" style={{ background: t.tile }}><ToolIcon id={t.id} /></span>
+              <span className="ttile" style={{ background: t.tile, fontSize: 20, lineHeight: 1 }} aria-hidden="true">{t.emoji}</span>
               <div><b>{t.name}</b><small>{t.sub}</small></div>
             </button>
           ))}
