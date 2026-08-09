@@ -56,6 +56,7 @@ export const E = {
   bg: '#FFFFFF', card: '#FFFFFF', inset: '#F6F6F4', line: '#E3E0D8',
   ink: '#1B2A4A', soft: '#6E7385', faint: '#9CA0AE',
   teal: '#22A39A', tealDark: '#0F6E56', tealTint: '#D9F1EB',
+  navActiveBorder: '#7FCDC4', // bottom-nav active-frame border (deany_bottom_nav_spec §4)
   gold: '#F0B429', goldDark: '#8A5E10', goldTint: '#FCEBC9', goldEdge: '#C98F17',
   navy: '#1B2A4A', history: '#E06A45', historyTint: '#FCE7DE', quranTint: '#E2E6F2',
   contGrad: 'linear-gradient(135deg,#27B5A8,#189287)', contBorder: '#178E85', contBottom: '#0F6E56',

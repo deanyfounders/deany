@@ -8,32 +8,98 @@ import { DashMotion } from './motion.jsx';
 const TABS = ['home', 'topics', 'quran', 'review', 'you'];
 const LABELS = { home: 'Home', topics: 'Topics', quran: "Qur'an", review: 'Review', you: 'You' };
 
-// Icon paths lifted from the pixel reference (24x24, stroke 1.9, round joins).
-function NavIcon({ id }) {
-  const common = { width: 22, height: 22, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.9, strokeLinecap: 'round', strokeLinejoin: 'round', 'aria-hidden': true };
-  if (id === 'home') return <svg {...common}><path d="M3 10.5 L12 3 L21 10.5 V20 a1 1 0 0 1-1 1 H4 a1 1 0 0 1-1-1 Z" /></svg>;
-  if (id === 'topics') return <svg {...common}><circle cx="12" cy="12" r="9" /><path d="M15.5 8.5 L13.5 13.5 L8.5 15.5 L10.5 10.5 Z" /></svg>;
-  if (id === 'quran') return <svg {...common}><path d="M12 6 Q8 3.5 4 5 V19 Q8 17.5 12 20 Q16 17.5 20 19 V5 Q16 3.5 12 6 Z" /><path d="M12 6 V20" /></svg>;
-  if (id === 'review') return <svg {...common}><path d="M21 12 a9 9 0 1 1-2.6-6.4" /><path d="M21 3 v6 h-6" /></svg>;
-  return <svg {...common}><circle cx="12" cy="8" r="4" /><path d="M4 21 Q4 15 12 15 Q20 15 20 21" /></svg>;
+// deany_bottom_nav_spec: Duolingo anatomy. Every icon is a FILLED, multi-tone
+// 32px SVG (no outlines, no gradients). Two fill sets per icon toggled by state:
+// full brand colour when active, controlled greyscale filled-silhouette when
+// inactive. Palettes below are the ONLY source of each icon's colours.
+const G = { main: '#B9BCC6', shade: '#D4D6DC' }; // §3 inactive greys
+const PAL = {
+  home:   { on: { body: '#F0B429', dark: '#C98F17', accent: '#22A39A' }, off: { body: G.main, dark: G.shade, accent: G.shade } },
+  topics: { on: { disc: '#22A39A', rim: '#0F6E56', nN: '#F0B429', nS: '#1B2A4A' }, off: { disc: G.main, rim: G.shade, nN: G.shade, nS: G.main } },
+  quran:  { on: { cover: '#1B2A4A', spine: '#101A31', gold: '#F0B429' }, off: { cover: G.main, spine: G.shade, gold: G.shade } },
+  review: { on: { arm: '#22A39A', shade: '#0F6E56', spark: '#F0B429' }, off: { arm: G.main, shade: G.shade, spark: G.shade } },
+  you:    { on: { bust: '#1B2A4A', collar: '#22A39A', plate: '#FCEBC9' }, off: { bust: G.main, collar: G.shade, plate: G.shade } },
+};
+
+// Filled annular sector (thick arc ribbon) for the refresh arrows - built from
+// two fill paths, never a stroke. Angles in radians, screen space (y down).
+const _pt = (cx, cy, r, a) => `${(cx + r * Math.cos(a)).toFixed(2)} ${(cy + r * Math.sin(a)).toFixed(2)}`;
+function sector(cx, cy, r0, r1, a0, a1) {
+  const large = Math.abs(a1 - a0) > Math.PI ? 1 : 0;
+  return `M${_pt(cx, cy, r1, a0)} A${r1} ${r1} 0 ${large} 1 ${_pt(cx, cy, r1, a1)} L${_pt(cx, cy, r0, a1)} A${r0} ${r0} 0 ${large} 0 ${_pt(cx, cy, r0, a0)} Z`;
+}
+function arrowhead(cx, cy, rm, a, len = 5) {
+  const tx = cx + rm * Math.cos(a) - len * Math.sin(a);
+  const ty = cy + rm * Math.sin(a) + len * Math.cos(a);
+  return `M${_pt(cx, cy, rm + 3.6, a)} L${_pt(cx, cy, rm - 3.6, a)} L${tx.toFixed(2)} ${ty.toFixed(2)} Z`;
 }
 
-export function NavBar({ tab, onTab, reviewDot }) {
+// Each icon: 32x32 box, filled shapes only. `p` is the on/off palette slice.
+function NavIcon({ id, active }) {
+  const p = PAL[id][active ? 'on' : 'off'];
+  const svg = (children) => (
+    <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" style={{ display: 'block' }}>{children}</svg>
+  );
+  if (id === 'home') return svg(<>
+    <path d="M16 4 L29 16 L3 16 Z" fill={p.dark} />
+    <rect x="6.5" y="15" width="19" height="12.5" rx="1.6" fill={p.body} />
+    <rect x="13.4" y="19.4" width="5.2" height="8.1" rx="1" fill={p.dark} />
+    <rect x="9" y="18" width="4" height="4" rx="0.8" fill={p.accent} />
+  </>);
+  if (id === 'topics') return svg(<>
+    <circle cx="16" cy="16" r="12.5" fill={p.rim} />
+    <circle cx="16" cy="16" r="10.4" fill={p.disc} />
+    <path d="M16 7 L19 16 L13 16 Z" fill={p.nN} />
+    <path d="M16 25 L13 16 L19 16 Z" fill={p.nS} />
+    <circle cx="16" cy="16" r="1.7" fill={p.rim} />
+  </>);
+  if (id === 'quran') return svg(<>
+    <rect x="7" y="5" width="18" height="22" rx="2.6" fill={p.cover} />
+    <rect x="7" y="5" width="3.6" height="22" rx="1.4" fill={p.spine} />
+    <rect x="22.6" y="7" width="2.4" height="18" rx="1" fill={p.spine} />
+    <path d="M16 10.5 l2.6 4.5 -2.6 4.5 -2.6 -4.5 Z" fill={p.gold} />
+    <rect x="23.4" y="14.4" width="3.4" height="3.2" rx="0.8" fill={p.gold} />
+  </>);
+  if (id === 'review') {
+    const cx = 16, cy = 16, r0 = 6.6, r1 = 10.6, rm = (r0 + r1) / 2;
+    return svg(<>
+      <path d={sector(cx, cy, r0, r1, -2.97, -0.52)} fill={p.arm} />
+      <path d={sector(cx, cy, r0, r1, 0.17, 2.62)} fill={p.arm} />
+      <path d={arrowhead(cx, cy, rm, -0.52)} fill={p.shade} />
+      <path d={arrowhead(cx, cy, rm, 2.62)} fill={p.shade} />
+      <path d="M25 6 l1 2.4 2.4 1 -2.4 1 -1 2.4 -1 -2.4 -2.4 -1 2.4 -1 Z" fill={p.spark} />
+    </>);
+  }
+  return svg(<>
+    <circle cx="16" cy="16" r="12.5" fill={p.plate} />
+    <path d="M6.5 27.6 Q7 19.4 16 19.4 Q25 19.4 25.5 27.6 Z" fill={p.bust} />
+    <path d="M12.4 20 L16 24.2 L19.6 20 Z" fill={p.collar} />
+    <circle cx="16" cy="12.4" r="5" fill={p.bust} />
+  </>);
+}
+
+// One bar, every screen (spec §2, §5). No text: names live only on aria-label.
+// Active icon sits in a 48x40 rounded frame (tealTint fill + 2px navActiveBorder);
+// inactive icons have no container. Tap pulses the icon to 0.9 then springs back.
+export function NavBar({ tab, onTab }) {
+  const [pressed, setPressed] = React.useState(null);
+  const pulse = (id) => { setPressed(id); setTimeout(() => setPressed((p) => (p === id ? null : p)), 100); };
   return (
-    <nav aria-label="Primary" style={{ display: 'flex', background: '#fff', borderTop: `1px solid ${E.line}`, paddingBottom: 'env(safe-area-inset-bottom)', flexShrink: 0, maxWidth: 520, margin: '0 auto', width: '100%' }}>
+    <nav aria-label="Primary" style={{ display: 'flex', background: '#fff', borderTop: '2px solid #E8E6E0', paddingBottom: 'env(safe-area-inset-bottom)', flexShrink: 0, maxWidth: 520, margin: '0 auto', width: '100%' }}>
       {TABS.map((id) => {
         const active = tab === id;
-        const showDot = id === 'review' && reviewDot;
         return (
-          <button key={id} onClick={() => onTab(id)} aria-label={LABELS[id]} aria-current={active} style={{
-            flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '10px 0 8px', border: 'none', background: 'none',
-            cursor: 'pointer', color: active ? E.tealDark : '#A6A9B4', fontSize: 11, fontWeight: active ? 800 : 600, WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation',
+          <button key={id} onPointerDown={() => pulse(id)} onClick={() => onTab(id)} aria-label={LABELS[id]} aria-current={active} style={{
+            flex: 1, height: 58, display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', background: 'none',
+            cursor: 'pointer', WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation', padding: 0,
           }}>
-            <span style={{ position: 'relative', display: 'flex', borderRadius: 16, padding: '4px 14px', background: active ? E.teal : 'transparent', boxShadow: active ? `0 2px 0 ${E.tealDark}` : 'none', color: active ? '#fff' : 'currentColor' }}>
-              <NavIcon id={id} />
-              {showDot && <span style={{ position: 'absolute', top: 1, right: 8, width: 7, height: 7, borderRadius: '50%', background: E.gold, border: '1.5px solid #fff' }} />}
+            <span style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center', width: 48, height: 40, borderRadius: 14,
+              background: active ? E.tealTint : 'transparent', border: active ? `2px solid ${E.navActiveBorder}` : '2px solid transparent',
+              transform: pressed === id ? 'scale(0.9)' : 'scale(1)', transition: 'transform 180ms cubic-bezier(.2,.8,.3,1.5)',
+            }}>
+              <NavIcon id={id} active={active} />
             </span>
-            {LABELS[id]}
           </button>
         );
       })}
@@ -59,7 +125,7 @@ export default function AppShell({ tab, onTab, reviewDot, children, overlay, scr
           </div>
         )}
       </div>
-      <NavBar tab={tab} onTab={onTab} reviewDot={reviewDot} />
+      <NavBar tab={tab} onTab={onTab} />
     </div>
   );
 }
