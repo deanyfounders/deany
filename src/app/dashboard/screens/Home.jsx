@@ -111,16 +111,15 @@ const ED_CSS = `
 .ed .pct{ font-size:9.5px; color:var(--faint); text-align:right; margin-top:4px; }
 .ed .xp-row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
 .ed .ring-card{ text-align:center; padding:16px 12px; margin-bottom:0; }
-/* NOTE: class is "goalring", NOT "ring". The bare class name "ring" collides with
-   Tailwind's `.ring` utility (loaded from the CDN in index.html), which paints a
-   3px box-shadow in the default ring colour (blue-500). On this rectangular div
-   that rendered as a blue square around the XP ring. Do not rename it back to
-   "ring" or any other Tailwind utility name. */
-.ed .goalring{ position:relative; width:84px; height:84px; margin:6px auto 8px; }
-.ed .goalring svg{ display:block; }
-.ed .goalring .n{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
-.ed .goalring .n b{ font-size:18px; font-weight:800; }
-.ed .goalring .n small{ font-size:8.5px; color:var(--faint); text-transform:uppercase; letter-spacing:0.08em; }
+.ed .ring{ position:relative; width:84px; height:84px; margin:6px auto 8px; pointer-events:none; }
+/* iOS Safari draws a cornflower-blue box around the ring SVG (composited-layer /
+   tap-highlight artifact). Belt-and-suspenders: no CSS transform on the svg (the
+   arc is rotated via an SVG attribute instead), plus kill any outline / tap
+   highlight / selection so the browser cannot paint a box on it. */
+.ed .ring svg{ display:block; outline:none; -webkit-tap-highlight-color:transparent; -webkit-user-select:none; user-select:none; }
+.ed .ring .n{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.ed .ring .n b{ font-size:18px; font-weight:800; }
+.ed .ring .n small{ font-size:8.5px; color:var(--faint); text-transform:uppercase; letter-spacing:0.08em; }
 .ed .ring-card p{ font-size:10.5px; color:var(--faint); line-height:1.45; }
 .ed .nudge{ padding:14px; margin-bottom:0; display:flex; flex-direction:column; justify-content:center; }
 .ed .nudge b{ font-size:13px; font-weight:800; }
@@ -282,7 +281,7 @@ export default function Home({ name, state, deps, coins, streak, onGoTab, onOpen
       {/* 5. XP row */}
       <div className="xp-row">
         <div className="card ring-card">
-          <div className="goalring">
+          <div className="ring">
             <svg width="84" height="84" viewBox="0 0 76 76" focusable="false" aria-hidden="true" style={{ pointerEvents: 'none' }}>
               <circle cx="38" cy="38" r="33" fill="none" stroke="#F1EFE9" strokeWidth="9" />
               <circle cx="38" cy="38" r="33" fill="none" stroke={E.gold} strokeWidth="9" strokeLinecap="round" strokeDasharray={CIRC} strokeDashoffset={ringOffset} transform="rotate(-90 38 38)" />
