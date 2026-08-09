@@ -85,12 +85,19 @@ export function NavBar({ tab, onTab }) {
   const [pressed, setPressed] = React.useState(null);
   const pulse = (id) => { setPressed(id); setTimeout(() => setPressed((p) => (p === id ? null : p)), 100); };
   return (
-    <nav aria-label="Primary" style={{ display: 'flex', background: '#fff', borderTop: '2px solid #E8E6E0', paddingBottom: 'env(safe-area-inset-bottom)', flexShrink: 0, maxWidth: 520, margin: '0 auto', width: '100%' }}>
+    <nav aria-label="Primary" style={{
+      display: 'flex', background: '#fff', borderTop: '2px solid #E8E6E0', flexShrink: 0, maxWidth: 520, margin: '0 auto', width: '100%',
+      // Flush to the screen edge (white fills the safe area), but the icon row is
+      // lifted: small space above, generous space below so the icons never hug the
+      // bottom edge. In normal flow, so content always ends above the bar - it can
+      // never cover anything on scroll.
+      padding: '8px 0 calc(env(safe-area-inset-bottom) + 16px)',
+    }}>
       {TABS.map((id) => {
         const active = tab === id;
         return (
           <button key={id} onPointerDown={() => pulse(id)} onClick={() => onTab(id)} aria-label={LABELS[id]} aria-current={active} style={{
-            flex: 1, height: 58, display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', background: 'none',
+            flex: 1, minHeight: 48, display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', background: 'none',
             cursor: 'pointer', WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation', padding: 0,
           }}>
             <span style={{
