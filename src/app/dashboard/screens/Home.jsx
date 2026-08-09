@@ -112,7 +112,6 @@ const ED_CSS = `
 .ed .xp-row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
 .ed .ring-card{ text-align:center; padding:16px 12px; margin-bottom:0; }
 .ed .ring{ position:relative; width:84px; height:84px; margin:6px auto 8px; }
-.ed .ring svg{ transform:rotate(-90deg); }
 .ed .ring .n{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
 .ed .ring .n b{ font-size:18px; font-weight:800; }
 .ed .ring .n small{ font-size:8.5px; color:var(--faint); text-transform:uppercase; letter-spacing:0.08em; }
@@ -280,7 +279,7 @@ export default function Home({ name, state, deps, coins, streak, onGoTab, onOpen
           <div className="ring">
             <svg width="84" height="84" viewBox="0 0 76 76">
               <circle cx="38" cy="38" r="33" fill="none" stroke="#F1EFE9" strokeWidth="9" />
-              <circle cx="38" cy="38" r="33" fill="none" stroke={E.gold} strokeWidth="9" strokeLinecap="round" strokeDasharray={CIRC} strokeDashoffset={ringOffset} />
+              <circle cx="38" cy="38" r="33" fill="none" stroke={E.gold} strokeWidth="9" strokeLinecap="round" strokeDasharray={CIRC} strokeDashoffset={ringOffset} transform="rotate(-90 38 38)" />
             </svg>
             <div className="n"><b>{ringEarned}</b><small>of {goal} min</small></div>
           </div>
