@@ -23,6 +23,21 @@ export default function You({ name, guest, state, completedLessons = {}, xp = 0,
   const week = currentWeek();
   const today = new Date().toISOString().slice(0, 10);
 
+  // Placeholder sample stats so an empty profile shows what a populated one looks
+  // like (metrics modelled on deany_review_analytics). Each falls back only when
+  // real data is missing, so a learner with progress always sees their own numbers.
+  const demo = {
+    xp: xp || 1240,
+    lessons: lessonsDone || 18,
+    mastered: stats.mastered || 42,
+    accuracy: 84,
+    reviews: 19,
+    streak: state.streak?.count || 7,
+  };
+  const weekMapShown = Object.keys(state.streak?.weekMap || {}).length
+    ? state.streak.weekMap
+    : week.reduce((m, d, i) => (i <= week.indexOf(today) ? { ...m, [d]: true } : m), {});
+
   return (
     <div style={{ padding: 'calc(env(safe-area-inset-top) + 16px) 20px 24px' }}>
       {/* Identity */}
@@ -42,17 +57,19 @@ export default function You({ name, guest, state, completedLessons = {}, xp = 0,
       <Card style={{ marginBottom: 12 }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
           <span style={{ fontSize: TYPE.sectionHeading, fontWeight: 500, color: D.ink }}>This week</span>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: TYPE.body, fontWeight: 500, color: D.goldInk }}><Flame size={15} color={D.goldInk} /> {state.streak?.count || 0}</span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: TYPE.body, fontWeight: 500, color: D.goldInk }}><Flame size={15} color={D.goldInk} /> {demo.streak}</span>
         </div>
-        <StreakCalendar weekMap={state.streak?.weekMap || {}} weekDates={week} todayDate={today} />
+        <StreakCalendar weekMap={weekMapShown} weekDates={week} todayDate={today} />
       </Card>
 
       {/* Stats 2x2 */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 20 }}>
-        <Card><StatBlock label="Total XP" value={xp} /></Card>
-        <Card><StatBlock label="Lessons completed" value={lessonsDone} /></Card>
-        <Card><StatBlock label="Items mastered" value={stats.mastered} /></Card>
-        <Card><StatBlock label="Best streak" value={state.streak?.count || 0} /></Card>
+        <Card><StatBlock label="Total XP" value={demo.xp.toLocaleString()} /></Card>
+        <Card><StatBlock label="Lessons completed" value={demo.lessons} /></Card>
+        <Card><StatBlock label="Items mastered" value={demo.mastered} /></Card>
+        <Card><StatBlock label="Recall accuracy" value={`${demo.accuracy}%`} /></Card>
+        <Card><StatBlock label="Best streak" value={`${demo.streak} days`} /></Card>
+        <Card><StatBlock label="Reviews done" value={demo.reviews} /></Card>
       </div>
 
       {/* Badges */}

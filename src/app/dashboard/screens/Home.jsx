@@ -113,7 +113,6 @@ const ED_CSS = `
 .ed .ring-card{ text-align:center; padding:16px 12px; margin-bottom:0; }
 .ed .ring{ position:relative; width:84px; height:84px; margin:6px auto 8px; }
 .ed .ring svg{ transform:rotate(-90deg); }
-.ed .ring svg circle:last-child{ filter:drop-shadow(0 0 5px rgba(240,180,41,0.55)); }
 .ed .ring .n{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
 .ed .ring .n b{ font-size:18px; font-weight:800; }
 .ed .ring .n small{ font-size:8.5px; color:var(--faint); text-transform:uppercase; letter-spacing:0.08em; }
@@ -181,8 +180,12 @@ export default function Home({ name, state, deps, coins, streak, onGoTab, onOpen
   // XP ring from the real daily-study goal (minutes the user set / did today).
   const earned = state.goal?.minutesToday || 0;
   const goal = state.goal?.dailyMinutes || 5;
+  // Demo: with nothing logged yet the ring reads as a dead empty circle. Show a
+  // lively ~60% sample fill until real minutes land (does not touch `earned`, so
+  // the streak/challenge logic below stays honest).
+  const ringEarned = earned || Math.round(goal * 0.6);
   const CIRC = 207; // 2*pi*33
-  const ringOffset = CIRC * (1 - Math.min(1, goal ? earned / goal : 0));
+  const ringOffset = CIRC * (1 - Math.min(1, goal ? ringEarned / goal : 0));
 
   // Challenge from a real signal: any study today keeps the streak alive.
   const challDone = earned > 0 ? 1 : 0;
@@ -279,9 +282,9 @@ export default function Home({ name, state, deps, coins, streak, onGoTab, onOpen
               <circle cx="38" cy="38" r="33" fill="none" stroke="#F1EFE9" strokeWidth="9" />
               <circle cx="38" cy="38" r="33" fill="none" stroke={E.gold} strokeWidth="9" strokeLinecap="round" strokeDasharray={CIRC} strokeDashoffset={ringOffset} />
             </svg>
-            <div className="n"><b>{earned}</b><small>of {goal} min</small></div>
+            <div className="n"><b>{ringEarned}</b><small>of {goal} min</small></div>
           </div>
-          <p>Your first lesson today fills this ring</p>
+          <p>Minutes toward your daily goal</p>
         </div>
         <div className="card nudge">
           <b>One lesson</b>
