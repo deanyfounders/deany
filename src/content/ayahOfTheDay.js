@@ -31,11 +31,11 @@ export const AYAH_BANK = [
     source: 'Tafsir Ibn Kathir', review: 'pending_mehdi',
   },
   {
-    id: 'talaq-3', surahName: 'At-Talaq', ref: '65:3',
-    arabic: 'وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ',
-    translation: 'And whoever relies upon Allah, then He is sufficient for him.',
-    tafsirLine: 'True reliance on Allah brings sufficiency - He becomes enough for the one who trusts Him.',
-    tafsirFull: 'Ibn Kathir explains that sufficiency here means Allah suffices the one who places his trust in Him in all his affairs, worldly and otherwise.',
+    id: 'talaq-3', surahName: 'At-Talaq', ref: '65:2-3',
+    arabic: 'وَمَن يَتَّقِ ٱللَّهَ يَجْعَل لَّهُۥ مَخْرَجًا وَيَرْزُقْهُ مِنْ حَيْثُ لَا يَحْتَسِبُ ۚ وَمَن يَتَوَكَّلْ عَلَى ٱللَّهِ فَهُوَ حَسْبُهُۥٓ',
+    translation: 'And whoever has taqwa of Allah, He will make a way out for him, and provide for him from where he does not expect. And whoever puts his trust in Allah, He will suffice him.',
+    tafsirLine: 'Taqwa opens a way out and unseen provision; trust in Allah brings sufficiency.',
+    tafsirFull: 'And whosoever has Taqwa of Allah, He will make a way for him to get out. And He will provide him from where he never could imagine. And whosoever puts his trust in Allah, then He will suffice him.',
     source: 'Tafsir Ibn Kathir', review: 'pending_mehdi',
   },
   {

@@ -28,8 +28,11 @@ function migrate(base) {
     const raw = window.localStorage.getItem(ONB);
     if (!raw) return base;
     const onb = JSON.parse(raw);
+    // Topics are opt-in: only the first onboarding pick starts active; the rest
+    // are not seeded, so they appear under "Add" in the Topics tab for the user
+    // to add (and remove) themselves - nothing is force-added automatically.
     const topics = {};
-    (onb.topics || []).forEach((id, i) => {
+    (onb.topics || []).slice(0, 1).forEach((id, i) => {
       const cal = (onb.calibration || {})[id] || {};
       topics[id] = { active: true, addedAt: nowIso(), order: i, level: cal.level || 'Foundations', tier: cal.tier || 1, lastActiveAt: null };
     });

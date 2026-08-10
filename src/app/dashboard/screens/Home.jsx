@@ -23,7 +23,7 @@ const minsOf = (d) => { const n = parseInt(String(d || '').replace(/[^0-9]/g, ''
 // Recite audio resolves from the DISPLAYED ayah key so it can never mismatch the
 // verse on screen (deany_recite_audio_spec). Local override first, then the
 // Al-Dosari CDN (reciter 4, same source as the hifz component).
-const RECITE_OVERRIDE = { '65:3': '/audio/ayah/065003.mp3' };
+const RECITE_OVERRIDE = { '65:2': '/audio/ayah/065002_003.mp3' };
 const reciteSources = (ref) => {
   const [s, aRaw] = String(ref || '').split(':');
   const a = String(aRaw || '').split('-')[0]; // first ayah of a range
@@ -206,6 +206,7 @@ export default function Home({ name, state, deps, coins, streak, xp, onGoTab, on
   const reciteIdx = useRef(0);
   const [reciting, setReciting] = useState(false);
   const [reciteErr, setReciteErr] = useState('');
+  const [showTafsir, setShowTafsir] = useState(false); // Tafsir chip expands inline
   const reciteList = useMemo(() => reciteSources(ayah.ref), [ayah.ref]);
   const playReciteFrom = (i) => {
     const el = reciteRef.current; if (!el || !reciteList[i]) return;
@@ -283,10 +284,19 @@ export default function Home({ name, state, deps, coins, streak, xp, onGoTab, on
               : <svg width="10" height="11" viewBox="0 0 11 12" fill="none" aria-hidden="true"><path d="M1.5 1.5 L10 6 L1.5 10.5 Z" fill="#fff" /></svg>}
             {reciting ? 'Stop' : 'Recite'}
           </div>
-          <div className="chip" onClick={openReader} style={{ background: E.goldTint, borderColor: '#F0D089', color: E.goldDark }}>Context</div>
+          <div className="chip" role="button" tabIndex={0} aria-expanded={showTafsir} aria-label="Tafsir"
+            onClick={() => setShowTafsir((v) => !v)}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowTafsir((v) => !v); } }}
+            style={{ background: E.goldTint, borderColor: '#F0D089', color: E.goldDark }}>Tafsir</div>
         </div>
         <audio ref={reciteRef} preload="none" onEnded={() => setReciting(false)} onError={onReciteError} />
         <div style={{ fontSize: 10.5, color: E.faint, marginTop: 10 }}>{reciteErr || 'Recited by Yasser Al-Dosari'}</div>
+        {showTafsir && ayah.tafsirFull && (
+          <div style={{ marginTop: 12, textAlign: 'left', background: E.inset, border: `1px solid ${E.line}`, borderRadius: 12, padding: '13px 15px' }}>
+            <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', color: E.soft, marginBottom: 6 }}>Tafsir · {ayah.source || 'Tafsir Ibn Kathir'}</div>
+            <p style={{ fontSize: 13, lineHeight: 1.65, color: E.ink, margin: 0 }}>{ayah.tafsirFull}</p>
+          </div>
+        )}
       </div>
 
       {/* 4. Learning paths */}
