@@ -445,15 +445,8 @@ const QuranModuleSeparator = ({ prevMod, prevIndex, nextMod, nextIndex, modules,
 
 /* The only lessons currently open. Everything else renders locked. Quran vocab
    (core words) is a separate always-open feature, not a lesson in this list. */
-export const UNLOCKED_LESSON_IDS = new Set([
-  'arabia-before-islam', // Islamic history, lesson 2
-  'lesson-1-3',          // Islamic finance, lesson 3 (Riba, Gharar, Maysir)
-  'hifz-fatiha',         // Quran memorisation - Surah Al-Fatiha
-  's2-l2',               // Salah, lesson 2 (Before You Pray)
-]);
-export const isLessonUnlocked = (idOrLesson) =>
-  UNLOCKED_LESSON_IDS.has(typeof idOrLesson === 'string' ? idOrLesson : idOrLesson?.id);
-const isUnlocked = (lesson) => isLessonUnlocked(lesson);
+export { UNLOCKED_LESSON_IDS, isLessonUnlocked } from './lessonLock.js';
+import { isLessonUnlocked as isUnlocked } from './lessonLock.js';
 
 /* ================================================================ */
 /*  ModuleBlock - the two-column layout per module                  */
