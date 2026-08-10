@@ -6,6 +6,7 @@ export const UNLOCKED_LESSON_IDS = new Set([
   'lesson-1-3',          // Islamic finance, lesson 3 (Riba, Gharar, Maysir)
   'hifz-fatiha',         // Quran memorisation - Surah Al-Fatiha
   's2-l2',               // Salah, lesson 2 (Before You Pray)
+  'b1-l2',               // Shahada, lesson 2 (The Second Testimony)
 ]);
 
 export const isLessonUnlocked = (idOrLesson) =>
