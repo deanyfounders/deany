@@ -23,7 +23,7 @@ const minsOf = (d) => { const n = parseInt(String(d || '').replace(/[^0-9]/g, ''
 // Recite audio resolves from the DISPLAYED ayah key so it can never mismatch the
 // verse on screen (deany_recite_audio_spec). Local override first, then the
 // Al-Dosari CDN (reciter 4, same source as the hifz component).
-const RECITE_OVERRIDE = { '65:2': '/audio/ayah/065002_003.mp3' };
+const RECITE_OVERRIDE = { '65:3': '/audio/ayah/065002_003.mp3' };
 const reciteSources = (ref) => {
   const [s, aRaw] = String(ref || '').split(':');
   const a = String(aRaw || '').split('-')[0]; // first ayah of a range
