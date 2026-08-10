@@ -200,7 +200,7 @@ const PATH_ACCENTS = {
 /*  ModuleOverview - root                                           */
 /* ================================================================ */
 const ModuleOverview = ({
-  modules, topicId, completedLessons, loadProgress, onSelectLesson, onSelectModule, onBack, onHome,
+  modules, topicId, completedLessons, loadProgress, onSelectLesson, onSelectModule, onBack, onHome, onOpenCoreWords,
 }) => {
   if (!modules?.length) return null;
 
@@ -276,6 +276,23 @@ const ModuleOverview = ({
             <Home size={16} /><span>Home</span>
           </button>
         </div>
+
+        {/* Quranic Core Words - separate study tool, kept above the modules. */}
+        {onOpenCoreWords && (
+          <button onClick={onOpenCoreWords} className="mo-focus"
+            style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 12,
+              background: '#EDEAFA', border: '1px solid #D9D3F2', borderRadius: 14, padding: '14px 16px',
+              cursor: 'pointer', marginBottom: 24, ...focusRing }}>
+            <span style={{ width: 40, height: 40, borderRadius: 11, background: '#2A2264', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <span style={{ fontFamily: "'Scheherazade New','Amiri',serif", fontSize: 21, color: '#fff', lineHeight: 1 }}>{'ق'}</span>
+            </span>
+            <span style={{ flex: 1, minWidth: 0 }}>
+              <span style={{ display: 'block', fontSize: 10, fontWeight: 700, letterSpacing: 0.4, textTransform: 'uppercase', color: '#5B4FA0' }}>Memorisation and tafsir</span>
+              <span style={{ display: 'block', fontFamily: serif, fontSize: 16, fontWeight: 600, color: '#2A2264', marginTop: 1 }}>Quranic Core Words</span>
+            </span>
+            <ArrowRight size={18} color="#5B4FA0" />
+          </button>
+        )}
 
         {modules.map((mod, mi) => {
           const isLast = mi === modules.length - 1;

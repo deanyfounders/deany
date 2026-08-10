@@ -9,6 +9,7 @@ import DEANY_HB1_L2 from './DEANY-HB1L2.jsx';
 import ModuleOverview, { isLessonUnlocked } from './ModuleOverview.jsx';
 import PathLessons from './app/home/PathLessons.jsx';
 import { subjectOf } from './app/dashboard/tokens.js';
+import RootWordsModule from './app/quran/corewords/RootWordsModule.jsx';
 import DEANYPrayerVis from './DEANY-PRAYER-VIS.jsx';
 import DEANYS2L1 from './DEANY-S2L1.jsx';
 import DEANYS2L2 from './DEANY-S2L2.jsx';
@@ -366,6 +367,7 @@ const App = ({ appMode = false, appState = null } = {}) => {
   const [selectedLevel, setSelectedLevel] = useState(null);
   const [selectedLesson, setSelectedLesson] = useState(null);
   const [launchedFromDashboard, setLaunchedFromDashboard] = useState(false);
+  const [showCore, setShowCore] = useState(false); // Quranic Core Words overlay on the module-list screen
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [showExplanation, setShowExplanation] = useState(false);
@@ -788,7 +790,7 @@ const App = ({ appMode = false, appState = null } = {}) => {
     // launched from the dashboard entered through the flat PathLessons list, so
     // return there for every topic. (The older selectMainTopic flow keeps its
     // ModuleOverview screens.)
-    if (launchedFromDashboard && selectedMainTopic) { setScreen('path-lessons'); return; }
+    if (launchedFromDashboard && selectedMainTopic) { setScreen('topic-modules'); return; }
     if (selectedEpoch && selectedLevel) { setScreen('history-lessons'); return; }
     if (selectedModule) { setScreen('lessons'); return; }
     if (selectedMainTopic) { setScreen('modules'); return; }
@@ -1173,16 +1175,21 @@ const App = ({ appMode = false, appState = null } = {}) => {
 
   // The flat lesson list (same as the dashboard entry), shown when returning
   // from a dashboard-launched lesson so back matches how the module first looked.
-  if (screen == 'path-lessons') {
+  if (screen == 'topic-modules') {
     if (!selectedMainTopic) { goHome(); return null; }
+    if (showCore) return <RootWordsModule onExit={() => setShowCore(false)} />;
+    const topicMods = (homeModules[selectedMainTopic.id] || []).filter(m => (m.lessons || []).length);
     return (
-      <PathLessons
-        topic={selectedMainTopic}
-        modules={homeModules}
+      <ModuleOverview
+        modules={topicMods}
+        topicId={selectedMainTopic.id}
         completedLessons={completedLessons}
-        accent={subjectOf(selectedMainTopic.id).accent}
+        loadProgress={loadProgress}
         onSelectLesson={selectLes}
+        onSelectModule={selectModule}
         onBack={goHome}
+        onHome={goHome}
+        onOpenCoreWords={selectedMainTopic.id === 'quran-arabic' ? () => setShowCore(true) : undefined}
       />
     );
   }
