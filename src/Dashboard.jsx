@@ -105,7 +105,9 @@ const Dashboard = ({
   const dailyItem = useMemo(getTodayContent, []);
   const hour = new Date().getHours();
   const storedName = (() => { try { return localStorage.getItem('deany-name') || 'Ali'; } catch (_) { return 'Ali'; } })();
-  const greeting = `Hello ${storedName}`;
+  // Browser/website greeting. The salam line above carries the greeting, so this
+  // reads just "Hub71". The installed app (AppDashboard) keeps "Hello <name>".
+  const greeting = 'Hub71';
 
   const findContinueLesson = () => {
     // Default to Finance Lesson 3 (Riba, Gharar, Maysir)
