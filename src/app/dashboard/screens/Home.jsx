@@ -193,6 +193,13 @@ export default function Home({ name, state, deps, coins, streak, onGoTab, onOpen
 
   const comingApproved = jumuah.status === 'approved' && (jumuah.body || '').trim();
 
+  // In a plain browser (not the installed/standalone PWA) the greeting reads
+  // "Hub71" instead of "Hello <name>". The salam line above still carries the
+  // greeting. The installed app keeps the personal "Hello <name>".
+  const isBrowserShell = typeof window !== 'undefined'
+    && !(window.matchMedia && window.matchMedia('(display-mode: standalone)').matches)
+    && !window.navigator.standalone;
+
   return (
     <div className="ed">
       <style>{ED_CSS}</style>
@@ -215,7 +222,7 @@ export default function Home({ name, state, deps, coins, streak, onGoTab, onOpen
         {/* 2. Header (centered, inside the wash) */}
         <div className="head">
           <div className="salam" dir="rtl">{SALAM}</div>
-          <h1>Hello {name || 'friend'}</h1>
+          <h1>{isBrowserShell ? 'Hub71' : `Hello ${name || 'friend'}`}</h1>
           <div className="date">{dateLine}</div>
         </div>
       </div>
