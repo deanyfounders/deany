@@ -470,8 +470,8 @@ const ModuleBlock = ({ mod, mi, topicId, completedLessons, loadProgress, onSelec
 
   const handleLessonClick = useCallback((lesson, i) => {
     if (!isUnlocked(lesson)) return; // locked - not clickable
-    onSelectLesson(lesson, i);
-  }, [onSelectLesson]);
+    onSelectLesson(lesson, i, mod); // pass mod: the dashboard handler needs mod.id
+  }, [onSelectLesson, mod]);
 
   /* Speed round - keep existing card */
   if (mod.isSpeedRound) return (
@@ -633,7 +633,7 @@ const ModuleBlock = ({ mod, mi, topicId, completedLessons, loadProgress, onSelec
         {/* CTA - only when this module has an open lesson; targets it directly */}
         {firstOpenIdx >= 0 && (
           <div style={{ marginTop: 20 }}>
-            <DeanyButton variant="primary" onClick={() => onSelectLesson(lessons[firstOpenIdx], firstOpenIdx)}
+            <DeanyButton variant="primary" onClick={() => onSelectLesson(lessons[firstOpenIdx], firstOpenIdx, mod)}
               style={{ width: '100%', gap: 8 }}>
               <Play size={15} fill={C.goldText} color={C.goldText} />
               {isDone(firstOpenIdx) ? 'Review Lesson' : 'Start Learning'}
