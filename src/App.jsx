@@ -7,6 +7,7 @@ import DEANY_M1L5 from "../DEANY_M1L5.jsx";
 import DEANY_HB1_L1 from './DEANY-HB1L1.jsx';
 import DEANY_HB1_L2 from './DEANY-HB1L2.jsx';
 import ModuleOverview, { isLessonUnlocked } from './ModuleOverview.jsx';
+import PathLessons from './app/home/PathLessons.jsx';
 import DEANYPrayerVis from './DEANY-PRAYER-VIS.jsx';
 import DEANYS2L1 from './DEANY-S2L1.jsx';
 import DEANYS2L2 from './DEANY-S2L2.jsx';
@@ -782,6 +783,9 @@ const App = ({ appMode = false, appState = null } = {}) => {
   // selectedModule/selectedMainTopic, so we can land on the 'lessons' screen.
   const goLessons = () => {
     setSelectedLesson(null);
+    // Islamic finance is flipped: back from a lesson shows the flat PathLessons
+    // list (entry showed the rich ModuleOverview).
+    if (selectedMainTopic?.id === 'islamic-finance') { setScreen('finance-flat'); return; }
     if (selectedEpoch && selectedLevel) { setScreen('history-lessons'); return; }
     if (selectedModule) { setScreen('lessons'); return; }
     if (selectedMainTopic) { setScreen('modules'); return; }
@@ -1160,6 +1164,22 @@ const App = ({ appMode = false, appState = null } = {}) => {
         onSelectModule={selectModule}
         onBack={goModules}
         onHome={goHome}
+      />
+    );
+  }
+
+  // Islamic finance flip: the flat lesson list, shown when returning from a
+  // finance lesson (entry into finance shows the ModuleOverview layout instead).
+  if (screen == 'finance-flat') {
+    if (!selectedMainTopic) { goHome(); return null; }
+    return (
+      <PathLessons
+        topic={selectedMainTopic}
+        modules={homeModules}
+        completedLessons={completedLessons}
+        accent={'#d97706'}
+        onSelectLesson={selectLes}
+        onBack={goHome}
       />
     );
   }

@@ -16,6 +16,7 @@ import QuranReader from '../quran/QuranReader.jsx';
 import RootWordsModule from '../quran/corewords/RootWordsModule.jsx';
 import ToolScreen from './tools/Tools.jsx';
 import PathLessons from '../home/PathLessons.jsx';
+import ModuleOverview from '../../ModuleOverview.jsx';
 import { getHomeBadges } from './selectors.js';
 import { subjectOf } from './tokens.js';
 import { useDashNav } from './nav.js';
@@ -107,12 +108,28 @@ function Inner({ mainTopics = [], modules = {}, completedLessons = {}, onSelectL
       {fullTop && typeof document !== 'undefined' && createPortal(
         <div style={{ position: 'fixed', inset: 0, zIndex: 1000, background: fullTop.type === 'corewords' ? '#F4F2FA' : '#fff', overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
           {fullTop.type === 'path' && (
-            <PathLessons
-              topic={mainTopics.find(t => t.id === fullTop.topicId) || { id: fullTop.topicId, title: subjectOf(fullTop.topicId).name }}
-              modules={modules} completedLessons={completedLessons}
-              accent={subjectOf(fullTop.topicId).accent} level={dash.state.topics[fullTop.topicId]?.level}
-              onSelectLesson={onSelectLesson} onBack={nav.goBack}
-            />
+            // Islamic finance is flipped (experiment): enter into the rich
+            // "how you'll learn" ModuleOverview; back from a lesson lands on the
+            // flat PathLessons list (handled in App.jsx). Other paths keep the
+            // flat list on entry.
+            fullTop.topicId === 'islamic-finance' ? (
+              <ModuleOverview
+                modules={(modules['islamic-finance'] || []).filter(m => (m.lessons || []).length)}
+                topicId="islamic-finance"
+                completedLessons={completedLessons}
+                onSelectLesson={onSelectLesson}
+                onSelectModule={() => {}}
+                onBack={nav.goBack}
+                onHome={nav.goBack}
+              />
+            ) : (
+              <PathLessons
+                topic={mainTopics.find(t => t.id === fullTop.topicId) || { id: fullTop.topicId, title: subjectOf(fullTop.topicId).name }}
+                modules={modules} completedLessons={completedLessons}
+                accent={subjectOf(fullTop.topicId).accent} level={dash.state.topics[fullTop.topicId]?.level}
+                onSelectLesson={onSelectLesson} onBack={nav.goBack}
+              />
+            )
           )}
           {fullTop.type === 'tool' && <ToolScreen tool={fullTop.tool} onBack={nav.goBack} />}
           {fullTop.type === 'corewords' && <RootWordsModule onExit={nav.goBack} />}
