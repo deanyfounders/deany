@@ -1,18 +1,12 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 
 const STORAGE_KEY = "deany:fatiha:memorisation:v7";
-const MODEL_RECITER = "Sheikh Yasser Al-Dosari";
 
-const audioFor = (ayah) => {
-  const legacyFile = `001${String(ayah).padStart(3, "0")}.mp3`;
-  return [
-    // GitHub Pages mirror, reliable CORS, confirmed reachable for browser <audio> playback
-    `https://the-quran-project.github.io/Quran-Audio/Data/4/1_${ayah}.mp3`,
-    `https://everyayah.com/data/Yasser_Ad-Dussary_128kbps/${legacyFile}`,
-    `https://www.versebyversequran.com/data/Yasser_Ad-Dussary_128kbps/${legacyFile}`,
-    `/audio/quran/yasser-al-dosari/${legacyFile}`,
-  ];
-};
+const audioFor = (ayah) => [
+  `https://cdn.islamic.network/quran/audio/128/ar.alafasy/${ayah}.mp3`,
+  `https://cdn.alquran.cloud/media/audio/ayah/ar.alafasy/${ayah}`,
+  `/audio/quran/alafasy/001${String(ayah).padStart(3, "0")}.mp3`,
+];
 
 const fullSurahAyahs = [1, 2, 3, 4, 5, 6, 7];
 
@@ -37,7 +31,7 @@ const modes = {
     id: "minimal",
     title: "Minimal help",
     tag: "Revision",
-    description: "Less support, more recall pressure, and fewer cues.",
+    description: "Less visible Arabic, more recall pressure, and fewer support cues.",
     showArabic: false,
     chainEvery: 2,
   },
@@ -287,17 +281,10 @@ function questionTranslitFor(passage) {
 
 function Button({ children, onClick, variant = "primary", disabled = false, className = "" }) {
   const styles = {
-    primary: "bg-violet-600 text-white hover:bg-violet-500",
-    secondary: "border-2 border-b-4 border-slate-200 bg-white text-slate-800 hover:bg-slate-50",
-    dark: "bg-violet-950 text-white hover:bg-violet-900",
-    danger: "bg-orange-600 text-white hover:bg-orange-500",
-    correct: "bg-emerald-500 text-white hover:bg-emerald-400",
-  };
-  const edges = {
-    primary: "0 4px 0 #4C1D95",
-    dark: "0 4px 0 #2E1065",
-    danger: "0 4px 0 #9A3412",
-    correct: "0 4px 0 #047857",
+    primary: "bg-emerald-600 text-white hover:bg-emerald-700",
+    secondary: "border border-slate-200 bg-white text-slate-800 hover:bg-slate-50",
+    dark: "bg-slate-950 text-white hover:bg-slate-800",
+    danger: "bg-rose-600 text-white hover:bg-rose-700",
   };
 
   return (
@@ -305,8 +292,7 @@ function Button({ children, onClick, variant = "primary", disabled = false, clas
       type="button"
       disabled={disabled}
       onClick={onClick}
-      style={edges[variant] ? { boxShadow: edges[variant] } : undefined}
-      className={`rounded-2xl px-5 py-3 text-sm font-black outline-none transition active:translate-y-1 focus:ring-4 focus:ring-violet-100 disabled:cursor-not-allowed disabled:opacity-40 ${styles[variant]} ${className}`}
+      className={`rounded-2xl px-4 py-3 text-sm font-black shadow-sm outline-none transition focus:ring-4 focus:ring-emerald-100 disabled:cursor-not-allowed disabled:opacity-40 ${styles[variant]} ${className}`}
     >
       {children}
     </button>
@@ -314,7 +300,7 @@ function Button({ children, onClick, variant = "primary", disabled = false, clas
 }
 
 function Card({ children, className = "" }) {
-  return <section className={`rounded-[2rem] border-2 border-b-4 border-slate-200 bg-white p-5 ${className}`}>{children}</section>;
+  return <section className={`rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm ${className}`}>{children}</section>;
 }
 
 function useRecorder() {
@@ -394,14 +380,14 @@ function useRecorder() {
   return { isRecording, audioUrl, seconds, error, start, stop, reset };
 }
 
-function RecorderPanel({ title = "Record yourself", helper = "Record your recitation, play it back, and compare it with Al-Dosari.", compact = false }) {
+function RecorderPanel({ title = "Optional recording", helper = "Record yourself only if it helps you compare your recitation.", compact = false }) {
   const recorder = useRecorder();
 
   return (
     <div className={`rounded-3xl border border-slate-200 bg-slate-50 ${compact ? "p-4" : "p-5"}`}>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Your recitation</p>
+          <p className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Optional</p>
           <h3 className="mt-1 text-xl font-black text-slate-950">{title}</h3>
           <p className="mt-1 text-sm font-bold leading-6 text-slate-600">{helper}</p>
         </div>
@@ -411,15 +397,15 @@ function RecorderPanel({ title = "Record yourself", helper = "Record your recita
       </div>
 
       <div className="mt-4 flex flex-wrap gap-3">
-        {!recorder.isRecording && <Button variant="dark" onClick={recorder.start}>{recorder.audioUrl ? "Record yourself again" : "Record yourself"}</Button>}
+        {!recorder.isRecording && <Button variant="dark" onClick={recorder.start}>Start recording</Button>}
         {recorder.isRecording && <Button variant="danger" onClick={recorder.stop}>Stop recording</Button>}
-        {recorder.audioUrl && <Button variant="secondary" onClick={recorder.reset}>Clear recording</Button>}
+        {recorder.audioUrl && <Button variant="secondary" onClick={recorder.reset}>Record again</Button>}
       </div>
 
       {recorder.audioUrl && (
         <div className="mt-4 rounded-2xl bg-white p-3">
           <audio src={recorder.audioUrl} controls className="w-full" />
-          <p className="mt-2 text-xs font-bold text-slate-500">Play this beside Al-Dosari and compare wording, endings, rhythm, and pauses.</p>
+          <p className="mt-2 text-xs font-bold text-slate-500">Play this beside the model and compare wording, endings, and pauses.</p>
         </div>
       )}
 
@@ -428,32 +414,19 @@ function RecorderPanel({ title = "Record yourself", helper = "Record your recita
   );
 }
 
-function AudioPlayer({ sources, label = "Play Al-Dosari" }) {
+function AudioPlayer({ sources, label = "Play model recitation" }) {
   const ref = useRef(null);
   const [sourceIndex, setSourceIndex] = useState(0);
   const [status, setStatus] = useState("");
-  const wantsToPlayRef = useRef(false);
 
   useEffect(() => {
     setSourceIndex(0);
     setStatus("");
-    wantsToPlayRef.current = false;
   }, [sources.join("|")]);
-
-  // When the source actually changes (fallback swap), retry play if the user
-  // already asked to hear it, this is the step the old code was missing.
-  useEffect(() => {
-    if (!wantsToPlayRef.current || !ref.current) return;
-    ref.current.currentTime = 0;
-    ref.current.play().catch(() => {
-      setStatus("Tap play again, or allow audio in your browser.");
-    });
-  }, [sourceIndex]);
 
   async function play() {
     try {
       if (!ref.current) return;
-      wantsToPlayRef.current = true;
       ref.current.currentTime = 0;
       await ref.current.play();
     } catch {
@@ -466,8 +439,7 @@ function AudioPlayer({ sources, label = "Play Al-Dosari" }) {
       setSourceIndex(sourceIndex + 1);
       setStatus("Trying a backup audio source...");
     } else {
-      wantsToPlayRef.current = false;
-      setStatus("Audio is unavailable right now. Read the Arabic on this screen instead.");
+      setStatus("Audio could not load. Check your connection or local audio path.");
     }
   }
 
@@ -534,28 +506,18 @@ function FullSurahPlayer() {
       setSourceIndex((value) => value + 1);
       setStatus("Trying a backup audio source...");
     } else {
-      setPlaying(false);
-      setStatus("This ayah's audio is unavailable right now. Read the Arabic on this screen instead.");
+      setStatus("This ayah audio could not load. Check your connection or local audio path.");
     }
   }
-
-  // Retry play on the newly swapped fallback source, same fix as AudioPlayer above.
-  useEffect(() => {
-    if (!playing || !audioRef.current) return;
-    audioRef.current.currentTime = 0;
-    audioRef.current.play().catch(() => {
-      setStatus("Tap play again, or allow audio in your browser.");
-    });
-  }, [sourceIndex]);
 
   return (
     <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
       <audio ref={audioRef} src={sources[sourceIndex]} preload="auto" onEnded={handleEnded} onError={onError} />
-      <p className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Model recitation · {MODEL_RECITER}</p>
+      <p className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Model recitation</p>
       <h3 className="mt-1 text-xl font-black text-slate-950">Full Al-Fatiha</h3>
-      <p className="mt-2 text-sm font-bold text-slate-600">Record yourself first, then play Al-Dosari and compare ayah by ayah.</p>
+      <p className="mt-2 text-sm font-bold text-slate-600">Play the model after recording yourself and compare ayah by ayah.</p>
       <div className="mt-4 flex flex-wrap gap-3">
-        <Button variant="dark" onClick={playFromStart}>{playing ? `Playing Al-Dosari · ayah ${currentAyah}` : "Play Al-Dosari · full recitation"}</Button>
+        <Button variant="dark" onClick={playFromStart}>{playing ? `Playing ayah ${currentAyah}` : "Play full recitation"}</Button>
         {playing && <Button variant="secondary" onClick={stop}>Stop</Button>}
       </div>
       {status && <p className="mt-3 text-sm font-bold text-amber-700">{status}</p>}
@@ -563,31 +525,22 @@ function FullSurahPlayer() {
   );
 }
 
-function ArabicBlock({ text, hidden, onReveal, onHide }) {
+function ArabicBlock({ text, hidden, onReveal }) {
   return (
     <div className="rounded-3xl bg-slate-50 p-6 text-center">
-      {hidden ? (
-        <>
-          <p aria-hidden="true" className="select-none text-4xl leading-loose tracking-[0.4em] text-slate-300 md:text-5xl">&bull; &bull; &bull; &bull; &bull;</p>
-          <Button className="mt-4" variant="secondary" onClick={onReveal}>Reveal Arabic</Button>
-        </>
-      ) : (
-        <>
-          <p dir="rtl" className="text-4xl leading-loose text-slate-950 md:text-5xl">{text}</p>
-          {onHide && <Button className="mt-4" variant="secondary" onClick={onHide}>Hide and recite from memory</Button>}
-        </>
-      )}
+      <p dir="rtl" className={`text-4xl leading-loose md:text-5xl ${hidden ? "select-none blur-sm text-slate-300" : "text-slate-950"}`}>{text}</p>
+      {hidden && <Button className="mt-4" variant="secondary" onClick={onReveal}>Reveal Arabic</Button>}
     </div>
   );
 }
 
 function ModeSelect({ onChoose, onBack }) {
   return (
-    <main className="min-h-screen bg-[#F7F5FC] p-6 text-slate-950">
+    <main className="min-h-screen bg-[#fbfbf8] p-6 text-slate-950">
       <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-[1fr_0.9fr]">
-        <Card className="bg-gradient-to-br from-white to-violet-50">
+        <Card className="bg-gradient-to-br from-white to-emerald-50">
           {onBack && <button onClick={onBack} className="mb-2 text-lg text-slate-950 hover:text-slate-600 transition" aria-label="Back">← Back</button>}
-          <p className="text-xs font-black uppercase tracking-[0.25em] text-violet-700">Deany Quran</p>
+          <p className="text-xs font-black uppercase tracking-[0.25em] text-emerald-700">Deany Quran</p>
           <h1 className="mt-4 text-5xl font-black tracking-tight">Memorise Al-Fatiha</h1>
           <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-600">Listen, echo, recall, and stitch the surah together one passage at a time.</p>
         </Card>
@@ -598,11 +551,11 @@ function ModeSelect({ onChoose, onBack }) {
               key={mode.id}
               type="button"
               onClick={() => onChoose(mode.id)}
-              className="rounded-[2rem] border border-slate-200 bg-white p-5 text-left shadow-sm outline-none transition hover:-translate-y-0.5 hover:shadow-md focus:ring-4 focus:ring-violet-100"
+              className="rounded-[2rem] border border-slate-200 bg-white p-5 text-left shadow-sm outline-none transition hover:-translate-y-0.5 hover:shadow-md focus:ring-4 focus:ring-emerald-100"
             >
               <div className="flex items-center justify-between gap-3">
                 <h2 className="text-2xl font-black text-slate-950">{mode.title}</h2>
-                <span className="rounded-full bg-violet-50 px-3 py-1 text-xs font-black uppercase tracking-wide text-violet-700">{mode.tag}</span>
+                <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-black uppercase tracking-wide text-emerald-700">{mode.tag}</span>
               </div>
               <p className="mt-3 text-sm leading-6 text-slate-600">{mode.description}</p>
             </button>
@@ -616,7 +569,6 @@ function ModeSelect({ onChoose, onBack }) {
 function Quiz({ passage, selected, firstAttempt, onSelect, onFirstAttempt, onWeak, onCorrect }) {
   const [result, setResult] = useState(null);
   const [pickedOrder, setPickedOrder] = useState([]);
-  const [picked, setPicked] = useState(null);
   const [round, setRound] = useState(0);
   const task = passage.task;
   const options = useMemo(() => shuffle(task.options), [passage.key, round]);
@@ -624,7 +576,6 @@ function Quiz({ passage, selected, firstAttempt, onSelect, onFirstAttempt, onWea
   useEffect(() => {
     setResult(null);
     setPickedOrder([]);
-    setPicked(null);
     setRound(0);
   }, [passage.key]);
 
@@ -636,7 +587,6 @@ function Quiz({ passage, selected, firstAttempt, onSelect, onFirstAttempt, onWea
   function tryAgain() {
     setResult(null);
     setPickedOrder([]);
-    setPicked(null);
     setRound((value) => value + 1);
   }
 
@@ -655,7 +605,6 @@ function Quiz({ passage, selected, firstAttempt, onSelect, onFirstAttempt, onWea
     }
 
     const correct = option === task.answer;
-    setPicked(option);
     onSelect(passage.key, option);
     registerAttempt(correct, task.type);
     setResult(correct ? "correct" : "wrong");
@@ -665,7 +614,7 @@ function Quiz({ passage, selected, firstAttempt, onSelect, onFirstAttempt, onWea
     <Card>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="text-xs font-black uppercase tracking-[0.2em] text-violet-700">Recall check</p>
+          <p className="text-xs font-black uppercase tracking-[0.2em] text-emerald-700">Recall check</p>
           <h2 className="mt-2 text-3xl font-black text-slate-950">{task.prompt}</h2>
         </div>
         {firstAttempt === false && <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-black text-amber-700">Added to review</span>}
@@ -676,27 +625,21 @@ function Quiz({ passage, selected, firstAttempt, onSelect, onFirstAttempt, onWea
         {task.type === "fill" && <>{task.before} <span className="rounded-xl bg-white px-6 py-2 text-slate-300">_____</span> {task.after}</>}
         {task.type === "next" && <>{task.stem} <span className="rounded-xl bg-white px-6 py-2 text-slate-300">_____</span></>}
         {task.type === "first" && <span className="text-slate-400">{task.prompt}</span>}
-        {task.type === "order" && <div className={`rounded-2xl border-2 p-3 ${
-          result === "correct" ? "border-emerald-300 bg-emerald-50 text-emerald-800"
-          : result === "wrong" ? "border-rose-300 bg-rose-50 text-rose-800"
-          : "border-transparent bg-white text-violet-700"}`}>{pickedOrder.length ? pickedOrder.join(" | ") : "Tap below to build the phrase"}</div>}
+        {task.type === "order" && <div className="rounded-2xl bg-white p-3 text-emerald-700">{pickedOrder.length ? pickedOrder.join(" | ") : "Tap below to build the phrase"}</div>}
       </div>
       <p className="mt-3 text-center text-sm font-bold italic text-slate-500">{questionTranslitFor(passage)}</p>
 
       <div className="mt-5 grid gap-3 sm:grid-cols-2">
         {options.map((option) => {
           const translit = translitForArabic(option);
-          const graded = result && (picked === option || (task.type === "order" && pickedOrder.includes(option))) ? result : null;
+          const active = selected === option || pickedOrder.includes(option);
           return (
             <button
               key={option}
               type="button"
               disabled={(task.type === "order" && pickedOrder.includes(option)) || result === "correct"}
               onClick={() => choose(option)}
-              className={`rounded-2xl border-2 border-b-4 p-4 text-right outline-none transition active:translate-y-0.5 focus:ring-4 focus:ring-violet-100 disabled:cursor-not-allowed disabled:opacity-50 ${
-                graded === "correct" ? "border-emerald-500 bg-emerald-50"
-                : graded === "wrong" ? "border-rose-500 bg-rose-50"
-                : "border-slate-200 bg-white hover:bg-slate-50"}`}
+              className={`rounded-2xl border bg-white p-4 text-right outline-none transition hover:-translate-y-0.5 hover:shadow-sm focus:ring-4 focus:ring-emerald-100 disabled:cursor-not-allowed disabled:opacity-50 ${active ? "border-emerald-500 ring-2 ring-emerald-100" : "border-slate-200"}`}
             >
               <span dir="rtl" className="block text-xl font-black leading-loose text-slate-950">{option}</span>
               {translit && <span className="block text-sm font-bold italic text-slate-500">{translit}</span>}
@@ -706,13 +649,13 @@ function Quiz({ passage, selected, firstAttempt, onSelect, onFirstAttempt, onWea
       </div>
 
       {result && (
-        <div className={`mt-5 rounded-2xl border-2 border-b-4 p-5 ${result === "correct" ? "border-emerald-300 bg-emerald-50 text-emerald-900" : "border-rose-300 bg-rose-50 text-rose-900"}`}>
+        <div className={`mt-5 rounded-3xl p-5 ${result === "correct" ? "bg-emerald-50 text-emerald-900" : "bg-rose-50 text-rose-900"}`}>
           <p className="text-xs font-black uppercase tracking-[0.18em]">{result === "correct" ? "Correct" : "Not quite"}</p>
           <p className="mt-2 text-sm font-bold leading-6">
             {result === "correct" ? "Good. Now connect it to the wider surah." : "Try again before moving on. This passage will return in your review."}
           </p>
           <div className="mt-4 flex gap-3">
-            {result === "correct" ? <Button variant="correct" onClick={onCorrect}>Continue</Button> : <Button variant="secondary" onClick={tryAgain}>Try again</Button>}
+            {result === "correct" ? <Button onClick={onCorrect}>Continue</Button> : <Button variant="secondary" onClick={tryAgain}>Try again</Button>}
           </div>
         </div>
       )}
@@ -725,12 +668,6 @@ function SeamDrill({ index, firstAttempt, onFirstAttempt, onWeak, onContinue }) 
   const current = passages[index];
   const [result, setResult] = useState(null);
   const [round, setRound] = useState(0);
-  const [picked, setPicked] = useState(null);
-
-  useEffect(() => {
-    setPicked(null);
-    setResult(null);
-  }, [index]);
 
   const options = useMemo(() => {
     const candidates = passages.filter((item) => item.key !== current.key).map((item) => item.arabic);
@@ -747,7 +684,6 @@ function SeamDrill({ index, firstAttempt, onFirstAttempt, onWeak, onContinue }) 
 
   function tryAgain() {
     setResult(null);
-    setPicked(null);
     setRound((value) => value + 1);
   }
 
@@ -755,7 +691,7 @@ function SeamDrill({ index, firstAttempt, onFirstAttempt, onWeak, onContinue }) 
     <Card>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="text-xs font-black uppercase tracking-[0.2em] text-violet-700">Seam drill</p>
+          <p className="text-xs font-black uppercase tracking-[0.2em] text-emerald-700">Seam drill</p>
           <h2 className="mt-2 text-3xl font-black text-slate-950">What comes next?</h2>
         </div>
         {firstAttempt === false && <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-black text-amber-700">Transition added to review</span>}
@@ -779,12 +715,8 @@ function SeamDrill({ index, firstAttempt, onFirstAttempt, onWeak, onContinue }) 
               key={option}
               type="button"
               disabled={result === "correct"}
-              onClick={() => { setPicked(option); choose(option); }}
-              className={`rounded-2xl border-2 border-b-4 p-4 text-right outline-none transition active:translate-y-0.5 focus:ring-4 focus:ring-violet-100 disabled:cursor-not-allowed ${
-                picked === option && result === "correct" ? "border-emerald-500 bg-emerald-50"
-                : picked === option && result === "wrong" ? "border-rose-500 bg-rose-50"
-                : result === "correct" ? "border-slate-200 bg-white opacity-40"
-                : "border-slate-200 bg-white hover:bg-slate-50"}`}
+              onClick={() => choose(option)}
+              className="rounded-2xl border border-slate-200 bg-white p-4 text-right outline-none transition hover:-translate-y-0.5 hover:shadow-sm focus:ring-4 focus:ring-emerald-100 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <span dir="rtl" className="block text-xl font-black leading-loose text-slate-950">{option}</span>
               {translit && <span className="block text-sm font-bold italic text-slate-500">{translit}</span>}
@@ -794,13 +726,13 @@ function SeamDrill({ index, firstAttempt, onFirstAttempt, onWeak, onContinue }) 
       </div>
 
       {result && (
-        <div className={`mt-5 rounded-2xl border-2 border-b-4 p-5 ${result === "correct" ? "border-emerald-300 bg-emerald-50 text-emerald-900" : "border-rose-300 bg-rose-50 text-rose-900"}`}>
+        <div className={`mt-5 rounded-3xl p-5 ${result === "correct" ? "bg-emerald-50 text-emerald-900" : "bg-rose-50 text-rose-900"}`}>
           <p className="text-xs font-black uppercase tracking-[0.18em]">{result === "correct" ? "Correct transition" : "Not quite"}</p>
           <p className="mt-2 text-sm font-bold leading-6">
             {result === "correct" ? "Good. The join between the two passages is getting stronger." : "This is a weak seam. Try it once more before moving on."}
           </p>
           <div className="mt-4 flex gap-3">
-            {result === "correct" ? <Button variant="correct" onClick={onContinue}>Continue</Button> : <Button variant="secondary" onClick={tryAgain}>Try again</Button>}
+            {result === "correct" ? <Button onClick={onContinue}>Continue</Button> : <Button variant="secondary" onClick={tryAgain}>Try again</Button>}
           </div>
         </div>
       )}
@@ -814,13 +746,13 @@ function FinalGate({ progress, revealed, setRevealed, onBackToPassage, onMarkFin
   const weakItems = passages.filter((item) => progress.weakQueue.includes(item.key));
 
   return (
-    <main className="min-h-screen bg-[#F7F5FC] p-6 text-slate-950">
+    <main className="min-h-screen bg-[#fbfbf8] p-6 text-slate-950">
       <div className="mx-auto max-w-6xl space-y-5">
         {onBack && <button onClick={onBack} className="mb-2 text-lg text-slate-950 hover:text-slate-600 transition" aria-label="Back">← Back</button>}
-        <Card className="bg-gradient-to-br from-white to-violet-50">
-          <p className="text-xs font-black uppercase tracking-[0.25em] text-violet-700">Final memory test</p>
+        <Card className="bg-gradient-to-br from-white to-emerald-50">
+          <p className="text-xs font-black uppercase tracking-[0.25em] text-emerald-700">Final memory test</p>
           <h1 className="mt-3 text-5xl font-black tracking-tight">Can you recite the whole surah?</h1>
-          <p className="mt-4 max-w-3xl text-lg leading-8 text-slate-600">Keep the Arabic hidden first. Recite Al-Fatiha from memory. Record yourself, then compare with Al-Dosari and tap the exact place where you got stuck.</p>
+          <p className="mt-4 max-w-3xl text-lg leading-8 text-slate-600">Keep the Arabic hidden first. Recite Al-Fatiha from memory. Record yourself if it helps, then compare with the model and tap the exact place where you got stuck.</p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Button variant="secondary" onClick={() => setRevealed((value) => !value)}>{revealed ? "Hide full text" : "Reveal and self-check"}</Button>
             <Button disabled={!allMarked || stuckItems.length > 0} onClick={onComplete}>I recited it cleanly</Button>
@@ -831,8 +763,8 @@ function FinalGate({ progress, revealed, setRevealed, onBackToPassage, onMarkFin
 
         <div className="grid gap-5 lg:grid-cols-2">
           <RecorderPanel
-            title="Record yourself reciting full Al-Fatiha"
-            helper="Recite from memory into your microphone, then play your recording beside Al-Dosari. Listen for missing words, swapped phrases, and weak endings."
+            title="Record your full recitation"
+            helper="Optional. Record Al-Fatiha from memory, then play it back beside the model recitation. Listen for missing words, swapped phrases, and weak endings."
           />
           <FullSurahPlayer />
         </div>
@@ -859,7 +791,7 @@ function FinalGate({ progress, revealed, setRevealed, onBackToPassage, onMarkFin
               return (
                 <div key={item.key} className={`rounded-3xl border p-4 transition ${state === false ? "border-rose-200 bg-rose-50" : state === true ? "border-emerald-200 bg-emerald-50" : "border-slate-200 bg-white"}`}>
                   <p className="text-sm font-black text-slate-500">{item.label}</p>
-                  {revealed && <p className="mt-2 text-sm font-bold italic text-slate-500">{item.translit}</p>}
+                  <p className="mt-2 text-sm font-bold italic text-slate-500">{item.translit}</p>
                   {revealed && <p dir="rtl" className="mt-3 text-right text-2xl leading-loose text-slate-950">{item.arabic}</p>}
                   <div className="mt-4 flex flex-wrap gap-2">
                     <Button className="px-3 py-2" variant="secondary" onClick={() => onBackToPassage(item.key)}>Review</Button>
@@ -878,7 +810,7 @@ function FinalGate({ progress, revealed, setRevealed, onBackToPassage, onMarkFin
 
 export default function DeanyFatihaMemorisationOnly({ onBack, onHome, onGoTafsir }) {
   const [progress, setProgress] = useState(readProgress);
-  const [revealed, setRevealed] = useState(true);
+  const [revealed, setRevealed] = useState(false);
 
   const mode = modes[progress.mode] || modes.balanced;
   const passage = passages[progress.index] || passages[0];
@@ -896,7 +828,7 @@ export default function DeanyFatihaMemorisationOnly({ onBack, onHome, onGoTafsir
   }, [progress]);
 
   useEffect(() => {
-    setRevealed(progress.phase !== "final");
+    setRevealed(false);
   }, [progress.index, progress.phase]);
 
   function update(patch) {
@@ -986,11 +918,11 @@ export default function DeanyFatihaMemorisationOnly({ onBack, onHome, onGoTafsir
   if (progress.complete) {
     const cleanCount = Object.values(progress.finalChecks).filter(Boolean).length;
     return (
-      <main className="min-h-screen bg-[#F7F5FC] p-6 text-slate-950">
+      <main className="min-h-screen bg-[#fbfbf8] p-6 text-slate-950">
         <div className="mx-auto max-w-5xl">
           {onBack && <button onClick={onBack} className="mb-4 text-lg text-slate-950 hover:text-slate-600 transition" aria-label="Back">← Back</button>}
           <Card>
-            <p className="text-xs font-black uppercase tracking-[0.25em] text-violet-700">Lesson complete</p>
+            <p className="text-xs font-black uppercase tracking-[0.25em] text-emerald-700">Lesson complete</p>
             <h1 className="mt-4 text-5xl font-black">{cleanCount} / {passages.length} passages clean</h1>
             <p className="mt-3 text-slate-600">Your next review is based on first-attempt accuracy and where you hesitated.</p>
             <div className="mt-6 grid gap-4 md:grid-cols-3">
@@ -1002,11 +934,11 @@ export default function DeanyFatihaMemorisationOnly({ onBack, onHome, onGoTafsir
             </div>
           </Card>
 
-          <Card className="mt-5 bg-gradient-to-br from-white to-violet-50">
-            <p className="text-xs font-black uppercase tracking-[0.25em] text-violet-700">Optional next lesson</p>
+          <Card className="mt-5 bg-gradient-to-br from-white to-emerald-50">
+            <p className="text-xs font-black uppercase tracking-[0.25em] text-emerald-700">Optional next lesson</p>
             <h2 className="mt-3 text-3xl font-black text-slate-950">Understand what you memorised</h2>
             <p className="mt-3 max-w-2xl text-sm font-bold leading-6 text-slate-600">When the learner is ready, send them to the separate beginner tafsir lesson for Surah Al-Fatiha.</p>
-            <button onClick={onGoTafsir} className="mt-6 inline-flex rounded-2xl bg-violet-950 px-5 py-3 text-sm font-black text-white transition hover:bg-violet-900 focus:outline-none focus:ring-4 focus:ring-violet-100">
+            <button onClick={onGoTafsir} className="mt-6 inline-flex rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white shadow-sm transition hover:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-emerald-100">
               Go to Al-Fatiha tafsir lesson
             </button>
           </Card>
@@ -1030,13 +962,13 @@ export default function DeanyFatihaMemorisationOnly({ onBack, onHome, onGoTafsir
   }
 
   return (
-    <main className="min-h-screen bg-[#F7F5FC] p-6 text-slate-950">
+    <main className="min-h-screen bg-[#fbfbf8] p-6 text-slate-950">
       <div className="mx-auto max-w-6xl space-y-5">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             {onBack && <button onClick={onBack} className="text-lg text-slate-950 hover:text-slate-600 transition" aria-label="Back">←</button>}
             <div>
-              <p className="text-xs font-black uppercase tracking-[0.25em] text-violet-700">Al-Fatiha memorisation · {mode.title}</p>
+              <p className="text-xs font-black uppercase tracking-[0.25em] text-emerald-700">Al-Fatiha memorisation · {mode.title}</p>
               <h1 className="mt-2 text-3xl font-black">{passage.label}</h1>
               {progress.returnToFinal && <p className="mt-1 text-sm font-bold text-amber-700">Review this passage, then return to the full-surah test.</p>}
             </div>
@@ -1045,23 +977,22 @@ export default function DeanyFatihaMemorisationOnly({ onBack, onHome, onGoTafsir
         </div>
 
         <div className="h-2 overflow-hidden rounded-full bg-slate-100">
-          <div className="h-full rounded-full bg-violet-500 transition-all" style={{ width: `${Math.max(3, width)}%`, boxShadow: "inset 0 2px 0 rgba(255,255,255,0.35)" }} />
+          <div className="h-full rounded-full bg-emerald-500 transition-all" style={{ width: `${Math.max(3, width)}%` }} />
         </div>
 
         {progress.phase === "listen" && (
           <div className="grid gap-5 lg:grid-cols-[1fr_1fr]">
             <Card>
-              <p className="text-xs font-black uppercase tracking-[0.2em] text-violet-700">Listen</p>
+              <p className="text-xs font-black uppercase tracking-[0.2em] text-emerald-700">Listen</p>
               <h2 className="mt-3 text-3xl font-black">Focus on the sound</h2>
               <p className="mt-3 text-slate-600">{passage.target}</p>
-              <p className="mt-2 text-sm font-bold text-slate-500">Model: {MODEL_RECITER}</p>
               <div className="mt-5"><AudioPlayer sources={audioFor(passage.ayah)} /></div>
               <div className="mt-5"><Button onClick={next}>Continue</Button></div>
             </Card>
             <Card>
-              <ArabicBlock text={passage.arabic} hidden={!revealed} onReveal={() => setRevealed(true)} onHide={() => setRevealed(false)} />
-              {revealed && <p className="mt-4 text-center text-sm italic text-slate-500">{passage.translit}</p>}
-              {revealed && <p className="mt-2 text-center text-sm font-bold text-slate-700">{passage.translation}</p>}
+              <ArabicBlock text={passage.arabic} hidden={!mode.showArabic && !revealed} onReveal={() => setRevealed(true)} />
+              <p className="mt-4 text-center text-sm italic text-slate-500">{passage.translit}</p>
+              <p className="mt-2 text-center text-sm font-bold text-slate-700">{passage.translation}</p>
             </Card>
           </div>
         )}
@@ -1069,17 +1000,17 @@ export default function DeanyFatihaMemorisationOnly({ onBack, onHome, onGoTafsir
         {progress.phase === "echo" && (
           <div className="grid gap-5 lg:grid-cols-[1fr_1fr]">
             <Card>
-              <p className="text-xs font-black uppercase tracking-[0.2em] text-violet-700">Echo</p>
+              <p className="text-xs font-black uppercase tracking-[0.2em] text-emerald-700">Echo</p>
               <h2 className="mt-3 text-3xl font-black">Recite it back</h2>
-              <p className="mt-3 text-slate-600">Record yourself saying the passage, then replay Al-Dosari and compare.</p>
-              <div className="mt-5"><AudioPlayer sources={audioFor(passage.ayah)} label="Replay Al-Dosari" /></div>
-              <div className="mt-5"><RecorderPanel title="Record yourself" helper="Say this passage into your microphone, then play it back beside Al-Dosari before moving on." compact /></div>
+              <p className="mt-3 text-slate-600">Say the passage aloud, then replay the model and compare.</p>
+              <div className="mt-5"><AudioPlayer sources={audioFor(passage.ayah)} label="Replay model" /></div>
+              <div className="mt-5"><RecorderPanel title="Record this passage" helper="Optional. Use this to hear yourself beside the model before moving on." compact /></div>
               <div className="mt-5"><Button onClick={next}>Continue to recall</Button></div>
             </Card>
             <Card>
-              <ArabicBlock text={passage.arabic} hidden={!revealed} onReveal={() => setRevealed(true)} onHide={() => setRevealed(false)} />
-              {revealed && <p className="mt-4 text-center text-sm italic text-slate-500">{passage.translit}</p>}
-              {revealed && <p className="mt-2 text-center text-sm font-bold text-slate-700">{passage.translation}</p>}
+              <ArabicBlock text={passage.arabic} hidden={!mode.showArabic && !revealed} onReveal={() => setRevealed(true)} />
+              <p className="mt-4 text-center text-sm italic text-slate-500">{passage.translit}</p>
+              <p className="mt-2 text-center text-sm font-bold text-slate-700">{passage.translation}</p>
             </Card>
           </div>
         )}
@@ -1109,10 +1040,10 @@ export default function DeanyFatihaMemorisationOnly({ onBack, onHome, onGoTafsir
         {progress.phase === "chain" && (
           <div className="grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
             <Card>
-              <p className="text-xs font-black uppercase tracking-[0.2em] text-violet-700">Chain practice</p>
+              <p className="text-xs font-black uppercase tracking-[0.2em] text-emerald-700">Chain practice</p>
               <h2 className="mt-3 text-3xl font-black">Recite from the beginning to {passage.label}</h2>
               <p className="mt-3 text-slate-600">This strengthens the joins between ayahs before moving on.</p>
-              <div className="mt-5"><RecorderPanel title="Record yourself" helper="Record the full chain so you can hear whether the joins between ayahs are smooth." compact /></div>
+              <div className="mt-5"><RecorderPanel title="Record the chain" helper="Optional. Use it if you want to hear whether the join between ayahs is smooth." compact /></div>
               <div className="mt-5 flex flex-wrap gap-3">
                 <Button variant="secondary" onClick={() => setRevealed((value) => !value)}>{revealed ? "Hide Arabic" : "Reveal Arabic"}</Button>
                 <Button onClick={next}>Continue</Button>
@@ -1124,7 +1055,7 @@ export default function DeanyFatihaMemorisationOnly({ onBack, onHome, onGoTafsir
                   <div key={item.key} className="rounded-3xl bg-slate-50 p-4">
                     <p className="text-sm font-black text-slate-500">{item.label}</p>
                     {revealed && <p dir="rtl" className="mt-3 text-right text-3xl leading-loose text-slate-950">{item.arabic}</p>}
-                    {revealed && <p className="mt-2 text-sm italic text-slate-500">{item.translit}</p>}
+                    <p className="mt-2 text-sm italic text-slate-500">{item.translit}</p>
                   </div>
                 ))}
               </div>
