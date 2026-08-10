@@ -6,7 +6,7 @@ import DEANY_M1L4 from "../DEANY_M1L4.jsx";
 import DEANY_M1L5 from "../DEANY_M1L5.jsx";
 import DEANY_HB1_L1 from './DEANY-HB1L1.jsx';
 import DEANY_HB1_L2 from './DEANY-HB1L2.jsx';
-import ModuleOverview from './ModuleOverview.jsx';
+import ModuleOverview, { isLessonUnlocked } from './ModuleOverview.jsx';
 import DEANYPrayerVis from './DEANY-PRAYER-VIS.jsx';
 import DEANYS2L1 from './DEANY-S2L1.jsx';
 import DEANYS2L2 from './DEANY-S2L2.jsx';
@@ -777,7 +777,16 @@ const App = ({ appMode = false, appState = null } = {}) => {
   };
   const goHome = () => { setScreen('home'); setSelectedMainTopic(null); setSelectedModule(null); setSelectedLesson(null); setLaunchedFromDashboard(false); };
   const goModules = () => { if (launchedFromDashboard || !selectedMainTopic) { goHome(); return; } setScreen('modules'); setSelectedModule(null); setSelectedLesson(null); };
-  const goLessons = () => { if (launchedFromDashboard || !selectedMainTopic) { goHome(); return; } setScreen(selectedEpoch && selectedLevel ? 'history-lessons' : selectedModule ? 'lessons' : 'modules'); setSelectedLesson(null); };
+  // Back from a lesson returns to that module's lesson list (not the dashboard),
+  // even when the lesson was launched from the dashboard - the dashboard sets
+  // selectedModule/selectedMainTopic, so we can land on the 'lessons' screen.
+  const goLessons = () => {
+    setSelectedLesson(null);
+    if (selectedEpoch && selectedLevel) { setScreen('history-lessons'); return; }
+    if (selectedModule) { setScreen('lessons'); return; }
+    if (selectedMainTopic) { setScreen('modules'); return; }
+    goHome();
+  };
 
   // Exit confirmation for quizzes/speed rounds with progress
   const tryExit = (action) => {
@@ -1045,6 +1054,9 @@ const App = ({ appMode = false, appState = null } = {}) => {
             }
             setSelectedModule(mod);
             setLaunchedFromDashboard(true);
+            // Locked lessons aren't launchable from the dashboard; open the
+            // module's lesson list instead so the lock is visible.
+            if (!isLessonUnlocked(lesson)) { setScreen('lessons'); return; }
             selectLes(lesson, idx);
           }}
         />
@@ -1077,6 +1089,7 @@ const App = ({ appMode = false, appState = null } = {}) => {
           }
           setSelectedModule(mod);
           setLaunchedFromDashboard(true);
+          if (!isLessonUnlocked(lesson)) { setScreen('lessons'); return; }
           selectLes(lesson, idx);
         }}
         onCalibration={() => setScreen('compass')}

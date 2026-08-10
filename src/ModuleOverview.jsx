@@ -234,6 +234,19 @@ const ModuleOverview = ({
         @media (prefers-reduced-motion: no-preference) {
           .hizb-glow { animation: hizbGlow 3s ease-in-out infinite; }
         }
+        /* Enticing pulse on an open (clickable) lesson's node + card. */
+        @keyframes moEntice {
+          0%,100% { filter: drop-shadow(0 0 3px rgba(240,180,41,.55)); transform: scale(1); }
+          50%     { filter: drop-shadow(0 0 9px rgba(240,180,41,.95)); transform: scale(1.06); }
+        }
+        @keyframes moEnticeCard {
+          0%,100% { box-shadow: 0 4px 20px rgba(240,180,41,.16); }
+          50%     { box-shadow: 0 6px 26px rgba(240,180,41,.34); }
+        }
+        @media (prefers-reduced-motion: no-preference) {
+          .mo-entice-node { animation: moEntice 2.2s ease-in-out infinite; }
+          .mo-entice-card { animation: moEnticeCard 2.4s ease-in-out infinite; }
+        }
         .quran-sep-bands { display: flex; }
         .quran-sep-label-mobile { display: none; }
         @media (max-width: 520px) {
@@ -430,6 +443,18 @@ const QuranModuleSeparator = ({ prevMod, prevIndex, nextMod, nextIndex, modules,
   );
 };
 
+/* The only lessons currently open. Everything else renders locked. Quran vocab
+   (core words) is a separate always-open feature, not a lesson in this list. */
+export const UNLOCKED_LESSON_IDS = new Set([
+  'arabia-before-islam', // Islamic history, lesson 2
+  'lesson-1-3',          // Islamic finance, lesson 3 (Riba, Gharar, Maysir)
+  'hifz-fatiha',         // Quran memorisation - Surah Al-Fatiha
+  's2-l2',               // Salah, lesson 2 (Before You Pray)
+]);
+export const isLessonUnlocked = (idOrLesson) =>
+  UNLOCKED_LESSON_IDS.has(typeof idOrLesson === 'string' ? idOrLesson : idOrLesson?.id);
+const isUnlocked = (lesson) => isLessonUnlocked(lesson);
+
 /* ================================================================ */
 /*  ModuleBlock - the two-column layout per module                  */
 /* ================================================================ */
@@ -441,13 +466,17 @@ const ModuleBlock = ({ mod, mi, topicId, completedLessons, loadProgress, onSelec
   const pct = lessons.length > 0 ? Math.round((doneCount / lessons.length) * 100) : 0;
   const curIdx = lessons.findIndex((_, i) => !isDone(i));
   const totalMin = lessons.reduce((sum, l) => sum + (parseInt(l.duration) || 0), 0);
+  // Only the curated set is open; every other lesson is locked regardless of
+  // progression. An unlocked lesson shows as 'done' if finished, else 'current'
+  // (the enticing, clickable state).
   const getState = (i) => {
-    if (isDone(i)) return 'done';
-    if (i === curIdx) return 'current';
-    return 'locked';
+    if (!isUnlocked(lessons[i])) return 'locked';
+    return isDone(i) ? 'done' : 'current';
   };
+  const firstOpenIdx = lessons.findIndex((l) => isUnlocked(l));
 
   const handleLessonClick = useCallback((lesson, i) => {
+    if (!isUnlocked(lesson)) return; // locked - not clickable
     onSelectLesson(lesson, i);
   }, [onSelectLesson]);
 
@@ -608,13 +637,13 @@ const ModuleBlock = ({ mod, mi, topicId, completedLessons, loadProgress, onSelec
           </div>
         )}
 
-        {/* CTA */}
-        {curIdx >= 0 && (
+        {/* CTA - only when this module has an open lesson; targets it directly */}
+        {firstOpenIdx >= 0 && (
           <div style={{ marginTop: 20 }}>
-            <DeanyButton variant="primary" onClick={() => onSelectLesson(lessons[curIdx], curIdx)}
+            <DeanyButton variant="primary" onClick={() => onSelectLesson(lessons[firstOpenIdx], firstOpenIdx)}
               style={{ width: '100%', gap: 8 }}>
               <Play size={15} fill={C.goldText} color={C.goldText} />
-              {doneCount > 0 ? 'Continue Learning' : 'Start Learning'}
+              {isDone(firstOpenIdx) ? 'Review Lesson' : 'Start Learning'}
             </DeanyButton>
           </div>
         )}
@@ -671,7 +700,7 @@ const LessonTimelineRow = ({ lesson, index, state, saved, isLast, meta, isCurren
         )}
 
         {/* Node */}
-        <div style={{
+        <div className={isCur ? 'mo-entice-node' : undefined} style={{
           width: 36, height: 36, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
           flexShrink: 0, position: 'relative', zIndex: 2,
           ...(isDone ? {
@@ -703,7 +732,7 @@ const LessonTimelineRow = ({ lesson, index, state, saved, isLast, meta, isCurren
       </div>
 
       {/* ── Lesson card ──────────────────────────────────────── */}
-      <button onClick={onClick} className="mo-focus"
+      <button onClick={onClick} className={isCur ? 'mo-focus mo-entice-card' : 'mo-focus'}
         style={{
           flex: 1, marginLeft: 14, marginBottom: isLast ? 0 : 12,
           borderRadius: 14, padding: '18px 20px', textAlign: 'left',
