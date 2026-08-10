@@ -5,9 +5,11 @@
 // Arabic is authored here - the verse comes from the ayah source and the bismillah
 // from the verified /quran source; this decorates only.
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { createPortal } from 'react-dom';
+import { MoreVertical, Trash2, Plus } from 'lucide-react';
 import { E, FONT_LATIN, FONT_SERIF, FONT_AR, subjectOf } from '../tokens.js';
 import { getActiveTopics, topicProgress, getContinueTarget, getDueReviews } from '../selectors.js';
-import { catalogById } from '../catalog.js';
+import { catalogById, CATALOG } from '../catalog.js';
 import { getAyahOfTheDay } from '../../../content/ayahOfTheDay.js';
 import { levelFor } from '../../../lib/levels.js';
 import { usePrayerTimes } from '../services/prayerTimes.js';
@@ -39,6 +41,7 @@ const PATHS = [
   { id: 'quran-arabic', tile: E.quranTint, badge: E.navy, badgeInk: '#fff', bar: E.navy, pct: E.navy, art: quranArt },
   { id: 'islamic-history', tile: E.historyTint, badge: E.history, badgeInk: '#fff', bar: E.history, pct: E.history, art: historyArt },
 ];
+const PATH_BY_ID = Object.fromEntries(PATHS.map((p) => [p.id, p]));
 const DIFF = (tier) => (tier >= 3 ? 'Advanced' : tier === 2 ? 'Intermediate' : 'Beginner');
 
 // Tools launcher (spec section 8). Each opens its own screen; none render inline.
@@ -112,6 +115,10 @@ const ED_CSS = `
 .ed .ptile img{ width:40px; height:40px; object-fit:contain; }
 .ed .path h4{ font-size:13.5px; font-weight:800; }
 .ed .path p{ font-size:10.5px; color:var(--faint); margin-top:2px; line-height:1.4; }
+.ed .add-path{ padding:14px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; border:2px dashed var(--line); border-radius:16px; background:var(--white); cursor:pointer; min-height:118px; font-family:inherit; -webkit-tap-highlight-color:transparent; }
+.ed .add-path:active{ transform:scale(0.982); }
+.ed .add-plus{ width:44px; height:44px; border-radius:13px; background:var(--teal-tint); display:inline-flex; align-items:center; justify-content:center; }
+.ed .add-lbl{ font-size:13px; font-weight:800; color:var(--teal-dark); }
 .ed .bar{ height:7px; background:#F1EFE9; border-radius:2px; margin-top:11px; overflow:hidden; }
 .ed .bar i{ display:block; height:100%; background:var(--gold); border-radius:4px; position:relative; overflow:hidden; }
 .ed .bar i::after{ content:''; position:absolute; top:1.5px; left:3px; right:3px; height:2px; border-radius:2px; background:rgba(255,255,255,0.45); }
@@ -158,7 +165,9 @@ const ED_CSS = `
 @media (prefers-reduced-motion: reduce){ .ed .wash,.ed .card,.ed .sect,.ed .paths,.ed .xp-row,.ed .trio,.ed .bismillah,.ed .btn,.ed .chip{ animation:none !important; transition:none !important; } }
 `;
 
-export default function Home({ name, state, deps, coins, streak, xp, onGoTab, onOpenTopic, onOpenAyah, onSelectLesson, onOpenTool }) {
+export default function Home({ name, state, deps, coins, streak, xp, onGoTab, onOpenTopic, onOpenAyah, onSelectLesson, onOpenTool, addTopic, removeTopic }) {
+  const [menuTopic, setMenuTopic] = useState(null); // open remove-menu for a subject
+  const [showAdd, setShowAdd] = useState(false);     // add-subject bottom sheet
   const [ayah] = useState(getAyahOfTheDay);
   const [dateLine] = useState(() => { const h = hijriParts(new Date()); return `${weekday()} · ${h.day} ${h.month} ${h.year}`; });
   const [bismillah, setBismillah] = useState('');
@@ -230,6 +239,11 @@ export default function Home({ name, state, deps, coins, streak, xp, onGoTab, on
 
   const comingApproved = jumuah.status === 'approved' && (jumuah.body || '').trim();
 
+  // Learning paths are the user's active subjects; they can add and remove them.
+  const activeTopics = getActiveTopics(state);
+  const activeTopicSet = new Set(activeTopics);
+  const addableTopics = CATALOG.filter((c) => !activeTopicSet.has(c.id) && c.status !== 'coming_soon');
+
   return (
     <div className="ed">
       <style>{ED_CSS}</style>
@@ -299,30 +313,80 @@ export default function Home({ name, state, deps, coins, streak, xp, onGoTab, on
         )}
       </div>
 
-      {/* 4. Learning paths */}
+      {/* 4. Learning paths - the user's active subjects (add / remove) */}
       <div className="sect"><h3>Learning paths</h3></div>
       <div className="paths">
-        {PATHS.map((p) => {
-          const s = subjectOf(p.id);
-          const prog = topicProgress(p.id, deps);
-          const tier = (state.topics?.[p.id]?.tier) || 1;
+        {activeTopics.map((id) => {
+          const p = PATH_BY_ID[id] || { id, tile: E.inset, badge: E.soft, badgeInk: '#fff', bar: E.teal, pct: E.tealDark, art: null };
+          const s = subjectOf(id);
+          const prog = topicProgress(id, deps);
+          const tier = (state.topics?.[id]?.tier) || 1;
           const started = prog.done > 0;
           return (
-            <div className="card path" key={p.id} onClick={() => onOpenTopic && onOpenTopic(p.id)}>
+            <div className="card path" key={id} onClick={() => onOpenTopic && onOpenTopic(id)} style={{ position: 'relative' }}>
               <div className="top">
-                <span className="ptile" style={{ background: p.tile }}><img src={p.art} alt="" aria-hidden="true" /></span>
-                <span className="badge" style={{ background: p.badge, color: p.badgeInk }}>{DIFF(tier)}</span>
+                <span className="ptile" style={{ background: p.tile }}>{p.art && <img src={p.art} alt="" aria-hidden="true" />}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <span className="badge" style={{ background: p.badge, color: p.badgeInk }}>{DIFF(tier)}</span>
+                  <button aria-label={`${s.name} options`} onClick={(e) => { e.stopPropagation(); setMenuTopic(menuTopic === id ? null : id); }}
+                    style={{ background: 'none', border: 'none', padding: 4, margin: '-4px -4px -4px 0', cursor: 'pointer', color: E.faint, display: 'inline-flex', WebkitTapHighlightColor: 'transparent' }}>
+                    <MoreVertical size={15} />
+                  </button>
+                </div>
               </div>
               <h4>{s.name}</h4>
-              <p>{(catalogById(p.id) || {}).desc || `${prog.total} lesson${prog.total === 1 ? '' : 's'}`}</p>
+              <p>{(catalogById(id) || {}).desc || `${prog.total} lesson${prog.total === 1 ? '' : 's'}`}</p>
               <div className="bar"><i style={{ width: `${prog.pct}%`, background: p.bar }} /></div>
               {started
                 ? <div className="pct" style={{ color: p.pct }}>{prog.pct}%</div>
                 : <div className="pct" style={{ color: p.pct }}>{prog.next ? `Start with ${prog.next.lesson.title}` : 'Not started'}</div>}
+              {menuTopic === id && (
+                <>
+                  <div onClick={(e) => { e.stopPropagation(); setMenuTopic(null); }} style={{ position: 'fixed', inset: 0, zIndex: 40 }} />
+                  <div style={{ position: 'absolute', top: 40, right: 10, zIndex: 41, background: '#fff', border: `1px solid ${E.line}`, borderRadius: 12, overflow: 'hidden', minWidth: 160, boxShadow: '0 8px 24px rgba(15,42,52,0.16)' }}>
+                    <button onClick={(e) => { e.stopPropagation(); removeTopic && removeTopic(id); setMenuTopic(null); }}
+                      style={{ display: 'flex', alignItems: 'center', gap: 9, width: '100%', textAlign: 'left', background: 'none', border: 'none', padding: '12px 13px', fontSize: 13, fontWeight: 600, color: '#B04A2C', cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}>
+                      <Trash2 size={15} color="#B04A2C" /> Remove subject
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           );
         })}
+        {addableTopics.length > 0 && (
+          <button className="add-path" onClick={() => setShowAdd(true)} aria-label="Add a subject">
+            <span className="add-plus"><Plus size={22} color={E.tealDark} /></span>
+            <span className="add-lbl">Add subject</span>
+          </button>
+        )}
       </div>
+
+      {/* Add-subject bottom sheet - portaled to body so the nav bar can't cover it */}
+      {showAdd && typeof document !== 'undefined' && createPortal(
+        <div>
+          <div onClick={() => setShowAdd(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(15,42,52,0.30)', zIndex: 1000 }} />
+          <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 1001, background: '#fff', borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: '18px 18px calc(env(safe-area-inset-bottom) + 20px)', maxWidth: 520, margin: '0 auto', maxHeight: '80vh', overflowY: 'auto', fontFamily: FONT_LATIN }}>
+            <div style={{ fontFamily: FONT_SERIF, fontSize: 18, fontWeight: 600, color: E.ink, marginBottom: 4 }}>Add a subject</div>
+            <div style={{ fontSize: 12.5, color: E.soft, marginBottom: 14 }}>Pick what you want to learn. You can remove it any time.</div>
+            {addableTopics.map((c) => {
+              const p = PATH_BY_ID[c.id];
+              return (
+                <button key={c.id} onClick={() => { addTopic && addTopic(c.id); if (addableTopics.length <= 1) setShowAdd(false); }}
+                  style={{ display: 'flex', alignItems: 'center', gap: 12, width: '100%', textAlign: 'left', background: 'none', border: 'none', borderBottom: `1px solid ${E.line}`, padding: '13px 2px', cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}>
+                  <span style={{ width: 44, height: 44, borderRadius: 13, flexShrink: 0, background: p ? p.tile : E.inset, border: '1px solid rgba(27,42,74,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>{p && p.art && <img src={p.art} alt="" aria-hidden="true" style={{ width: 36, height: 36, objectFit: 'contain' }} />}</span>
+                  <span style={{ flex: 1, minWidth: 0 }}>
+                    <span style={{ display: 'block', fontSize: 14, fontWeight: 700, color: E.ink }}>{c.name}</span>
+                    <span style={{ display: 'block', fontSize: 11.5, color: E.soft, marginTop: 1 }}>{c.desc}</span>
+                  </span>
+                  <span style={{ flexShrink: 0, display: 'inline-flex', alignItems: 'center', gap: 5, color: E.tealDark, fontSize: 12.5, fontWeight: 700, border: `1px solid ${E.line}`, borderRadius: 999, padding: '7px 14px' }}><Plus size={14} /> Add</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>,
+        document.body,
+      )}
 
       <div style={{ height: 14 }} />
 

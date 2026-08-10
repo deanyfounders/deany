@@ -74,6 +74,7 @@ function Inner({ mainTopics = [], modules = {}, completedLessons = {}, onSelectL
   const tabContent =
     tab === 'home' ? (
       <Home name={name} state={dash.state} deps={deps} coins={cn} streak={streak} xp={xp}
+        addTopic={dash.addTopic} removeTopic={dash.removeTopic}
         onOpenTopic={openPath} onGoTab={nav.onTapTab} onSelectLesson={onSelectLesson}
         onOpenCoreWords={openCore} onOpenTool={openTool} onOpenAyah={openReader} />
     ) : tab === 'topics' ? (
