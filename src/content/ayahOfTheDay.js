@@ -58,6 +58,10 @@ export const AYAH_BANK = [
 
 // Deterministic by date - same ayah for every user on a given day, offline.
 export function getAyahOfTheDay(date = new Date()) {
+  // PINNED by request: keep Ash-Sharh 94:5-6 fixed (do not rotate) until told
+  // otherwise. To restore daily rotation, delete the two pin lines below.
+  const pinned = AYAH_BANK.find((a) => a.id === 'sharh-5-6');
+  if (pinned) return pinned;
   const start = new Date(date.getFullYear(), 0, 0);
   const dayOfYear = Math.floor((date - start) / 86400000);
   return AYAH_BANK[dayOfYear % AYAH_BANK.length];

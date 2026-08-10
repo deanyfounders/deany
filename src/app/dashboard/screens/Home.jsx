@@ -165,11 +165,14 @@ export default function Home({ name, state, deps, coins, streak, onGoTab, onOpen
   const prayer = usePrayerTimes();
 
   // Continue-learning target (real current lesson, else first lesson of a path).
-  const ct = useMemo(() => getContinueTarget(state, deps, Date.now()), [state, deps]);
-  const contId = ct.type === 'lesson' ? ct.topicId : (getActiveTopics(state)[0] || PATHS[0].id);
-  const cprog = contId ? topicProgress(contId, deps) : null;
-  const cnext = cprog && cprog.next;
-  const cStarted = cprog && cprog.done > 0;
+  // Top CTA pinned to Islamic finance lesson 3 (Riba, Gharar, Maysir) for now.
+  const contId = 'islamic-finance';
+  const cprog = topicProgress(contId, deps);
+  const _finMod = (deps.modules?.[contId] || []).find((m) => m.id === 'module-1');
+  const cnext = _finMod?.lessons?.[2]
+    ? { lesson: _finMod.lessons[2], idx: 2, mod: _finMod }
+    : (cprog && cprog.next);
+  const cStarted = false;
 
   const hp = hijriParts(new Date());
   const monthLen = useMemo(() => hijriMonthLen(new Date()), []);
@@ -215,7 +218,7 @@ export default function Home({ name, state, deps, coins, streak, onGoTab, onOpen
         {/* 2. Header (centered, inside the wash) */}
         <div className="head">
           <div className="salam" dir="rtl">{SALAM}</div>
-          <h1>Hello {name || 'friend'}</h1>
+          <h1>{name || 'friend'}</h1>
           <div className="date">{dateLine}</div>
         </div>
       </div>
@@ -241,7 +244,7 @@ export default function Home({ name, state, deps, coins, streak, onGoTab, onOpen
             <svg width="10" height="11" viewBox="0 0 11 12" fill="none" aria-hidden="true"><path d="M1.5 1.5 L10 6 L1.5 10.5 Z" fill="#fff" /></svg>
             Recite
           </div>
-          <div className="chip" onClick={openReader} style={{ background: E.goldTint, borderColor: '#F0D089', color: E.goldDark }}>Tafseer</div>
+          <div className="chip" onClick={openReader} style={{ background: E.goldTint, borderColor: '#F0D089', color: E.goldDark }}>Context</div>
         </div>
       </div>
 
