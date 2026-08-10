@@ -9,6 +9,7 @@ import { E, FONT_LATIN, FONT_SERIF, FONT_AR, subjectOf } from '../tokens.js';
 import { getActiveTopics, topicProgress, getContinueTarget, getDueReviews } from '../selectors.js';
 import { catalogById } from '../catalog.js';
 import { getAyahOfTheDay } from '../../../content/ayahOfTheDay.js';
+import { levelFor } from '../../../lib/levels.js';
 import { usePrayerTimes } from '../services/prayerTimes.js';
 import jumuah from '../../../../content/dashboard/jumuah.json';
 import pillarsArt from '../../../assets/topics/5-pillars.png';
@@ -116,17 +117,15 @@ const ED_CSS = `
 .ed .bar i::after{ content:''; position:absolute; top:1.5px; left:3px; right:3px; height:2px; border-radius:2px; background:rgba(255,255,255,0.45); }
 .ed .pct{ font-size:9.5px; color:var(--faint); text-align:right; margin-top:4px; }
 .ed .xp-row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-.ed .ring-card{ text-align:center; padding:16px 12px; margin-bottom:0; }
-.ed .ring{ position:relative; width:84px; height:84px; margin:6px auto 8px; pointer-events:none; }
-/* iOS Safari draws a cornflower-blue box around the ring SVG (composited-layer /
-   tap-highlight artifact). Belt-and-suspenders: no CSS transform on the svg (the
-   arc is rotated via an SVG attribute instead), plus kill any outline / tap
-   highlight / selection so the browser cannot paint a box on it. */
-.ed .ring svg{ display:block; outline:none; -webkit-tap-highlight-color:transparent; -webkit-user-select:none; user-select:none; }
-.ed .ring .n{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
-.ed .ring .n b{ font-size:18px; font-weight:800; }
-.ed .ring .n small{ font-size:8.5px; color:var(--faint); text-transform:uppercase; letter-spacing:0.08em; }
-.ed .ring-card p{ font-size:10.5px; color:var(--faint); line-height:1.45; }
+/* Level progress card (deany_level_card_spec) - replaces the old XP ring. */
+.ed .level-card{ margin-bottom:0; padding:16px; display:flex; flex-direction:column; justify-content:center; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+.ed .level-head{ display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+.ed .level-badge{ width:38px; height:38px; border-radius:12px; background:var(--gold-tint); border:1px solid #F0D089; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; font-family:${FONT_SERIF}; font-weight:700; font-size:15px; color:var(--gold-dark); }
+.ed .level-lbl{ font-size:9px; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:var(--soft); }
+.ed .level-hl{ font-size:13.5px; font-weight:800; color:var(--ink); line-height:1.2; margin-top:2px; }
+.ed .level-track{ height:10px; background:var(--inset); border-radius:6px; overflow:hidden; }
+.ed .level-fill{ height:100%; background:var(--gold); border-radius:6px; position:relative; overflow:hidden; transition:width .5s ease-out; }
+.ed .level-fill::after{ content:''; position:absolute; top:2px; left:3px; right:3px; height:2px; border-radius:2px; background:rgba(255,255,255,0.5); }
 .ed .nudge{ padding:14px; margin-bottom:0; display:flex; flex-direction:column; justify-content:center; }
 .ed .nudge b{ font-size:13px; font-weight:800; }
 .ed .nudge small{ font-size:10.5px; color:var(--faint); margin-top:3px; }
@@ -159,7 +158,7 @@ const ED_CSS = `
 @media (prefers-reduced-motion: reduce){ .ed .wash,.ed .card,.ed .sect,.ed .paths,.ed .xp-row,.ed .trio,.ed .bismillah,.ed .btn,.ed .chip{ animation:none !important; transition:none !important; } }
 `;
 
-export default function Home({ name, state, deps, coins, streak, onGoTab, onOpenTopic, onOpenAyah, onSelectLesson, onOpenTool }) {
+export default function Home({ name, state, deps, coins, streak, xp, onGoTab, onOpenTopic, onOpenAyah, onSelectLesson, onOpenTool }) {
   const [ayah] = useState(getAyahOfTheDay);
   const [dateLine] = useState(() => { const h = hijriParts(new Date()); return `${weekday()} · ${h.day} ${h.month} ${h.year}`; });
   const [bismillah, setBismillah] = useState('');
@@ -190,15 +189,11 @@ export default function Home({ name, state, deps, coins, streak, onGoTab, onOpen
   const monthLen = useMemo(() => hijriMonthLen(new Date()), []);
   const due = getDueReviews(state, Date.now());
 
-  // XP ring from the real daily-study goal (minutes the user set / did today).
-  const earned = state.goal?.minutesToday || 0;
-  const goal = state.goal?.dailyMinutes || 5;
-  // Demo: with nothing logged yet the ring reads as a dead empty circle. Show a
-  // lively ~60% sample fill until real minutes land (does not touch `earned`, so
-  // the streak/challenge logic below stays honest).
-  const ringEarned = earned || Math.round(goal * 0.6);
-  const CIRC = 207; // 2*pi*33
-  const ringOffset = CIRC * (1 - Math.min(1, goal ? ringEarned / goal : 0));
+  const earned = state.goal?.minutesToday || 0; // drives the streak/challenge signal below
+
+  // Level card: derived from lifetime XP (same source the profile uses).
+  const xpKnown = Number.isFinite(Number(xp));
+  const lvl = levelFor(xp);
 
   // Challenge from a real signal: any study today keeps the streak alive.
   const challDone = earned > 0 ? 1 : 0;
@@ -323,15 +318,20 @@ export default function Home({ name, state, deps, coins, streak, onGoTab, onOpen
 
       {/* 5. XP row */}
       <div className="xp-row">
-        <div className="card ring-card">
-          <div className="ring">
-            <svg width="84" height="84" viewBox="0 0 76 76" focusable="false" aria-hidden="true" style={{ pointerEvents: 'none' }}>
-              <circle cx="38" cy="38" r="33" fill="none" stroke="#F1EFE9" strokeWidth="9" />
-              <circle cx="38" cy="38" r="33" fill="none" stroke={E.gold} strokeWidth="9" strokeLinecap="round" strokeDasharray={CIRC} strokeDashoffset={ringOffset} transform="rotate(-90 38 38)" />
-            </svg>
-            <div className="n"><b>{ringEarned}</b><small>of {goal} min</small></div>
+        <div className="card level-card" role="button" tabIndex={0}
+          aria-label={xpKnown ? `Level ${lvl.level}, ${lvl.xpToNext} XP to level ${lvl.nextLevel}. Open profile.` : 'Level. Open profile.'}
+          onClick={() => onGoTab && onGoTab('you')}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onGoTab && onGoTab('you'); } }}>
+          <div className="level-head">
+            <span className="level-badge">{xpKnown ? lvl.level : '–'}</span>
+            <div style={{ minWidth: 0 }}>
+              <div className="level-lbl">Level {xpKnown ? lvl.level : ''}</div>
+              <div className="level-hl">{xpKnown ? `${lvl.xpToNext} XP to Level ${lvl.nextLevel}` : '— XP to next level'}</div>
+            </div>
           </div>
-          <p>Minutes toward your daily goal</p>
+          <div className="level-track">
+            <div className="level-fill" style={{ width: `${Math.round((xpKnown ? lvl.progress : 0) * 100)}%` }} />
+          </div>
         </div>
         <div className="card nudge">
           <b>One lesson</b>

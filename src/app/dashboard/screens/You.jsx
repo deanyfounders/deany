@@ -64,7 +64,7 @@ export default function You({ name, guest, state, completedLessons = {}, xp = 0,
 
       {/* Stats 2x2 */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 20 }}>
-        <Card><StatBlock label="Total XP" value={demo.xp.toLocaleString()} /></Card>
+        <Card><StatBlock label="Total XP" value={(Number(xp) || 0).toLocaleString()} /></Card>
         <Card><StatBlock label="Lessons completed" value={demo.lessons} /></Card>
         <Card><StatBlock label="Items mastered" value={demo.mastered} /></Card>
         <Card><StatBlock label="Recall accuracy" value={`${demo.accuracy}%`} /></Card>
