@@ -4,7 +4,7 @@
 // tokens; every visible value is wired to real state or a live service. No Qur'anic
 // Arabic is authored here - the verse comes from the ayah source and the bismillah
 // from the verified /quran source; this decorates only.
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { E, FONT_LATIN, FONT_SERIF, FONT_AR, subjectOf } from '../tokens.js';
 import { getActiveTopics, topicProgress, getContinueTarget, getDueReviews } from '../selectors.js';
 import { catalogById } from '../catalog.js';
@@ -18,6 +18,18 @@ import historyArt from '../../../assets/topics/islamic-history.png';
 
 const SALAM = 'السلام عليكم'; // greeting, not Qur'anic verse text
 const minsOf = (d) => { const n = parseInt(String(d || '').replace(/[^0-9]/g, ''), 10); return Number.isFinite(n) && n > 0 ? n : 5; };
+
+// Recite audio resolves from the DISPLAYED ayah key so it can never mismatch the
+// verse on screen (deany_recite_audio_spec). Local override first, then the
+// Al-Dosari CDN (reciter 4, same source as the hifz component).
+const RECITE_OVERRIDE = { '65:3': '/audio/ayah/065003.mp3' };
+const reciteSources = (ref) => {
+  const [s, aRaw] = String(ref || '').split(':');
+  const a = String(aRaw || '').split('-')[0]; // first ayah of a range
+  const cdn = `https://the-quran-project.github.io/Quran-Audio/Data/4/${s}_${a}.mp3`;
+  const local = RECITE_OVERRIDE[`${s}:${a}`];
+  return local ? [local, cdn] : [cdn];
+};
 
 // Path identity (spec section 4): tile tint, badge fill, bar + percent colour, art.
 const PATHS = [
@@ -194,6 +206,32 @@ export default function Home({ name, state, deps, coins, streak, onGoTab, onOpen
   const nextLesson = () => { if (cnext) onSelectLesson && onSelectLesson(cnext.lesson, cnext.idx, cnext.mod); else if (contId) onOpenTopic && onOpenTopic(contId); };
   const openReader = () => { const [s, a] = String(ayah.ref).split(':'); onOpenAyah && onOpenAyah(parseInt(s, 10), parseInt(a, 10)); };
 
+  // Recite chip = play/stop toggle for the displayed ayah, local file -> CDN.
+  const reciteRef = useRef(null);
+  const reciteIdx = useRef(0);
+  const [reciting, setReciting] = useState(false);
+  const [reciteErr, setReciteErr] = useState('');
+  const reciteList = useMemo(() => reciteSources(ayah.ref), [ayah.ref]);
+  const playReciteFrom = (i) => {
+    const el = reciteRef.current; if (!el || !reciteList[i]) return;
+    reciteIdx.current = i;
+    el.src = reciteList[i];
+    el.currentTime = 0;
+    el.play().then(() => { setReciting(true); setReciteErr(''); }).catch(() => {/* onError handles fallback */});
+  };
+  const toggleRecite = () => {
+    const el = reciteRef.current; if (!el) return;
+    if (reciting) { el.pause(); setReciting(false); return; }
+    try { document.querySelectorAll('audio').forEach((a) => { if (a !== el) a.pause(); }); } catch (e) {} // one voice at a time
+    playReciteFrom(0);
+  };
+  const onReciteError = () => {
+    if (reciteIdx.current < reciteList.length - 1) playReciteFrom(reciteIdx.current + 1);
+    else { setReciting(false); setReciteErr('Audio is unavailable right now'); }
+  };
+  // Stop and release when the verse changes or on unmount.
+  useEffect(() => { setReciting(false); setReciteErr(''); return () => { const el = reciteRef.current; if (el) el.pause(); }; }, [ayah.ref]);
+
   const comingApproved = jumuah.status === 'approved' && (jumuah.body || '').trim();
 
   return (
@@ -240,12 +278,20 @@ export default function Home({ name, state, deps, coins, streak, onGoTab, onOpen
         <div className="tr">"{ayah.translation}"</div>
         <div className="ref">{ayah.surahName} {ayah.ref}</div>
         <div className="chips">
-          <div className="chip" onClick={openReader} style={{ background: E.teal, borderColor: E.teal, color: '#fff' }}>
-            <svg width="10" height="11" viewBox="0 0 11 12" fill="none" aria-hidden="true"><path d="M1.5 1.5 L10 6 L1.5 10.5 Z" fill="#fff" /></svg>
-            Recite
+          <div className="chip" role="button" tabIndex={0} aria-pressed={reciting}
+            aria-label={reciting ? 'Stop recitation' : 'Recite, recited by Yasser Al-Dosari'}
+            onClick={toggleRecite}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleRecite(); } }}
+            style={{ background: E.teal, borderColor: E.teal, color: '#fff' }}>
+            {reciting
+              ? <svg width="10" height="10" viewBox="0 0 12 12" aria-hidden="true"><rect x="1" y="1" width="10" height="10" rx="2" fill="#fff" /></svg>
+              : <svg width="10" height="11" viewBox="0 0 11 12" fill="none" aria-hidden="true"><path d="M1.5 1.5 L10 6 L1.5 10.5 Z" fill="#fff" /></svg>}
+            {reciting ? 'Stop' : 'Recite'}
           </div>
           <div className="chip" onClick={openReader} style={{ background: E.goldTint, borderColor: '#F0D089', color: E.goldDark }}>Context</div>
         </div>
+        <audio ref={reciteRef} preload="none" onEnded={() => setReciting(false)} onError={onReciteError} />
+        <div style={{ fontSize: 10.5, color: E.faint, marginTop: 10 }}>{reciteErr || 'Recited by Yasser Al-Dosari'}</div>
       </div>
 
       {/* 4. Learning paths */}
