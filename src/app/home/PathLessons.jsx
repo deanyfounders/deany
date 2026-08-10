@@ -12,7 +12,6 @@ const serif = 'Georgia, serif';
 
 export default function PathLessons({ topic, modules, completedLessons, accent = TOKENS.teal, level, onSelectLesson, onBack }) {
   const [coreWords, setCoreWords] = useState(false);
-  const showCoreWords = topic.id === 'quran-arabic';
   const { sections, currentKey, done, total } = useMemo(() => {
     const mods = (modules[topic.id] || []).filter(m => (m.lessons || []).length);
     const flat = [];
@@ -58,28 +57,15 @@ export default function PathLessons({ topic, modules, completedLessons, accent =
         </div>
       </div>
 
-      {/* Quranic Core Words - memorisation and tafsir study tool, at the top */}
-      {showCoreWords && (
-        <div style={{ padding: '4px 20px 2px' }}>
-          <button onClick={() => setCoreWords(true)} className="dash-press"
-            style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 12, background: '#EDEAFA', border: '1px solid #D9D3F2', borderRadius: 14, padding: '13px 15px', cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}>
-            <span style={{ width: 38, height: 38, borderRadius: 10, background: '#2A2264', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <span style={{ fontFamily: "'Scheherazade New','Amiri',serif", fontSize: 20, color: '#fff', lineHeight: 1 }}>{'ق'}</span>
-            </span>
-            <span style={{ flex: 1, minWidth: 0 }}>
-              <span style={{ display: 'block', fontSize: 11, fontWeight: 700, letterSpacing: 0.3, textTransform: 'uppercase', color: '#5B4FA0' }}>Memorisation and tafsir</span>
-              <span style={{ display: 'block', fontSize: 14, fontWeight: 600, color: '#2A2264', marginTop: 1 }}>Quranic Core Words</span>
-            </span>
-            <ArrowRight size={18} color="#5B4FA0" />
-          </button>
-        </div>
-      )}
-
       {/* Timeline */}
       <div style={{ padding: '10px 20px 8px' }}>
         {sections.map((sec, si) => (
           <div key={sec.mod.id}>
             <div style={{ fontSize: 11, letterSpacing: '1.2px', textTransform: 'uppercase', color: 'rgba(27,42,74,0.45)', fontWeight: 700, margin: si === 0 ? '4px 0 12px' : '22px 0 12px' }}>{sec.mod.title}</div>
+            {/* Quranic Core Words (vocab) lives inside the memorisation module. */}
+            {sec.mod.id === 'quran-memorisation' && (
+              <VocabRow onOpen={() => setCoreWords(true)} isLast={sec.lessons.length === 0} />
+            )}
             {sec.lessons.map((row, ri) => {
               const unlocked = isLessonUnlocked(row.lesson);
               const state = !unlocked ? 'locked' : row.isDone ? 'done' : 'current';
@@ -98,6 +84,32 @@ export default function PathLessons({ topic, modules, completedLessons, accent =
         </div>,
         document.body
       )}
+    </div>
+  );
+}
+
+// Quranic Core Words entry, styled as an always-open timeline row (its own
+// purple identity) that opens the vocabulary tool.
+function VocabRow({ onOpen, isLast }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'stretch', position: 'relative' }}>
+      <div style={{ width: 34, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div style={{ width: 34, height: 34, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, zIndex: 2, background: '#2A2264', boxShadow: '0 2px 10px rgba(42,34,100,0.35)' }}>
+          <span style={{ fontFamily: "'Scheherazade New','Amiri',serif", fontSize: 18, color: '#fff', lineHeight: 1 }}>{'ق'}</span>
+        </div>
+        {!isLast && <div style={{ width: 2, flexGrow: 1, minHeight: 14, background: 'rgba(15,76,92,0.10)' }} />}
+      </div>
+      <button onClick={onOpen} style={{
+        flex: 1, marginLeft: 14, marginBottom: isLast ? 0 : 12, borderRadius: 14, padding: '15px 16px', textAlign: 'left',
+        background: '#EDEAFA', border: '1px solid #D9D3F2', cursor: 'pointer', minHeight: 48,
+        display: 'flex', alignItems: 'center', gap: 12, WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation',
+      }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontFamily: serif, fontSize: 15.5, fontWeight: 500, color: '#2A2264', lineHeight: 1.3 }}>Quranic Core Words</div>
+          <div style={{ marginTop: 4, fontSize: 12, color: '#5B4FA0' }}>Vocab · <span style={{ fontWeight: 700 }}>Start now</span></div>
+        </div>
+        <ArrowRight size={18} color="#5B4FA0" style={{ flexShrink: 0 }} />
+      </button>
     </div>
   );
 }

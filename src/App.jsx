@@ -8,6 +8,7 @@ import DEANY_HB1_L1 from './DEANY-HB1L1.jsx';
 import DEANY_HB1_L2 from './DEANY-HB1L2.jsx';
 import ModuleOverview, { isLessonUnlocked } from './ModuleOverview.jsx';
 import PathLessons from './app/home/PathLessons.jsx';
+import { subjectOf } from './app/dashboard/tokens.js';
 import DEANYPrayerVis from './DEANY-PRAYER-VIS.jsx';
 import DEANYS2L1 from './DEANY-S2L1.jsx';
 import DEANYS2L2 from './DEANY-S2L2.jsx';
@@ -783,9 +784,11 @@ const App = ({ appMode = false, appState = null } = {}) => {
   // selectedModule/selectedMainTopic, so we can land on the 'lessons' screen.
   const goLessons = () => {
     setSelectedLesson(null);
-    // Islamic finance is flipped: back from a lesson shows the flat PathLessons
-    // list (entry showed the rich ModuleOverview).
-    if (selectedMainTopic?.id === 'islamic-finance') { setScreen('finance-flat'); return; }
+    // Back from a lesson returns to the SAME list the user first saw. Everything
+    // launched from the dashboard entered through the flat PathLessons list, so
+    // return there for every topic. (The older selectMainTopic flow keeps its
+    // ModuleOverview screens.)
+    if (launchedFromDashboard && selectedMainTopic) { setScreen('path-lessons'); return; }
     if (selectedEpoch && selectedLevel) { setScreen('history-lessons'); return; }
     if (selectedModule) { setScreen('lessons'); return; }
     if (selectedMainTopic) { setScreen('modules'); return; }
@@ -1168,16 +1171,16 @@ const App = ({ appMode = false, appState = null } = {}) => {
     );
   }
 
-  // Islamic finance flip: the flat lesson list, shown when returning from a
-  // finance lesson (entry into finance shows the ModuleOverview layout instead).
-  if (screen == 'finance-flat') {
+  // The flat lesson list (same as the dashboard entry), shown when returning
+  // from a dashboard-launched lesson so back matches how the module first looked.
+  if (screen == 'path-lessons') {
     if (!selectedMainTopic) { goHome(); return null; }
     return (
       <PathLessons
         topic={selectedMainTopic}
         modules={homeModules}
         completedLessons={completedLessons}
-        accent={'#d97706'}
+        accent={subjectOf(selectedMainTopic.id).accent}
         onSelectLesson={selectLes}
         onBack={goHome}
       />
