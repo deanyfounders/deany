@@ -266,7 +266,7 @@ export default function Home({ name, state, deps, coins, streak, xp, onGoTab, on
         {/* 2. Header (centered, inside the wash) */}
         <div className="head">
           <div className="salam" dir="rtl">{SALAM}</div>
-          <h1>{name || 'friend'}</h1>
+          <h1>{name || 'Hub71'}</h1>
           <div className="date">{dateLine}</div>
         </div>
       </div>
