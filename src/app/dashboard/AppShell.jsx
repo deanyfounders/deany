@@ -28,11 +28,11 @@ export function NavBar({ tab, onTab }) {
   return (
     <nav aria-label="Primary" style={{
       display: 'flex', background: '#fff', borderTop: '2px solid #E8E6E0', flexShrink: 0, maxWidth: 520, margin: '0 auto', width: '100%',
-      // Flush to the screen edge (white fills the safe area), but the icon row is
-      // lifted: small space above, generous space below so the icons never hug the
-      // bottom edge. In normal flow, so content always ends above the bar - it can
-      // never cover anything on scroll.
-      padding: '8px 0 calc(env(safe-area-inset-bottom) + 16px)',
+      // Flush to the screen edge (white fills the safe area). The icon row sits low:
+      // a small, balanced margin above and below, plus the home-indicator safe-area
+      // inset so icons clear it without floating high above the bottom edge. In
+      // normal flow, so content always ends above the bar - it never covers content.
+      padding: '6px 0 calc(env(safe-area-inset-bottom) + 6px)',
     }}>
       {TABS.map((id) => {
         const active = tab === id;
