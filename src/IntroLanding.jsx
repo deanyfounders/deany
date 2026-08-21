@@ -20,9 +20,9 @@ const sans = '-apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-ser
 const HEAD = 'clamp(34px, 8vw, 60px)';
 
 const LEVELS = [
-  { text: 'at', label: 'Beginner', color: C.teal },
-  { text: 'any', label: 'Intermediate', color: C.goldDk },
-  { text: 'level.', label: 'Advanced', color: C.coral },
+  { text: 'at', label: 'Beginner', color: C.teal, tint: C.tealSoft },
+  { text: 'any', label: 'Intermediate', color: C.goldDk, tint: C.goldTint },
+  { text: 'level.', label: 'Advanced', color: C.coral, tint: C.coralSoft },
 ];
 
 const PLATFORMS = [
@@ -49,6 +49,18 @@ const ArrowDown = ({ color }) => (
   </svg>
 );
 
+const DownloadIcon = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <path d="M12 3v12" /><path d="M7 11l5 5 5-5" /><path d="M5 21h14" />
+  </svg>
+);
+
+const Chevron = ({ open }) => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden style={{ transition: 'transform .2s ease', transform: open ? 'rotate(180deg)' : 'none' }}>
+    <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
 const Blob = ({ color, size, style }) => (
   <div aria-hidden style={{ position: 'absolute', width: size, height: size, borderRadius: '50%',
     background: color, filter: 'blur(70px)', opacity: 0.55, pointerEvents: 'none', ...style }} />
@@ -56,7 +68,7 @@ const Blob = ({ color, size, style }) => (
 
 export default function IntroLanding() {
   const [deferred, setDeferred] = useState(null);
-  const [showHow, setShowHow] = useState(true);
+  const [showHow, setShowHow] = useState(false);
   const [installed] = useState(isStandalone);
 
   useEffect(() => {
@@ -131,18 +143,19 @@ export default function IntroLanding() {
               Learn Islam, beautifully
             </span>
 
-            {/* Colour-coded, level-labelled headline. Labels float ABOVE each word
-                (absolute) so long labels never widen or squish the word row. */}
-            <h1 aria-label="Start at any level" className="il-head" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'flex-end', rowGap: 34, margin: '48px 0 0' }}>
-              <span style={{ fontFamily: sans, fontWeight: 800, color: C.tealDeep, letterSpacing: '-0.02em', fontSize: HEAD, lineHeight: 1 }}>Start</span>
+            {/* Level legend: colour-matched chips above the headline. Each chip's
+                colour (teal/gold/coral) ties it to the matching word below, so
+                nothing needs to align across breakpoints. */}
+            <div aria-hidden style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 10px', margin: '26px 0 15px' }}>
               {LEVELS.map((l) => (
-                <span key={l.label} style={{ position: 'relative', display: 'inline-block', lineHeight: 1 }}>
-                  <span aria-hidden style={{ position: 'absolute', bottom: '100%', left: '50%', transform: 'translateX(-50%)', marginBottom: 4, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1, whiteSpace: 'nowrap' }}>
-                    <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: '.4px', textTransform: 'uppercase', color: l.color }}>{l.label}</span>
-                    <ArrowDown color={l.color} />
-                  </span>
-                  <span style={{ fontFamily: sans, fontWeight: 800, letterSpacing: '-0.02em', fontSize: HEAD, lineHeight: 1, color: l.color }}>{l.text}</span>
-                </span>
+                <span key={l.label} style={{ background: l.tint, color: l.color, fontSize: 11.5, fontWeight: 800, letterSpacing: '.5px', textTransform: 'uppercase', padding: '6px 12px', borderRadius: 999 }}>{l.label}</span>
+              ))}
+            </div>
+
+            <h1 aria-label="Start at any level" className="il-head" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'baseline', margin: 0 }}>
+              <span style={{ fontFamily: sans, fontWeight: 800, color: C.tealDeep, letterSpacing: '-0.02em', fontSize: HEAD, lineHeight: 1.05 }}>Start</span>
+              {LEVELS.map((l) => (
+                <span key={l.label} style={{ fontFamily: sans, fontWeight: 800, letterSpacing: '-0.02em', fontSize: HEAD, lineHeight: 1.05, color: l.color }}>{l.text}</span>
               ))}
             </h1>
 
@@ -160,9 +173,12 @@ export default function IntroLanding() {
             </div>
 
             {!installed && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 14, margin: '16px 0 0', flexWrap: 'wrap' }}>
-                <button className="il-link" onClick={() => setShowHow((v) => !v)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: C.tealDeep, fontSize: 13.5, fontWeight: 700, fontFamily: sans, padding: 0 }}>
-                  {showHow ? 'Hide install steps' : 'How do I install?'}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16, margin: '18px 0 0', flexWrap: 'wrap' }}>
+                <button className="il-pill" onClick={() => setShowHow((v) => !v)} aria-expanded={showHow} style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 9, minHeight: 46, padding: '0 18px', borderRadius: 12,
+                  background: C.surface, color: C.tealDeep, border: '1.5px solid ' + C.teal, cursor: 'pointer',
+                  fontSize: 14.5, fontWeight: 700, fontFamily: sans, boxShadow: '0 6px 18px rgba(34,163,154,.16)', WebkitTapHighlightColor: 'transparent' }}>
+                  <DownloadIcon /> {showHow ? 'Hide install steps' : 'How do I install?'} <Chevron open={showHow} />
                 </button>
                 <button className="il-link" onClick={openApp} style={{ background: 'none', border: 'none', cursor: 'pointer', color: C.textMuted, fontSize: 13.5, fontWeight: 500, fontFamily: sans, padding: 0 }}>
                   or use it on the web &rarr;
