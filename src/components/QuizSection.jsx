@@ -99,7 +99,7 @@ const BackArrow = ({ onClick, label }) => (
 );
 
 // ═══════════════════════════════════════════════════════
-const QuizSection = ({ autoStart = false, onDone } = {}) => {
+const QuizSection = ({ autoStart = false, onDone, embedded = false } = {}) => {
   const [view, setView] = useState(autoStart ? 'quiz' : 'teaser');
   const [step, setStep] = useState(0);
   const [showBtn, setShowBtn] = useState(false);
@@ -423,7 +423,7 @@ const QuizSection = ({ autoStart = false, onDone } = {}) => {
 
   // ═══════════════════════════════════════════════
   return (
-    <section id="how-it-works" style={{ padding: '56px 22px 48px', background: C.canvas }}>
+    <section id="how-it-works" style={{ padding: embedded ? '0' : '56px 22px 48px', background: embedded ? 'transparent' : C.canvas }}>
       <style>{`
         @keyframes quizStepIn { 0% { opacity:0; transform:translateY(8px); } 100% { opacity:1; transform:translateY(0); } }
         @keyframes quizPopIn { 0% { opacity:0; transform:scale(0.92) translateY(6px); } 100% { opacity:1; transform:scale(1) translateY(0); } }

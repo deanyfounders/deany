@@ -26,6 +26,7 @@ import DeanyB1L2 from './DEANY-B1L2.jsx';
 import DeanyB1L3 from './DEANY-B1L3.jsx';
 import QuranicQuote from './components/QuranicQuote.jsx';
 import LandingPage from './LandingPage.jsx';
+import IntroLanding from './IntroLanding.jsx';
 import Dashboard from './Dashboard.jsx';
 import HomeShell from './app/home/HomeShell.jsx';
 import AppDashboard from './app/dashboard/Dashboard.jsx';
@@ -1072,8 +1073,15 @@ const App = ({ appMode = false, appState = null } = {}) => {
       );
     }
 
-    // Show landing page for first-time visitors, dashboard for returning users
+    // Install-first intro is the website front door. Its actions install the PWA
+    // or open the app-mode PWA on the web (/?app=1); the legacy LandingPage below
+    // stays in the codebase but is no longer the entry surface.
     if (!hasEntered) {
+      return <IntroLanding />;
+    }
+
+    // Legacy website landing, retained and reachable at /?site for reference.
+    if (typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('site')) {
       return (
         <LandingPage
           onGetStarted={enterApp}
