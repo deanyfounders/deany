@@ -17,7 +17,7 @@ const C = {
 };
 const serif = 'Georgia, serif';
 const sans = '-apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif';
-const HEAD = 'clamp(38px, 6.2vw, 60px)';
+const HEAD = 'clamp(34px, 8vw, 60px)';
 
 const LEVELS = [
   { text: 'at', label: 'Beginner', color: C.teal },
@@ -94,6 +94,8 @@ export default function IntroLanding() {
         .iu { animation: introUp .55s cubic-bezier(.2,.7,.3,1) both; }
         .il-grid { display: grid; grid-template-columns: 1fr; gap: 26px; align-items: center; }
         @media (min-width: 940px) { .il-grid { grid-template-columns: 1.02fr 0.98fr; gap: 52px; } }
+        .il-head { column-gap: 12px; }
+        @media (min-width: 480px) { .il-head { column-gap: 16px; } }
         .il-how { display: grid; grid-template-columns: 1fr; gap: 12px; }
         @media (min-width: 560px) { .il-how { grid-template-columns: 1fr 1fr; } }
         .il-pill { transition: transform .15s ease, filter .15s ease, box-shadow .15s ease; }
@@ -129,13 +131,14 @@ export default function IntroLanding() {
               Learn Islam, beautifully
             </span>
 
-            {/* Colour-coded, level-labelled headline */}
-            <h1 aria-label="Start at any level" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'flex-end', columnGap: 15, rowGap: 8, margin: '30px 0 0' }}>
+            {/* Colour-coded, level-labelled headline. Labels float ABOVE each word
+                (absolute) so long labels never widen or squish the word row. */}
+            <h1 aria-label="Start at any level" className="il-head" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'flex-end', rowGap: 34, margin: '48px 0 0' }}>
               <span style={{ fontFamily: sans, fontWeight: 800, color: C.tealDeep, letterSpacing: '-0.02em', fontSize: HEAD, lineHeight: 1 }}>Start</span>
               {LEVELS.map((l) => (
-                <span key={l.label} aria-hidden style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: 5 }}>
-                  <span style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
-                    <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: '.7px', textTransform: 'uppercase', color: l.color }}>{l.label}</span>
+                <span key={l.label} style={{ position: 'relative', display: 'inline-block', lineHeight: 1 }}>
+                  <span aria-hidden style={{ position: 'absolute', bottom: '100%', left: '50%', transform: 'translateX(-50%)', marginBottom: 4, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1, whiteSpace: 'nowrap' }}>
+                    <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: '.4px', textTransform: 'uppercase', color: l.color }}>{l.label}</span>
                     <ArrowDown color={l.color} />
                   </span>
                   <span style={{ fontFamily: sans, fontWeight: 800, letterSpacing: '-0.02em', fontSize: HEAD, lineHeight: 1, color: l.color }}>{l.text}</span>
