@@ -463,7 +463,7 @@ const QuranModuleSeparator = ({ prevMod, prevIndex, nextMod, nextIndex, modules,
 /* The only lessons currently open. Everything else renders locked. Quran vocab
    (core words) is a separate always-open feature, not a lesson in this list. */
 export { UNLOCKED_LESSON_IDS, isLessonUnlocked } from './lessonLock.js';
-import { isLessonUnlocked as isUnlocked } from './lessonLock.js';
+import { isLessonUnlocked as isUnlocked, notifyLockedLesson } from './lessonLock.js';
 
 /* ================================================================ */
 /*  ModuleBlock - the two-column layout per module                  */
@@ -486,7 +486,7 @@ const ModuleBlock = ({ mod, mi, topicId, completedLessons, loadProgress, onSelec
   const firstOpenIdx = lessons.findIndex((l) => isUnlocked(l));
 
   const handleLessonClick = useCallback((lesson, i) => {
-    if (!isUnlocked(lesson)) return; // locked - not clickable
+    if (!isUnlocked(lesson)) { notifyLockedLesson(); return; } // locked - show the MVP note
     onSelectLesson(lesson, i, mod); // pass mod: the dashboard handler needs mod.id
   }, [onSelectLesson, mod]);
 
@@ -753,7 +753,7 @@ const LessonTimelineRow = ({ lesson, index, state, saved, isLast, meta, isCurren
             ? `0 4px 20px ${ac.accent}1F, ${S.card}`
             : isDone ? S.card : '0 1px 4px rgba(26,35,50,.03)',
           opacity: isLocked ? 0.88 : 1,
-          cursor: isLocked ? 'default' : 'pointer',
+          cursor: 'pointer',
           transition: 'box-shadow .2s ease, transform .2s ease',
           minHeight: 48,
           ...focusRing,

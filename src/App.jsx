@@ -7,6 +7,7 @@ import DEANY_M1L5 from "../DEANY_M1L5.jsx";
 import DEANY_HB1_L1 from './DEANY-HB1L1.jsx';
 import DEANY_HB1_L2 from './DEANY-HB1L2.jsx';
 import ModuleOverview, { isLessonUnlocked } from './ModuleOverview.jsx';
+import { notifyLockedLesson } from './lessonLock.js';
 import PathLessons from './app/home/PathLessons.jsx';
 import { subjectOf } from './app/dashboard/tokens.js';
 import RootWordsModule from './app/quran/corewords/RootWordsModule.jsx';
@@ -1064,9 +1065,8 @@ const App = ({ appMode = false, appState = null } = {}) => {
             }
             setSelectedModule(mod);
             setLaunchedFromDashboard(true);
-            // Locked lessons aren't launchable from the dashboard; open the
-            // module's lesson list instead so the lock is visible.
-            if (!isLessonUnlocked(lesson)) { setScreen('lessons'); return; }
+            // Locked lessons aren't launchable; tapping shows the MVP note.
+            if (!isLessonUnlocked(lesson)) { notifyLockedLesson(); return; }
             selectLes(lesson, idx);
           }}
         />
@@ -1106,7 +1106,7 @@ const App = ({ appMode = false, appState = null } = {}) => {
           }
           setSelectedModule(mod);
           setLaunchedFromDashboard(true);
-          if (!isLessonUnlocked(lesson)) { setScreen('lessons'); return; }
+          if (!isLessonUnlocked(lesson)) { notifyLockedLesson(); return; }
           selectLes(lesson, idx);
         }}
         onCalibration={() => setScreen('compass')}

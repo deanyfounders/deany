@@ -6,7 +6,7 @@ import { createPortal } from 'react-dom';
 import { Check, Play, ChevronLeft, Clock, ArrowRight, Lock } from 'lucide-react';
 import { TOKENS } from '../shared/AppScreen.jsx';
 import RootWordsModule from '../quran/corewords/RootWordsModule.jsx';
-import { isLessonUnlocked } from '../../lessonLock.js';
+import { isLessonUnlocked, notifyLockedLesson } from '../../lessonLock.js';
 
 const serif = 'Georgia, serif';
 
@@ -85,7 +85,7 @@ export default function PathLessons({ topic, modules, completedLessons, accent =
               const state = !unlocked ? 'locked' : row.isDone ? 'done' : 'current';
               const isLast = ri === sec.lessons.length - 1;
               return <Row key={row.key} row={row} index={ri} state={state} accent={accent} isLast={isLast}
-                onClick={unlocked ? () => onSelectLesson?.(row.lesson, row.idx, row.mod) : undefined} />;
+                onClick={unlocked ? () => onSelectLesson?.(row.lesson, row.idx, row.mod) : notifyLockedLesson} />;
             })}
           </div>
         ))}
@@ -122,11 +122,11 @@ function Row({ row, index, state, accent, isLast, onClick }) {
       </div>
 
       {/* Card */}
-      <button onClick={onClick} disabled={locked} className={cur ? 'pl-entice-card' : undefined} style={{
+      <button onClick={onClick} className={cur ? 'pl-entice-card' : undefined} style={{
         flex: 1, marginLeft: 14, marginBottom: isLast ? 0 : 12, borderRadius: 14, padding: '15px 16px', textAlign: 'left',
         background: '#fff', border: cur ? 'none' : '1px solid rgba(15,76,92,0.10)', borderLeft: cur ? `4px solid ${accent}` : undefined,
         boxShadow: cur ? `0 4px 18px ${accent}1F` : '0 1px 4px rgba(26,35,50,.04)',
-        cursor: locked ? 'default' : 'pointer', opacity: locked ? 0.72 : 1, minHeight: 48,
+        cursor: 'pointer', opacity: locked ? 0.72 : 1, minHeight: 48,
         display: 'flex', alignItems: 'center', gap: 12, transition: 'box-shadow .2s ease, transform .12s ease',
         WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation',
       }}>
